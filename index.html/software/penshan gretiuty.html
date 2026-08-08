@@ -14,12 +14,12 @@
 body {
     font-family: Mangal, Arial, sans-serif;
     background: pink;
-    height: 100vh;
+    min-height: 100vh;
     width: 100vw;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    padding: 0.5vh 1vw;
+    overflow-x: hidden;
+    padding: 10px;
 }
 
 /* Login Modal Screen */
@@ -37,65 +37,65 @@ body {
 }
 .login-card {
     background: #fff;
-    padding: 2.5vh 2vw;
+    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px #999;
     text-align: center;
-    width: 320px;
+    width: 90%;
+    max-width: 320px;
 }
 .login-card h2 {
-    font-size: 2.2vh;
+    font-size: 20px;
     color: #1a0dab;
-    margin-bottom: 1.5vh;
+    margin-bottom: 15px;
 }
 .login-card input {
-    height: 4vh;
-    margin-bottom: 1.2vh;
-    padding: 0.5vh;
+    height: 38px;
+    margin-bottom: 12px;
+    padding: 8px;
     border: 1px solid #999;
     border-radius: 4px;
     width: 100%;
-    font-size: 1.6vh;
+    font-size: 14px;
 }
 .login-card button {
     width: 100%;
-    padding: 1vh;
+    padding: 10px;
     background: #0b57d0;
     color: white;
     border: none;
     border-radius: 4px;
     font-weight: bold;
     cursor: pointer;
-    font-size: 1.6vh;
+    font-size: 15px;
 }
 .login-card button:hover {
     background: #084298;
 }
 
-/* Main Container (Initially Hidden) */
+/* Main Container */
 #mainAppContainer {
     display: none;
-    height: 100%;
     width: 100%;
     flex-direction: column;
 }
 
 center h2 {
-    font-size: 2.2vh;
-    margin-bottom: 0.2vh;
+    font-size: 20px;
+    margin-bottom: 5px;
     color: #333;
 }
 .marq-container {
     display: flex;
     align-items: center;
     background: green;
-    margin-bottom: 0.5vh;
+    margin-bottom: 10px;
 }
 .marq {
     background: green;
     color: white;
-    padding: 0.3vh;
-    font-size: 1.8vh;
+    padding: 5px;
+    font-size: 15px;
     font-weight: bold;
     flex: 1;
 }
@@ -103,12 +103,13 @@ center h2 {
     background: #d93025;
     color: white;
     border: none;
-    padding: 0.3vh 1vw;
+    padding: 6px 12px;
     font-weight: bold;
-    font-size: 1.5vh;
+    font-size: 13px;
     cursor: pointer;
     border-radius: 3px;
     margin-right: 5px;
+    white-space: nowrap;
 }
 .btn-logout:hover {
     background: #a50e0e;
@@ -118,31 +119,26 @@ center h2 {
     max-width: 1000px;
     margin: 0 auto;
     background: #fff;
-    padding: 1.5vh 1.5vw;
+    padding: 15px;
     border-radius: 8px;
     box-shadow: 0 0 10px #999;
-    flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden;
 }
 .form-box h2 {
     text-align: center;
-    font-size: 2.2vh;
-    margin-bottom: 1vh;
+    font-size: 20px;
+    margin-bottom: 15px;
     color: #1a0dab;
 }
 form {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
+    gap: 8px;
 }
 .row {
     display: flex;
-    gap: 1.5vw;
-    margin-bottom: 0.8vh;
+    gap: 15px;
 }
 .field {
     flex: 1;
@@ -150,18 +146,18 @@ form {
     flex-direction: column;
 }
 label {
-    font-size: 1.5vh;
+    font-size: 13px;
     font-weight: bold;
-    margin-bottom: 0.3vh;
+    margin-bottom: 3px;
     color: #333;
 }
 input {
-    height: 3.5vh;
-    padding: 0.5vh;
+    height: 35px;
+    padding: 5px 8px;
     border: 1px solid #999;
     border-radius: 4px;
     width: 100%;
-    font-size: 1.6vh;
+    font-size: 14px;
     background-color: #fafafa;
 }
 input:focus {
@@ -171,18 +167,21 @@ input:focus {
 }
 .button-group {
     text-align: center;
-    margin-top: 0.5vh;
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 button {
-    padding: 1vh 2vw;
-    margin: 0 0.5vw;
+    padding: 8px 16px;
     border: none;
     border-radius: 5px;
     background: #0b57d0;
     color: white;
     cursor: pointer;
     font-weight: bold;
-    font-size: 1.6vh;
+    font-size: 14px;
     transition: background 0.2s;
 }
 button:hover {
@@ -191,6 +190,22 @@ button:hover {
 .hide-value {
     color: transparent;
     background-color: #e9ecef;
+}
+
+/* Mobile Responsiveness Rules */
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto;
+        padding: 5px;
+    }
+    .row {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .button-group button {
+        flex: 1 1 40%;
+        padding: 10px;
+    }
 }
 </style>
 </head>
@@ -204,7 +219,7 @@ button:hover {
         <input type="text" id="loginIdInput" placeholder="Login ID">
         <input type="password" id="loginPassInput" placeholder="Password">
         <button onclick="handleLogin()">Login</button>
-        <p id="loginErrMsg" style="color: red; font-size: 1.3vh; margin-top: 1vh; display: none;">गलत ID या पासवर्ड!</p>
+        <p id="loginErrMsg" style="color: red; font-size: 12px; margin-top: 8px; display: none;">गलत ID या पासवर्ड!</p>
     </div>
 </div>
 
@@ -322,7 +337,6 @@ function handleLogout() {
     }
 }
 
-// यहाँ अपना नया पब्लिश किया हुआ गूगल वेब ऐप URL पेस्ट करें
 const scriptURL = "https://script.google.com/macros/s/AKfycbzVmo8BBfo0t2vbjXkHVoe7tVU_f8U1bvwC409__7hGyHD3ylkmh-kYvijSVJMBq_bP/exec";
 
 function setAgeRate(){
@@ -483,23 +497,18 @@ function searchData() {
         if (data.error) {
             alert("Data Search Successful: " + data.error);
         } else {
-            // फ़ील्ड्स में सही डेटा असाइन करना
             document.getElementById("combo1").value = data.name || "";
             document.getElementById("combo2").value = data.post || "";
             document.getElementById("t1").value = data.dob || "";
             document.getElementById("t2").value = data.joinDate || "";
             document.getElementById("t6").value = data.basicSalary || "";
             document.getElementById("t7").value = data.ratePercent || "";
-            
-            // टेक्स्टबॉक्स 19 में केवल मृत्यु तिथि ही लोड होगी
             document.getElementById("t19").value = data.deathDate || "";
 
-            // ऑटो-कैलकुलेशन फंक्शन रन करना
             setAgeRate();
             setRetirementDate();
             calculateAll();
             
-            // शीट से प्राप्त एक्चुअल डेटा टेक्स्टबॉक्स 20 और 21 में डालना (कैलकुलेटर रिप्लेसमेंट रोकने के लिए)
             if (data.deathDate) {
                 document.getElementById("t20").value = data.deathGratuity || "";
                 document.getElementById("t21").value = data.deathPension || "";
