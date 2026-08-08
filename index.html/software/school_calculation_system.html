@@ -972,8 +972,9 @@ function updateLiveGrandTotal() {
                         else if(cls.startsWith("12")) mainCls = 12;
 
                         if(mainCls > 0) {
-                            let genCnt = (Number(record.txt2) || 0) + (Number(record.janTxt2) || 0);
-                            let scCnt = (Number(record.txt3) || 0) + (Number(record.janTxt3) || 0);
+                            // Jul/Jan की स्थिति में जन० संख्या (janTxt2 / janTxt3) को छात्र संख्या में नहीं जोड़ा जाएगा
+                            let genCnt = Number(record.txt2) || 0;
+                            let scCnt = Number(record.txt3) || 0;
                             let totalFee = Number(record.txt26) || 0; // कुल योग (txt26) का प्रयोग
 
                             classStats[mainCls].gen += genCnt;
