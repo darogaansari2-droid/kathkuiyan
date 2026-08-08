@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart DA Arrear Version 4.1</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --success-color: #2f855a;
+            --warning-color: #d69e2e;
+            --danger-color: #c53030;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 5px;
+            color: var(--text-color);
+            line-height: 1.2;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            height: calc(100vh - 10px);
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #ffffff;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        marquee {
+            background: #edf2f7;
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            margin-bottom: 8px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .msg-box-container {
+            min-height: 35px;
+            margin-bottom: 8px;
+        }
+
+        .msg-box {
+            visibility: hidden;
+            padding: 6px;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+            height: 100%;
+        }
+        .msg-success { background-color: #c6f6d5; color: #22543d; border: 1px solid #98e6b1; }
+        .msg-error { background-color: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 3.5fr 0.9fr;
+            gap: 12px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .workspace {
+                grid-template-columns: 1fr;
+                overflow-y: auto;
+            }
+            body { overflow: auto; }
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .panel {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 15px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid #e2e8f0;
+            font-weight: 700;
+        }
+
+        .grid-3-col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .month-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 4px;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 12px;
+        }
+
+        input, select {
+            padding: 6px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2d3748;
+            background-color: #fff;
+            font-weight: bold; 
+        }
+
+        input:focus, select:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+        }
+
+        input[readonly] {
+            background-color: #edf2f7;
+            color: #4a5568;
+            font-weight: bold;
+        }
+
+        .highlight-input {
+            border: 1px solid var(--secondary-color);
+        }
+
+        .btn-panel {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            padding-top: 5px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 100px;
+        }
+
+        .btn-save { background-color: var(--success-color); }
+        .btn-save:hover { background-color: #22543d; }
+        .btn-search { background-color: var(--secondary-color); }
+        .btn-search:hover { background-color: #2b6cb0; }
+        .btn-update { background-color: var(--warning-color); color: #fff; }
+        .btn-update:hover { background-color: #b7791f; }
+        .btn-clear { background-color: var(--danger-color); }
+        .btn-clear:hover { background-color: #9b2c2c; }
+        
+        .btn-open { background-color: #4a5568; }
+        .btn-open:hover { background-color: #2d3748; }
+
+        .calc-helper-box {
+            background: #1a202c;
+            color: #f7fafc;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+
+        .calc-helper-box h3 {
+            margin: 0;
+            font-size: 13px;
+            border-bottom: 1px solid #4a5568;
+            padding-bottom: 6px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 12px;
+            border-bottom: 1px dashed #2d3748;
+            padding-bottom: 4px;
+        }
+
+        .summary-item span.val {
+            font-weight: 700;
+            color: #63b3ed;
+        }
+
+        .custom-calc-tool {
+            margin-top: 5px;
+            background: #2d3748;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .custom-calc-tool label {
+            color: #cbd5e0;
+            font-size: 11px;
+        }
+
+        .custom-calc-tool input {
+            background: #4a5568;
+            border: 1px solid #718096;
+            color: #fff;
+            width: 100%;
+            margin-bottom: 4px;
+            padding: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .calc-ops-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .btn-inline-calc {
+            padding: 5px;
+            background: var(--secondary-color);
+            border: none;
+            color: white;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .btn-inline-calc:hover { background: #2260a9; }
+        .btn-inline-calc.clear-op { background: var(--danger-color); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-section">
+        <h1>अवशेष महंगाई भत्ता (DA Arrear Software)</h1>
+    </div>
+    
+    <marquee behavior="scroll" direction="left">
+        S K I C Update Gpf And Nps Arrear 
+    </marquee>
+
+    <div class="msg-box-container">
+        <div id="messageBox" class="msg-box"></div>
+    </div>
+
+    <div class="workspace">
+        
+        <form id="arrearForm" onsubmit="event.preventDefault();">
+            
+            <div class="panel">
+                <div class="section-title">1. कर्मचारी एवं मूल वेतन का विवरण</div>
+                <div class="grid-3-col">
+                    <div class="form-group">
+                        <label for="empId">क्रम सं० (ID)</label>
+                        <input type="text" id="empId" tabindex="1" required placeholder="ID लोड हो रही है...">
+                    </div>
+                    <div class="form-group">
+                        <label for="empName">कर्मचारी का नाम </label>
+                        <input type="text" id="empName" tabindex="2" required placeholder="नाम दर्ज करें">
+                    </div>
+                    <div class="form-group">
+                        <label for="designation">पदनाम </label>
+                        <input type="text" id="designation" tabindex="3" required placeholder="पदनाम दर्ज करें">
+                    </div>
+                    <div class="form-group">
+                        <label for="basicPay">मूल वेतन </label>
+                        <input type="number" id="basicPay" tabindex="4" required placeholder="मूल वेतन दर्ज करें" oninput="runMasterCalculations()">
+                    </div>
+                    <div class="form-group">
+                        <label for="daAmount">महंगाई </label>
+                        <input type="number" id="daAmount" tabindex="-1" readonly placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="basicPlusDa">कुल योग </label>
+                        <input type="number" id="basicPlusDa" tabindex="-1" readonly placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel" style="background-color: #f7fafc;">
+                <div class="section-title" style="color: var(--secondary-color);">2. महंगाई भत्ता (DA) दर संरचना </div>
+                <div class="grid-3-col">
+                    <div class="form-group">
+                        <label for="prevDaRate">पूर्व DA दर (%)</label>
+                        <input type="number" id="prevDaRate" tabindex="6" value="58" step="0.01" class="highlight-input" oninput="runMasterCalculations()">
+                    </div>
+                    <div class="form-group">
+                        <label for="newDaRate">वर्तमान/नवीन DA दर (%)</label>
+                        <input type="number" id="newDaRate" tabindex="7" value="60" step="0.01" class="highlight-input" oninput="runMasterCalculations()">
+                    </div>
+                    <div class="form-group">
+                        <label for="daDifference">DA अंतर दर (%)</label>
+                        <input type="number" id="daDifference" tabindex="-1" readonly placeholder="अंतर दर">
+                    </div>
+                    <div class="form-group">
+                        <label for="yog">मासिक DA अंतर राशि</label>
+                        <input type="number" id="yog" tabindex="-1" readonly placeholder="मूल वेतन की अंतर राशि">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">3. मासिक विवरण एवं अंतर गणना (Editable)</div>
+                <div class="month-grid-container">
+                    <div class="form-group">
+                        <label for="jan">जनवरी </label>
+                        <input type="number" id="jan" tabindex="8" class="month-input" oninput="calculateGrandTotalOnly()" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="feb">फरवरी </label>
+                        <input type="number" id="feb" tabindex="9" class="month-input" oninput="calculateGrandTotalOnly()" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="march">मार्च </label>
+                        <input type="number" id="march" tabindex="10" class="month-input" oninput="calculateGrandTotalOnly()" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="apr">अप्रैल </label>
+                        <input type="number" id="apr" tabindex="11" class="month-input" oninput="calculateGrandTotalOnly()" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="section-title">4. कुल योग, cut-offs एवं नकद भुगतान विकल्प</div>
+                <div class="grid-3-col">
+                    <div class="form-group">
+                        <label for="total">कुल योग </label>
+                        <input type="number" id="total" tabindex="-1" readonly placeholder="महीनों का कुल योग">
+                    </div>
+                    <div class="form-group">
+                        <label for="anm">Nps/Gpf</label>
+                        <select id="anm" tabindex="12" onchange="runDeductionLogic()">
+                            <option value="GPF">जी.पी.एफ </option>
+                            <option value="NPS"> एन.पी.एस</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="gpfGroup">
+                        <label for="gpf"> जी.पी.एफ</label>
+                        <input type="number" id="gpf" tabindex="-1" value="0" readonly>
+                    </div>
+                    <div class="form-group" id="npsGroup">
+                        <label for="nps"> एन.पी.एस</label>
+                        <input type="number" id="nps" tabindex="-1" value="0" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="nagad">नकद भुगतान </label>
+                        <input type="number" id="nagad" tabindex="13" placeholder="नगद राशि" oninput="handleManualNagadChange()" style="font-weight: bold; color: var(--success-color); background-color: #f0fff4;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-panel">
+                <button type="button" class="btn btn-save" tabindex="5" onclick="saveToGoogleSheets()">Save</button>
+                <button type="button" class="btn btn-search" tabindex="14" onclick="searchEmployeeData()">Search</button>
+                <button type="button" class="btn btn-update" tabindex="15" onclick="updateEmployeeData()">Update</button>
+                <button type="button" class="btn btn-clear" tabindex="16" onclick="resetFormFields()">Clear</button>
+                <button type="button" class="btn btn-open" tabindex="17" onclick="openGoogleDrive()">Open Drive</button>
+            </div>
+        </form>
+
+        <div class="calc-helper-box">
+            <div>
+                <h3>लाइव गणना विश्लेषक & उत्तम कैलकुलेटर</h3>
+                <div style="margin-top: 10px;">
+                    <div class="summary-item"><span>मूल वेतन:</span><span id="lblBasic" class="val">₹0</span></div>
+                    <div class="summary-item"><span>DA अंतर:</span><span id="lblDiffRate" class="val">0%</span></div>
+                    <div class="summary-item"><span>मासिक अंतर:</span><span id="lblMonthlyProfit" class="val">₹0</span></div>
+                    <div class="summary-item"><span>कुल एरियर:</span><span id="lbl4MonthTotal" class="val">₹0</span></div>
+                </div>
+            </div>
+
+            <div class="custom-calc-tool">
+                <div class="form-group">
+                    <label>संख्या १</label>
+                    <input type="number" id="scVal1" tabindex="18" placeholder="संख्या १">
+                </div>
+                <div class="form-group">
+                    <label>संख्या २</label>
+                    <input type="number" id="scVal2" tabindex="19" placeholder="संख्या २">
+                </div>
+                <div class="form-group">
+                    <label>परिणाम</label>
+                    <input type="text" id="scResult" tabindex="-1" readonly style="background:#1a202c; color:#63b3ed; font-weight: bold;">
+                </div>
+                <div class="calc-ops-grid">
+                    <button type="button" class="btn-inline-calc" tabindex="20" onclick="performUttamCalc('+')">+</button>
+                    <button type="button" class="btn-inline-calc" tabindex="21" onclick="performUttamCalc('-')">-</button>
+                    <button type="button" class="btn-inline-calc" tabindex="22" onclick="performUttamCalc('*')">*</button>
+                    <button type="button" class="btn-inline-calc" tabindex="23" onclick="performUttamCalc('/')">/</button>
+                    <button type="button" class="btn-inline-calc" tabindex="24" onclick="performUttamCalc('%')">%</button>
+                    <button type="button" class="btn-inline-calc" tabindex="25" onclick="clearUttamCalc()">C</button>
+                </div>
+            </div>
+            
+            <p style="font-size:10px; color:#a0aec0; margin: 5px 0 0 0; text-align:center; line-height:1.2;">
+                NPS चुनने पर 10% राउंड valeur आएगी। GPF चुनने पर नकद हटाने के बाद शेष राशि GPF में जाएगी।
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const googleSheetScriptUrl = 'https://script.google.com/macros/s/AKfycbxwizioPfXQVj8onqRjPTh6wmR3YSWxlfWIQC2x8AXtAReD7gt1d9NBkITTbS4fJPVw/exec';
+
+    window.onload = function() {
+        runMasterCalculations();
+        fetchNextId();
+    };
+
+    function fetchNextId() {
+        fetch(googleSheetScriptUrl + '?action=getNextId')
+        .then(response => response.json())
+        .then(data => {
+            if(data.result === 'success') {
+                document.getElementById('empId').value = data.nextId;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching ID:', error);
+        });
+    }
+
+    function openGoogleDrive() {
+        window.open('https://drive.google.com/', '_blank');
+    }
+
+    function runMasterCalculations() {
+        let prevRate = parseFloat(document.getElementById('prevDaRate').value) || 0;
+        let newRate = parseFloat(document.getElementById('newDaRate').value) || 0;
+        let diffRate = newRate - prevRate;
+        document.getElementById('daDifference').value = diffRate.toFixed(2);
+
+        let basicPay = parseFloat(document.getElementById('basicPay').value) || 0;
+        
+        let currentDaAmount = (basicPay * newRate) / 100;
+        let basicPlusDaTotal = basicPay + currentDaAmount;
+        
+        document.getElementById('daAmount').value = currentDaAmount.toFixed(2);
+        document.getElementById('basicPlusDa').value = basicPlusDaTotal.toFixed(2);
+
+        let monthlyDifference = (basicPay * diffRate) / 100;
+        document.getElementById('yog').value = monthlyDifference.toFixed(2);
+
+        document.getElementById('jan').value = monthlyDifference.toFixed(2);
+        document.getElementById('feb').value = monthlyDifference.toFixed(2);
+        document.getElementById('march').value = monthlyDifference.toFixed(2);
+        document.getElementById('apr').value = monthlyDifference.toFixed(2);
+
+        calculateGrandTotalOnly();
+        updateLiveAnalyticsPanel(basicPay, diffRate, monthlyDifference);
+    }
+
+    function calculateGrandTotalOnly() {
+        let jan = parseFloat(document.getElementById('jan').value) || 0;
+        let feb = parseFloat(document.getElementById('feb').value) || 0;
+        let march = parseFloat(document.getElementById('march').value) || 0;
+        let apr = parseFloat(document.getElementById('apr').value) || 0;
+
+        let grandTotal = jan + feb + march + apr;
+        document.getElementById('total').value = grandTotal.toFixed(2);
+
+        runDeductionLogic();
+    }
+
+    function runDeductionLogic() {
+        let selection = document.getElementById('anm').value;
+        let totalArrear = parseFloat(document.getElementById('total').value) || 0;
+        let nagadValue = parseFloat(document.getElementById('nagad').value) || 0;
+
+        if (selection === 'NPS') {
+            let calculatedNps = totalArrear * 0.10;
+            let roundNps = Math.round(calculatedNps);
+            
+            document.getElementById('nps').value = roundNps;
+            document.getElementById('gpf').value = 0;
+
+            let remainingCash = totalArrear - roundNps;
+            document.getElementById('nagad').value = remainingCash.toFixed(2);
+
+        } else if (selection === 'GPF') {
+            document.getElementById('nps').value = 0;
+            let balancedGpf = totalArrear - nagadValue;
+            document.getElementById('gpf').value = balancedGpf >= 0 ? balancedGpf.toFixed(2) : "0.00";
+        }
+        
+        document.getElementById('lbl4MonthTotal').innerText = '₹' + totalArrear.toFixed(2);
+    }
+
+    function handleManualNagadChange() {
+        let selection = document.getElementById('anm').value;
+        let totalArrear = parseFloat(document.getElementById('total').value) || 0;
+        let nagadInput = parseFloat(document.getElementById('nagad').value) || 0;
+
+        if (selection === 'GPF') {
+            let balancedGpf = totalArrear - nagadInput;
+            document.getElementById('gpf').value = balancedGpf >= 0 ? balancedGpf.toFixed(2) : "0.00";
+        }
+    }
+
+    function updateLiveAnalyticsPanel(basic, diffRate, monthlyProfit) {
+        document.getElementById('lblBasic').innerText = '₹' + basic.toLocaleString('en-IN');
+        document.getElementById('lblDiffRate').innerText = diffRate.toFixed(2) + '%';
+        document.getElementById('lblMonthlyProfit').innerText = '₹' + monthlyProfit.toFixed(2);
+    }
+
+    function performUttamCalc(operation) {
+        let v1 = parseFloat(document.getElementById('scVal1').value) || 0;
+        let v2 = parseFloat(document.getElementById('scVal2').value) || 0;
+        let resField = document.getElementById('scResult');
+
+        switch(operation) {
+            case '+': resField.value = (v1 + v2).toFixed(2); break;
+            case '-': resField.value = (v1 - v2).toFixed(2); break;
+            case '*': resField.value = (v1 * v2).toFixed(2); break;
+            case '/': 
+                if(v2 !== 0) resField.value = (v1 / v2).toFixed(2);
+                else resField.value = "Error";
+                break;
+            case '%': resField.value = ((v1 * v2) / 100).toFixed(2); break;
+            default: resField.value = "";
+        }
+    }
+
+    function clearUttamCalc() {
+        document.getElementById('scVal1').value = '';
+        document.getElementById('scVal2').value = '';
+        document.getElementById('scResult').value = '';
+    }
+
+    function triggerNotificationBox(msgText, isSuccessMode) {
+        const msgBox = document.getElementById('messageBox');
+        msgBox.innerText = msgText;
+        msgBox.className = 'msg-box ' + (isSuccessMode ? 'msg-success' : 'msg-error');
+        msgBox.style.visibility = 'visible';
+        setTimeout(() => { msgBox.style.visibility = 'hidden'; }, 4000);
+    }
+
+    function resetFormFields() {
+        document.getElementById('arrearForm').reset();
+        document.getElementById('nagad').value = '';
+        runMasterCalculations();
+        fetchNextId();
+    }
+
+    function saveToGoogleSheets() {
+        let empId = document.getElementById('empId').value;
+        let empName = document.getElementById('empName').value;
+        
+        if (!empId || !empName) {
+            triggerNotificationBox('कृपया ID और कर्मचारी का नाम दर्ज करें।', false);
+            return;
+        }
+
+        triggerNotificationBox('डेटा सहेजा जा रहा है, कृपया प्रतीक्षा करें...', true);
+
+        let formData = new URLSearchParams();
+        formData.append('action', 'save');
+        formData.append('empId', empId);
+        formData.append('empName', empName);
+        formData.append('designation', document.getElementById('designation').value);
+        formData.append('basicPay', document.getElementById('basicPay').value);
+        formData.append('daAmount', document.getElementById('daAmount').value);
+        formData.append('basicPlusDa', document.getElementById('basicPlusDa').value);
+        formData.append('jan', document.getElementById('jan').value);
+        formData.append('feb', document.getElementById('feb').value);
+        formData.append('march', document.getElementById('march').value);
+        formData.append('apr', document.getElementById('apr').value);
+        formData.append('total', document.getElementById('total').value);
+        formData.append('gpf', document.getElementById('gpf').value);
+        formData.append('nps', document.getElementById('nps').value);
+        formData.append('nagad', document.getElementById('nagad').value);
+
+        fetch(googleSheetScriptUrl, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.result === 'success') {
+                triggerNotificationBox(data.message || 'डेटा सफलतापूर्वक सुरक्षित किया गया!', true);
+                resetFormFields();
+            } else {
+                triggerNotificationBox('त्रुटि: ' + (data.message || 'डेटा सेव करने में विफल।'), false);
+            }
+        })
+        .catch(error => {
+            triggerNotificationBox('नेटवर्क या सर्वर त्रुटि के कारण डेटा सहेजा नहीं जा सका।', false);
+        });
+    }
+
+    function searchEmployeeData() {
+        let empId = document.getElementById('empId').value;
+        if (!empId) { 
+            triggerNotificationBox('खोजने के लिए कृपया एक ID दर्ज करें।', false); 
+            return; 
+        }
+
+        triggerNotificationBox('डेटा खोजा जा रहा है, कृपया प्रतीक्षा करें...', true);
+
+        fetch(`${googleSheetScriptUrl}?empId=${encodeURIComponent(empId)}`, {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.result === 'success') {
+                document.getElementById('empName').value = data.empName || '';
+                document.getElementById('designation').value = data.designation || '';
+                document.getElementById('basicPay').value = data.basicPay || 0;
+                document.getElementById('daAmount').value = data.daAmount || 0;
+                document.getElementById('basicPlusDa').value = data.basicPlusDa || 0;
+                document.getElementById('jan').value = data.jan || 0;
+                document.getElementById('feb').value = data.feb || 0;
+                document.getElementById('march').value = data.march || 0;
+                document.getElementById('apr').value = data.apr || 0;
+                document.getElementById('total').value = data.total || 0;
+                
+                if (data.anm) {
+                    document.getElementById('anm').value = data.anm;
+                }
+                
+                document.getElementById('gpf').value = data.gpf || 0;
+                document.getElementById('nps').value = data.nps || 0;
+                document.getElementById('nagad').value = data.nagad || 0;
+
+                let diffRate = parseFloat(document.getElementById('daDifference').value) || 0;
+                let monthlyDiff = parseFloat(document.getElementById('yog').value) || 0;
+                updateLiveAnalyticsPanel(parseFloat(data.basicPay || 0), diffRate, monthlyDiff);
+                document.getElementById('lbl4MonthTotal').innerText = '₹' + (parseFloat(data.total) || 0).toFixed(2);
+
+                triggerNotificationBox('रिकॉर्ड मिल गया!', true);
+            } else {
+                triggerNotificationBox('त्रुटि: ' + (data.message || 'रिकॉर्ड नहीं मिला।'), false);
+            }
+        })
+        .catch(error => {
+            console.error('Search Error:', error);
+            triggerNotificationBox('कोई मिलान रिकॉर्ड नहीं मिला या अनुरोध विफल रहा।', false);
+        });
+    }
+
+    function updateEmployeeData() {
+        let empId = document.getElementById('empId').value;
+        let empName = document.getElementById('empName').value;
+        
+        if (!empId || !empName) {
+            triggerNotificationBox('अपडेट करने के लिए ID और नाम दर्ज होना आवश्यक है।', false);
+            return;
+        }
+
+        triggerNotificationBox('डेटा अपडेट किया जा रहा है...', true);
+
+        let formData = new URLSearchParams();
+        formData.append('action', 'update');  
+        formData.append('empId', empId);
+        formData.append('empName', empName);
+        formData.append('designation', document.getElementById('designation').value);
+        formData.append('basicPay', document.getElementById('basicPay').value);
+        formData.append('daAmount', document.getElementById('daAmount').value);
+        formData.append('basicPlusDa', document.getElementById('basicPlusDa').value);
+        formData.append('jan', document.getElementById('jan').value);
+        formData.append('feb', document.getElementById('feb').value);
+        formData.append('march', document.getElementById('march').value);
+        formData.append('apr', document.getElementById('apr').value);
+        formData.append('total', document.getElementById('total').value);
+        formData.append('gpf', document.getElementById('gpf').value);
+        formData.append('nps', document.getElementById('nps').value);
+        formData.append('nagad', document.getElementById('nagad').value);
+
+        fetch(googleSheetScriptUrl, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.result === 'success') {
+                triggerNotificationBox('डेटा सफलतापूर्वक अपडेट हुआ!', true);
+            } else {
+                triggerNotificationBox('त्रुटि: ' + (data.message || 'डेटा अपडेट करने में विफल।'), false);
+            }
+        })
+        .catch(error => {
+            console.error('Update Error:', error);
+            triggerNotificationBox('त्रुटि: डेटा अपडेट नहीं हो सका। Apps Script सेटअप की जांच करें।', false);
+        });
+    }
+</script>
+
+</body>
+</html>

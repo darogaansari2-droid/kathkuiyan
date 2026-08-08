@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>विद्यालय लेटर पैड</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background-color: #f5f5f5; 
+            user-select: none; 
+        }
+
+        /* 🛠️ टूल्स बॉक्स स्टाइल */
+        .size-selector-box {
+            width: 794px;
+            margin: 10px auto 0 auto;
+            padding: 8px 15px;
+            background: #003366;
+            color: #fff;
+            border-radius: 5px 5px 0 0;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px; 
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+        }
+        .selector-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .size-selector-box select {
+            padding: 4px 6px;
+            font-size: 13px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        /* 📊 बटन्स स्टाइल */
+        .btn-table {
+            background-color: #ff9900; color: #000; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;
+        }
+        .btn-delete-action {
+            background-color: #cc0000; color: #fff; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px;
+        }
+        .btn-table:hover { background-color: #e68a00; }
+        .btn-delete-action:hover { background-color: #a30000; }
+
+        /* लेटर पैड का मुख्य कंटेनर (A4 साइज़) */
+        .letterhead {
+            width: 794px; 
+            min-height: 1123px; 
+            margin: 0 auto 20px auto; 
+            padding: 10px 0px 96px 0px; 
+            border: 1px solid #ddd; 
+            box-sizing: border-box;
+            position: relative; 
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* 🔒 हेडर ज़ोन */
+        .fixed-header-container {
+            padding-left: 50px;
+            padding-right: 50px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* 🖨️ प्रिंट... */
+        @media print {
+            body { background-color: #ffffff; }
+            .size-selector-box, .drag-handle { display: none !important; }
+            .letterhead { 
+                border: none !important; 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                overflow: visible !important; 
+            }
+            .editable-text:focus, .content-fixed:focus { outline: none !important; background-color: transparent !important; }
+            .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; }
+            .resize-handle-left, .resize-handle-right { display: none !important; }
+            .table-resizable-wrapper table { border-collapse: collapse !important; }
+            .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #000 !important; }
+        }
+
+        /* हेडर स्टाइल */
+        .header { padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* 📏 विद्यालय के नीचे पूरे पेज में फैलने वाली सीधी सुंदर बॉर्डर लाइन */
+        .full-width-line {
+            border-bottom: 5px double #003366;
+            margin: 0 -50px 28px -50px; 
+            display: block;
+        }
+
+        .logo { width: 95px; height: 95px; object-fit: contain; }
+        .school-details { text-align: center; flex-grow: 1; }
+        .school-name { font-size: 36px; font-weight: bold; color: #003366; margin: 0; text-transform: uppercase; line-height: 1.2; }
+        .school-info { font-size: 18px; margin: 8px 0 0 0; color: #003366; font-weight: bold; } /* 🌟 गाढ़ा नीला रंग */
+        
+        /* 📅 पत्रांक और दिनांक का मुख्य डिब्बा - गहरा गाढ़ा नीला रंग */
+        .meta-info { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            margin-bottom: 18px; 
+            font-weight: bold; 
+            color: #003366; /* 🌟 स्कूल नेम वाला सेम गाढ़ा नीला रंग */
+            width: 100%;
+        }
+        .meta-info .date-right {
+            text-align: right; 
+        }
+
+        /* 👔 प्रबन्धक / प्रधानाचार्य - गहरा गाढ़ा नीला रंग */
+        .authority { 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-bottom: 10px; 
+            margin-left: 10px; 
+            color: #003366; /* 🌟 स्कूल नेम वाला सेम गाढ़ा नीला रंग */
+        }
+         
+        /* ✍️ सामान्य पत्र लिखने की मुख्य जगह */
+        .content-fixed {
+            padding-left: 50px;   
+            padding-right: 50px;  
+            min-height: 400px; 
+            font-size: 15px; 
+            line-height: 1.5;
+            color: #222;
+            text-align: justify;
+            padding-bottom: 10px;
+            cursor: text;
+            user-select: text; 
+            box-sizing: border-box;
+        }
+        .content-fixed:focus, .editable-text:focus { outline: 1px dashed #003366 !important; background-color: #fafafa; padding: 2px; }
+        
+        /* भरने वाली जगह का रंग */
+        .editable-text { 
+            display: inline-block; 
+            min-width: 120px; 
+            font-weight: normal; 
+            color: #003366; /* 🌟 भरने वाले अक्षरों का रंग भी मैचिंग रहेगा */
+            cursor: text; 
+            user-select: text; 
+        }
+
+        /* ↔️ टेबल कंटेनर बॉक्स */
+        .table-resizable-wrapper {
+            position: absolute;
+            left: 50px; 
+            top: 300px;  
+            width: 694px; 
+            min-width: 100px;
+            border: 1px dashed #aaa;  
+            padding: 25px 12px 12px 12px; 
+            box-sizing: border-box;
+            background: #fff;
+            z-index: 10; 
+        }
+
+        /* ✥ टेबल हैंडल */
+        .drag-handle {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            height: 20px;
+            background-color: #003366;
+            color: #fff;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: move; 
+            border-radius: 2px;
+            user-select: none;
+        }
+
+        /* 📊 टेबल स्टाइल */
+        .table-resizable-wrapper table {
+            width: 100%;             
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+            table-layout: fixed; 
+        }
+        .table-resizable-wrapper table, .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #333; }
+        .table-resizable-wrapper th { background-color: #f2f2f2; padding: 8px; font-weight: bold; }
+        .table-resizable-wrapper td { padding: 8px; }
+
+        /* रीसाइज़ हैंडल्स */
+        .resize-handle-right { position: absolute; right: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
+        .resize-handle-left { position: absolute; left: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
+        .resize-handle-right:hover, .resize-handle-left:hover { opacity: 1; }
+    </style>
+</head>
+<body>
+
+<div class="size-selector-box">
+    <div class="selector-group">
+        <span>🔍 साइज़:</span>
+        <select id="fontSizeSelector" onchange="changeSelectionFontSize(this.value)">
+            <option value="" selected disabled>चुनें</option>
+            <option value="1">Size 8</option>
+            <option value="2">Size 9</option>
+            <option value="3">Size 10</option>
+            <option value="4">Size 11</option>
+            <option value="5">Size 12</option>
+            <option value="6">Size 14</option>
+            <option value="7">Size 16</option>
+        </select>
+    </div>
+
+    <div class="selector-group">
+        <span>🔤 फॉन्ट:</span>
+        <select id="fontFamilySelector" onchange="changeSelectionFontFamily(this.value)">
+            <option value="" selected disabled>चुनें</option>
+            <option value="Arial">Arial</option>
+            <option value="Mangal">Mangal</option>
+            <option value="Nirmala UI">Nirmala UI</option>
+        </select>
+    </div>
+
+    <div class="selector-group">
+        <span>↕️ रो ऊँचाई:</span>
+        <select id="tableHeightSelector" onchange="changeTableRowHeight(this.value)">
+            <option value="" selected disabled>हाइट</option>
+            <option value="2px">कम</option>
+            <option value="8px">सामान्य</option>
+            <option value="18px">ज्यादा</option>
+            <option value="30px">बहुत ज्यादा</option>
+        </select>
+    </div>
+
+    <div class="selector-group">
+        <span>📄 केवल टेबल मार्जिन:</span>
+        <select id="pageMarginSelector" onchange="changeTableZoneMargin(this.value)">
+            <option value="normal" selected>सामान्य टेबल (Normal)</option>
+            <option value="narrow">चौड़ी टेबल (Narrow)</option>
+            <option value="left1inch">लेफ्ट 1" फिक्स टेबल (Left 1" Fixed)</option>
+        </select>
+    </div>
+
+    <button class="btn-table" onclick="insertDynamicTable()">➕ टेबल जोड़ें</button>
+
+    <div class="selector-group" style="margin-left: auto; gap: 5px;">
+        <button class="btn-delete-action" onclick="deleteCurrentRow()">❌ रो हटाएँ</button>
+        <button class="btn-delete-action" onclick="deleteCurrentColumn()">❌ कॉलम हटाएँ</button>
+        <button class="btn-delete-action" style="background-color: #555;" onclick="deleteCurrentTable()">🗑️ पूरी टेबल हटाएँ</button>
+    </div>
+</div>
+
+<div class="letterhead" id="main-letterhead">
+    
+    <div class="fixed-header-container">
+        <div class="header">
+            <img class="logo" src="logo.png" alt="Logo"> 
+            <div class="school-details">
+                <h1 class="school-name">श्री कृष्ण इण्टरमीडिएट कालेज सेमरा </h1>
+                <p class="school-info">पत्रालय - कठकुइयाँ , जनपद - कुशीनगर  - पिन कोड - 274303</p>
+            </div>
+        </div>
+
+        <div class="full-width-line"></div>
+
+        <div class="meta-info">
+            <div>पत्रांक / (Ref No): <span class="editable-text" contenteditable="true">...................</span></div>
+            <div class="date-right">दिनांक (Date): <span class="editable-text" contenteditable="true">...................</span></div>
+        </div>
+
+        <div class="authority">प्रबन्धक / प्रधानाचार्य</div>
+    </div>
+   
+    <div class="content-fixed" id="letter-body" contenteditable="true">यहाँ अपना पत्र या मुख्य सूचना टाइप करें...</div>
+
+</div>
+
+<script>
+    window.onload = function() {
+        var bodyArea = document.getElementById('letter-body');
+        bodyArea.focus();
+        bodyArea.onfocus = function() { if(this.innerText.trim() === "यहाँ अपना पत्र या मुख्य सूचना टाइप करें...") { this.innerText = ""; } };
+    };
+
+    function changeTableZoneMargin(marginType) {
+        var wrappers = document.querySelectorAll('.table-resizable-wrapper');
+        wrappers.forEach(function(wrapper) {
+            if (marginType === 'left1inch') {
+                wrapper.style.left = '96px';  
+                wrapper.style.width = '678px'; 
+            } else if (marginType === 'narrow') {
+                wrapper.style.left = '15px';
+                wrapper.style.width = '764px';
+            } else {
+                wrapper.style.left = '50px';
+                wrapper.style.width = '694px';
+            }
+        });
+    }
+
+    function changeSelectionFontSize(sizeValue) { if (sizeValue) { document.execCommand('fontSize', false, sizeValue); document.getElementById('fontSizeSelector').value = ""; } }
+    function changeSelectionFontFamily(fontValue) { if (fontValue) { document.execCommand('fontName', false, fontValue); document.getElementById('fontFamilySelector').value = ""; } }
+
+    function changeTableRowHeight(paddingValue) {
+        var selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            var node = selection.getRangeAt(0).startContainer;
+            while (node && node.id !== 'main-letterhead') {
+                if (node.nodeName === 'TR') {
+                    var cells = node.querySelectorAll('th, td');
+                    cells.forEach(function(cell) { cell.style.padding = paddingValue; });
+                    document.getElementById('tableHeightSelector').value = ""; 
+                    return;
+                }
+                node = node.parentNode;
+            }
+            alert("कृपया कर्सर को टेबल की किसी सेल में रखकर हाइट बदलें!");
+            document.getElementById('tableHeightSelector').value = "";
+        }
+    }
+
+    function insertDynamicTable() {
+        var rows = prompt("कितनी रो (Rows) चाहिए? (उदा. 3)", "3");
+        var cols = prompt("कितने कॉलम (Columns) चाहिए? (उदा. 4)", "4");
+        
+        if (!rows || !cols || isNaN(rows) || isNaN(cols)) {
+            alert("कृपया सही संख्या भरें!");
+            return;
+        }
+
+        var wrapperId = "wrap_" + new Date().getTime();
+
+        var wrapper = document.createElement('div');
+        wrapper.id = wrapperId;
+        wrapper.className = 'table-resizable-wrapper';
+        
+        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ)</div>' +
+                          '<div class="resize-handle-left" onmousedown="initResize(event, \''+wrapperId+'\', \'left\')"></div>' +
+                          '<table contenteditable="true"><thead><tr>';
+        
+        for (var c = 0; c < cols; c++) { htmlContent += "<th>हेडिंग " + (c + 1) + "</th>"; }
+        htmlContent += "</tr></thead><tbody>";
+
+        for (var r = 0; r < rows; r++) {
+            htmlContent += "<tr>";
+            for (var c = 0; c < cols; c++) { htmlContent += "<td>डेटा</td>"; }
+            htmlContent += "</tr>";
+        }
+        htmlContent += '</tbody></table>' +
+                       '<div class="resize-handle-right" onmousedown="initResize(event, \''+wrapperId+'\', \'right\')"></div>';
+
+        wrapper.innerHTML = htmlContent;
+        
+        document.getElementById('main-letterhead').appendChild(wrapper);
+
+        var currentMargin = document.getElementById('pageMarginSelector').value;
+        changeTableZoneMargin(currentMargin);
+    }
+
+    var dragObj = null;
+    var offsetX = 0, offsetY = 0;
+
+    function initDrag(e, wrapperId) {
+        e.preventDefault();
+        dragObj = document.getElementById(wrapperId);
+        var rect = dragObj.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        
+        document.documentElement.addEventListener('mousemove', doDrag, false);
+        document.documentElement.addEventListener('mouseup', stopDrag, false);
+    }
+
+    function doDrag(e) {
+        if (!dragObj) return;
+        e.preventDefault();
+        var containerRect = document.getElementById('main-letterhead').getBoundingClientRect();
+        
+        var leftPos = e.clientX - containerRect.left - offsetX;
+        var topPos = e.clientY - containerRect.top - offsetY;
+        
+        dragObj.style.left = leftPos + 'px';
+        dragObj.style.top = topPos + 'px';
+    }
+
+    function stopDrag(e) {
+        document.documentElement.removeEventListener('mousemove', doDrag, false);
+        document.documentElement.removeEventListener('mouseup', stopDrag, false);
+        dragObj = null;
+    }
+
+    var startX, startWidth, startLeft;
+    var currentWrapper, resizeDirection;
+
+    function initResize(e, wrapperId, direction) {
+        e.preventDefault();
+        e.stopPropagation(); 
+        currentWrapper = document.getElementById(wrapperId);
+        resizeDirection = direction;
+        startX = e.clientX;
+        startWidth = parseInt(document.defaultView.getComputedStyle(currentWrapper).width, 10);
+        startLeft = parseInt(currentWrapper.style.left, 10) || 50;
+        
+        document.documentElement.addEventListener('mousemove', doResize, false);
+        document.documentElement.addEventListener('mouseup', stopResize, false);
+    }
+
+    function doResize(e) {
+        e.preventDefault();
+        if (resizeDirection === 'right') {
+            var newWidth = startWidth + (e.clientX - startX);
+            if (newWidth > 80) { currentWrapper.style.width = newWidth + 'px'; }
+        } else if (resizeDirection === 'left') {
+            var diffX = e.clientX - startX;
+            var newWidth = startWidth - diffX;
+            var newLeft = startLeft + diffX;
+            if (newWidth > 80) {
+                currentWrapper.style.width = newWidth + 'px';
+                currentWrapper.style.left = newLeft + 'px'; 
+            }
+        }
+    }
+
+    function stopResize(e) {
+        document.documentElement.removeEventListener('mousemove', doResize, false);
+        document.documentElement.removeEventListener('mouseup', stopResize, false);
+    }
+
+    function deleteCurrentRow() {
+        var selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            var node = selection.getRangeAt(0).startContainer;
+            while (node && node.id !== 'main-letterhead') { if (node.nodeName === 'TR') { node.parentNode.removeChild(node); return; } node = node.parentNode; }
+            alert("कृपया कर्सर को टेबल की उस लाइन (Row) में रखें जिसे हटाना है!");
+        }
+    }
+
+    function deleteCurrentColumn() {
+        var selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            var node = selection.getRangeAt(0).startContainer;
+            var cell = null;
+            while (node && node.id !== 'main-letterhead') { if (node.nodeName === 'TD' || node.nodeName === 'TH') { cell = node; break; } node = node.parentNode; }
+            if (cell) {
+                var cellIndex = cell.cellIndex;
+                var table = cell.closest('table');
+                if (table) {
+                    var rows = table.querySelectorAll('tr');
+                    rows.forEach(function(row) { if(row.cells[cellIndex]) { row.deleteCell(cellIndex); } });
+                    return;
+                }
+            }
+            alert("कृपया कर्सर को उस कॉलम में रखें जिसे हटाना है!");
+        }
+    }
+
+    function deleteCurrentTable() {
+        var selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            var node = selection.getRangeAt(0).startContainer;
+            while (node && node.id !== 'main-letterhead') {
+                if (node.classList && node.classList.contains('table-resizable-wrapper')) { node.parentNode.removeChild(node); return; }
+                node = node.parentNode;
+            }
+            alert("कृपया कर्सर को टेबल के अंदर कहीं रखें ताकि उसे डिलीट किया जा सके!");
+        }
+    }
+</script>
+
+</body>
+</html>

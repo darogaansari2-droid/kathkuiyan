@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>पेंशन प्रबंधन प्रणाली (सटीक छमाही गणना)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body, html {
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* लॉगिन मॉडल स्टाइल्स */
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-box {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .login-box h3 {
+            margin-bottom: 15px;
+            color: #0d3b66;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 9px;
+            background-color: #0d3b66;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .login-box button:hover {
+            background-color: #05668d;
+        }
+
+        .login-error {
+            color: red;
+            font-size: 12px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .main-content {
+            display: none; /* लॉगिन के बाद दिखेगा */
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .header-marquee {
+            background: linear-gradient(135deg, #0d3b66, #05668d);
+            color: white;
+            padding: 6px 0;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .form-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 8px 15px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #0d3b66;
+            margin-bottom: 8px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .grid-form {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(13, 1fr);
+            grid-auto-flow: column;
+            gap: 5px 10px;
+            flex: 1;
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            min-height: 0; 
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label {
+            width: 42%;
+            font-size: 11px;
+            font-weight: 600;
+            color: #2b2d42;
+            padding-right: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .form-group input, .form-group select {
+            width: 58%;
+            height: 100%;
+            max-height: 28px;
+            padding: 2px 6px;
+            border: 1px solid #b5c2c9;
+            border-radius: 4px;
+            font-size: 11.5px;
+            background-color: #fefefe;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .form-group input:focus {
+            border-color: #05668d;
+            outline: none;
+            background-color: #fff;
+            box-shadow: 0 0 4px rgba(5,102,141,0.3);
+        }
+
+        .auto-calculated {
+            background-color: #eef1f6 !important;
+            font-weight: bold;
+            color: #0d3b66 !important;
+        }
+
+        .button-panel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+            padding-bottom: 10px;
+        }
+
+        .btn {
+            padding: 6px 18px;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-save { background-color: #2ea44f; }
+        .btn-save:hover { background-color: #227d3c; }
+
+        .btn-search { background-color: #0284c7; }
+        .btn-search:hover { background-color: #0369a1; }
+
+        .btn-update { background-color: #f59e0b; color: #1e293b; }
+        .btn-update:hover { background-color: #d97706; }
+
+        .btn-clear { background-color: #ef4444; }
+        .btn-clear:hover { background-color: #dc2626; }
+
+        .btn-google { background-color: #4f46e5; }
+        .btn-google:hover { background-color: #4338ca; }
+
+        .btn-logout { background-color: #475569; }
+        .btn-logout:hover { background-color: #334155; }
+
+        #MessageTextBox {
+            width: 250px;
+            text-align: center;
+            font-weight: bold;
+            border: none;
+            background: transparent;
+            color: #d00000;
+            font-size: 12px;
+        }
+
+        /* मोबाइल व्यू स्टाइल */
+        @media (max-width: 768px) {
+            body, html {
+                overflow-y: auto !important;
+            }
+
+            .form-container {
+                height: auto !important;
+                padding: 10px;
+            }
+
+            .grid-form {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 10px !important;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .form-group label {
+                width: 100% !important;
+                font-size: 13px !important;
+                white-space: normal !important;
+            }
+
+            .form-group input, .form-group select {
+                width: 100% !important;
+                max-height: 36px !important;
+                height: 36px !important;
+                font-size: 13px !important;
+            }
+
+            .button-panel {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .button-panel .btn {
+                width: 100%;
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            #MessageTextBox {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- लॉगिन स्क्रीन -->
+    <div class="login-overlay" id="loginModal">
+        <div class="login-box">
+            <h3>पेंशन सिस्टम लॉगिन</h3>
+            <input type="text" id="loginId" placeholder="User ID दर्ज करें">
+            <input type="password" id="loginPassword" placeholder="Password दर्ज करें">
+            <button onclick="checkLogin()">लॉगिन करें</button>
+            <p class="login-error" id="loginError">गलत User ID या Password!</p>
+        </div>
+    </div>
+
+    <!-- मुख्य फॉर्म प्रविष्टि -->
+    <div class="main-content" id="mainContent">
+        <div class="header-marquee">
+            <marquee behavior="scroll" direction="left" scrollamount="10">
+                श्री कृष्ण इ० का० सेमरा कठकुइयाँ ( पेंशन आवेदन फॉर्म )
+            </marquee>
+        </div>
+
+        <div class="form-container">
+            <h2>पेंशनर विवरण प्रविष्टि फॉर्म </h2>
+             
+            <form id="pensionForm" class="grid-form" onsubmit="event.preventDefault();">
+                <div class="form-group"><label>1. कर्मचारी आईडी</label><input type="text" id="TextBox1" placeholder="सर्च हेतु आईडी भरें"></div>
+                <div class="form-group"><label>2. कर्मचारी का नाम</label><input type="text" id="TextBox2" placeholder="सर्च हेतु नाम भी भर सकते हैं" oninput="handleNameChange()"></div>
+                <div class="form-group"><label>3. पदनाम</label><input type="text" id="TextBox3" placeholder="प्रधानाचार्य/प्रवक्ता/स० अ०/दफ्तरी" oninput="calculateAll()"></div>
+                <div class="form-group"><label>4. विद्यालय का नाम</label><input type="text" id="TextBox4"></div>
+                <div class="form-group"><label>5. पिता का नाम</label><input type="text" id="TextBox5"></div>
+                <div class="form-group"><label>6. पता</label><input type="text" id="TextBox6"></div>
+                <div class="form-group"><label>7. जिला</label><input type="text" id="TextBox7"></div>
+                <div class="form-group"><label>8. अस्थाई पता</label><input type="text" id="TextBox8"></div>
+                <div class="form-group"><label>9. जिला</label><input type="text" id="TextBox9"></div>
+                <div class="form-group"><label style="color:red;">10. जन्मतिथि (DOB) *</label><input type="date" id="TextBox10" onchange="calculateAll()"></div>
+                <div class="form-group"><label>11. जन्मतिथि (शब्दों में)</label><input type="text" id="TextBox11" class="auto-calculated" readonly placeholder="ऑटो जनरेट"></div>
+                <div class="form-group"><label style="color:blue;">12. नियुक्ति तिथि</label><input type="date" id="TextBox12" onchange="calculateAll()"></div>
+                <div class="form-group"><label>13. सेवा निवृति तिथि</label><input type="text" id="TextBox13" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>14. कुल सेवा वर्ष</label><input type="text" id="TextBox14" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>15. छमाही</label><input type="text" id="TextBox15" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>16. पेंशन का भाग</label><input type="text" id="TextBox16"></div>
+                <div class="form-group"><label>17. कोषागार</label><input type="text" id="TextBox17"></div>
+                <div class="form-group"><label>18. कर्मचारी की ऊचाई</label><input type="text" id="TextBox18"></div>
+                <div class="form-group"><label>19. पहचान चिन्ह</label><input type="text" id="TextBox19"></div>
+                <div class="form-group"><label>20. सदस्य 1 का नाम</label><input type="text" id="TextBox20"></div>
+                <div class="form-group"><label>21. जन्मतिथि</label><input type="date" id="TextBox21"></div>
+                <div class="form-group"><label>22. सेवक से सम्बन्ध</label><input type="text" id="TextBox22"></div>
+                <div class="form-group"><label>23. विवाहित/अविवाहित</label><input type="text" id="TextBox23"></div>
+                <div class="form-group"><label>24. पता</label><input type="text" id="TextBox24"></div>
+                <div class="form-group"><label>25. सदस्य 2 का नाम</label><input type="text" id="TextBox25"></div>
+                <div class="form-group"><label>26. जन्मतिथि</label><input type="date" id="TextBox26"></div>
+                <div class="form-group"><label>27. सेवक से सम्बन्ध</label><input type="text" id="TextBox27"></div>
+                <div class="form-group"><label>28. विवाहित/अविवाहित</label><input type="text" id="TextBox28"></div>
+                <div class="form-group"><label>29. पता</label><input type="text" id="TextBox29"></div>
+                <div class="form-group"><label>30. सदस्य 3 का नाम</label><input type="text" id="TextBox30"></div>
+                <div class="form-group"><label style="color: blue;">31. जन्मतिति</label><input type="date" id="TextBox31"></div>
+                <div class="form-group"><label>32. सेवक से सम्बन्ध</label><input type="text" id="TextBox32"></div>
+                <div class="form-group"><label style="color: darkcyan;">33. विवाहित/अविवाहित</label><input type="text" id="TextBox33"></div>
+                <div class="form-group"><label style="color: darkcyan;">34. पता</label><input type="text" id="TextBox34"></div>
+                <div class="form-group"><label>35. सदस्य 4 का नाम</label><input type="text" id="TextBox35"></div>
+                <div class="form-group"><label>36. जन्मतिथि</label><input type="date" id="TextBox36"></div>
+                <div class="form-group"><label style="color:green;">37. सेवक से सम्बन्ध</label><input type="text" id="TextBox37"></div>
+                <div class="form-group"><label>38. मूल वेतन</label><input type="number" id="TextBox38" oninput="calculateAll()"></div>
+                <div class="form-group"><label>39. महंगाई</label><input type="number" id="TextBox39" placeholder="DA % (उदा. 50)" oninput="calculateAll()"></div>
+                <div class="form-group"><label>40. योग</label><input type="text" id="TextBox40" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>41. कम्यूट वैल्यू</label><input type="text" id="TextBox41" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>42. कम्यूट राशी</label><input type="text" id="TextBox42" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>43. पेंशन</label><input type="text" id="TextBox43" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>44. महंगाई</label><input type="text" id="TextBox44" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>45. योग</label><input type="text" id="TextBox45" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>46. ग्रेच्युटी</label><input type="text" id="TextBox46" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>47. पारिवारिक पेंशन</label><input type="text" id="TextBox47" class="auto-calculated" readonly></div>
+                <div class="form-group"><label>48. महंगाई</label><input type="text" id="TextBox48" class="auto-calculated" readonly></div>
+                <div class="form-group"><label style="color: blue; font-weight: bold;">49. योग (पारिवारिक पेंशन)</label><input type="text" id="TextBox49" class="auto-calculated" readonly></div>
+                <div class="form-group"><label style="color: darkred; font-weight: bold;">50. मृत्यु दिनांक</label><input type="date" id="TextBox50" onchange="calculateAll()"></div>
+                <div class="form-group"><label style="color: darkgreen; font-weight: bold;">51. मृत्यु पा० पेंशन</label><input type="text" id="TextBox51" class="auto-calculated" readonly></div>
+                <div class="form-group"><label style="color: darkgreen; font-weight: bold;">52. मृत्यु ग्रेच्युटी</label><input type="text" id="TextBox52" class="auto-calculated" readonly></div>
+            </form>
+
+            <div class="button-panel">
+                <input type="text" id="MessageTextBox" readonly placeholder="">
+                <button type="button" class="btn btn-save" onclick="saveDataToGoogleSheet('save')">SAVE</button>
+                <button type="button" class="btn btn-search" onclick="manualSearch()">SEARCH</button>
+                <button type="button" class="btn btn-update" onclick="saveDataToGoogleSheet('update')">UPDATE</button>
+                <button type="button" class="btn btn-clear" onclick="clearForm()">CLEAR</button>
+                <button type="button" class="btn btn-google" onclick="window.open('https://docs.google.com/spreadsheets/', '_blank')">GOOGLE SHEET OPEN</button>
+                <button type="button" class="btn btn-logout" onclick="logout()">LOGOUT</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const googleScriptUrl = "https://script.google.com/macros/s/AKfycbynO4L12H4WlXcT5uiHLVFb10qY2f0bz7aNgy3P8gAzjI9mAem6ez6HIAEowlpqvWa4/exec";
+
+        // पेज लोड होते ही चेक करें कि पहले से लॉगिन है या नहीं
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('pensionLoggedIn') === 'true') {
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'flex';
+            }
+        });
+
+        // लॉगिन जांच एवं सेव्ह फंक्शन
+        function checkLogin() {
+            const idInput = document.getElementById('loginId').value.trim();
+            const passInput = document.getElementById('loginPassword').value.trim();
+            const errorMsg = document.getElementById('loginError');
+
+            if (idInput === "penshan" && passInput === "123") {
+                localStorage.setItem('pensionLoggedIn', 'true'); // रिफ्रेश के लिए स्टेट सेव्ह करें
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'flex';
+            } else {
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        // लॉगआउट फंक्शन
+        function logout() {
+            localStorage.removeItem('pensionLoggedIn');
+            location.reload();
+        }
+
+        function getLocalPendingData() {
+            let data = localStorage.getItem('pendingPensionData');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveLocalPendingData(dataArray) {
+            localStorage.setItem('pendingPensionData', JSON.stringify(dataArray));
+        }
+
+        function saveDataToGoogleSheet(actionType) {
+            if(!googleScriptUrl || googleScriptUrl.includes("YOUR_WEB_APP_URL_HERE")) {
+                showMessage("पहले Apps Script Web App URL सेट करें!");
+                return;
+            }
+
+            if(actionType === 'update' && !document.getElementById('TextBox1').value.trim()) {
+                showMessage("अपडेट करने के लिए कर्मचारी आईडी (ID) जरूरी है!");
+                return;
+            }
+
+            let formData = { action: actionType }; 
+            for (let i = 1; i <= 52; i++) {
+                let element = document.getElementById("TextBox" + i);
+                if (element) {
+                    formData["TextBox" + i] = element.value;
+                }
+            }
+
+            if (!navigator.onLine) {
+                let pendingList = getLocalPendingData();
+                pendingList.push(formData);
+                saveLocalPendingData(pendingList);
+
+                if (actionType === 'save') {
+                    showMessage("डेटा लोकली सेव हुआ (ऑफलाइन)!");
+                    clearForm();
+                } else {
+                    showMessage("अपडेट लोकली सेव हुआ (ऑफलाइन)!");
+                }
+                return;
+            }
+
+            showMessage(actionType === 'update' ? "Updating Data... Please wait..." : "Saving Data... Please wait...");
+            
+            fetch(googleScriptUrl, {
+                method: "POST",
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === "success" || data.result === "success") {
+                    if (actionType === 'save') {
+                        showMessage("Data Successfully Saved!");
+                        clearForm();
+                    } else {
+                        showMessage("Data Successfully Updated!");
+                    }
+                } else {
+                    showMessage("त्रुटि: " + (data.message || "कार्रवाई विफल"));
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                let pendingList = getLocalPendingData();
+                pendingList.push(formData);
+                saveLocalPendingData(pendingList);
+                showMessage("नेटवर्क एरर! डेटा लोकली सुरक्षित किया गया।");
+            });
+        }
+
+        function syncOfflineData() {
+            if (!navigator.onLine) return;
+
+            let pendingList = getLocalPendingData();
+            if (pendingList.length === 0) return;
+
+            showMessage("ऑफलाइन डेटा सिंक हो रहा है...");
+            let itemToSend = pendingList[0];
+
+            fetch(googleScriptUrl, {
+                method: "POST",
+                body: JSON.stringify(itemToSend)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === "success" || data.result === "success") {
+                    pendingList.shift();
+                    saveLocalPendingData(pendingList);
+                    if(pendingList.length > 0) {
+                        syncOfflineData();
+                    } else {
+                        showMessage("सभी ऑफलाइन डेटा सिंक हो गया!");
+                    }
+                }
+            })
+            .catch(error => console.error("सिंक एरर:", error));
+        }
+
+        window.addEventListener('online', syncOfflineData);
+        setInterval(syncOfflineData, 10000);
+
+        function manualSearch() {
+            const idVal = document.getElementById('TextBox1').value.trim();
+            const nameVal = document.getElementById('TextBox2').value.trim();
+
+            if (!idVal && !nameVal) { 
+                showMessage("सर्च के लिए ID या Name भरें!"); 
+                return; 
+            }
+
+            if (!navigator.onLine) {
+                showMessage("सर्च के लिए इंटरनेट कनेक्शन जरूरी है!");
+                return;
+            }
+
+            showMessage("Searching Record... Please wait...");
+
+            let queryParams = [];
+            if (idVal) queryParams.push("id=" + encodeURIComponent(idVal));
+            if (nameVal) queryParams.push("name=" + encodeURIComponent(nameVal));
+
+            let searchUrl = googleScriptUrl + "?" + queryParams.join("&");
+
+            fetch(searchUrl)
+            .then(response => response.json())
+            .then(data => {
+                if ((data.status === "success" || data.result === "success") && data.record) {
+                    for (let i = 1; i <= 52; i++) {
+                        let element = document.getElementById("TextBox" + i);
+                        if (element && data.record["TextBox" + i] !== undefined) {
+                            let val = data.record["TextBox" + i];
+                            if (element.type === "date" && val) {
+                                try {
+                                    let dateObj = new Date(val);
+                                    if(!isNaN(dateObj.getTime())) {
+                                        val = dateObj.toISOString().split('T')[0];
+                                    }
+                                } catch(e) { console.log(e); }
+                            }
+                            element.value = val;
+                        }
+                    }
+                    showMessage("Search Record Successfully");
+                    calculateAll(); 
+                } else {
+                    showMessage("Record Not Found");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showMessage("खोज विफल! वेब ऐप चेक करें।");
+            });
+        }
+
+        function handleNameChange() {
+            const nameVal = document.getElementById('TextBox2').value.trim();
+            if (nameVal !== "") {
+                document.getElementById('TextBox4').value = "श्री कृष्ण इ० का० सेमरा कठकुइयां";
+                document.getElementById('TextBox16').value = "1/5"; 
+            }
+        }
+
+        const hindiWordsMap = [
+            "", "एक", "दो", "तीन", "चार", "पाँचे", "छह", "सात", "आठ", "नौ", "दस",
+            "ग्यारह", "बारह", "तेरह", "चौदह", "पन्द्रह", "सोलह", "सत्रह", "अठहारह", "उन्नीस", "बीस",
+            "इक्कीस", "बाईस", "तेईस", "चौबिस", "पच्चीस", "छब्बीस", "सत्ताईस", "अट्ठाईस", "उनतीस", "तीस",
+            "इकत्तीस", "बत्तीस", "तैंतीस", "चौंतीस", "पैंतीस", "छत्तीस", "सैंतालीस", "अड़तीस", "उनतालीस", "चालिस",
+            "इकतालीस", "बयालीस", "तैंतालीस", "चैंवालिस", "पैंतालीस", "छियालीस", "सैंतालीस", "अड़तालीस", "उनचास", "पचास",
+            "इक्कावन", "बावन", "तिरेपन", "चौपन", "पचपन", "छपपन", "सत्तावन", "अट्ठावन", "उनसठ", "साठ",
+            "इकसठ", "बासठ", "तिरेसठ", "चौंसठ", "पैंसठ", "छियासठ", "सरसठ", "अड़सठ", "उनहत्तर", "सत्तर",
+            "इकहत्तर", "बहत्तर", "तिहत्तर", "चौहत्तर", "पचहत्तर", "छीहत्तर", "सतहत्तर", "अठहत्तर", "उनासी", "अस्सी",
+            "इक्यासी", "बयासी", "तिरासी", "चौरासी", "पचासी", "छियासी", "सतासी", "अठासी", "नवासी", "नब्बे",
+            "इक्यानबे", "बानबे", "तिरानबे", "चौरानबे", "पंचानबे", "छियानबे", "सत्तानबे", "अट्ठानबे", "निन्यानबे"
+        ];
+
+        function getYearInHindi(year) {
+            if (year >= 1900 && year < 2000) {
+                let suffix = year % 100;
+                return "सन उन्नीस सौ " + hindiWordsMap[suffix];
+            } else if (year >= 2000 && year < 2100) {
+                let suffix = year % 100;
+                if(suffix === 0) return "सन दो हजार";
+                return "सन दो हजार " + hindiWordsMap[suffix];
+            } else {
+                return "सन " + year;
+            }
+        }
+
+        function convertDateToWords(dateObj) {
+            const monthsHindi = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
+            let day = dateObj.getDate();
+            let monthStr = monthsHindi[dateObj.getMonth()];
+            let year = dateObj.getFullYear();
+            return `${hindiWordsMap[day]} ${monthStr} ${getYearInHindi(year)}`.trim();
+        }
+
+        function calculateAll() {
+            const dobInput = document.getElementById('TextBox10').value; 
+            if (!dobInput) return;
+
+            let dob = new Date(dobInput);
+            if (isNaN(dob.getTime())) return;
+
+            document.getElementById('TextBox11').value = convertDateToWords(dob);
+
+            let d = dob.getDate();
+            let m = dob.getMonth() + 1; 
+            let y = dob.getFullYear();
+
+            const postName = document.getElementById('TextBox3').value.trim();
+            let ageLimit = 0;
+            let ageRate = 0; 
+
+            if (postName === "प्रधानाचार्य" || postName === "प्रवक्ता" || postName === "स० अ०") {
+                ageLimit = 62;
+                ageRate = 7.982; 
+            } else if (postName === "प्र० लि०" || postName === "स० लि०" || postName === "परिचारक" || postName === "दफ्तरी") {
+                ageLimit = 60;
+                ageRate = 8.194; 
+            } else {
+                document.getElementById('TextBox13').value = "";
+                return;
+            }
+
+            let retireDate;
+            if (ageLimit === 62) {
+                if (m <= 3) {
+                    retireDate = new Date(y + ageLimit, 2, 31); 
+                } else {
+                    retireDate = new Date(y + ageLimit + 1, 2, 31); 
+                }
+            } else {
+                if (d === 1) {
+                    retireDate = new Date(y + ageLimit, m - 1, 0); 
+                } else {
+                    retireDate = new Date(y + ageLimit, m, 0); 
+                }
+            }
+
+            let rD = String(retireDate.getDate()).padStart(2, '0');
+            let rM = String(retireDate.getMonth() + 1).padStart(2, '0');
+            let rY = retireDate.getFullYear();
+            document.getElementById('TextBox13').value = `${rD}-${rM}-${rY}`;
+
+            const deathInput = document.getElementById('TextBox50').value; 
+            let isDead = false;
+            if(deathInput) {
+                let deathDate = new Date(deathInput);
+                if(!isNaN(deathDate.getTime())) {
+                    isDead = true;
+                }
+            }
+
+            const joinInput = document.getElementById('TextBox12').value; 
+            if(joinInput) {
+                let joinDate = new Date(joinInput);
+                if(!isNaN(joinDate.getTime())) {
+                    
+                    let endDate = isDead ? new Date(deathInput) : retireDate;
+                    
+                    let years = endDate.getFullYear() - joinDate.getFullYear();
+                    let months = endDate.getMonth() - joinDate.getMonth();
+                    let days = endDate.getDate() - joinDate.getDate();
+
+                    if (days < 0) {
+                        months--;
+                        let lastMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate();
+                        days += lastMonth;
+                    }
+
+                    if (months < 0) {
+                        years--;
+                        months += 12;
+                    }
+                     
+                    let vBasic = parseFloat(document.getElementById('TextBox38').value) || 0; 
+                    let vDaPercent = parseFloat(document.getElementById('TextBox39').value) || 0; 
+                    let vDaAmt = Math.round(vBasic * (vDaPercent / 100)); 
+                    let vTotalPay = vBasic + vDaAmt; 
+
+                    document.getElementById('TextBox40').value = vTotalPay; 
+
+                    if(isDead) {
+                        let roundedYears = (months >= 6) ? (years + 1) : years;
+                        document.getElementById('TextBox14').value = `${years} वर्ष ${months} माह ${days} दिन`;
+                        document.getElementById('TextBox51').value = Math.round(vTotalPay / 2);
+                        
+                        let deathGratuity = Math.round(vTotalPay * roundedYears);
+                        if(deathGratuity > 2500000) deathGratuity = 2500000;
+                        document.getElementById('TextBox52').value = deathGratuity;
+
+                        document.getElementById('TextBox13').value = "";
+                        document.getElementById('TextBox15').value = "";
+                        document.getElementById('TextBox41').value = "";
+                        document.getElementById('TextBox42').value = "";
+                        document.getElementById('TextBox43').value = "";
+                        document.getElementById('TextBox44').value = "";
+                        document.getElementById('TextBox45').value = "";
+                        document.getElementById('TextBox46').value = "";
+                        document.getElementById('TextBox47').value = "";
+                        document.getElementById('TextBox48').value = "";
+                        document.getElementById('TextBox49').value = "";
+                    } else {
+                        document.getElementById('TextBox14').value = `${years} वर्ष ${months} माह ${days} दिन`;
+                        document.getElementById('TextBox51').value = "";
+                        document.getElementById('TextBox52').value = "";
+
+                        let halfYears = years * 2; 
+                        if (months >= 3) halfYears += 1; 
+                        if(halfYears > 66) halfYears = 66; 
+                        document.getElementById('TextBox15').value = halfYears;
+                        
+                        let basicPension = Math.round(vBasic / 2);
+                        document.getElementById('TextBox43').value = basicPension;
+
+                        let commuteValuePart = Math.round(basicPension * 0.20);
+                        document.getElementById('TextBox41').value = commuteValuePart;
+                        document.getElementById('TextBox42').value = Math.round(ageRate * commuteValuePart * 12);
+                        
+                        document.getElementById('TextBox44').value = Math.round((basicPension * vDaPercent) / 100);
+                        document.getElementById('TextBox45').value = Math.round(basicPension - commuteValuePart + (basicPension * vDaPercent / 100));
+
+                        let gratuity = Math.round((halfYears * vTotalPay) / 4);
+                        if(gratuity > 2500000) gratuity = 2500000;
+                        document.getElementById('TextBox46').value = gratuity;
+
+                        let familyPension = Math.round(vBasic * 0.30);
+                        document.getElementById('TextBox47').value = familyPension;
+
+                        let familyPensionDa = Math.round((familyPension * vDaPercent) / 100);
+                        document.getElementById('TextBox48').value = familyPensionDa;
+                        
+                        document.getElementById('TextBox49').value = familyPension + familyPensionDa;
+                    }
+                }
+            }
+        }
+
+        function showMessage(msg) {
+            document.getElementById('MessageTextBox').value = msg;
+        }
+
+        function clearForm() {
+            document.getElementById('pensionForm').reset();
+            showMessage("User Form Data Clear");
+        }
+    </script>
+</body>
+</html>

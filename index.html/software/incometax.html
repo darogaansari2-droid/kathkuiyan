@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>आयकर आगणन वित्तीय वर्ष</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 5px; margin: 0; color: #000; }
+        
+        .main-container { 
+            max-width: 950px; 
+            margin: 0 auto; 
+            background: #fff; 
+            padding: 6px; 
+            border: 1px solid #000;
+            box-sizing: border-box;
+        }
+        
+        /* TOP BAR */
+        .top-action-bar { 
+            background: #f8fafc; 
+            padding: 5px; 
+            margin-bottom: 6px; 
+            border: 2px solid #000; 
+        }
+        .control-unit { display: inline-block; margin-right: 8px; vertical-align: middle; font-size: 11px; }
+        .control-unit label { font-weight: bold; }
+        .control-unit input, .control-unit select { padding: 2px; font-weight: bold; font-size: 11px; }
+        
+        .action-btn { padding: 3px 6px; font-weight: bold; cursor: pointer; margin-right: 3px; font-size: 11px; }
+        .btn-blue { background: #0056b3; color: white; border: 1px solid #000; }
+        .btn-green { background: #28a745; color: white; border: 1px solid #000; }
+        .btn-orange { background: #fd7e14; color: white; border: 1px solid #000; }
+        .btn-red { background: #dc3545; color: white; border: 1px solid #000; }
+        .btn-gray { background: #6c757d; color: white; border: 1px solid #000; }
+        .btn-purple { background: #6f42c1; color: white; border: 1px solid #000; }
+        .btn-teal { background: #20c997; color: white; border: 1px solid #000; }
+        
+        /* EXCEL STYLES */
+        .sheet-table { width: 100%; border-collapse: collapse; margin-top: 2px; table-layout: fixed; }
+        .sheet-table th, .sheet-table td { border: 1px solid #000; padding: 1px 3px; text-align: center; font-size: 10px; height: 13px; line-height: 1.1; overflow: hidden; }
+        .sheet-table th { background-color: #f1f5f9; font-weight: bold; }
+        .cell-input { width: 100%; border: none; text-align: center; font-size: 10px; background: transparent; padding: 0; margin: 0; font-family: Arial, sans-serif; height: 100%; box-sizing: border-box; }
+        .cell-input:focus { background-color: #fffbeb; outline: none; }
+        .bold-row { font-weight: bold; }
+        .text-left { text-align: left; }
+        
+        .header-title-area { font-size: 13px; font-weight: bold; text-align: center; margin-bottom: 2px; }
+        .fy-input { font-size: 13px; font-weight: bold; border: none; border-bottom: 2px solid #000; width: 55px; text-align: center; background: transparent; }
+        
+        .signature-section { margin-top: 10px; padding-top: 12px; display: flex; justify-content: space-around; font-weight: bold; font-size: 10px; page-break-inside: avoid; }
+        .instructions { margin-top: 6px; font-size: 12px; text-align: left; border-top: 1px dashed #000; padding-top: 3px; line-height: 1.3; page-break-inside: avoid; }
+
+        /* PRINT CONFIGURATION */
+        @media print {
+            @page { margin: 0.3cm 0.4cm 0.2cm 0.4cm; }
+            .top-action-bar { display: none !important; }
+            body { background: white; padding: 0; margin: 0; }
+            .main-container { border: none; max-width: 100%; padding: 0; margin: 0; }
+            .sheet-table { margin-top: 1px; }
+            .sheet-table th, .sheet-table td { padding: 1px 2px !important; font-size: 9.5px !important; height: 12px !important; }
+            .cell-input { font-size: 9.5px !important; }
+            .signature-section { margin-top: 15px !important; padding-bottom: 5px !important; font-size: 10px !important; }
+            .instructions { margin-top: 5px !important; font-size: 8px !important; line-height: 1.2 !important; padding-bottom: 0 !important; }
+            
+            body.print-old .regime-new-block { display: none !important; }
+            body.print-new .regime-old-block { display: none !important; }
+        }
+    </style>
+</head>
+<body class="print-old">
+
+<div class="main-container">
+
+    <div class="top-action-bar">
+        <div class="control-unit">
+            <select id="searchType"><option value="id">ID / SR. NO.</option></select>
+            <input type="text" id="searchQuery" style="width:90px;" placeholder="ID दर्ज करें...">
+            <button class="action-btn btn-blue" onclick="searchData()">Search</button>
+            <button class="action-btn btn-red" onclick="deleteData()">Delete</button>
+        </div>
+        <div class="control-unit" style="background: #fef08a; padding: 1px; border: 1px solid #eab308;">
+            <label>📈 वेतन वृद्धि: </label>
+            <select id="incMonthSelect">
+                <option value="0">March</option>
+                <option value="1">April</option>
+                <option value="2">May</option>
+                <option value="3">June</option>
+                <option value="4" selected>July</option>
+                <option value="5">August</option>
+                <option value="6">September</option>
+                <option value="7">October</option>
+                <option value="8">November</option>
+                <option value="9">December</option>
+                <option value="10">January</option>
+                <option value="11">February</option>
+            </select>
+            <button class="action-btn btn-green" onclick="applyIncrementFromTopBox()">लागु करें (3%)</button>
+        </div>
+        <div class="control-unit" style="background: #e0f2fe; padding: 1px; border: 1px solid #bae6fd;">
+            <label>⚙️ DA बदलें: </label>
+            <select id="daMonthSelect">
+                <option value="0">March</option>
+                <option value="1">April</option>
+                <option value="2">May</option>
+                <option value="3">June</option>
+                <option value="4">July</option>
+                <option value="5">August</option>
+                <option value="6">September</option>
+                <option value="7">October</option>
+                <option value="8">November</option>
+                <option value="9">December</option>
+                <option value="10">January</option>
+                <option value="11">February</option>
+            </select>
+            <input type="number" id="step_da_rate" value="55" style="width: 32px;">
+            <button class="action-btn btn-blue" onclick="applyDARateFromMonth()">सेट करें</button>
+        </div>
+        <div class="control-unit">
+            <button class="action-btn btn-green" onclick="saveData()">Save</button>
+            <button class="action-btn btn-orange" onclick="updateData()">Update</button>
+            <button class="action-btn btn-gray" onclick="resetForm()">Reset</button>
+            <button class="action-btn btn-purple" onclick="setRegimeAndView('old')">🖨️ Print Old Tax</button>
+            <button class="action-btn btn-teal" onclick="setRegimeAndView('new')">🖨️ Print New Tax</button>
+        </div>
+    </div>
+
+    <div class="header-title-area">
+        आयकर आगणन वित्तीय वर्ष - 
+        <input type="text" id="dynamic_fy_start" class="fy-input" value="2025" oninput="updateMonthsByYear()"> - 
+        <input type="text" id="dynamic_fy_end" class="fy-input" value="26" style="width:25px;" oninput="updateMonthsByYear()">
+    </div>
+
+    <table class="sheet-table">
+        <tr>
+            <td class="bold-row" width="14%">BLOCK NAME</td>
+            <td width="36%" class="bold-row"><input type="text" id="meta_block" class="cell-input bold-row" value=""></td>
+            <td class="bold-row" width="15%">MOBILE NUMBER</td>
+            <td width="35%" class="bold-row"><input type="text" id="meta_mobile" class="cell-input bold-row" value=""></td>
+        </tr>
+        <tr>
+            <td class="bold-row">SCHOOL NAME</td>
+            <td class="bold-row"><input type="text" id="meta_school" class="cell-input bold-row" value=""></td>
+            <td class="bold-row">ID / SR. NO.</td>
+            <td class="bold-row"><input type="text" id="meta_ehrms" class="cell-input bold-row" value="" placeholder="यहाँ ID दर्ज करना अनिवार्य है"></td>
+        </tr>
+        <tr>
+            <td class="bold-row">EMPLOYEE NAME</td>
+            <td class="bold-row"><input type="text" id="meta_name" class="cell-input bold-row" value=""></td>
+            <td class="bold-row">DATE OF BIRTH</td>
+            <td class="bold-row"><input type="text" id="meta_dob" class="cell-input bold-row" value=""></td>
+        </tr>
+        <tr>
+            <td class="bold-row">DESIGNATION</td>
+            <td class="bold-row"><input type="text" id="meta_desg" class="cell-input bold-row" value=""></td>
+            <td class="bold-row">A/C NUMBER</td>
+            <td class="bold-row"><input type="text" id="meta_ac" class="cell-input bold-row" value=""></td>
+        </tr>
+        <tr>
+            <td class="bold-row">PAN NUMBER</td>
+            <td class="bold-row"><input type="text" id="meta_pan" class="cell-input bold-row" value=""></td>
+            <td class="bold-row">IFSC CODE</td>
+            <td class="bold-row"><input type="text" id="meta_ifsc" class="cell-input bold-row" value=""></td>
+        </tr>
+    </table>
+
+    <table class="sheet-table">
+        <thead>
+            <tr class="bold-row">
+                <th width="9%">Month</th>
+                <th width="10%">Basic Pay</th>
+                <th width="9%">DA</th>
+                <th width="8%">HRA</th>
+                <th width="11%">Other Allow</th>
+                <th width="11%">Total pay</th>
+                <th width="9%">GPF/NPS</th>
+                <th width="9%">GPF Adv</th>
+                <th width="7%">GIS</th>
+                <th width="8%">ADV. IT</th>
+                <th width="10%">NET PAY</th>
+            </tr>
+        </thead>
+        <tbody id="salaryTableBody"></tbody>
+        <tfoot>
+            <tr class="bold-row">
+                <td>Total</td>
+                <td id="tot_basic">0</td><td id="tot_da">0</td><td id="tot_hra">0</td><td id="tot_other">0</td><td id="tot_pay">0</td>
+                <td id="tot_gpf">0</td><td id="tot_gpf_adv">0</td><td id="tot_gis">0</td><td id="tot_adv_it">0</td><td id="tot_net">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">Arear</td>
+                <td><input type="text" id="ar1_note" class="cell-input" value=""></td>
+                <td><input type="text" id="ar1_period" class="cell-input" value=""></td>
+                <td colspan="2"></td>
+                <td><input type="number" id="ar1_pay" class="cell-input bold-row" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="ar1_gpf" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="ar1_gpf_adv" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="ar1_gis" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="ar1_adv_it" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td id="ar1_net" class="bold-row">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">Arear</td>
+                <td><input type="text" id="ar2_note" class="cell-input" value=""></td>
+                <td><input type="text" id="ar2_period" class="cell-input" value=""></td>
+                <td colspan="2"></td>
+                <td><input type="number" id="ar2_pay" class="cell-input bold-row" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="ar2_gpf" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="ar2_gpf_adv" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="ar2_gis" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="ar2_adv_it" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td id="ar2_net" class="bold-row">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">Bonus</td>
+                <td colspan="2"><input type="text" id="bonus_note" class="cell-input" value=""></td>
+                <td colspan="2"></td>
+                <td><input type="number" id="bonus_pay" class="cell-input bold-row" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="bonus_gpf" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="bonus_gpf_adv" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="bonus_gis" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="bonus_adv_it" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td id="bonus_net" class="bold-row">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">Other</td>
+                <td><input type="text" id="pension_note" class="cell-input" value=""></td>
+                <td colspan="3"></td>
+                <td><input type="number" id="pension_pay" class="cell-input bold-row" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="pension_gpf" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="pension_gpf_adv" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="pension_gis" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td><input type="number" id="pension_adv_it" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+                <td id="pension_net" class="bold-row">0</td>
+            </tr>
+            <tr class="bold-row" style="background:#e2e8f0;">
+                <td>Total</td>
+                <td id="g_basic">0</td><td id="g_da">0</td><td id="g_hra">0</td><td id="g_other">0</td>
+                <td id="g_pay">0</td><td id="g_gpf">0</td><td id="g_gpf_adv">0</td><td id="g_gis">0</td><td id="g_adv_it">0</td><td id="g_net">0</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <table class="sheet-table">
+        <tr class="bold-row">
+            <td width="3%">1</td><td class="text-left" width="37%">कुल आय (Gross Income)</td><td id="tax_1" width="12%">0</td>
+            <td width="48%" colspan="2" id="ded_header_title">80C की छूटों का विवरण (Old Tax में मान्य)</td>
+        </tr>
+        <tr>
+            <td>2</td><td class="text-left">घटाये मकान किराया भत्ता / ऋण ब्याज भुगतान</td><td><input type="number" id="tax_2" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+            <td class="text-left" width="33%">जी० पी० एफ० / एन०पी०एस०</td><td id="ded_gpf" width="15%">0</td>
+        </tr>
+        <tr>
+            <td>3</td><td class="text-left" id="lbl_std_ded">मानक कटौती (Standard Deduction)</td><td id="tax_3" class="bold-row">50000</td>
+            <td class="text-left">जीवन बीमा प्रीमियम (LIC)</td><td><input type="number" id="ded_lic" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+        </tr>
+        <tr class="bold-row">
+            <td>4</td><td class="text-left">सकल आय ( 1 - 2 - 3 )</td><td id="tax_4">0</td>
+            <td class="text-left">शिक्षण शुल्क (Tuition Fee)</td><td><input type="number" id="ded_tuition" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+        </tr>
+        <tr>
+            <td>5</td><td class="text-left">Chapter VIA की छूट (धारा 80C आदि)</td><td id="tax_5_disp" class="bold-row">0</td>
+            <td class="text-left">एन एस सी (NSC)</td><td><input type="number" id="ded_nsc" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+        </tr>
+        <tr>
+            <td>(a)</td><td class="text-left" id="lbl_80c_title">धारा 80C (अधिकतम 1.50 lakh)</td><td id="tax_80c_allowed">0</td>
+            <td class="text-left">एफडी/आरडी ( 5 Year )</td><td><input type="number" id="ded_fd" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+        </tr>
+        <tr>
+            <td>(b)</td><td class="text-left">विकलांगता छूट / अन्य छूट (80U)</td><td><input type="number" id="tax_80u" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+            <td class="text-left">गृह ऋण मूलधन भुगतान</td><td><input type="number" id="ded_hl" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+        </tr>
+        <tr>
+            <td>(c)</td><td class="text-left">धारा 80CCD(2) (नियोक्ता योगदान)</td><td><input type="number" id="tax_80ccd2" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+            <td class="text-left">सुकन्या समृद्धि खाता</td><td><input type="number" id="ded_ssy" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+        </tr>
+        <tr>
+            <td>(d)</td><td class="text-left">धारा 80CCD(1B) / 80D (मेडिक्लेम)</td><td><input type="number" id="tax_80d" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+            <td class="text-left">जी.आई.स. (GIS)</td><td id="ded_gis">0</td>
+        </tr>
+        <tr>
+            <td>(e)</td><td class="text-left">अन्य छूट धाराएं</td><td><input type="number" id="tax_other_ded" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+            <td class="text-left">एन.पी.एस. ( कर्मचारी योगदान )</td><td><input type="number" id="ded_nps" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+        </tr>
+        <tr class="bold-row">
+            <td>6</td><td class="text-left">कुल कटौती (नियम संगत मान्य)</td><td id="tax_6">0</td>
+            <td class="text-left">80C के अन्तर्गत कोई अन्य छूट</td><td><input type="number" id="ded_other" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+        </tr>
+        <tr class="bold-row">
+            <td>7</td><td class="text-left">कर योग्य आय ( 4 - 6 )</td><td id="tax_7">0</td>
+            <td class="text-left">80C का कुल योग (Gross 80C)</td><td id="ded_80c_tot">0</td>
+        </tr>
+    </table>
+
+    <div class="regime-old-block">
+        <table class="sheet-table" style="margin-top: 2px;">
+            <tr class="bold-row" style="background:#cbd5e1;">
+                <td colspan="5">टैक्स गणना: विकल्प - 1 (Old Tax Regime)</td>
+            </tr>
+            <tr class="bold-row">
+                <td width="10%">क्र.सं.</td>
+                <td width="35%" class="text-left">टैक्स स्लैब (Old Regime)</td>
+                <td width="20%">आय राशि</td>
+                <td width="15%">दर %</td>
+                <td width="20%">कुल आयकर</td>
+            </tr>
+            <tr>
+                <td>1)</td><td class="text-left">0 - 2,50,000</td><td id="v1_s1_base">0</td><td>0%</td><td id="v1_s1_tax">0</td>
+            </tr>
+            <tr>
+                <td>2)</td><td class="text-left">2,50,000 - 5,00,000</td><td id="v1_s2_base">0</td><td>5%</td><td id="v1_s2_tax">0</td>
+            </tr>
+            <tr>
+                <td>3)</td><td class="text-left">5,00,000 - 10,00,000</td><td id="v1_s3_base">0</td><td>20%</td><td id="v1_s3_tax">0</td>
+            </tr>
+            <tr>
+                <td>4)</td><td class="text-left">> 10,00,000 से अधिक</td><td id="v1_s4_base">0</td><td>30%</td><td id="v1_s4_tax">0</td>
+            </tr>
+            <tr class="bold-row" style="background: #f1f5f9;">
+                <td colspan="4" class="text-left">विकल्प - 1 का कुल योग (Total Tax)</td><td id="v1_tax_total">0</td>
+            </tr>
+        </table>
+
+        <table class="sheet-table" style="margin-top:2px;">
+            <tr>
+                <td class="bold-row" width="8%">8</td>
+                <td class="text-left" width="62%">कुल आयकर (क्रमांक 1 से 4 तक का योग)</td>
+                <td id="fin_v1_8" class="bold-row" width="30%">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">9</td>
+                <td class="text-left">घटाये धारा 87A की छूट (यदि आय 5 लाख तक हो)</td>
+                <td id="fin_v1_9">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">10</td>
+                <td class="text-left">कुल आयकर ( 8 - 9 )</td>
+                <td id="fin_v1_10" class="bold-row">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">11</td>
+                <td class="text-left">स्वास्थ्य एवं शिक्षा उपकर (Cess @ 4%)</td>
+                <td id="fin_v1_11" class="bold-row" style="background:#fee2e2;">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">12</td>
+                <td class="text-left">देय आयकर ( 10 + 11 )</td>
+                <td id="fin_v1_12" class="bold-row" style="background:#dcfce7;">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">13</td>
+                <td class="text-left">घटायें धारा 89(1) की छूट / अन्य राहत</td>
+                <td><input type="number" id="fin_v1_13" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+            </tr>
+            <tr>
+                <td class="bold-row">14</td>
+                <td class="text-left">घटायें अग्रिम कर (Total ADV. IT Paid)</td>
+                <td id="fin_v1_14" class="bold-row">0</td>
+            </tr>
+            <tr style="background:#bbf7d0; font-size:10.5px;">
+                <td class="bold-row">15</td>
+                <td class="text-left"><strong>शुद्ध देय आयकर / वापसी (विकल्प - 1)</strong></td>
+                <td id="fin_v1_15" class="bold-row">0</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="regime-new-block">
+        <table class="sheet-table" style="margin-top: 2px;">
+            <tr class="bold-row" style="background:#cbd5e1;">
+                <td colspan="5">टैक्स गणना: विकल्प - 2 (New Tax Regime)</td>
+            </tr>
+            <tr class="bold-row">
+                <td width="10%">क्र.सं.</td>
+                <td width="35%" class="text-left">टैक्स स्लैब (New Regime)</td>
+                <td width="20%">आय राशि</td>
+                <td width="15%">दर %</td>
+                <td width="20%">कुल आयकर</td>
+            </tr>
+            <tr>
+                <td>1)</td><td class="text-left">0 - 4,00,000</td><td id="v2_s1_base">0</td><td>0%</td><td id="v2_s1_tax">0</td>
+            </tr>
+            <tr>
+                <td>2)</td><td class="text-left">4,00,000 - 8,00,000</td><td id="v2_s2_base">0</td><td>5%</td><td id="v2_s2_tax">0</td>
+            </tr>
+            <tr>
+                <td>3)</td><td class="text-left">8,00,000 - 12,00,000</td><td id="v2_s3_base">0</td><td>10%</td><td id="v2_s3_tax">0</td>
+            </tr>
+            <tr>
+                <td>4)</td><td class="text-left">12,00,000 - 16,00,000</td><td id="v2_s4_base">0</td><td>15%</td><td id="v2_s4_tax">0</td>
+            </tr>
+            <tr>
+                <td>5)</td><td class="text-left">16,00,000 - 20,00,000</td><td id="v2_s5_base">0</td><td>20%</td><td id="v2_s5_tax">0</td>
+            </tr>
+            <tr>
+                <td>6)</td><td class="text-left">20,00,000 - 24,00,000</td><td id="v2_s6_base">0</td><td>25%</td><td id="v2_s6_tax">0</td>
+            </tr>
+            <tr>
+                <td>7)</td><td class="text-left">> 24,00,000 से अधिक</td><td id="v2_s7_base">0</td><td>30%</td><td id="v2_s7_tax">0</td>
+            </tr>
+            <tr class="bold-row" style="background: #f1f5f9;">
+                <td colspan="4" class="text-left">विकल्प - 2 का कुल योग (Total Tax)</td><td id="v2_tax_total">0</td>
+            </tr>
+        </table>
+
+        <table class="sheet-table" style="margin-top:2px;">
+            <tr>
+                <td class="bold-row" width="8%">8</td>
+                <td class="text-left" width="62%">कुल आयकर (क्रमांक 1 से 7 तक का योग)</td>
+                <td id="fin_v2_8" class="bold-row" width="30%">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">9</td>
+                <td class="text-left">घटाये धारा 87A की छूट / सीमांत छूट (Marginal Relief)</td>
+                <td id="fin_v2_9">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">10</td>
+                <td class="text-left">कुल आयकर ( 8 - 9 )</td>
+                <td id="fin_v2_10" class="bold-row">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">11</td>
+                <td class="text-left">स्वास्थ्य एवं शिक्षा उपकर (Cess @ 4%)</td>
+                <td id="fin_v2_11" class="bold-row" style="background:#fee2e2;">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">12</td>
+                <td class="text-left">देय आयकर ( 10 + 11 )</td>
+                <td id="fin_v2_12" class="bold-row" style="background:#dcfce7;">0</td>
+            </tr>
+            <tr>
+                <td class="bold-row">13</td>
+                <td class="text-left">घटायें धारा 89(1) की छूट / अन्य राहत</td>
+                <td><input type="number" id="fin_v2_13" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+            </tr>
+            <tr>
+                <td class="bold-row">14</td>
+                <td class="text-left">घटायें अग्रिम कर (Total ADV. IT Paid)</td>
+                <td id="fin_v2_14" class="bold-row">0</td>
+            </tr>
+            <tr style="background:#bbf7d0; font-size:10.5px;">
+                <td class="bold-row">15</td>
+                <td class="text-left"><strong>शुद्ध देय आयकर / वापसी (विकल्प - 2)</strong></td>
+                <td id="fin_v2_15" class="bold-row">0</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="signature-section">
+        <div>Sign Of Candidate</div>
+        <div>Sign Of BEO</div>
+        <div>Sign Of DDO</div>
+    </div>
+
+    <div class="instructions">
+        <strong>निर्देश :-</strong> <br><br>
+        1- कुल आयकर (क्रमांक -8) में विकल्प -1 अथवा विकल्प -2 में से किसी एक का ही टोटल भरें | <br><br>
+        2- रु ० 50000 की मानक कटौती विकल्प -1 एवं रु ० 75000 की मानक कटौती विकल्प -2 में उपलब्ध है | <br><br>
+        3- विकल्प -1 में 87A की छूट कर योग आय के रु ० 500000 तक होने पर रु ० 12500 तक की छूट अनुमन्य होगी | <br><br>
+        4- विकल्प -2 में वरिष्ठ नागरिक के लिये अतिरिक्त टैक्स स्लैब उपलब्ध नहीं है | <br><br>
+        5- विकल्प -2 में 87A की छूट कर योग आय के रु ० 1200000 तक होने पर रु ० 60000 तक की छूट अनुमन्य होगी | <br><br>
+        6- विकल्प -2 में 87A की छूट कर योग आय के रु ० 1200000 से अधिक होने पर सीमांत छूट निर्देश -7 के अनुसार आगणित करें | <br><br>
+        7- यदि कर योग आय रु ० 1200000 से अधिक है और उक्त पर बना कुल कर आधिक्य आय राशि से भी ज्यादा है तो सीमांत छूट आगणित कर राशी और आधिक्य कर योग्य राशि का अन्तर होगी |
+    </div>
+</div>
+
+<script>
+    const baseMonths = ["Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb"];
+    let currentActiveRegime = 'old'; 
+    
+    const tbody = document.getElementById('salaryTableBody');
+    baseMonths.forEach((m, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td id="lbl_month_${idx}" style="font-weight:bold;">${m}-25</td>
+            <td><input type="number" id="pay_${idx}" class="cell-input" value="0" oninput="trackPayEdit(${idx})"></td>
+            <td><input type="number" id="da_${idx}" class="cell-input" value="0" oninput="recalculateSystem()"></td>
+            <td><input type="number" id="hra_${idx}" class="cell-input" value="0" oninput="cascadeValues(${idx}, 'hra')"></td>
+            <td><input type="number" id="other_${idx}" class="cell-input" value="0" oninput="cascadeValues(${idx}, 'other')"></td>
+            <td id="total_${idx}" class="bold-row">0</td>
+            <td><input type="number" id="gpf_${idx}" class="cell-input" value="0" oninput="cascadeValues(${idx}, 'gpf')"></td>
+            <td><input type="number" id="gpfadv_${idx}" class="cell-input" value="0" oninput="cascadeValues(${idx}, 'gpfadv')"></td>
+            <td><input type="number" id="gis_${idx}" class="cell-input" value="0" oninput="cascadeValues(${idx}, 'gis')"></td>
+            <td><input type="number" id="advit_${idx}" class="cell-input" value="0" oninput="cascadeValues(${idx}, 'advit')"></td>
+            <td id="net_${idx}" class="bold-row">0</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    function updateMonthsByYear() {
+        let startYearStr = document.getElementById('dynamic_fy_start').value.trim();
+        let endYearStr = document.getElementById('dynamic_fy_end').value.trim();
+        let startShort = startYearStr.substring(2,4) || "25";
+        let endShort = endYearStr || "26";
+
+        baseMonths.forEach((m, idx) => {
+            let labelCell = document.getElementById(`lbl_month_${idx}`);
+            if (idx <= 9) labelCell.textContent = `${m}-${startShort}`;
+            else labelCell.textContent = `${m}-${endShort}`;
+        });
+    }
+
+    function trackPayEdit(idx) {
+        cascadeValues(idx, 'pay');
+    }
+
+    function cascadeValues(idx, type) {
+        let val = parseFloat(document.getElementById(`${type}_${idx}`).value) || 0;
+        for (let i = idx; i < baseMonths.length; i++) {
+            document.getElementById(`${type}_${i}`).value = val;
+        }
+        recalculateSystem();
+    }
+
+    function applyIncrementFromTopBox() {
+        let index = parseInt(document.getElementById('incMonthSelect').value);
+        let prevPay = parseFloat(document.getElementById(`pay_${index-1}`).value) || 0;
+        if(prevPay === 0) return alert("Error: पिछला वेतन 0 है!");
+        let finalValue = Math.round((prevPay * 1.03)/100)*100;
+        for (let i = index; i < baseMonths.length; i++) { document.getElementById(`pay_${i}`).value = finalValue; }
+        recalculateSystem();
+    }
+
+    function applyDARateFromMonth() {
+        let startIdx = parseInt(document.getElementById('daMonthSelect').value);
+        let targetRate = parseFloat(document.getElementById('step_da_rate').value) || 0;
+        for (let i = startIdx; i < baseMonths.length; i++) {
+            let basePay = parseFloat(document.getElementById(`pay_${i}`).value) || 0;
+            document.getElementById(`da_${i}`).value = Math.round((basePay * targetRate) / 100);
+        }
+        recalculateSystem();
+    }
+
+    function setRegimeAndView(type) {
+        currentActiveRegime = type;
+        document.body.classList.remove('print-old', 'print-new');
+        
+        if(type === 'old') {
+            document.body.classList.add('print-old');
+            document.getElementById('ded_header_title').textContent = "80C की छूटों का विवरण (Old Tax में मान्य)";
+            document.getElementById('lbl_80c_title').textContent = "धारा 80C (अधिकतम 1.50 लाख)";
+            document.getElementById('lbl_std_ded').textContent = "मानक कटौती (Old Tax Standard Ded.)";
+            document.getElementById('tax_3').textContent = "50000";
+        } else {
+            document.body.classList.add('print-new');
+            document.getElementById('ded_header_title').textContent = "छूट विवरण (New Tax में मान्य नहीं❌)";
+            document.getElementById('lbl_80c_title').textContent = "धारा 80C (New Tax में शून्य ❌)";
+            document.getElementById('lbl_std_ded').textContent = "मानक कटौती (New Tax Standard Ded.)";
+            document.getElementById('tax_3').textContent = "75000";
+        }
+        recalculateSystem();
+        window.print();
+    }
+
+    function recalculateSystem() {
+        let tot_b = 0, tot_d = 0, tot_h = 0, tot_o = 0, tot_p = 0;
+        let tot_g = 0, tot_ga = 0, tot_gi = 0, tot_adv = 0, tot_n = 0;
+
+        for(let i=0; i<12; i++) {
+            let b = parseFloat(document.getElementById(`pay_${i}`).value) || 0;
+            let d = parseFloat(document.getElementById(`da_${i}`).value) || 0;
+            let h = parseFloat(document.getElementById(`hra_${i}`).value) || 0;
+            let o = parseFloat(document.getElementById(`other_${i}`).value) || 0;
+            
+            let t_pay = b + d + h + o;
+            document.getElementById(`total_${i}`).textContent = t_pay;
+
+            let g = parseFloat(document.getElementById(`gpf_${i}`).value) || 0;
+            let ga = parseFloat(document.getElementById(`gpfadv_${i}`).value) || 0;
+            let gi = parseFloat(document.getElementById(`gis_${i}`).value) || 0;
+            let adv = parseFloat(document.getElementById(`advit_${i}`).value) || 0;
+            
+            let net = t_pay - (g + ga + gi + adv);
+            document.getElementById(`net_${i}`).textContent = net;
+
+            tot_b += b; tot_d += d; tot_h += h; tot_o += o; tot_p += t_pay;
+            tot_g += g; tot_ga += ga; tot_gi += gi; tot_adv += adv; tot_n += net;
+        }
+
+        document.getElementById('tot_basic').textContent = tot_b;
+        document.getElementById('tot_da').textContent = tot_d;
+        document.getElementById('tot_hra').textContent = tot_h;
+        document.getElementById('tot_other').textContent = tot_o;
+        document.getElementById('tot_pay').textContent = tot_p;
+        document.getElementById('tot_gpf').textContent = tot_g;
+        document.getElementById('tot_gpf_adv').textContent = tot_ga;
+        document.getElementById('tot_gis').textContent = tot_gi;
+        document.getElementById('tot_adv_it').textContent = tot_adv;
+        document.getElementById('tot_net').textContent = tot_n;
+
+        let ar1 = parseFloat(document.getElementById('ar1_pay').value) || 0;
+        let ar1_g = parseFloat(document.getElementById('ar1_gpf').value) || 0;
+        let ar1_ga = parseFloat(document.getElementById('ar1_gpf_adv').value) || 0;
+        let ar1_gi = parseFloat(document.getElementById('ar1_gis').value) || 0;
+        let ar1_adv = parseFloat(document.getElementById('ar1_adv_it').value) || 0;
+        document.getElementById('ar1_net').textContent = ar1 - (ar1_g + ar1_ga + ar1_gi + ar1_adv);
+
+        let ar2 = parseFloat(document.getElementById('ar2_pay').value) || 0;
+        let ar2_g = parseFloat(document.getElementById('ar2_gpf').value) || 0;
+        let ar2_ga = parseFloat(document.getElementById('ar2_gpf_adv').value) || 0;
+        let ar2_gi = parseFloat(document.getElementById('ar2_gis').value) || 0;
+        let ar2_adv = parseFloat(document.getElementById('ar2_adv_it').value) || 0;
+        document.getElementById('ar2_net').textContent = ar2 - (ar2_g + ar2_ga + ar2_gi + ar2_adv);
+
+        let bon = parseFloat(document.getElementById('bonus_pay').value) || 0;
+        let bon_g = parseFloat(document.getElementById('bonus_gpf').value) || 0;
+        let bon_ga = parseFloat(document.getElementById('bonus_gpf_adv').value) || 0;
+        let bon_gi = parseFloat(document.getElementById('bonus_gis').value) || 0;
+        let bon_adv = parseFloat(document.getElementById('bonus_adv_it').value) || 0;
+        document.getElementById('bonus_net').textContent = bon - (bon_g + bon_ga + bon_gi + bon_adv);
+
+        let pen = parseFloat(document.getElementById('pension_pay').value) || 0;
+        let pen_g = parseFloat(document.getElementById('pension_gpf').value) || 0;
+        let pen_ga = parseFloat(document.getElementById('pension_gpf_adv').value) || 0;
+        let pen_gi = parseFloat(document.getElementById('pension_gis').value) || 0;
+        let pen_adv = parseFloat(document.getElementById('pension_adv_it').value) || 0;
+        document.getElementById('pension_net').textContent = pen - (pen_g + pen_ga + pen_gi + pen_adv);
+
+        let g_pay = tot_p + ar1 + ar2 + bon + pen;
+        let g_gpf = tot_g + ar1_g + ar2_g + bon_g + pen_g;
+        let g_gis = tot_gi + ar1_gi + ar2_gi + bon_gi + pen_gi;
+        let g_adv_it = tot_adv + ar1_adv + ar2_adv + bon_adv + pen_adv;
+
+        document.getElementById('g_basic').textContent = tot_b;
+        document.getElementById('g_da').textContent = tot_d;
+        document.getElementById('g_hra').textContent = tot_h;
+        document.getElementById('g_other').textContent = tot_o;
+        document.getElementById('g_pay').textContent = g_pay;
+        document.getElementById('g_gpf').textContent = g_gpf;
+        document.getElementById('g_gpf_adv').textContent = tot_ga + ar1_ga + ar2_ga + bon_ga + pen_ga;
+        document.getElementById('g_gis').textContent = g_gis;
+        document.getElementById('g_adv_it').textContent = g_adv_it;
+        document.getElementById('g_net').textContent = g_pay - (g_gpf + (tot_ga + ar1_ga + ar2_ga + bon_ga + pen_ga) + g_gis + g_adv_it);
+
+        document.getElementById('tax_1').textContent = g_pay;
+        
+        let tax_2 = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('tax_2').value) || 0) : 0;
+        let std_ded = currentActiveRegime === 'old' ? 50000 : 75000;
+        document.getElementById('tax_3').textContent = std_ded;
+
+        let tax_4 = Math.max(0, g_pay - tax_2 - std_ded);
+        document.getElementById('tax_4').textContent = tax_4;
+
+        document.getElementById('ded_gpf').textContent = currentActiveRegime === 'old' ? g_gpf : 0;
+        document.getElementById('ded_gis').textContent = currentActiveRegime === 'old' ? g_gis : 0;
+        
+        let lic = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('ded_lic').value) || 0) : 0;
+        let tui = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('ded_tuition').value) || 0) : 0;
+        let nsc = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('ded_nsc').value) || 0) : 0;
+        let fd = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('ded_fd').value) || 0) : 0;
+        let hl = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('ded_hl').value) || 0) : 0;
+        let ssy = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('ded_ssy').value) || 0) : 0;
+        let nps = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('ded_nps').value) || 0) : 0;
+        let oth_ded = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('ded_other').value) || 0) : 0;
+
+        let gross_80c = currentActiveRegime === 'old' ? (g_gpf + g_gis + lic + tui + nsc + fd + hl + ssy + nps + oth_ded) : 0;
+        document.getElementById('ded_80c_tot').textContent = gross_80c;
+
+        let allowed_80c = currentActiveRegime === 'old' ? Math.min(150000, gross_80c) : 0;
+        document.getElementById('tax_80c_allowed').textContent = allowed_80c;
+
+        let tax_80u = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('tax_80u').value) || 0) : 0;
+        let tax_80ccd2 = parseFloat(document.getElementById('tax_80ccd2').value) || 0; 
+        let tax_80d = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('tax_80d').value) || 0) : 0;
+        let tax_oth = currentActiveRegime === 'old' ? (parseFloat(document.getElementById('tax_other_ded').value) || 0) : 0;
+
+        let total_ded = allowed_80c + tax_80u + tax_80ccd2 + tax_80d + tax_oth;
+        document.getElementById('tax_5_disp').textContent = total_ded;
+        document.getElementById('tax_6').textContent = total_ded;
+
+        let taxable_income = Math.max(0, tax_4 - total_ded);
+        document.getElementById('tax_7').textContent = taxable_income;
+
+        calculateOldRegime(taxable_income, g_adv_it);
+        calculateNewRegime(taxable_income, g_adv_it);
+    }
+
+    function calculateOldRegime(income, advPaid) {
+        let rem = income; let s1 = 0, s2 = 0, s3 = 0, s4 = 0;
+        s1 = Math.min(250000, rem); rem -= s1;
+        if(rem > 0) { s2 = Math.min(250000, rem); rem -= s2; }
+        if(rem > 0) { s3 = Math.min(500000, rem); rem -= s3; }
+        if(rem > 0) { s4 = rem; }
+        let t1 = 0, t2 = Math.round(s2 * 0.05), t3 = Math.round(s3 * 0.20), t4 = Math.round(s4 * 0.30);
+        let total_tax = t1 + t2 + t3 + t4;
+        document.getElementById('v1_s1_base').textContent = s1;
+        document.getElementById('v1_s2_base').textContent = s2;
+        document.getElementById('v1_s3_base').textContent = s3;
+        document.getElementById('v1_s4_base').textContent = s4;
+        document.getElementById('v1_s1_tax').textContent = t1;
+        document.getElementById('v1_s2_tax').textContent = t2;
+        document.getElementById('v1_s3_tax').textContent = t3;
+        document.getElementById('v1_s4_tax').textContent = t4;
+        document.getElementById('v1_tax_total').textContent = total_tax;
+        document.getElementById('fin_v1_8').textContent = total_tax;
+        let rebate = 0; if (income <= 500000 || total_tax <= 20000) { rebate = total_tax; }
+        document.getElementById('fin_v1_9').textContent = rebate;
+        let tax_minus_rebate = Math.max(0, total_tax - rebate);
+        document.getElementById('fin_v1_10').textContent = tax_minus_rebate;
+        let cess = Math.round(tax_minus_rebate * 0.04);
+        document.getElementById('fin_v1_11').textContent = cess;
+        let payable = tax_minus_rebate + cess;
+        document.getElementById('fin_v1_12').textContent = payable;
+        let relief = parseFloat(document.getElementById('fin_v1_13').value) || 0;
+        document.getElementById('fin_v1_14').textContent = advPaid;
+        document.getElementById('fin_v1_15').textContent = payable - relief - advPaid;
+    }
+
+    function calculateNewRegime(income, advPaid) {
+        let rem = income; let s1=0, s2=0, s3=0, s4=0, s5=0, s6=0, s7=0;
+        s1 = Math.min(400000, rem); rem -= s1;
+        if(rem > 0) { s2 = Math.min(400000, rem); rem -= s2; }
+        if(rem > 0) { s3 = Math.min(400000, rem); rem -= s3; }
+        if(rem > 0) { s4 = Math.min(400000, rem); rem -= s4; }
+        if(rem > 0) { s5 = Math.min(400000, rem); rem -= s5; }
+        if(rem > 0) { s6 = Math.min(400000, rem); rem -= s6; }
+        if(rem > 0) { s7 = rem; }
+        let t1 = 0, t2 = Math.round(s2 * 0.05), t3 = Math.round(s3 * 0.10), t4 = Math.round(s4 * 0.15), t5 = Math.round(s5 * 0.20), t6 = Math.round(s6 * 0.25), t7 = Math.round(s7 * 0.30);
+        let total_tax = t1 + t2 + t3 + t4 + t5 + t6 + t7;
+        document.getElementById('v2_s1_base').textContent = s1;
+        document.getElementById('v2_s2_base').textContent = s2;
+        document.getElementById('v2_s3_base').textContent = s3;
+        document.getElementById('v2_s4_base').textContent = s4;
+        document.getElementById('v2_s5_base').textContent = s5;
+        document.getElementById('v2_s6_base').textContent = s6;
+        document.getElementById('v2_s7_base').textContent = s7;
+        document.getElementById('v2_s1_tax').textContent = t1;
+        document.getElementById('v2_s2_tax').textContent = t2;
+        document.getElementById('v2_s3_tax').textContent = t3;
+        document.getElementById('v2_s4_tax').textContent = t4;
+        document.getElementById('v2_s5_tax').textContent = t5;
+        document.getElementById('v2_s6_tax').textContent = t6;
+        document.getElementById('v2_s7_tax').textContent = t7;
+        document.getElementById('v2_tax_total').textContent = total_tax;
+        document.getElementById('fin_v2_8').textContent = total_tax;
+        let rebate = 0; if (income <= 1200000 || total_tax <= 60000) { rebate = total_tax; } else { let excess_income = income - 1200000; if (total_tax > excess_income + 60000) { rebate = total_tax - (excess_income + 60000); } }
+        document.getElementById('fin_v2_9').textContent = rebate;
+        let tax_minus_rebate = Math.max(0, total_tax - rebate);
+        document.getElementById('fin_v2_10').textContent = tax_minus_rebate;
+        let cess = Math.round(tax_minus_rebate * 0.04);
+        document.getElementById('fin_v2_11').textContent = cess;
+        let payable = tax_minus_rebate + cess;
+        document.getElementById('fin_v2_12').textContent = payable;
+        let relief = parseFloat(document.getElementById('fin_v2_13').value) || 0;
+        document.getElementById('fin_v2_14').textContent = advPaid;
+        document.getElementById('fin_v2_15').textContent = payable - relief - advPaid;
+    }
+
+    // फॉर्म रिसेट या साफ़ करने का लॉजिक (सभी इनपुट फ़ील्ड को ज़ीरो या ब्लैंक करना)
+    function clearFormFields() {
+        // टेक्स्ट मेटाडेटा को खाली करना
+        document.getElementById('meta_block').value = "";
+        document.getElementById('meta_mobile').value = "";
+        document.getElementById('meta_school').value = "";
+        document.getElementById('meta_ehrms').value = "";
+        document.getElementById('meta_name').value = "";
+        document.getElementById('meta_dob').value = "";
+        document.getElementById('meta_desg').value = "";
+        document.getElementById('meta_ac').value = "";
+        document.getElementById('meta_pan').value = "";
+        document.getElementById('meta_ifsc').value = "";
+        document.getElementById('searchQuery').value = "";
+
+        // मंथली टेबल को 0 करना
+        for(let i=0; i<12; i++) {
+            document.getElementById(`pay_${i}`).value = 0;
+            document.getElementById(`da_${i}`).value = 0;
+            document.getElementById(`hra_${i}`).value = 0;
+            document.getElementById(`other_${i}`).value = 0;
+            document.getElementById(`gpf_${i}`).value = 0;
+            document.getElementById(`gpfadv_${i}`).value = 0;
+            document.getElementById(`gis_${i}`).value = 0;
+            document.getElementById(`advit_${i}`).value = 0;
+        }
+
+        // एरियर व एक्स्ट्रा को क्लियर करना
+        const extraFields = [
+            'ar1_note','ar1_period','ar1_pay','ar1_gpf','ar1_gpf_adv','ar1_gis','ar1_adv_it',
+            'ar2_note','ar2_period','ar2_pay','ar2_gpf','ar2_gpf_adv','ar2_gis','ar2_adv_it',
+            'bonus_note','bonus_pay','bonus_gpf','bonus_gpf_adv','bonus_gis','bonus_adv_it',
+            'pension_note','pension_pay','pension_gpf','pension_gpf_adv','pension_gis','pension_adv_it'
+        ];
+        extraFields.forEach(f => {
+            let el = document.getElementById(f);
+            if(el) el.value = (el.type === 'number') ? 0 : "";
+        });
+
+        // टैक्स डिडक्शन को रीसेट करना
+        const taxFields = [
+            'tax_2', 'ded_lic', 'ded_tuition', 'ded_nsc', 'ded_fd', 'ded_hl', 
+            'ded_ssy', 'ded_nps', 'ded_other', 'tax_80u', 'tax_80ccd2', 'tax_80d', 
+            'tax_other_ded', 'fin_v1_13', 'fin_v2_13'
+        ];
+        taxFields.forEach(f => {
+            let el = document.getElementById(f);
+            if(el) el.value = 0;
+        });
+
+        recalculateSystem();
+    }
+
+    function resetForm() { clearFormFields(); }
+
+    // ================= LOCALSTORAGE DATA ENGINE (SAVE, UPDATE, SEARCH, DELETE) =================
+    
+    function getFormSnapshot() {
+        let snapshot = {
+            metadata: {
+                fy_start: document.getElementById('dynamic_fy_start').value,
+                fy_end: document.getElementById('dynamic_fy_end').value,
+                block: document.getElementById('meta_block').value,
+                mobile: document.getElementById('meta_mobile').value,
+                school: document.getElementById('meta_school').value,
+                ehrms: document.getElementById('meta_ehrms').value.trim(),
+                name: document.getElementById('meta_name').value,
+                dob: document.getElementById('meta_dob').value,
+                desg: document.getElementById('meta_desg').value,
+                ac: document.getElementById('meta_ac').value,
+                pan: document.getElementById('meta_pan').value,
+                ifsc: document.getElementById('meta_ifsc').value
+            },
+            monthly: [],
+            extras: {
+                ar1_note: document.getElementById('ar1_note').value, ar1_period: document.getElementById('ar1_period').value, ar1_pay: document.getElementById('ar1_pay').value, ar1_gpf: document.getElementById('ar1_gpf').value, ar1_gpf_adv: document.getElementById('ar1_gpf_adv').value, ar1_gis: document.getElementById('ar1_gis').value, ar1_adv_it: document.getElementById('ar1_adv_it').value,
+                ar2_note: document.getElementById('ar2_note').value, ar2_period: document.getElementById('ar2_period').value, ar2_pay: document.getElementById('ar2_pay').value, ar2_gpf: document.getElementById('ar2_gpf').value, ar2_gpf_adv: document.getElementById('ar2_gpf_adv').value, ar2_gis: document.getElementById('ar2_gis').value, ar2_adv_it: document.getElementById('ar2_adv_it').value,
+                bonus_note: document.getElementById('bonus_note').value, bonus_pay: document.getElementById('bonus_pay').value, bonus_gpf: document.getElementById('bonus_gpf').value, bonus_gpf_adv: document.getElementById('bonus_gpf_adv').value, bonus_gis: document.getElementById('bonus_gis').value, bonus_adv_it: document.getElementById('bonus_adv_it').value,
+                pension_note: document.getElementById('pension_note').value, pension_pay: document.getElementById('pension_pay').value, pension_gpf: document.getElementById('pension_gpf').value, pension_gpf_adv: document.getElementById('pension_gpf_adv').value, pension_gis: document.getElementById('pension_gis').value, pension_adv_it: document.getElementById('pension_adv_it').value
+            },
+            taxDeductions: {
+                tax_2: document.getElementById('tax_2').value,
+                ded_lic: document.getElementById('ded_lic').value,
+                ded_tuition: document.getElementById('ded_tuition').value,
+                ded_nsc: document.getElementById('ded_nsc').value,
+                ded_fd: document.getElementById('ded_fd').value,
+                ded_hl: document.getElementById('ded_hl').value,
+                ded_ssy: document.getElementById('ded_ssy').value,
+                ded_nps: document.getElementById('ded_nps').value,
+                ded_other: document.getElementById('ded_other').value,
+                tax_80u: document.getElementById('tax_80u').value,
+                tax_80ccd2: document.getElementById('tax_80ccd2').value,
+                tax_80d: document.getElementById('tax_80d').value,
+                tax_other_ded: document.getElementById('tax_other_ded').value,
+                fin_v1_13: document.getElementById('fin_v1_13').value,
+                fin_v2_13: document.getElementById('fin_v2_13').value
+            }
+        };
+
+        for(let i=0; i<12; i++) {
+            snapshot.monthly.push({
+                pay: document.getElementById(`pay_${i}`).value,
+                da: document.getElementById(`da_${i}`).value,
+                hra: document.getElementById(`hra_${i}`).value,
+                other: document.getElementById(`other_${i}`).value,
+                gpf: document.getElementById(`gpf_${i}`).value,
+                gpfadv: document.getElementById(`gpfadv_${i}`).value,
+                gis: document.getElementById(`gis_${i}`).value,
+                advit: document.getElementById(`advit_${i}`).value
+            });
+        }
+        return snapshot;
+    }
+
+    function saveData() {
+        let id = document.getElementById('meta_ehrms').value.trim();
+        if(!id) {
+            alert("त्रुटि: डेटा सेव करने के लिए 'ID / SR. NO.' दर्ज करना अनिवार्य है!");
+            document.getElementById('meta_ehrms').focus();
+            return;
+        }
+        
+        let storedData = JSON.parse(localStorage.getItem('tax_records') || '{}');
+        if(storedData[id]) {
+            alert("यह ID पहले से सेव है! अगर बदलाव करना चाहते हैं तो 'Update' बटन दबाएं।");
+            return;
+        }
+
+        storedData[id] = getFormSnapshot();
+        localStorage.setItem('tax_records', JSON.stringify(storedData));
+        alert("बधाई हो! ID: " + id + " का डेटा सफलतापूर्वक सेव कर लिया गया है।");
+        clearFormFields(); // सेव होने के बाद फॉर्म खाली करें
+    }
+
+    function updateData() {
+        let id = document.getElementById('meta_ehrms').value.trim();
+        if(!id) {
+            alert("त्रुटि: डेटा अपडेट करने के लिए 'ID / SR. NO.' फील्ड खाली नहीं होना चाहिए!");
+            return;
+        }
+        
+        let storedData = JSON.parse(localStorage.getItem('tax_records') || '{}');
+        if(!storedData[id]) {
+            alert("इस ID का पुराना कोई रिकॉर्ड नहीं मिला। पहले डेटा 'Save' करें।");
+            return;
+        }
+
+        storedData[id] = getFormSnapshot();
+        localStorage.setItem('tax_records', JSON.stringify(storedData));
+        alert("सफलतापूर्वक! ID: " + id + " का डेटा अपडेट कर दिया गया है।");
+        clearFormFields(); // अपडेट होने के बाद फॉर्म खाली करें
+    }
+
+    function searchData() {
+        let query = document.getElementById('searchQuery').value.trim();
+        if(!query) {
+            alert("कृपया सर्च बॉक्स में ID दर्ज करें!");
+            return;
+        }
+
+        let storedData = JSON.parse(localStorage.getItem('tax_records') || '{}');
+        let record = storedData[query];
+
+        if(!record) {
+            alert("क्षमा करें! ID: '" + query + "' का कोई भी डेटा नहीं मिला।");
+            return;
+        }
+
+        document.getElementById('dynamic_fy_start').value = record.metadata.fy_start || "2025";
+        document.getElementById('dynamic_fy_end').value = record.metadata.fy_end || "26";
+        document.getElementById('meta_block').value = record.metadata.block || "";
+        document.getElementById('meta_mobile').value = record.metadata.mobile || "";
+        document.getElementById('meta_school').value = record.metadata.school || "";
+        document.getElementById('meta_ehrms').value = record.metadata.ehrms || "";
+        document.getElementById('meta_name').value = record.metadata.name || "";
+        document.getElementById('meta_dob').value = record.metadata.dob || "";
+        document.getElementById('meta_desg').value = record.metadata.desg || "";
+        document.getElementById('meta_ac').value = record.metadata.ac || "";
+        document.getElementById('meta_pan').value = record.metadata.pan || "";
+        document.getElementById('meta_ifsc').value = record.metadata.ifsc || "";
+
+        updateMonthsByYear();
+
+        if(record.monthly && record.monthly.length === 12) {
+            for(let i=0; i<12; i++) {
+                document.getElementById(`pay_${i}`).value = record.monthly[i].pay || 0;
+                document.getElementById(`da_${i}`).value = record.monthly[i].da || 0;
+                document.getElementById(`hra_${i}`).value = record.monthly[i].hra || 0;
+                document.getElementById(`other_${i}`).value = record.monthly[i].other || 0;
+                document.getElementById(`gpf_${i}`).value = record.monthly[i].gpf || 0;
+                document.getElementById(`gpfadv_${i}`).value = record.monthly[i].gpfadv || 0;
+                document.getElementById(`gis_${i}`).value = record.monthly[i].gis || 0;
+                document.getElementById(`advit_${i}`).value = record.monthly[i].advit || 0;
+            }
+        }
+
+        document.getElementById('ar1_note').value = record.extras.ar1_note || "";
+        document.getElementById('ar1_period').value = record.extras.ar1_period || "";
+        document.getElementById('ar1_pay').value = record.extras.ar1_pay || 0;
+        document.getElementById('ar1_gpf').value = record.extras.ar1_gpf || 0;
+        document.getElementById('ar1_gpf_adv').value = record.extras.ar1_gpf_adv || 0;
+        document.getElementById('ar1_gis').value = record.extras.ar1_gis || 0;
+        document.getElementById('ar1_adv_it').value = record.extras.ar1_adv_it || 0;
+
+        document.getElementById('ar2_note').value = record.extras.ar2_note || "";
+        document.getElementById('ar2_period').value = record.extras.ar2_period || "";
+        document.getElementById('ar2_pay').value = record.extras.ar2_pay || 0;
+        document.getElementById('ar2_gpf').value = record.extras.ar2_gpf || 0;
+        document.getElementById('ar2_gpf_adv').value = record.extras.ar2_gpf_adv || 0;
+        document.getElementById('ar2_gis').value = record.extras.ar2_gis || 0;
+        document.getElementById('ar2_adv_it').value = record.extras.ar2_adv_it || 0;
+
+        document.getElementById('bonus_note').value = record.extras.bonus_note || "";
+        document.getElementById('bonus_pay').value = record.extras.bonus_pay || 0;
+        document.getElementById('bonus_gpf').value = record.extras.bonus_gpf || 0;
+        document.getElementById('bonus_gpf_adv').value = record.extras.bonus_gpf_adv || 0;
+        document.getElementById('bonus_gis').value = record.extras.bonus_gis || 0;
+        document.getElementById('bonus_adv_it').value = record.extras.bonus_adv_it || 0;
+
+        document.getElementById('pension_note').value = record.extras.pension_note || "";
+        document.getElementById('pension_pay').value = record.extras.pension_pay || 0;
+        document.getElementById('pension_gpf').value = record.extras.pension_gpf || 0;
+        document.getElementById('pension_gpf_adv').value = record.extras.pension_gpf_adv || 0;
+        document.getElementById('pension_gis').value = record.extras.pension_gis || 0;
+        document.getElementById('pension_adv_it').value = record.extras.pension_adv_it || 0;
+
+        document.getElementById('tax_2').value = record.taxDeductions.tax_2 || 0;
+        document.getElementById('ded_lic').value = record.taxDeductions.ded_lic || 0;
+        document.getElementById('ded_tuition').value = record.taxDeductions.ded_tuition || 0;
+        document.getElementById('ded_nsc').value = record.taxDeductions.ded_nsc || 0;
+        document.getElementById('ded_fd').value = record.taxDeductions.ded_fd || 0;
+        document.getElementById('ded_hl').value = record.taxDeductions.ded_hl || 0;
+        document.getElementById('ded_ssy').value = record.taxDeductions.ded_ssy || 0;
+        document.getElementById('ded_nps').value = record.taxDeductions.ded_nps || 0;
+        document.getElementById('ded_other').value = record.taxDeductions.ded_other || 0;
+        document.getElementById('tax_80u').value = record.taxDeductions.tax_80u || 0;
+        document.getElementById('tax_80ccd2').value = record.taxDeductions.tax_80ccd2 || 0;
+        document.getElementById('tax_80d').value = record.taxDeductions.tax_80d || 0;
+        document.getElementById('tax_other_ded').value = record.taxDeductions.tax_other_ded || 0;
+        document.getElementById('fin_v1_13').value = record.taxDeductions.fin_v1_13 || 0;
+        document.getElementById('fin_v2_13').value = record.taxDeductions.fin_v2_13 || 0;
+
+        recalculateSystem();
+        alert("सफलतापूर्वक! ID '" + query + "' का पूरा डेटा लोड कर दिया गया है।");
+    }
+
+    // नया डिलीट फंक्शन (डेटा को हटाने के लिए)
+    function deleteData() {
+        let query = document.getElementById('searchQuery').value.trim();
+        if(!query) {
+            alert("त्रुटि: पहले सर्च बॉक्स में वह ID लिखें जिसे आप डिलीट करना चाहते हैं!");
+            return;
+        }
+
+        let storedData = JSON.parse(localStorage.getItem('tax_records') || '{}');
+        
+        if(!storedData[query]) {
+            alert("ID: '" + query + "' का कोई रिकॉर्ड नहीं मिला, जिसे डिलीट किया जा सके।");
+            return;
+        }
+
+        // पुष्टि (Confirm) करना कि यूजर गलती से डिलीट न कर दे
+        let confirmDelete = confirm("क्या आप निश्चित रूप से ID: " + query + " का डेटा हमेशा के लिए डिलीट करना चाहते हैं?");
+        if(confirmDelete) {
+            delete storedData[query]; // मेमोरी से हटाना
+            localStorage.setItem('tax_records', JSON.stringify(storedData)); // अपडेटेड लिस्ट सेव करना
+            alert("सफलतापूर्वक! ID: " + query + " का डेटा डिलीट कर दिया गया है।");
+            clearFormFields(); // स्क्रीन साफ़ करना
+        }
+    }
+
+    recalculateSystem();
+</script>
+</body>
+</html>

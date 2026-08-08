@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Penshan Getiuty Data Entry Form</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: Mangal, Arial, sans-serif;
+    background: pink;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0.5vh 1vw;
+}
+
+/* Login Modal Screen */
+#loginModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: pink;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.login-card {
+    background: #fff;
+    padding: 2.5vh 2vw;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #999;
+    text-align: center;
+    width: 320px;
+}
+.login-card h2 {
+    font-size: 2.2vh;
+    color: #1a0dab;
+    margin-bottom: 1.5vh;
+}
+.login-card input {
+    height: 4vh;
+    margin-bottom: 1.2vh;
+    padding: 0.5vh;
+    border: 1px solid #999;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 1.6vh;
+}
+.login-card button {
+    width: 100%;
+    padding: 1vh;
+    background: #0b57d0;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1.6vh;
+}
+.login-card button:hover {
+    background: #084298;
+}
+
+/* Main Container (Initially Hidden) */
+#mainAppContainer {
+    display: none;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+}
+
+center h2 {
+    font-size: 2.2vh;
+    margin-bottom: 0.2vh;
+    color: #333;
+}
+.marq-container {
+    display: flex;
+    align-items: center;
+    background: green;
+    margin-bottom: 0.5vh;
+}
+.marq {
+    background: green;
+    color: white;
+    padding: 0.3vh;
+    font-size: 1.8vh;
+    font-weight: bold;
+    flex: 1;
+}
+.btn-logout {
+    background: #d93025;
+    color: white;
+    border: none;
+    padding: 0.3vh 1vw;
+    font-weight: bold;
+    font-size: 1.5vh;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-right: 5px;
+}
+.btn-logout:hover {
+    background: #a50e0e;
+}
+.form-box {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 1.5vh 1.5vw;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #999;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+.form-box h2 {
+    text-align: center;
+    font-size: 2.2vh;
+    margin-bottom: 1vh;
+    color: #1a0dab;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+.row {
+    display: flex;
+    gap: 1.5vw;
+    margin-bottom: 0.8vh;
+}
+.field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+label {
+    font-size: 1.5vh;
+    font-weight: bold;
+    margin-bottom: 0.3vh;
+    color: #333;
+}
+input {
+    height: 3.5vh;
+    padding: 0.5vh;
+    border: 1px solid #999;
+    border-radius: 4px;
+    width: 100%;
+    font-size: 1.6vh;
+    background-color: #fafafa;
+}
+input:focus {
+    border-color: #0b57d0;
+    outline: none;
+    background-color: #fff;
+}
+.button-group {
+    text-align: center;
+    margin-top: 0.5vh;
+}
+button {
+    padding: 1vh 2vw;
+    margin: 0 0.5vw;
+    border: none;
+    border-radius: 5px;
+    background: #0b57d0;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.6vh;
+    transition: background 0.2s;
+}
+button:hover {
+    background: #084298;
+}
+.hide-value {
+    color: transparent;
+    background-color: #e9ecef;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Login Modal Section -->
+<div id="loginModal">
+    <div class="login-card">
+        <h2>लॉगिन करें</h2>
+        <input type="text" id="loginIdInput" placeholder="Login ID">
+        <input type="password" id="loginPassInput" placeholder="Password">
+        <button onclick="handleLogin()">Login</button>
+        <p id="loginErrMsg" style="color: red; font-size: 1.3vh; margin-top: 1vh; display: none;">गलत ID या पासवर्ड!</p>
+    </div>
+</div>
+
+<!-- Main Application Wrapper -->
+<div id="mainAppContainer">
+    <center>
+    <h2>FAIZAN COMPUTER CENTER</h2>
+    </center>
+
+    <div class="marq-container">
+        <marquee class="marq" direction="left" scrollamount="12">
+        Anas Akhtar &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Shree Krishn Inter College Semra Kathkuiyan &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Faizan Computer Center
+        </marquee>
+        <button class="btn-logout" onclick="handleLogout()">Log Out</button>
+    </div>
+
+    <div class="form-box">
+    <h2>Anas Akhtar Penshan Getiuty Data Entry Form</h2>
+
+    <form id="myForm">
+    <div class="row">
+        <div class="field"><label>आईडी</label><input type="text" id="id"></div>
+        <div class="field"><label>नाम</label><input type="text" id="combo1"></div>
+        <div class="field"><label>पद</label><input type="text" id="combo2" oninput="setAgeRate();setRetirementDate();calculateAll();"></div>
+    </div>
+
+    <div class="row">
+        <div class="field"><label>जन्मतिथि</label><input type="text" id="t1" placeholder="DD-MM-YYYY" onkeyup="setRetirementDate();calculateAll();"></div>
+        <div class="field"><label>सेवा तिथि</label><input type="text" id="t2" placeholder="DD-MM-YYYY" onkeyup="calculateAll();"></div>
+        <div class="field"><label>सेवा निवृत्ति</label><input type="text" id="t3"></div>
+    </div>
+
+    <div class="row">
+        <div class="field"><label>एज रेट</label><input type="text" id="t4"></div>
+        <div class="field"><label>छमाही / वर्ष</label><input type="text" id="t5"></div>
+        <div class="field"><label>मूल वेतन</label><input type="text" id="t6" onkeyup="calculateAll();"></div>
+    </div>
+
+    <div class="row">
+        <div class="field"><label>रेट %</label><input type="text" id="t7" onkeyup="calculateAll();"></div>
+        <div class="field"><label>महंगाई</label><input type="text" id="t8"></div>
+        <div class="field"><label>योग</label><input type="text" id="t9"></div>
+    </div>
+
+    <div class="row">
+        <div class="field"><label>पेंशन</label><input type="text" id="t10"></div>
+        <div class="field"><label>महंगाई</label><input type="text" id="t11"></div>
+        <div class="field"><label>कम्यूट वैल्यू</label><input type="text" id="t12"></div>
+    </div>
+
+    <div class="row">
+        <div class="field"><label>कम्यूट योग</label><input type="text" id="t13"></div>
+        <div class="field"><label>कुल पेंशन</label><input type="text" id="t14"></div>
+        <div class="field"><label>ग्रेच्युटी</label><input type="text" id="t15"></div>
+    </div>
+
+    <div class="row">
+        <div class="field"><label>पारिवारिक पेंशन</label><input type="text" id="t16"></div>
+        <div class="field"><label>महंगाई</label><input type="text" id="t17"></div>
+        <div class="field"><label>योग</label><input type="text" id="t18"></div>
+    </div>
+
+    <div class="row">
+        <div class="field"><label>मृत्यु तिथि</label><input type="text" id="t19" placeholder="DD-MM-YYYY" onkeyup="calculateAll();"></div>
+        <div class="field"><label>मृत्यु ग्रेच्युटी</label><input type="text" id="t20"></div>
+        <div class="field"><label>मृत्यु पेंशन</label><input type="text" id="t21"></div>
+    </div>
+
+    <div class="button-group">
+        <button type="button" onclick="saveData()">Save</button>
+        <button type="reset">Clear</button>
+        <button type="button" onclick="updateData()">Update</button>
+        <button type="button" onclick="searchData()">Search</button>
+    </div>
+    </form>
+    </div>
+</div>
+
+<script>
+// Authentication Logic
+const AUTH_KEY = "PENSHANA_LOGGED_IN";
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem(AUTH_KEY) === 'true') {
+        showMainApp();
+    }
+});
+
+function handleLogin() {
+    const user = document.getElementById("loginIdInput").value.trim();
+    const pass = document.getElementById("loginPassInput").value.trim();
+    const err = document.getElementById("loginErrMsg");
+
+    if (user === "penshana" && pass === "123") {
+        localStorage.setItem(AUTH_KEY, 'true');
+        err.style.display = "none";
+        showMainApp();
+    } else {
+        err.style.display = "block";
+    }
+}
+
+function showMainApp() {
+    document.getElementById("loginModal").style.display = "none";
+    document.getElementById("mainAppContainer").style.display = "flex";
+}
+
+function handleLogout() {
+    if (confirm("क्या आप लॉग आउट करना चाहते हैं?")) {
+        localStorage.removeItem(AUTH_KEY);
+        document.getElementById("loginIdInput").value = "";
+        document.getElementById("loginPassInput").value = "";
+        document.getElementById("mainAppContainer").style.display = "none";
+        document.getElementById("loginModal").style.display = "flex";
+    }
+}
+
+// यहाँ अपना नया पब्लिश किया हुआ गूगल वेब ऐप URL पेस्ट करें
+const scriptURL = "https://script.google.com/macros/s/AKfycbzVmo8BBfo0t2vbjXkHVoe7tVU_f8U1bvwC409__7hGyHD3ylkmh-kYvijSVJMBq_bP/exec";
+
+function setAgeRate(){
+    let p=document.getElementById("combo2").value.trim();
+    document.getElementById("t4").value = (p==="प्रधानाचार्य" || p==="प्रवक्ता" || p==="स० अ०") ? "7.982" : "8.194";
+}
+
+function setRetirementDate(){
+    let dob=document.getElementById("t1").value.trim();
+    let post=document.getElementById("combo2").value.trim();
+    if(!dob)return;
+    dob=dob.replace(/\//g,"-");
+    let x=dob.split("-");
+    if(x.length!==3)return;
+    let d=parseInt(x[0]);
+    let m=parseInt(x[1]);
+    let y=parseInt(x[2]);
+    let ry = (post==="प्रधानाचार्य" || post==="प्रवक्ता" || post==="स० अ०") ? y + 62 : y + 60;
+    let r;
+    if(post==="प्रधानाचार्य" || post==="प्रवक्ता" || post==="स० अ०"){
+        if(m===4 && d===1) r=new Date(ry,2,31);
+        else if(m>4 || (m===4 && d>=2)) r=new Date(ry+1,2,31);
+        else r=new Date(ry,2,31);
+    }else{
+        if(d===1) r=new Date(ry,m-1,0);
+        else r=new Date(ry,m,0);
+    }
+    document.getElementById("t3").value= String(r.getDate()).padStart(2,"0")+"-"+String(r.getMonth()+1).padStart(2,"0")+"-"+r.getFullYear();
+}
+
+function parseDate(v){
+    if(!v)return null;
+    v=v.replace(/\//g,"-");
+    let p=v.split("-");
+    if(p.length!==3)return null;
+    return new Date(p[2],p[1]-1,p[0]);
+}
+
+function calculateAll(){
+    let j=parseDate(document.getElementById("t2").value);
+    let r=parseDate(document.getElementById("t3").value);
+    let d=parseDate(document.getElementById("t19").value);
+    if(!j || !r)return;
+
+    let serviceDays=(r-j)/(1000*60*60*24);
+    let serviceYears=serviceDays/365.25;
+    let half=serviceYears*2;
+    if(half>66)half=66;
+    let showT5=half;
+
+    if(d){
+        let deathYears=(d-j)/(1000*60*60*24*365.25);
+        if(deathYears>=0) showT5=deathYears;
+    }
+    document.getElementById("t5").value=showT5.toFixed(0);
+
+    let v6=parseFloat(document.getElementById("t6").value)||0;
+    let v7=parseFloat(document.getElementById("t7").value)||0;
+    let v8=v6*(v7/100);
+    document.getElementById("t8").value=Math.round(v8);
+    let v9=v6+v8;
+    document.getElementById("t9").value=Math.round(v9);
+    let t10=v6/2;
+    document.getElementById("t10").value=Math.round(t10);
+    let t11=(t10*v7)/100;
+    document.getElementById("t11").value=Math.round(t11);
+    let t12=t10*0.20;
+    document.getElementById("t12").value=Math.round(t12);
+    let v4=parseFloat(document.getElementById("t4").value)||0;
+    document.getElementById("t13").value=Math.round(v4*t12*12);
+    let t14=t10-t12+t11;
+    document.getElementById("t14").value=Math.round(t14);
+    let t15 = (showT5 * v9) / 4;
+    t15 = Math.min(t15, 2500000);
+    document.getElementById("t15").value = Math.round(t15);
+    let t16=v6*0.30;
+    document.getElementById("t16").value=Math.round(t16);
+    let t17=t16*(v7/100);
+    document.getElementById("t17").value=Math.round(t17);
+    let t18=t16+t17;
+    document.getElementById("t18").value=Math.round(t18);
+
+    let hideIds = ["t3","t11","t12","t13","t14","t15","t16","t17","t18"];
+
+    if(!d){
+        hideIds.forEach(id=>{ document.getElementById(id).classList.remove("hide-value"); });
+        document.getElementById("t20").value="";
+        document.getElementById("t21").value="";
+    }else{
+        hideIds.forEach(id=>{ document.getElementById(id).classList.add("hide-value"); });
+        let v5 = parseFloat(document.getElementById("t5").value) || 0;
+        let t20 = v9 * v5;
+        if (t20 > 2500000) t20 = 2500000;
+        document.getElementById("t20").value = Math.round(t20);
+        document.getElementById("t21").value = Math.round(t12+t14);
+    }
+}
+
+function prepareFormData() {
+    let deathDate = document.getElementById("t19").value.trim();
+    return {
+        id: document.getElementById("id").value,
+        name: document.getElementById("combo1").value,
+        post: document.getElementById("combo2").value,
+        dob: document.getElementById("t1").value,
+        joinDate: document.getElementById("t2").value,
+        retireDate: document.getElementById("t3").value,
+        ageRate: document.getElementById("t4").value,
+        halfYear: document.getElementById("t5").value,
+        basicSalary: document.getElementById("t6").value,
+        ratePercent: document.getElementById("t7").value,
+        da: document.getElementById("t8").value,
+        total: document.getElementById("t9").value,
+        pension: document.getElementById("t10").value,
+        da2: deathDate ? "" : document.getElementById("t11").value,
+        commutValue: deathDate ? "" : document.getElementById("t12").value,
+        commutTotal: deathDate ? "" : document.getElementById("t13").value,
+        totalPension: deathDate ? "" : document.getElementById("t14").value,
+        gratuity: deathDate ? "" : document.getElementById("t15").value,
+        familyPension: deathDate ? "" : document.getElementById("t16").value,
+        familyDa: deathDate ? "" : document.getElementById("t17").value,
+        familyTotal: deathDate ? "" : document.getElementById("t18").value,
+        deathDate: document.getElementById("t19").value,
+        deathGratuity: document.getElementById("t20").value,
+        deathPension: document.getElementById("t21").value
+    };
+}
+
+function saveData(){
+    let data = prepareFormData();
+    fetch(scriptURL,{
+        method:"POST",
+        body:JSON.stringify(data)
+    })
+    .then(res=>res.text())
+    .then(response=>{
+        alert("Data Saved Successfully");
+        document.getElementById("myForm").reset();
+    })
+    .catch(error=>{
+        alert("Error Saving Data");
+        console.log(error);
+    });
+}
+
+function searchData() {
+    let idValue = document.getElementById("id").value.trim();
+    if (!idValue) {
+        alert("कृपया खोजने के लिए पहले 'आईडी' टाइप करें।");
+        return;
+    }
+
+    fetch(scriptURL + "?action=search&id=" + encodeURIComponent(idValue), {
+        method: "GET"
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert("Data Search Successful: " + data.error);
+        } else {
+            // फ़ील्ड्स में सही डेटा असाइन करना
+            document.getElementById("combo1").value = data.name || "";
+            document.getElementById("combo2").value = data.post || "";
+            document.getElementById("t1").value = data.dob || "";
+            document.getElementById("t2").value = data.joinDate || "";
+            document.getElementById("t6").value = data.basicSalary || "";
+            document.getElementById("t7").value = data.ratePercent || "";
+            
+            // टेक्स्टबॉक्स 19 में केवल मृत्यु तिथि ही लोड होगी
+            document.getElementById("t19").value = data.deathDate || "";
+
+            // ऑटो-कैलकुलेशन फंक्शन रन करना
+            setAgeRate();
+            setRetirementDate();
+            calculateAll();
+            
+            // शीट से प्राप्त एक्चुअल डेटा टेक्स्टबॉक्स 20 और 21 में डालना (कैलकुलेटर रिप्लेसमेंट रोकने के लिए)
+            if (data.deathDate) {
+                document.getElementById("t20").value = data.deathGratuity || "";
+                document.getElementById("t21").value = data.deathPension || "";
+            }
+
+            alert("Data Search Successful");
+        }
+    })
+    .catch(error => {
+        alert("Check ID To Find The Data ");
+        console.error(error);
+    });
+}
+
+function updateData() {
+    let idValue = document.getElementById("id").value.trim();
+    if (!idValue) {
+        alert("कृपया अपडेट करने के लिए पहले 'आईडी' टाइप करें।");
+        return;
+    }
+
+    let data = prepareFormData();
+    data.action = "update"; 
+
+    fetch(scriptURL, {
+        method: "POST",
+        body: JSON.stringify(data)
+    })
+    .then(res => res.text())
+    .then(response => {
+        alert("Data Updated Successfully");
+    })
+    .catch(error => {
+        alert("Error Updating Data");
+        console.log(error);
+    });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transfer Certificate Data Updater & Printer</title>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #4CAF50;
+            --accent-color: #f44336;
+            --bg-color: #f4f7f6;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 5px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- LOGIN MODAL STYLES --- */
+        #loginModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .login-card {
+            background: #ffffff;
+            padding: 25px 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            border: 2px solid var(--primary-color);
+        }
+
+        .login-card h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        .login-field {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .login-field label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .login-field input {
+            width: 100%;
+            height: 38px;
+            padding: 0 10px;
+            font-size: 0.95rem;
+            border: 1.5px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .login-btn:hover {
+            background-color: #002244;
+        }
+
+        #loginError {
+            color: #d32f2f;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            display: none;
+            font-weight: bold;
+        }
+
+        /* --- MAIN CONTAINER STYLES --- */
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            background: #fff;
+            padding: 8px; 
+            box-shadow: none;
+            border-radius: 0;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden; 
+        }
+
+        header {
+            text-align: center;
+            background: var(--primary-color);
+            color: white;
+            padding: 6px 0; 
+            margin-bottom: 4px;
+            width: 100%;
+        }
+
+        header h1 { margin: 0; font-size: 1.3rem; letter-spacing: 1px; }
+        .marquee-container { background: #ffcc00; color: #000; font-weight: bold; padding: 4px; font-size: 0.85rem; margin-bottom: 6px; border-radius: 2px; }
+        .message-box-container { margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+        .message-box-container label { font-weight: bold; font-size: 0.85rem; color: var(--primary-color); white-space: nowrap; }
+        
+        .message-box {
+            width: 100%; height: 28px; padding: 4px 8px; border: 1px solid #1e7e34;
+            border-radius: 4px; font-size: 0.85rem;
+            font-weight: bold; resize: none; background-color: #28a745; color: #ffffff;
+        }
+
+        .flex-container { display: flex; justify-content: flex-start; gap: 8px; flex: 1; margin-bottom: 6px; overflow-x: auto; width: 100%; }
+        .series-section { flex: 1; min-width: 260px; background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 4px; padding: 6px; display: flex; flex-direction: column; }
+        .series-title { font-size: 0.9rem; color: var(--primary-color); margin-top: 0; margin-bottom: 6px; border-bottom: 1.5px solid var(--primary-color); padding-bottom: 2px; text-align: center; background: #eef3f7; }
+        .vertical-container { display: flex; flex-direction: column; gap: 4px; justify-content: space-between; flex: 1; }
+        .form-group { display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: 100%; }
+        .form-group label { font-size: 0.70rem; font-weight: 800; color: #111; width: 35%; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .form-group input { width: 65%; padding: 4px 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 0.8rem; font-weight: bold; }
+        .form-group input:focus { border-color: var(--primary-color); background-color: #fff; outline: none; box-shadow: 0 0 4px rgba(0,51,102,0.2); }
+        
+        .btn-container { display: flex; justify-content: center; gap: 8px; margin-top: 2px; padding-top: 4px; border-top: 1px solid #eee; width: 100%; flex-wrap: wrap; }
+        
+        .btn { padding: 6px 16px; font-size: 0.85rem; font-weight: bold; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-save { background-color: #28a745; }
+        .btn-search { background-color: #17a2b8; }
+        .btn-update { background-color: #ffc107; color: black; }
+        .btn-reset { background-color: #6c757d; }
+        .btn-open-tc { background-color: #007bff; }
+        .btn-print { background-color: #6f42c1; }
+
+        /* --- MOBILE RESPONSIVE MEDIA QUERIES --- */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 2px;
+            }
+            .container {
+                overflow: visible;
+            }
+            header h1 {
+                font-size: 1rem;
+            }
+            .flex-container {
+                flex-direction: column;
+                overflow-x: visible;
+                gap: 12px;
+            }
+            .series-section {
+                min-width: 100%;
+            }
+            .form-group label {
+                font-size: 0.8rem;
+                width: 40%;
+            }
+            .form-group input {
+                width: 60%;
+                font-size: 0.85rem;
+                padding: 6px;
+            }
+            .btn-container {
+                gap: 6px;
+            }
+            .btn {
+                flex: 1 1 45%;
+                padding: 8px 10px;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* --- PRINT PREVIEW DESIGN --- */
+        #tcPrintTemplate {
+            display: none;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 5mm 10mm 5mm 10mm;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #tcPrintTemplate, #tcPrintTemplate * {
+                visibility: visible;
+            }
+            #tcPrintTemplate {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                font-family: 'Segoe UI', Arial, sans-serif;
+                color: #000;
+                background-color: transparent !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* लोगो इमेज वाटरमार्क प्रिंट फ़िक्स */
+            #tcPrintTemplate::before {
+                content: "" !important;
+                position: fixed !important;
+                top: 54% !important;
+                left: 25% !important;
+                width: 50% !important;
+                height: 25% !important;
+                background-image: url("https://i.ibb.co/wrjj5kvC/Chat-GPT-Image-Jun-16-2026-01-50-15-PM.png") !important;
+                background-repeat: no-repeat !important;
+                background-position: center !important;
+                background-size: contain !important;
+                opacity: 0.20 !important;
+                pointer-events: none !important;
+                z-index: -1000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .p-header-wrapper {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                position: relative;
+                margin-bottom: 8px;
+                width: 100%;
+            }
+            .p-logo {
+                width: 80px;
+                height: 80px;
+                border: 1px solid #000;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: absolute;
+                left: 0;
+                top: 0;
+                overflow: hidden;
+            }
+            .p-header { 
+                text-align: center; 
+                width: 100%;
+                padding: 0 70px;
+                box-sizing: border-box;
+            }
+            .p-school-name { font-size: 30px; font-weight: bold; margin: 0; color: #003366; }
+            .p-school-address { font-size: 18px; margin: 2px 0 4px 0; font-weight: 600; }
+            .p-form-title { font-size: 16px; font-weight: bold; text-decoration: underline; margin-top: 2px; }
+            
+            .p-top-table, .p-main-table, .p-class-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 6px;
+            }
+            .p-top-table td {
+                border: none;
+                padding: 2px;
+                font-size: 11px;
+                font-weight: bold;
+            }
+            
+            .p-main-table td {
+                border: 1px solid #000;
+                padding: 8px 8px;
+                font-size: 12px;
+                vertical-align: top;
+                line-height: 1.5;
+                background-color: transparent !important; 
+            }
+            .p-main-table td strong, .p-main-table td span {
+                font-size: 13.5px;
+                font-weight: bold;
+            }
+            
+            .p-class-table th, .p-class-table td {
+                border: 1px solid #000;
+                padding: 3px 2px;
+                font-size: 10.5px;
+                text-align: center;
+                background-color: transparent !important; 
+            }
+            .p-class-table th { font-weight: bold; background-color: #f2f2f2 !important; }
+            .p-class-table td span { font-weight: bold; } 
+            
+            .p-footer-text { font-size: 10.5px; margin-top: 6px; line-height: 1.4; }
+            .p-signatures-area { margin-top: 25px; display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; }
+            .p-sig-col { display: flex; flex-direction: column; justify-content: space-between; min-height: 55px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal">
+    <div class="login-card">
+        <h2>TC SYSTEM LOGIN</h2>
+        <div class="login-field">
+            <label>Login ID</label>
+            <input type="text" id="loginId" placeholder="Enter ID">
+        </div>
+        <div class="login-field">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter Password">
+        </div>
+        <button class="login-btn" onclick="checkLogin()">LOG IN</button>
+        <p id="loginError">गलत Login ID या Password!</p>
+    </div>
+</div>
+
+<div class="container">
+    <header>
+        <h1>SKIC SEMRA KATHKUIYAN KUSHINAGAR</h1>
+    </header>
+
+    <div class="marquee-container">
+        <marquee behavior="scroll" direction="left" scrollamount="4">TRANSFER CERTIFICATE DATA UPDATER & PRINTER</marquee>
+    </div>
+
+    <div class="message-box-container">
+        <label for="messageBox">Status Message:</label>
+        <textarea id="messageBox" class="message-box" readonly placeholder="System ready..."></textarea>
+    </div>
+
+    <form id="tcForm" style="display: flex; flex-direction: column; flex: 1; justify-content: space-between; width: 100%;">
+        <input type="hidden" id="current_row_index" value="">
+        <div id="seriesContainer" class="flex-container"></div>
+
+        <div class="btn-container">
+            <button type="button" class="btn btn-save" onclick="processSafeAction('SAVE')">SAVE</button>
+            <button type="button" class="btn btn-search" onclick="processSafeAction('SEARCH')">SEARCH</button>
+            <button type="button" class="btn btn-update" onclick="processSafeAction('UPDATE')">UPDATE</button>
+            <button type="button" class="btn btn-reset" onclick="resetForm()">RESET</button>
+            <button type="button" class="btn btn-open-tc" onclick="openGoogleSheetTC()">OPEN SHEET TC</button>
+            <button type="button" class="btn btn-print" onclick="openPrintPreview()">PRINT CURRENT TC</button>
+        </div>
+    </form>
+</div>
+
+<div id="tcPrintTemplate">
+    <div class="p-header-wrapper">
+        <div class="p-logo">
+            <img src="https://i.ibb.co/wrjj5kvC/Chat-GPT-Image-Jun-16-2026-01-50-15-PM.png" alt="School Logo" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+        </div>
+        <div class="p-header">
+            <div class="p-school-name">SHRI KRISHN INTER COLLEGE SEMRA</div>
+            <div class="p-school-address">POST - KATHKUIYAN, DIST- KUSHINAGAR PIN CODE - 274303</div>
+            <div class="p-form-title">Scholar's Register & Transfer Certificate Form</div>
+        </div>
+    </div>
+
+    <table class="p-top-table">
+        <tr>
+            <td width="65%">Scholar's Board Registration No. ..................................</td>
+            <td width="40%" align="right">U-DISE CODE: 09590104807</td>
+        </tr>
+    </table>
+
+    <table class="p-main-table">
+        <tr>
+            <td width="15%">नामांकन संख्या<br>Admission File No.<br><br><strong id="lbl_reg_no_file">........................</strong></td>
+            <td width="16%">निष्कासन फाइल सं०<br>Withdrawal File No.<br><br>........................</td>
+            <td width="16%">स्थानान्तरण प्रमाण पत्र सं०<br>TC No.<br><br>........................</td>
+            <td width="15%">पंजिका सं०<br>Register No.<br><br><strong id="lbl_reg_no">........................</strong></td>
+        </tr>
+        <tr>
+            <td width="40%" colspan="2">
+                <strong>छात्र/छात्रा का नाम तथा राष्ट्रीयता एवं जाति यदि हिन्दू हों अथवा धर्म</strong><br>
+                Name of the Scholar With nationality & caste if Hindu otherwise religion<br><br>
+                नाम (Name): &nbsp;&nbsp;&nbsp; &nbsp;<span id="lbl_student_name"></span><br>
+                राष्ट्रीयता (Nationality): &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;<span id="lbl_nationality">भारतीय</span><br>
+                धर्म/जाति (Religion/Caste): &nbsp;&nbsp;&nbsp; &nbsp;<span id="lbl_religion"></span> <span id="lbl_caste_bracket"></span><br>
+                आधार नंबर (Aadhaar No.): &nbsp;&nbsp;&nbsp; &nbsp;<span id="lbl_aadhaar_no">[Aadhaar Redacted]</span>
+            </td>
+            <td width="50%" colspan="2">
+                <strong>संरक्षक / पिता अथवा पति का नाम व्यवसाय तथा पता</strong><br>
+                Name Occupation and Address of parents, Guardian or Husband<br><br>
+                पिता का नाम (Father's Name):&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; <span id="lbl_father_name"></span><br>
+                माता का नाम (Mother's Name): &nbsp; &nbsp; <span id="lbl_mother_name"></span><br>
+                <strong>पता (Address):</strong><br>
+                ग्राम   : &nbsp;&nbsp;&nbsp; &nbsp;<span id="lbl_pata_gram"></span><br>
+                पोस्ट  : &nbsp;&nbsp; &nbsp;<span id="lbl_pata_post"></span><br>
+                जिला  : &nbsp;&nbsp; &nbsp;<span id="lbl_pata_jila"></span>
+            </td>
+        </tr>
+        <tr>
+            <td width="50%" colspan="2">
+                <strong>छात्र/ छात्रा की जन्मतिथि</strong><br>
+                Date of birth of the scholar<br><br>
+                अंको में (In Figures):&nbsp;&nbsp;&nbsp; &nbsp;<span id="lbl_dob_numeric"></span><br>
+                शब्दों में (In Words): &nbsp;&nbsp;&nbsp; &nbsp;<span id="lbl_dob_words"></span>
+            </td>
+            <td width="50%" colspan="2">
+                <strong>अन्तिम संस्था जिसमे पढ़ा/ पढ़ी हो</strong><br>
+                Last Institution attended by the scholar<br><br>
+                संस्था: &nbsp;&nbsp;&nbsp; &nbsp; <span id="lbl_last_institution">........................</span><br>
+                मो० नं ० (Mobile No.): &nbsp;&nbsp;&nbsp; &nbsp;<span id="lbl_mobile_no"></span>
+            </td>
+        </tr>
+    </table>
+
+    <table class="p-class-table" style="margin-top: 4px;">
+        <thead>
+            <tr>
+                <th>कक्षा<br>Class</th>
+                <th>प्रवेश तिथि<br>Date of Adm.</th>
+                <th>कक्षोन्नति तिथि<br>Date of Prom.</th>
+                <th>निष्कासन तिथि<br>Date of Rem.</th>
+                <th width="28%">निष्कासन का कारण (शुल्क/स्थानांतरण आदि)<br>Cause of Removal</th>
+                <th>वर्ष<br>Year</th>
+                <th>आचरण<br>Conduct</th>
+                <th>कार्य<br>Work</th>
+                <th>हस्ताक्षर<br>Sign.</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>VI</td><td><span id="tc_vi_1"></span></td><td><span id="tc_vi_2"></span></td><td></td><td></td><td><span id="tc_vi_3"></span></td><td><span id="tc_vi_4"></span></td><td><span id="tc_vi_5"></span></td><td></td></tr>
+            <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            
+            <tr><td>VII</td><td><span id="tc_vii_1"></span></td><td><span id="tc_vii_2"></span></td><td></td><td></td><td><span id="tc_vii_3"></span></td><td><span id="tc_vii_4"></span></td><td><span id="tc_vii_5"></span></td><td></td></tr>
+            <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            
+            <tr><td>VIII</td><td><span id="tc_viii_1"></span></td><td><span id="tc_viii_2"></span></td><td></td><td></td><td><span id="tc_viii_3"></span></td><td><span id="tc_viii_4"></span></td><td><span id="tc_viii_5"></span></td><td></td></tr>
+            <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            
+            <tr><td>IX</td><td><span id="tc_ix_1"></span></td><td><span id="tc_ix_2"></span></td><td></td><td></td><td><span id="tc_ix_3"></span></td><td><span id="tc_ix_4"></span></td><td><span id="tc_ix_5"></span></td><td></td></tr>
+            <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            
+            <tr><td>X</td><td><span id="tc_x_1"></span></td><td><span id="tc_x_2"></span></td><td><span id="tc_x_3"></span></td><td><span id="tc_x_4"></span></td><td><span id="tc_x_5"></span></td><td><span id="tc_x_6"></span></td><td><span id="tc_x_7"></span></td><td></td></tr>
+            <tr><td>X (RE)</td><td><span id="tc_x_re_1"></span></td><td><span id="tc_x_re_2"></span></td><td><span id="tc_x_re_3"></span></td><td><span id="tc_x_re_4"></span></td><td><span id="tc_x_re_5"></span></td><td><span id="tc_x_re_6"></span></td><td><span id="tc_x_re_7"></span></td><td></td></tr>
+            
+            <tr><td>XI</td><td><span id="tc_xi_1"></span></td><td><span id="tc_xi_2"></span></td><td></td><td></td><td><span id="tc_xi_3"></span></td><td><span id="tc_xi_4"></span></td><td><span id="tc_xi_5"></span></td><td></td></tr>
+            <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            
+            <tr><td>XII</td><td><span id="tc_xii_1"></span></td><td><span id="tc_xii_2"></span></td><td><span id="tc_xii_3"></span></td><td><span id="tc_xii_4"></span></td><td><span id="tc_xii_5"></span></td><td><span id="tc_xii_6"></span></td><td><span id="tc_xii_7"></span></td><td></td></tr>
+            <tr><td>XII (RE)</td><td><span id="tc_xii_re_1"></span></td><td><span id="tc_xii_re_2"></span></td><td><span id="tc_xii_re_3"></span></td><td><span id="tc_xii_re_4"></span></td><td><span id="tc_xii_re_5"></span></td><td><span id="tc_xii_re_6"></span></td><td><span id="tc_xii_re_7"></span></td><td></td></tr>
+        </tbody>
+    </table>
+
+    <div class="p-footer-text">
+        <p>1- प्रमाणित किया जाता है कि छात्र/छात्रा ब्यौरे से सम्बंधित प्रविष्टियों का मिलान प्रवेश पत्र से कर लिया गया है और ये पूर्णतया सत्य है<br>
+        <small>Certified that the entries as regards details of the student have been duly checked from the Admission Form and that they are complete.</small></p>
+        <p>2- प्रमाणित किया जाता है कि उपरोक्त छात्र/छात्रा पंजिका तथा स्थानान्तरण प्रमाण पत्र की छात्र/छात्रा के पृथक होने का दिनांक तथा शिक्षा विभाग के नियमानुसार पूर्ती कर दी गई है |<br>
+        <small>Certified that the above student Register has been posted up-to-date of student's leaving as required by the department Rules.</small></p>
+    </div>
+
+    <div class="p-signatures-area">
+        <div class="p-sig-col">
+            <div>&nbsp;</div>
+            <div>प्रस्तुतकर्ता / Prepared by :……………….</div>
+        </div>
+        <div class="p-sig-col">
+            <div>&nbsp;</div>
+            <div id="lbl_jari_tithi">दिनांक / Date:-&nbsp;&nbsp;&nbsp; &nbsp;...............................</div>
+        </div>
+        <div class="p-sig-col" align="right">
+            <div>C .B. PATHAK</div>
+            <div>संस्था प्रधान / Head of Institution<br>(मोहर सहित)</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // LOGIN CHECK FUNCTIONALITY
+    function checkLogin() {
+        let id = document.getElementById("loginId").value.trim();
+        let pass = document.getElementById("loginPassword").value.trim();
+        let err = document.getElementById("loginError");
+
+        if (id === "tc" && pass === "123") {
+            sessionStorage.setItem("isTcLoggedIn", "true");
+            document.getElementById("loginModal").style.display = "none";
+        } else {
+            err.style.display = "block";
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        if (sessionStorage.getItem("isTcLoggedIn") === "true") {
+            document.getElementById("loginModal").style.display = "none";
+        }
+    });
+
+    const GOOGLE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyl1tk0MkweZ3ZxdLbR8Q3M6-7RHqrOFa_9ACvJhKmx8emO-X5MySIj8upt4G4SVcaPgg/exec";
+    
+    const seriesContainer = document.getElementById('seriesContainer');
+    let totalFields = 70;
+    let fieldsPerSeries = 14;
+    let seriesCount = 5;
+    let targetSheetUrl = ""; 
+
+    const customLabels = [
+        "एस. आर ", "छात्र का नाम", "कक्षा/वर्ग", "जन्मतिथि", "जन्मतिथि हिंदी", 
+        "धर्म", "जाति", "आधार नम.", "पिता नाम", "माता नाम", 
+        "पता", "पोस्ट", "जिला", "नामांकन (VI)",
+        
+        "कक्षोन्ति", "वर्ष", "आचरण व्यवहार", "परीक्षाफल", "नामांकन (VII)", 
+        "कक्षोन्ति ", "वर्ष ", "आचरण व्यवहार ", "परीक्षाफल ", "नामांकन (VIII) ",
+        "कक्षोन्ति ", "वर्ष ", "आचरण व्यवहार ", "परीक्षाफल ", 
+        
+        "नामांकन (IX)", "कक्षोन्ति ", "वर्ष ", "आचरण व्यवहार ", "परीक्षाफल    ", 
+        "नामांकन (X)", "कक्षोन्ति ", "निष्कासन तिथि ", "नाम कटने का कारण ", "वर्ष ",
+        "आचरण व्यवहार ", "परीक्षाफल ", "पुन: प्रवेश (X)", "कक्षोन्ति ", 
+        
+        "निष्कासन तिथि ", "नाम कटने का कारण ", "वर्ष ", "आचरण व्यवहार ", "परीक्षाफल ", 
+        "नामांकन (XI)", "कक्षोन्ति ", "वर्ष ", "आचरण व्यवहार ", "परीक्षाफल ",
+        "नामांकन (XII)", "कक्षोन्ति ", "निष्कासन तिथि ", "नाम कटने का कारण ", 
+        
+        "वर्ष ", "आचरण व्यवहार ", "परीक्षाफल ", "पुन: प्रवेश (XII) Alt", "कक्षोन्ति ", 
+        "निष्कासन तिथि ", "नाम कटने का कारण ", "वर्ष ", "आचरण व्यवहार ", "परीक्षाफल",
+        "फाईल न०. ", "अन्तिम संस्था ", "जारी तिथि ", "मोबाइल नं. "
+    ];
+
+    // Form fields generation
+    for (let s = 1; s <= seriesCount; s++) {
+        let seriesDiv = document.createElement('div');
+        seriesDiv.className = 'series-section';
+        let title = document.createElement('h3');
+        title.className = 'series-title';
+        title.innerText = `Series ${s}`;
+        seriesDiv.appendChild(title);
+        let verticalDiv = document.createElement('div');
+        verticalDiv.className = 'vertical-container';
+
+        for (let f = 1; f <= fieldsPerSeries; f++) {
+            let fieldNumber = (s - 1) * fieldsPerSeries + f;
+            let labelText = customLabels[fieldNumber - 1] || `Field ${fieldNumber}`;
+            let formGroup = document.createElement('div');
+            formGroup.className = 'form-group';
+            let label = document.createElement('label');
+            label.innerText = labelText + ":";
+            label.setAttribute('for', `field_${fieldNumber}`);
+            let input = document.createElement('input');
+            input.type = 'text';
+            input.id = `field_${fieldNumber}`;
+            input.name = `field_${fieldNumber}`;
+            input.placeholder = `Enter ${labelText}`;
+            formGroup.appendChild(label);
+            formGroup.appendChild(input);
+            verticalDiv.appendChild(formGroup);
+        }
+        seriesDiv.appendChild(verticalDiv);
+        seriesContainer.appendChild(seriesDiv);
+    }
+
+    // Automations
+    document.getElementById('field_4').addEventListener('input', function() {
+        let cleanedDate = formatTimestampToDateStr(this.value.trim());
+        if(cleanedDate !== this.value.trim()) this.value = cleanedDate;
+        document.getElementById('field_5').value = convertDateToHindiWords(cleanedDate);
+    });
+
+    document.getElementById('field_14').addEventListener('input', function() { runChainCalculation(14); });
+    document.getElementById('field_19').addEventListener('input', function() { runChainCalculation(19); });
+    document.getElementById('field_24').addEventListener('input', function() { runChainCalculation(24); });
+    document.getElementById('field_29').addEventListener('input', function() { runChainCalculation(29); });
+    document.getElementById('field_34').addEventListener('input', function() { runChainCalculation(34); });
+    document.getElementById('field_48').addEventListener('input', function() { runChainCalculation(48); });
+
+    function clearFieldsRange(start, end) {
+        for(let i = start; i <= end; i++) {
+            let el = document.getElementById(`field_${i}`);
+            if(el) el.value = "";
+        }
+    }
+
+    function runChainCalculation(startField) {
+        if (startField <= 14) {
+            let f14 = document.getElementById('field_14').value.trim();
+            if (!f14) { clearFieldsRange(15, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
+            else { let res1 = processSingleBlock(f14, 'field_15', 'field_16', 'field_17', 'field_18'); if (res1.nextYear) document.getElementById('field_19').value = `01/04/${res1.nextYear}`; }
+        }
+        if (startField <= 19) {
+            let f19 = document.getElementById('field_19').value.trim();
+            if (!f19) { clearFieldsRange(20, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
+            else { let res2 = processSingleBlock(f19, 'field_20', 'field_21', 'field_22', 'field_23'); if (res2.nextYear) document.getElementById('field_24').value = `01/04/${res2.nextYear}`; }
+        }
+        if (startField <= 24) {
+            let f24 = document.getElementById('field_24').value.trim();
+            if (!f24) { clearFieldsRange(25, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
+            else { let res3 = processSingleBlock(f24, 'field_25', 'field_26', 'field_27', 'field_28'); if (res3.nextYear) document.getElementById('field_29').value = `01/04/${res3.nextYear}`; }
+        }
+        if (startField <= 29) {
+            let f29 = document.getElementById('field_29').value.trim();
+            if (!f29) { clearFieldsRange(30, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
+            else { let res4 = processSingleBlock(f29, 'field_30', 'field_31', 'field_32', 'field_33'); if (res4.nextYear) document.getElementById('field_34').value = `01/04/${res4.nextYear}`; }
+        }
+        if (startField <= 34) {
+            let f34 = document.getElementById('field_34').value.trim();
+            if (!f34) { clearFieldsRange(35, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
+            else { let res5 = processSingleBlock(f34, 'field_35', 'field_38', 'field_39', 'field_40'); if (res5.nextYear) document.getElementById('field_48').value = `01/04/${res5.nextYear}`; }
+        }
+        if (startField <= 48) {
+            let f48 = document.getElementById('field_48').value.trim();
+            if (!f48) { clearFieldsRange(49, 52); return; }
+            else { processSingleBlock(f48, 'field_49', 'field_50', 'field_51', 'field_52'); }
+        }
+    }
+
+    function processSingleBlock(inputDate, nextDateId, sessionId, conductId, resultId) {
+        let output = { nextYear: null }; if(!inputDate) return output;
+        let parts = inputDate.split('/');
+        if(parts.length === 3) {
+            let d = parseInt(parts[0]), m = parseInt(parts[1]), y = parseInt(parts[2]);
+            if(!isNaN(d) && !isNaN(m) && !isNaN(y)) {
+                let ny = y + 1; output.nextYear = ny;
+                if(nextDateId) document.getElementById(nextDateId).value = `31/03/${ny}`;
+                if(sessionId) document.getElementById(sessionId).value = `${y}-${ny.toString().slice(-2)}`;
+                if(conductId) document.getElementById(conductId).value = "उत्तम";
+                if(resultId) document.getElementById(resultId).value = "सं. प्रद उत्तीर्ण";
+            }
+        }
+        return output;
+    }
+
+    function formatTimestampToDateStr(inputStr) {
+        if (!inputStr) return "";
+        if (inputStr.includes('T')) {
+            try {
+                let d = new Date(inputStr);
+                if (!isNaN(d.getTime())) {
+                    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+                }
+            } catch (e) {}
+        }
+        return inputStr;
+    }
+
+    function convertDateToHindiWords(dateStr) {
+        if(!dateStr) return ""; 
+        let parts = dateStr.split('/'); 
+        if(parts.length !== 3) return "";
+        let day = parseInt(parts[0]), month = parseInt(parts[1]), year = parseInt(parts[2]);
+        if(isNaN(day) || isNaN(month) || isNaN(year)) return "";
+        
+        const hindiNumbers = { 
+            1:"एक", 2:"दो", 3:"तीन", 4:"चार", 5:"पांच", 6:"छह", 7:"सात", 8:"आठ", 9:"नौ", 10:"दस", 
+            11:"ग्याराह", 12:"बारह", 13:"तेरह", 14:"चौदह", 15:"पन्द्रह", 16:"सोलह", 17:"सत्रह", 18:"अट्ठारह", 19:"उन्नीस", 20:"बीस", 
+            21:"इक्कीस", 22:"बाईस", 23:"तेईस", 24:"चौबीस", 25:"पच्चीस", 26:"छब्बीस", 27:"सत्ताईस", 28:"अठ्ठाईस", 29:"उनतीस", 30:"तीस", 
+            31:"इकतीस" 
+        };
+        const hindiMonths = ["", "जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितम्बर", "अक्टूबर", "नवम्बर", "दिसम्बर"];
+        let dayText = hindiNumbers[day] || day; 
+        let monthText = hindiMonths[month] || ""; 
+        let yearText = (year >= 2000 && year < 2100) ? "सन् दो हजार " + (hindiNumbers[year - 2000] || (year - 2000)) : (year >= 1900 && year < 2000) ? "सन् उन्नीस सौ " + (hindiNumbers[year - 1900] || (year - 1900)) : "सन् " + year; 
+        return `${dayText} ${monthText} ${yearText}`.trim();
+    }
+
+    function updateMessage(msg) { document.getElementById('messageBox').value = msg; }
+    function resetForm() { document.getElementById('tcForm').reset(); document.getElementById('current_row_index').value = ""; targetSheetUrl = ""; updateMessage("Form reset Completed."); }
+
+    /* === ऑफ़लाइन सिंक मैकेनिज्म (OFFLINE SYNC LOGIC) === */
+
+    function saveToLocalStorage(formData) {
+        let queue = JSON.parse(localStorage.getItem('tc_sync_queue')) || [];
+        queue.push(formData);
+        localStorage.setItem('tc_sync_queue', JSON.stringify(queue));
+        
+        if(formData.action === 'SAVE') {
+            let currentId = parseInt(document.getElementById('field_1').value.trim());
+            document.getElementById('tcForm').reset();
+            if(!isNaN(currentId)) { document.getElementById('field_1').value = currentId + 1; }
+        }
+        updateMessage("ऑफलाइन मोड: डेटा लोकली सुरक्षित कर दिया गया है। ऑनलाइन होने पर सिंक होगा।");
+    }
+
+    function syncOfflineData() {
+        if (!navigator.onLine) return;
+        let queue = JSON.parse(localStorage.getItem('tc_sync_queue')) || [];
+        if (queue.length === 0) return;
+
+        updateMessage(`ऑनलाइन कनेक्शन मिला! ${queue.length} पेंडिंग डेटा सिंक किया जा रहा है...`);
+
+        let promises = queue.map((formData, index) => {
+            return fetch(GOOGLE_WEB_APP_URL, { method: 'POST', body: JSON.stringify(formData) })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.status === 'SUCCESS') return index; 
+                    return null;
+                }).catch(() => null);
+        });
+
+        Promise.all(promises).then(results => {
+            let remainingQueue = queue.filter((_, idx) => !results.includes(idx));
+            localStorage.setItem('tc_sync_queue', JSON.stringify(remainingQueue));
+            
+            if (remainingQueue.length === 0) {
+                updateMessage("सभी ऑफलाइन डेटा सफलतापूर्वक Google Sheet में सिंक हो गए हैं! 👍");
+            } else {
+                updateMessage(`कुछ डेटा सिंक नहीं हो सका। पेंडिंग: ${remainingQueue.length}`);
+            }
+        });
+    }
+
+    window.addEventListener('online', syncOfflineData);
+    window.addEventListener('load', syncOfflineData);
+
+    function processSafeAction(actionType) {
+        let srNum = document.getElementById('field_1').value.trim();
+        let aadhaarNum = document.getElementById('field_8').value.trim();
+
+        if (actionType === 'SEARCH') {
+            if (!navigator.onLine) {
+                alert("खोजने (SEARCH) के लिए इंटरनेट आवश्यक है! ऑफलाइन मोड में खोज संभव नहीं है।");
+                return;
+            }
+            if (srNum !== "" || aadhaarNum !== "") {
+                handleAction('SEARCH');
+            } else {
+                alert("कृपया SEARCH करने के लिए 'एस. आर' नंबर या 'आधार नम.' दर्ज करें!");
+                updateMessage("त्रुटि: इनपुट गायब है।");
+            }
+            return;
+        }
+
+        if (actionType === 'UPDATE') { handleAction('UPDATE'); return; }
+
+        if (actionType === 'SAVE') {
+            if (!navigator.onLine) {
+                let formData = {};
+                for (let i = 1; i <= totalFields; i++) { formData[`field_${i}`] = document.getElementById(`field_${i}`).value; }
+                formData['action'] = 'SAVE';
+                formData['rowIndex'] = document.getElementById('current_row_index').value;
+                saveToLocalStorage(formData);
+                return;
+            }
+
+            if (aadhaarNum !== "") {
+                updateMessage("सुरक्षा जांच: आधार नंबर की विशिष्टता जांची जा रही है...");
+                fetch(GOOGLE_WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'CHECK_AADHAAR', aadhaar: aadhaarNum }) })
+                .then(r => r.json()).then(res => {
+                    if (res.status === 'EXISTS') {
+                        alert("क्रिटिकल अलर्ट: यह आधार नंबर पहले से मौजूद है! डुप्लीकेट एंट्री सेव नहीं की जा सकती।");
+                        updateMessage("DUPLICATE ENTRY DETECTED.");
+                    } else {
+                        handleAction('SAVE');
+                    }
+                }).catch(() => handleAction('SAVE'));
+            } else {
+                handleAction(actionType);
+            }
+        }
+    }
+
+    function handleAction(actionType) {
+        let formData = {};
+        for (let i = 1; i <= totalFields; i++) { formData[`field_${i}`] = document.getElementById(`field_${i}`).value; }
+        formData['action'] = actionType;
+        formData['rowIndex'] = document.getElementById('current_row_index').value;
+
+        if (!navigator.onLine) {
+            if (actionType === 'SAVE' || actionType === 'UPDATE') {
+                saveToLocalStorage(formData);
+                return;
+            }
+        }
+
+        updateMessage(`${actionType} Processing has begun...`);
+        fetch(GOOGLE_WEB_APP_URL, { method: 'POST', body: JSON.stringify(formData) })
+        .then(response => response.json())
+        .then(res => {
+            if (actionType === 'SEARCH' && res.status === 'SUCCESS' && res.data) {
+                updateMessage(res.message);
+                for (let i = 1; i <= totalFields; i++) {
+                    if (res.data[`field_${i}`] !== undefined) {
+                        let val = res.data[`field_${i}`];
+                        if (i === 4) val = formatTimestampToDateStr(val);
+                        document.getElementById(`field_${i}`).value = val;
+                    }
+                }
+                document.getElementById('current_row_index').value = res.data.rowIndex;
+                if (res.openSheetUrl) targetSheetUrl = res.openSheetUrl;
+                let bDate = document.getElementById('field_4').value.trim();
+                if (bDate !== "") document.getElementById('field_5').value = convertDateToHindiWords(bDate);
+
+                let srNum = document.getElementById('field_1').value.trim();
+                if(srNum !== "") {
+                    fetch(GOOGLE_WEB_APP_URL, { 
+                        method: 'POST', 
+                        body: JSON.stringify({ action: 'UPDATE_J4', srNo: srNum }) 
+                    }).catch(e => console.log("J4 Update Error: ", e));
+                }
+
+            } else {
+                updateMessage(res.message);
+                if ((actionType === 'SAVE' || actionType === 'UPDATE') && res.status === 'SUCCESS') {
+                    let nextId = "";
+                    if(actionType === 'SAVE') {
+                        let currentId = parseInt(document.getElementById('field_1').value.trim());
+                        if(!isNaN(currentId)) { nextId = currentId + 1; }
+                    }
+                    document.getElementById('current_row_index').value = ""; targetSheetUrl = "";
+                    if(actionType === 'SAVE') {
+                        document.getElementById('tcForm').reset();
+                        if(nextId !== "") { document.getElementById('field_1').value = nextId; }
+                    }
+                }
+            }
+        }).catch(err => {
+            if(actionType === 'SAVE' || actionType === 'UPDATE') {
+                saveToLocalStorage(formData);
+            } else {
+                updateMessage(`Error: ${err.message}`);
+            }
+        });
+    }
+
+    function openGoogleSheetTC() { if (targetSheetUrl) window.open(targetSheetUrl, '_blank'); else updateMessage("Please Seach data First"); }
+
+    /* --- PRINT PREVIEW PROCESS --- */
+    function openPrintPreview() {
+        let currentSr = document.getElementById('field_1').value.trim();
+        if(currentSr === "") {
+            alert("Pleade load or Search for a student's data first");
+            return;
+        }
+        
+        document.getElementById('lbl_reg_no_file').innerText = document.getElementById('field_67').value || '........................';
+        document.getElementById('lbl_reg_no').innerText = document.getElementById('field_1').value || '........................';
+        document.getElementById('lbl_student_name').innerText = document.getElementById('field_2').value || '';
+        document.getElementById('lbl_religion').innerText = document.getElementById('field_6').value || '';
+        document.getElementById('lbl_caste_bracket').innerText = document.getElementById('field_7').value ? `(${document.getElementById('field_7').value})` : '';
+        document.getElementById('lbl_aadhaar_no').innerText = document.getElementById('field_8').value || '........................';
+        document.getElementById('lbl_father_name').innerText = document.getElementById('field_9').value || '';
+        document.getElementById('lbl_mother_name').innerText = document.getElementById('field_10').value || '';
+        document.getElementById('lbl_pata_gram').innerText = document.getElementById('field_11').value || '';
+        document.getElementById('lbl_pata_post').innerText = document.getElementById('field_12').value || '';
+        document.getElementById('lbl_pata_jila').innerText = document.getElementById('field_13').value || '';
+        document.getElementById('lbl_dob_numeric').innerText = document.getElementById('field_4').value || '';
+        document.getElementById('lbl_dob_words').innerText = document.getElementById('field_5').value || '';
+        
+        document.getElementById('lbl_last_institution').innerText = document.getElementById('field_68').value || '........................';
+        document.getElementById('lbl_mobile_no').innerText = document.getElementById('field_70').value || '';
+        
+        let jariTithi = document.getElementById('field_69').value;
+        if(jariTithi) {
+            document.getElementById('lbl_jari_tithi').innerText = `दिनांक / Date:- ${jariTithi}`;
+        } else {
+            document.getElementById('lbl_jari_tithi').innerText = `दिनांक / Date:-…………………………………….`;
+        }
+
+        // कक्षावार डेटा मैपिंग (VI से XII)
+        document.getElementById('tc_vi_1').innerText = document.getElementById('field_14').value || '';
+        document.getElementById('tc_vi_2').innerText = document.getElementById('field_15').value || '';
+        document.getElementById('tc_vi_3').innerText = document.getElementById('field_16').value || '';
+        document.getElementById('tc_vi_4').innerText = document.getElementById('field_17').value || '';
+        document.getElementById('tc_vi_5').innerText = document.getElementById('field_18').value || '';
+        
+        document.getElementById('tc_vii_1').innerText = document.getElementById('field_19').value || '';
+        document.getElementById('tc_vii_2').innerText = document.getElementById('field_20').value || '';
+        document.getElementById('tc_vii_3').innerText = document.getElementById('field_21').value || '';
+        document.getElementById('tc_vii_4').innerText = document.getElementById('field_22').value || '';
+        document.getElementById('tc_vii_5').innerText = document.getElementById('field_23').value || '';
+
+        document.getElementById('tc_viii_1').innerText = document.getElementById('field_24').value || '';
+        document.getElementById('tc_viii_2').innerText = document.getElementById('field_25').value || '';
+        document.getElementById('tc_viii_3').innerText = document.getElementById('field_26').value || '';
+        document.getElementById('tc_viii_4').innerText = document.getElementById('field_27').value || '';
+        document.getElementById('tc_viii_5').innerText = document.getElementById('field_28').value || '';
+
+        document.getElementById('tc_ix_1').innerText = document.getElementById('field_29').value || '';
+        document.getElementById('tc_ix_2').innerText = document.getElementById('field_30').value || '';
+        document.getElementById('tc_ix_3').innerText = document.getElementById('field_31').value || '';
+        document.getElementById('tc_ix_4').innerText = document.getElementById('field_32').value || '';
+        document.getElementById('tc_ix_5').innerText = document.getElementById('field_33').value || '';
+
+        document.getElementById('tc_x_1').innerText = document.getElementById('field_34').value || '';
+        document.getElementById('tc_x_2').innerText = document.getElementById('field_35').value || '';
+        document.getElementById('tc_x_3').innerText = document.getElementById('field_36').value || '';
+        document.getElementById('tc_x_4').innerText = document.getElementById('field_37').value || '';
+        document.getElementById('tc_x_5').innerText = document.getElementById('field_38').value || '';
+        document.getElementById('tc_x_6').innerText = document.getElementById('field_39').value || '';
+        document.getElementById('tc_x_7').innerText = document.getElementById('field_40').value || '';
+        
+        document.getElementById('tc_x_re_1').innerText = document.getElementById('field_41').value || '';
+        document.getElementById('tc_x_re_2').innerText = document.getElementById('field_42').value || '';
+        document.getElementById('tc_x_re_3').innerText = document.getElementById('field_43').value || '';
+        document.getElementById('tc_x_re_4').innerText = document.getElementById('field_44').value || '';
+        document.getElementById('tc_x_re_5').innerText = document.getElementById('field_45').value || '';
+        document.getElementById('tc_x_re_6').innerText = document.getElementById('field_46').value || '';
+        document.getElementById('tc_x_re_7').innerText = document.getElementById('field_47').value || '';
+
+        document.getElementById('tc_xi_1').innerText = document.getElementById('field_48').value || '';
+        document.getElementById('tc_xi_2').innerText = document.getElementById('field_49').value || '';
+        document.getElementById('tc_xi_3').innerText = document.getElementById('field_50').value || '';
+        document.getElementById('tc_xi_4').innerText = document.getElementById('field_51').value || '';
+        document.getElementById('tc_xi_5').innerText = document.getElementById('field_52').value || '';
+
+        document.getElementById('tc_xii_1').innerText = document.getElementById('field_53').value || '';
+        document.getElementById('tc_xii_2').innerText = document.getElementById('field_54').value || '';
+        document.getElementById('tc_xii_3').innerText = document.getElementById('field_55').value || '';
+        document.getElementById('tc_xii_4').innerText = document.getElementById('field_56').value || '';
+        document.getElementById('tc_xii_5').innerText = document.getElementById('field_57').value || '';
+        document.getElementById('tc_xii_6').innerText = document.getElementById('field_58').value || '';
+        document.getElementById('tc_xii_7').innerText = document.getElementById('field_59').value || '';
+
+        document.getElementById('tc_xii_re_1').innerText = document.getElementById('field_60').value || '';
+        document.getElementById('tc_xii_re_2').innerText = document.getElementById('field_61').value || '';
+        document.getElementById('tc_xii_re_3').innerText = document.getElementById('field_62').value || '';
+        document.getElementById('tc_xii_re_4').innerText = document.getElementById('field_63').value || '';
+        document.getElementById('tc_xii_re_5').innerText = document.getElementById('field_64').value || '';
+        document.getElementById('tc_xii_re_6').innerText = document.getElementById('field_65').value || '';
+        document.getElementById('tc_xii_re_7').innerText = document.getElementById('field_66').value || '';
+
+        window.print();
+    }
+</script>
+</body>
+</html>

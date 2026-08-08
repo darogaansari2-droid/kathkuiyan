@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPF Calculation System</title>
+
+<style>
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    padding: 10px 20px 20px 20px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffe4e1 !important; /* Main Background - Soft Pink */
+    min-height: 100vh;
+}
+
+/* LOGIN MODAL STYLES */
+#loginModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.login-card {
+    background: #ffffff;
+    padding: 30px 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 380px;
+    text-align: center;
+    border: 3px solid #d81b60;
+}
+
+.login-card h2 {
+    color: #2e7d32;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.login-field {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.login-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+.login-field input {
+    width: 100%;
+    height: 40px;
+    padding: 0 10px;
+    font-size: 16px;
+    border: 2px solid #333;
+    border-radius: 6px;
+    text-align: left !important;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #2e7d32;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.login-btn:hover {
+    background-color: #1b5e20;
+}
+
+#loginError {
+    color: #c62828;
+    font-size: 14px;
+    margin-top: 10px;
+    display: none;
+}
+
+/* MAIN CONTENT BLUR UNTIL LOGGED IN */
+#mainContent {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Marquee Style */
+.marquee-container {
+    width: 100%;
+    background-color: #2e7d32; 
+    color: #ffffff;
+    padding: 5px 0;
+    font-size: 16px;
+    letter-spacing: 2px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Header container right-aligned */
+.top-inputs-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px; 
+    justify-content: flex-end; 
+    width: 100%;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.top-input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+#acno-box { width: 160px; }
+#name-box { width: 250px; }
+#year-box { width: 130px; }
+
+.top-inputs-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 18px; 
+    text-align: left;
+    color: #333;
+}
+
+/* Top Inputs - Only input is White */
+.top-inputs-container input {
+    width: 100%;
+    text-align: left;
+    padding: 0 10px;
+    height: 38px;
+    font-size: 15px;
+    font-weight: bold;
+    border: 2px solid #000000;
+    border-radius: 4px;
+    background-color: #ffffff; 
+}
+
+/* Horizontal Scroll Wrapper for Table Container */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+}
+
+/* Main Grid */
+.container {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(180px, 1fr)); 
+    gap: 15px;
+    width: 100%;
+    min-width: 1280px; /* Ensures all 7 columns remain perfectly readable */
+}
+
+/* Columns background changed to Pink shade instead of White */
+.container > div {
+    background: pink; 
+    padding: 15px 10px; 
+    border-radius: 8px;
+    border: 2px solid #d81b60; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+    text-align: center;
+    font-size: 18px; 
+    border-bottom: 2px solid #000000;
+    padding-bottom: 8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    color: #000000; 
+    margin-bottom: 5px;
+}
+
+/* Rows layout */
+.form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    flex-grow: 1; 
+    padding: 2px 0;
+    gap: 5px;
+}
+
+label {
+    font-size: 16px; 
+    min-width: 65px;
+    text-align: left;
+    white-space: nowrap;
+    color: #000000;
+}
+
+/* Textboxes inside columns - Explicitly White */
+input {
+    width: 100%; 
+    height: 30px; 
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid #000000; 
+    text-align: center;
+    background-color: #ffffff !important; 
+    color: #000000;
+    border-radius: 4px;
+    outline: none;
+}
+
+input:focus {
+    border-color: #4a0014;
+    background-color: #fffdf0 !important; 
+    box-shadow: 0 0 3px rgba(163, 0, 54, 0.5);
+}
+
+/* Buttons Container */
+.btnbox {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px; 
+    width: 100%;
+}
+
+button {
+    width: 100%;
+    padding: 6px 0; 
+    font-size: 14px; 
+    font-weight: bold;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    text-transform: uppercase;
+    transition: background 0.2s;
+}
+
+/* Button Colors */
+.gpf-sheet { background: #8e44ad; } 
+.gpf-sheet:hover { background: #6c3483; }
+
+.save { background: #2e7d32; }
+.save:hover { background: #1b5e20; }
+
+.search { background: #1565c0; }
+.search:hover { background: #0d47a1; }
+
+.clear { background: #37474f; }
+.clear:hover { background: #263238; }
+
+.update { background: #ef6c00; color: white; }
+.update:hover { background: #e65100; }
+
+.delete { background: #c62828; }
+.delete:hover { background: #b71c1c; }
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* Mobile Responsive Adjustments */
+@media screen and (max-width: 768px) {
+    body {
+        padding: 8px;
+    }
+    .top-inputs-container {
+        justify-content: space-between;
+        gap: 10px;
+    }
+    #acno-box, #name-box, #year-box {
+        width: 31%;
+    }
+    .top-inputs-container label {
+        font-size: 12px;
+    }
+    .top-inputs-container input {
+        height: 34px;
+        font-size: 13px;
+    }
+    .container {
+        grid-template-columns: 1fr; /* Stack vertically on mobile */
+        min-width: 100%;
+    }
+    .table-wrapper {
+        overflow-x: visible;
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN MODAL -->
+<div id="loginModal">
+    <div class="login-card">
+        <h2>S K I C GPF SYSTEM LOGIN</h2>
+        <div class="login-field">
+            <label>Login ID</label>
+            <input type="text" id="loginId" placeholder="Enter ID">
+        </div>
+        <div class="login-field">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter Password">
+        </div>
+        <button class="login-btn" onclick="checkLogin()">LOG IN</button>
+        <p id="loginError">गलत Login ID या Password!</p>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="mainContent">
+
+<!-- MARQUEE DISPLAY PATTI -->
+<div class="marquee-container">
+    <marquee behavior="scroll" direction="left" scrollamount="10">S K I C     GPF INTEREST SOFTWARE</marquee>
+</div>
+
+<!-- TOP INPUT BAR -->
+<div class="top-inputs-container">
+    <div class="top-input-group" id="acno-box">
+        <label>ID / Ac No.</label>
+        <input type="text" id="acno">
+    </div>
+    <div class="top-input-group" id="name-box">
+        <label>Name</label>
+        <input type="text" id="empname">
+    </div>
+    <div class="top-input-group" id="year-box">
+        <label>Year</label>
+        <input type="text" id="year" placeholder="e.g. 2018-19">
+    </div>
+</div>
+
+<div class="table-wrapper">
+<div class="container">
+
+<!-- COLUMN 1 -->
+<div>
+<h3>GPF</h3>
+<div class="form-row"><label>Mar</label><input id="t1"></div>
+<div class="form-row"><label>Apr</label><input id="t2"></div>
+<div class="form-row"><label>May</label><input id="t3"></div>
+<div class="form-row"><label>Jun</label><input id="t4"></div>
+<div class="form-row"><label>Jul</label><input id="t5"></div>
+<div class="form-row"><label>Aug</label><input id="t6"></div>
+<div class="form-row"><label>Sep</label><input id="t7"></div>
+<div class="form-row"><label>Oct</label><input id="t8"></div>
+<div class="form-row"><label>Nov</label><input id="t9"></div>
+<div class="form-row"><label>Dec</label><input id="t10"></div>
+<div class="form-row"><label>Jan</label><input id="t11"></div>
+<div class="form-row"><label>Feb</label><input id="t12"></div>
+<div class="form-row"><label>Total</label><input id="t13"></div>
+</div>
+
+<!-- COLUMN 2 -->
+<div>
+<h3>Return</h3>
+<div class="form-row"><label>Mar</label><input id="t14"></div>
+<div class="form-row"><label>Apr</label><input id="t15"></div>
+<div class="form-row"><label>May</label><input id="t16"></div>
+<div class="form-row"><label>Jun</label><input id="t17"></div>
+<div class="form-row"><label>Jul</label><input id="t18"></div>
+<div class="form-row"><label>Aug</label><input id="t19"></div>
+<div class="form-row"><label>Sep</label><input id="t20"></div>
+<div class="form-row"><label>Oct</label><input id="t21"></div>
+<div class="form-row"><label>Nov</label><input id="t22"></div>
+<div class="form-row"><label>Dec</label><input id="t23"></div>
+<div class="form-row"><label>Jan</label><input id="t24"></div>
+<div class="form-row"><label>Feb</label><input id="t25"></div>
+<div class="form-row"><label>Total</label><input id="t26"></div>
+</div>
+
+<!-- COLUMN 3 -->
+<div>
+<h3>GPF + Return</h3>
+<div class="form-row"><label>Mar</label><input id="t27"></div>
+<div class="form-row"><label>Apr</label><input id="t28"></div>
+<div class="form-row"><label>May</label><input id="t29"></div>
+<div class="form-row"><label>Jun</label><input id="t30"></div>
+<div class="form-row"><label>Jul</label><input id="t31"></div>
+<div class="form-row"><label>Aug</label><input id="t32"></div>
+<div class="form-row"><label>Sep</label><input id="t33"></div>
+<div class="form-row"><label>Oct</label><input id="t34"></div>
+<div class="form-row"><label>Nov</label><input id="t35"></div>
+<div class="form-row"><label>Dec</label><input id="t36"></div>
+<div class="form-row"><label>Jan</label><input id="t37"></div>
+<div class="form-row"><label>Feb</label><input id="t38"></div>
+<div class="form-row"><label>Total</label><input id="t39"></div>
+</div>
+
+<!-- COLUMN 4 -->
+<div>
+<h3>Loan</h3>
+<div class="form-row"><label>Mar</label><input id="t40"></div>
+<div class="form-row"><label>Apr</label><input id="t41"></div>
+<div class="form-row"><label>May</label><input id="t42"></div>
+<div class="form-row"><label>Jun</label><input id="t43"></div>
+<div class="form-row"><label>Jul</label><input id="t44"></div>
+<div class="form-row"><label>Aug</label><input id="t45"></div>
+<div class="form-row"><label>Sep</label><input id="t46"></div>
+<div class="form-row"><label>Oct</label><input id="t47"></div>
+<div class="form-row"><label>Nov</label><input id="t48"></div>
+<div class="form-row"><label>Dec</label><input id="t49"></div>
+<div class="form-row"><label>Jan</label><input id="t50"></div>
+<div class="form-row"><label>Feb</label><input id="t51"></div>
+<div class="form-row"><label>Total</label><input id="t52"></div>
+</div>
+
+<!-- COLUMN 5 -->
+<div>
+<h3>Grand Total</h3>
+<div class="form-row"><label>Mar</label><input id="t53"></div>
+<div class="form-row"><label>Apr</label><input id="t54"></div>
+<div class="form-row"><label>May</label><input id="t55"></div>
+<div class="form-row"><label>Jun</label><input id="t56"></div>
+<div class="form-row"><label>Jul</label><input id="t57"></div>
+<div class="form-row"><label>Aug</label><input id="t58"></div>
+<div class="form-row"><label>Sep</label><input id="t59"></div>
+<div class="form-row"><label>Oct</label><input id="t60"></div>
+<div class="form-row"><label>Nov</label><input id="t61"></div>
+<div class="form-row"><label>Dec</label><input id="t62"></div>
+<div class="form-row"><label>Jan</label><input id="t63"></div>
+<div class="form-row"><label>Feb</label><input id="t64"></div>
+<div class="form-row"><label>Total</label><input id="t65"></div>
+</div>
+
+<!-- COLUMN 6 -->
+<div>
+<h3>BF / Interest</h3>
+<div class="form-row"><label>BF</label><input id="t66"></div>
+<div class="form-row"><label>3M%</label><input id="t67"></div>
+<div class="form-row"><label>3M%</label><input id="t68"></div>
+<div class="form-row"><label>3M%</label><input id="t69"></div>
+<div class="form-row"><label>3M%</label><input id="t70"></div>
+<div class="form-row"><label>4M%</label><input id="t71"></div>
+<div class="form-row"><label>4M%</label><input id="t72"></div>
+<div class="form-row"><label>4M%</label><input id="t73"></div>
+<div class="form-row"><label>1Year</label><input id="t75"></div>
+<div class="form-row"><label>Total</label><input id="t74"></div>
+<div class="form-row"><label>Calc</label><input type="text" id="t82"></div>
+<div class="form-row"><label>Laser</label><input id="t83"></div>
+<div class="form-row"><label>Differen.</label><input id="t84"></div>
+</div>
+
+<!-- COLUMN 7 -->
+<div>
+<h3>Total GPF</h3>
+<div class="form-row"><label>BF</label><input id="t76"></div>
+<div class="form-row"><label>Current</label><input id="t77"></div>
+<div class="form-row"><label>Total</label><input id="t78"></div>
+<div class="form-row"><label>Interest</label><input id="t79"></div>
+<div class="form-row"><label>Loan</label><input id="t80"></div>
+<div class="form-row"><label>Total</label><input id="t81"></div>
+
+<!-- BUTTON BOX -->
+<div class="btnbox">
+    <button class="gpf-sheet" onclick="openGpfSheet()">GPF SHEET</button>
+    <button class="save" onclick="saveData()">SAVE</button>
+    <button class="search" onclick="searchData()">SEARCH</button>
+    <button class="clear" onclick="clearAllData()">CLEAR ALL</button>
+    <button class="update" onclick="updateData()">UPDATE</button>
+    <button class="delete" onclick="deleteData()">DELETE</button>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+
+<script>
+// LOGIN CHECK FUNCTIONALITY
+function checkLogin() {
+    let id = document.getElementById("loginId").value.trim();
+    let pass = document.getElementById("loginPassword").value.trim();
+    let err = document.getElementById("loginError");
+
+    if (id === "gpfa" && pass === "123") {
+        sessionStorage.setItem("isLoggedIn", "true");
+        document.getElementById("loginModal").style.display = "none";
+    } else {
+        err.style.display = "block";
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    if (sessionStorage.getItem("isLoggedIn") === "true") {
+        document.getElementById("loginModal").style.display = "none";
+    }
+});
+
+const API_URL = "https://script.google.com/macros/s/AKfycbzgnCYtgVb3wE9lnz4OSzC4szP_BGr1TKuM76WItxDG4t1rfbaoTtcZ3VNAfOnDSNg/exec";
+
+let isSearchMode = false;
+
+const interestRateMaster = {
+    "1956-57": 3.75, "1957-58": 3.75, "1958-59": 3.75, "1959-60": 3.75, "1960-61": 3.75, "1961-62": 3.75,
+    "1962-63": 4, "1963-64": 4, "1964-65": 4, "1965-66": 4.25, "1966-67": 4.6, "1967-68": 4.8, "1968-69": 5.1,
+    "1969-70": 5.3, "1970-71": 5.5, "1971-72": 5.7, "1972-73": 6.0, "1973-74": 6.0, "1974-75": 7.2,
+    "1975-76": 7.5, "1976-77": 7.5, "1977-78": 7.5, "1978-79": 7.5, "1980-81": 8.5, "1981-82": 9, "1982-83": 9,
+    "1983-84": 9.5, "1984-85": 10, "1985-86": 10.5, "1986-87": 12, "1987-88": 12, "1988-89": 12, "1989-90": 12,
+    "1990-91": 12, "1991-92": 12, "1992-93": 12, "1993-94": 12, "1994-95": 12, "1995-96": 12, "1996-97": 12,
+    "1997-98": 12, "1998-99": 12, "1999-00": 12, "2000-01": 11, "2001-02": 9.5, "2002-03": 9, "2003-04": 8.0,
+    "2004-05": 8.0, "2005-06": 8.0, "2006-07": 8.0, "2008-09": 8.0, "2009-10": 8.0, "2010-11": 8.0,
+    "2011-12": { q1: 8.0, q2: 8.0, q3: 8.6, q4: 8.6 }, "2012-13": 8.8, "2013-14": 8.7, "2014-15": 8.7, "2015-16": 8.7,
+    "2016-17": { q1: 8.1, q2: 8.1, q3: 8, q4: 8 }, "2017-18": { q1: 7.9, q2: 7.8, q3: 7.8, q4: 7.6 },
+    "2018-19": { q1: 7.6, q2: 7.6, q3: 8, q4: 8 }, "2019-20": { q1: 8, q2: 7.9, q3: 7.9, q4: 7.9 },
+    "2020-21": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2021-22": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 },
+    "2022-23": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2023-24": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 },
+    "2024-25": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2025-26": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 },
+    "2026-27": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2027-28": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 },
+    "2028-29": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2029-30": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 },
+    "2030-31": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2031-32": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }
+};
+
+function v(id){ return Number(document.getElementById(id).value)||0; }
+
+function fill(start,end){
+    for(let i=start;i<=end;i++){
+        let el = document.getElementById("t"+i);
+        if(el){
+            el.addEventListener("input",function(){
+                isSearchMode = false; 
+                let val=this.value;
+                for(let j=i;j<=end;j++){
+                    let target = document.getElementById("t"+j);
+                    if(target) target.value=val;
+                }
+                calc();
+            });
+        }
+    }
+}
+fill(1,12); fill(14,25);
+
+document.getElementById("year").addEventListener("input", function() {
+    let yearVal = this.value.trim();
+    
+    document.getElementById("t67").value = "";
+    document.getElementById("t68").value = "";
+    document.getElementById("t69").value = "";
+    document.getElementById("t70").value = "";
+    document.getElementById("t71").value = "";
+    document.getElementById("t72").value = "";
+    document.getElementById("t73").value = "";
+    document.getElementById("t75").value = "";
+
+    if (yearVal === "2011-12") {
+        document.getElementById("t71").value = "8.0"; 
+        document.getElementById("t72").value = "8.0"; 
+        document.getElementById("t73").value = "8.6"; 
+    } else if (interestRateMaster[yearVal] !== undefined) {
+        let rateData = interestRateMaster[yearVal];
+        if (typeof rateData === "object") {
+            document.getElementById("t67").value = rateData.q1;
+            document.getElementById("t68").value = rateData.q2;
+            document.getElementById("t69").value = rateData.q3;
+            document.getElementById("t70").value = rateData.q4;
+        } else {
+            document.getElementById("t75").value = rateData;
+        }
+    } 
+    
+    isSearchMode = false;
+    calc(); 
+});
+
+function calc(){
+    if (isSearchMode && v("t1") === 0 && v("t14") === 0 && v("t78") > 0) {
+        let total81 = v("t81"); 
+        if (document.getElementById("t83").value.trim() !== "") {
+            document.getElementById("t84").value = total81 - v("t83");
+        } else {
+            document.getElementById("t84").value = "";
+        }
+        return; 
+    }
+
+    let sum1=0; for(let i=1;i<=12;i++){ sum1 += v("t"+i); }
+    document.getElementById("t13").value=sum1;
+
+    let sum2=0; for(let i=14;i<=25;i++){ sum2 += v("t"+i); }
+    document.getElementById("t26").value=sum2;
+
+    for(let i=0;i<12;i++){
+        let target = document.getElementById("t"+(27+i));
+        if(target) target.value = v("t"+(1+i))+v("t"+(14+i));
+    }
+
+    let total39=0; for(let i=27;i<=38;i++){ total39 += v("t"+i); }
+    document.getElementById("t39").value=total39;
+
+    let loanTotal=0; for(let i=40;i<=51;i++){ loanTotal += v("t"+i); }
+    document.getElementById("t52").value=loanTotal;
+
+    document.getElementById("t53").value=v("t27")-v("t40")+v("t66");
+    document.getElementById("t54").value=v("t53")+v("t28")-v("t41");
+    document.getElementById("t55").value=v("t54")+v("t29")-v("t42");
+    document.getElementById("t56").value=v("t55")+v("t30")-v("t43");
+    document.getElementById("t57").value=v("t56")+v("t31")-v("t44");
+    document.getElementById("t58").value=v("t57")+v("t32")-v("t45");
+    document.getElementById("t59").value=v("t58")+v("t33")-v("t46");
+    document.getElementById("t60").value=v("t59")+v("t34")-v("t47");
+    document.getElementById("t61").value=v("t60")+v("t35")-v("t48");
+    document.getElementById("t62").value=v("t61")+v("t36")-v("t49");
+    document.getElementById("t63").value=v("t62")+v("t37")-v("t50");
+    document.getElementById("t64").value=v("t63")+v("t38")-v("t51");
+
+    let grand=0; for(let i=53;i<=64;i++){ grand += v("t"+i); }
+    document.getElementById("t65").value=grand;
+
+    let totalInterest = 0;
+    if(v("t67")>0){ totalInterest += Math.round(((v("t53") + v("t54") + v("t55")) * v("t67")) / 100 / 12); }
+    if(v("t68")>0){ totalInterest += Math.round(((v("t56") + v("t57") + v("t58")) * v("t68")) / 100 / 12); }
+    if(v("t69")>0){ totalInterest += Math.round(((v("t59") + v("t60") + v("t61")) * v("t69")) / 100 / 12); }
+    if(v("t70")>0){ totalInterest += Math.round(((v("t62") + v("t63") + v("t64")) * v("t70")) / 100 / 12); }
+    if(v("t71")>0){ totalInterest += Math.round(((v("t53") + v("t54") + v("t55") + v("t56")) * v("t71")) / 100 / 12); }
+    if(v("t72")>0){ totalInterest += Math.round(((v("t57") + v("t58") + v("t59") + v("t60")) * v("t72")) / 100 / 12); }
+    if(v("t73")>0){ totalInterest += Math.round(((v("t61") + v("t62") + v("t63") + v("t64")) * v("t73")) / 100 / 12); }
+    if(v("t75")>0){
+        let amt75 = v("t53") + v("t54") + v("t55") + v("t56") + v("t57") + v("t58") + v("t59") + v("t60") + v("t61") + v("t62") + v("t63") + v("t64");
+        totalInterest += Math.round((amt75 * v("t75")) / 100 / 12);
+    }
+
+    document.getElementById("t74").value = totalInterest;
+    
+    document.getElementById("t76").value = v("t66");
+    document.getElementById("t77").value = v("t39");
+    let total78 = v("t76") + v("t77");
+    document.getElementById("t78").value = total78;
+    
+    document.getElementById("t79").value = v("t74");
+    document.getElementById("t80").value = v("t52"); 
+    
+    let total81 = total78 + v("t79") - v("t80");
+    document.getElementById("t81").value = total81; 
+
+    if (document.getElementById("t83").value.trim() !== "") {
+        document.getElementById("t84").value = total81 - v("t83");
+    } else {
+        document.getElementById("t84").value = ""; 
+    }
+}
+
+for(let i=1; i<=84; i++){
+    if(i === 82) continue; 
+    let el = document.getElementById("t" + i);
+    if(el){ 
+        el.addEventListener("input", function() {
+            if(i !== 83) isSearchMode = false; 
+            calc();
+        }); 
+    }
+}
+
+let el82 = document.getElementById("t82");
+if(el82) {
+    el82.addEventListener("change", function() {
+        isSearchMode = false; 
+        let rawVal = this.value.trim();
+        if(rawVal !== "") {
+            try {
+                let solvedResult = Number(eval(rawVal));
+                if(!isNaN(solvedResult)) {
+                    this.value = Math.round(solvedResult); 
+                }
+            } catch(e) {
+                this.value = "";
+            }
+        }
+        calc(); 
+    });
+}
+
+// ─── OFFLINE SYNC SYSTEM FOR LOCAL STORAGE ───
+
+async function syncOfflineData() {
+    if (!navigator.onLine) return; 
+    
+    let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
+    if (offlineQueue.length === 0) return;
+
+    console.log("Offline data detected. Syncing with Google Sheets...");
+    let remainingQueue = [];
+    let successCount = 0;
+
+    for (let data of offlineQueue) {
+        try {
+            let res = await fetch(API_URL, { 
+                method: "POST", 
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(data) 
+            });
+            if (!res.ok) throw new Error("Server error");
+            successCount++;
+        } catch (error) {
+            remainingQueue.push(data);
+        }
+    }
+
+    localStorage.setItem("gpf_offline_queue", JSON.stringify(remainingQueue));
+    
+    if (remainingQueue.length === 0 && successCount > 0) {
+        alert("बधाई हो! इंटरनेट वापस आ गया है और ऑफ़लाइन सेव किया हुआ " + successCount + " डेटा गूगल शीट में सिंक हो गया है।");
+    } else if (remainingQueue.length > 0) {
+        console.log("Kuch data sync nahi ho paya, agli baar koshish hogi.");
+    }
+}
+
+window.addEventListener('online', syncOfflineData);
+window.addEventListener('load', syncOfflineData);
+
+async function saveData(){
+    let acnoInput = document.getElementById("acno");
+    let yearInput = document.getElementById("year");
+    let empnameInput = document.getElementById("empname");
+    
+    if(!acnoInput.value || !yearInput.value) { alert("ID aur Year daalna zaroori hai!"); return; }
+    
+    let totalVal = document.getElementById("t81").value; 
+    let data={ 
+        action: "save", 
+        acno: acnoInput.value.trim(), 
+        empname: empnameInput.value.trim(), 
+        year: yearInput.value.trim(),
+        t76: document.getElementById("t76").value, 
+        t77: document.getElementById("t77").value, 
+        t78: document.getElementById("t78").value, 
+        t79: document.getElementById("t79").value, 
+        t80: document.getElementById("t80").value, 
+        t81: totalVal, 
+        t83: document.getElementById("t83").value, 
+        t84: document.getElementById("t84").value
+    };
+
+    if (!navigator.onLine) {
+        let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
+        offlineQueue.push(data);
+        localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
+        
+        alert("Internet nahi hai! Data local storage me temporary save ho gaya hai. Net aane par sheet me update ho jayega.");
+        
+        clearCalculationData(); 
+        document.getElementById("t66").value = totalVal; 
+        isSearchMode = false;
+        calc();
+        return;
+    }
+
+    try{
+        let res=await fetch(API_URL,{ 
+            method:"POST", 
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body:JSON.stringify(data) 
+        });
+        let result = await res.text();
+        alert(result);
+        
+        clearCalculationData(); 
+        
+        document.getElementById("t66").value = totalVal; 
+        isSearchMode = false;
+        calc(); 
+    }catch(error){ 
+        let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
+        offlineQueue.push(data);
+        localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
+        alert("Network Error: Data locally safe kar liya gaya hai."); 
+        console.error(error); 
+    }
+}
+
+async function searchData(){
+    let acnoInput = document.getElementById("acno");
+    let yearInput = document.getElementById("year");
+    let empnameInput = document.getElementById("empname");
+
+    if(!navigator.onLine) { alert("Data Search karne ke liye Internet zaroori hai!"); return; }
+
+    if(!acnoInput.value || !yearInput.value) { alert("Dhundhne ke liye ID aur Year dono daalein!"); return; }
+    try {
+        let res = await fetch(API_URL + "?action=search&acno=" + encodeURIComponent(acnoInput.value.trim()) + "&year=" + encodeURIComponent(yearInput.value.trim()));
+        let data = await res.json();
+        
+        if(data.status == "NOT_FOUND"){ alert("Is ID aur Year ka koi data nahi mila!"); return; }
+        
+        clearCalculationData();
+        
+        empnameInput.value = data.empname || "";
+        acnoInput.value = data.acno || acnoInput.value.trim();
+        yearInput.value = data.year || yearInput.value.trim();
+        
+        isSearchMode = true; 
+        
+        document.getElementById("t76").value = data.t76 !== undefined ? data.t76 : ""; 
+        document.getElementById("t77").value = data.t77 !== undefined ? data.t77 : ""; 
+        document.getElementById("t78").value = data.t78 !== undefined ? data.t78 : ""; 
+        document.getElementById("t79").value = data.t79 !== undefined ? data.t79 : ""; 
+        document.getElementById("t80").value = data.t80 !== undefined ? data.t80 : ""; 
+        document.getElementById("t81").value = data.t81 !== undefined ? data.t81 : ""; 
+        document.getElementById("t83").value = data.t83 !== undefined ? data.t83 : ""; 
+        document.getElementById("t84").value = data.t84 !== undefined ? data.t84 : "";
+        
+        alert("Data Successfully Loaded!");
+    } catch(error) { 
+        console.error(error);
+        alert("Search Error: Sheet se data nahi aa raha hai."); 
+    }
+}
+
+async function updateData(){
+    let acnoInput = document.getElementById("acno");
+    let yearInput = document.getElementById("year");
+    let empnameInput = document.getElementById("empname");
+
+    if(!acnoInput.value || !yearInput.value) { alert("Update ke liye ID aur Year zaroori hai!"); return; }
+
+    let totalVal = document.getElementById("t81").value; 
+    let data={ 
+        action: "update", 
+        acno: acnoInput.value.trim(), 
+        empname: empnameInput.value.trim(), 
+        year: yearInput.value.trim(),
+        t76: document.getElementById("t76").value,
+        t77: document.getElementById("t77").value,
+        t78: document.getElementById("t78").value,
+        t79: document.getElementById("t79").value,
+        t80: document.getElementById("t80").value, 
+        t81: totalVal, 
+        t83: document.getElementById("t83").value, 
+        t84: document.getElementById("t84").value
+    };
+
+    if (!navigator.onLine) {
+        let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
+        offlineQueue.push(data);
+        localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
+        alert("Internet nahi hai! Update Queue me save ho gaya hai, online aate hi sheet update ho jayegi.");
+        document.getElementById("t66").value = totalVal; 
+        isSearchMode = false;
+        calc();
+        return;
+    }
+
+    try{
+        let res=await fetch(API_URL,{ 
+            method:"POST", 
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body:JSON.stringify(data) 
+        });
+        let result=await res.text();
+        alert(result);
+        
+        document.getElementById("t66").value = totalVal; 
+        isSearchMode = false;
+        calc(); 
+    }catch(error){ alert("Update Error"); }
+}
+
+async function deleteData(){
+    let acnoInput = document.getElementById("acno");
+    let yearInput = document.getElementById("year");
+
+    if(!navigator.onLine) { alert("Data Delete karne ke liye Internet zaroori hai!"); return; }
+
+    if(!acnoInput.value || !yearInput.value) { alert("Delete karne ke liye ID aur Year daalein!"); return; }
+    if(!confirm("Kya aap sach me yeh record delete karna chahte hain?")) return;
+    try{
+        let data={ action:"delete", acno:acnoInput.value.trim(), year:yearInput.value.trim() };
+        let res=await fetch(API_URL,{ 
+            method:"POST", 
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body:JSON.stringify(data) 
+        });
+        let result=await res.text();
+        alert(result);
+        clearAllData();
+    }catch(error){ alert("Delete Error"); }
+}
+
+function openGpfSheet() {
+    window.open("https://drive.google.com/drive/recent", '_blank');
+}
+
+function clearCalculationData(){
+    for(let i=1;i<=84;i++){
+        let el = document.getElementById("t"+i);
+        if(el) el.value="";
+    }
+}
+
+function clearAllData(){
+    isSearchMode = false;
+    document.getElementById("acno").value=""; 
+    document.getElementById("empname").value=""; 
+    document.getElementById("year").value="";
+    clearCalculationData();
+}
+</script>
+
+</body>
+</html>

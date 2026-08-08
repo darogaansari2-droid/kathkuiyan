@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admission Portal</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 5px; }
+        .main-wrapper { max-width: 1200px; margin: auto; }
+        .fixed-header { background: white; padding:14px; border: 2px solid #333; position: sticky; top: 0; z-index: 100; }
+        .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
+        input, select { width: 100%; padding: 13px 10px; border: 1px solid #999; box-sizing: border-box; font-size: 13px; }
+        label { font-size: 11px; font-weight: bold; display: block; }
+        button { padding: 5px 10px; cursor: pointer; border: none; background: #2c3e50; color: white; font-size: 15px; }
+        .total-box { background: #2c3e50; color: white; padding: 2px 10px; border-radius: 15px; display: inline-block; font-weight: bold; margin: 5px 0; font-size: 13px; }
+        .scroll-area { margin-top: 16px; background: white; padding: 10px; border: 1px solid #333; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { border: 1px solid #000; padding: 4px 6px; text-align: left; }
+        .del-btn { background: #e74c3c; display: none; }
+        .edit-btn { background: #f39c12; }
+        .search-container { display: flex; gap: 10px; margin-bottom: 5px; }
+        .search-container input, .search-container select { padding: 8px; border: 2px solid #2c3e50; font-size: 13px; }
+        
+        /* Login Page Styles */
+        #loginOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .login-box {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+        }
+        .login-box h3 { margin-top: 0; text-align: center; color: #2c3e50; }
+        .login-box label { margin-top: 10px; }
+        .login-box input { margin-bottom: 12px; }
+        .login-box button { width: 100%; background: #27ae60; padding: 10px; font-weight: bold; }
+        .error-msg { color: red; font-size: 12px; text-align: center; margin-top: 5px; display: none; }
+    </style>
+</head>
+<body>
+
+<!-- Login Screen -->
+<div id="loginOverlay">
+    <div class="login-box">
+        <h3>Portal Login</h3>
+        <label>Login ID:</label>
+        <input type="text" id="loginId" placeholder="Enter ID">
+        <label>Password:</label>
+        <input type="password" id="loginPass" placeholder="Enter Password">
+        <button onclick="checkLogin()">Login</button>
+        <div id="errorMsg" class="error-msg">Galat Login ID ya Password!</div>
+    </div>
+</div>
+
+<div class="main-wrapper" id="portalContent" style="display: none;">
+    <div class="fixed-header">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">Admission Entry Portal From 2026-27................</h3>
+            <button onclick="logout()" style="background:#e74c3c; font-size: 12px; padding: 6px 12px;">Logout</button>
+        </div>
+        <input type="hidden" id="editIndex">
+        <div class="form-grid" style="margin-top: 10px;">
+            <div><label>Start SR:</label><input type="number" id="startSr" oninput="calculateEndSr()"></div>
+            <div><label>Sankhya:</label><input type="number" id="countBox" oninput="calculateEndSr()"></div>
+            <div><label>End SR:</label><input type="number" id="endSr" readonly></div>
+            <div><label>Teacher:</label><input type="text" id="teacher"></div>
+            <div><label>Class:</label><input type="text" id="classSec"></div>
+            <div><label>Date:</label><input type="text" id="entryDate" placeholder="DD/MM/YYYY"></div>
+        </div>
+        <button onclick="saveData()" style="background:#27ae60;">Save / Update</button>
+        <button onclick="resetForm()" style="background:#6c757d;">Reset</button>
+        <button onclick="unlockDelete()" style="background:#8e44ad;">Unlock Delete</button>
+    </div>
+
+    <div class="scroll-area">
+        <div class="search-container">
+            <input type="text" id="searchBox" placeholder="🔍 Search Teacher Name..." onkeyup="render()" style="flex: 2;">
+            <input type="text" id="searchClassBox" placeholder="🔍 Filter Class (e.g. 6A, 6B)..." onkeyup="render()" style="flex: 1;">
+        </div>
+        <div class="total-box">Total SR Issued (Filtered): <span id="liveTotalSr">0</span></div>
+        <table id="dataTable">
+            <thead>
+                <tr>
+                    <th>Range</th>
+                    <th>Teacher</th>
+                    <th>Class</th>
+                    <th>Sankhya</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx68m-bZdSycvaaQdm9dFwKikc-tSgnBkEN9g36MIHXVoT1UlToob33uvzIn3qfPHJu/exec";
+    let data = JSON.parse(localStorage.getItem('admissions')) || [];
+
+    if(sessionStorage.getItem('isLoggedIn') === 'true') {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('portalContent').style.display = 'block';
+    }
+
+    function checkLogin() {
+        let id = document.getElementById('loginId').value.trim();
+        let pass = document.getElementById('loginPass').value.trim();
+
+        if(id === "scollar" && pass === "123") {
+            sessionStorage.setItem('isLoggedIn', 'true');
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('portalContent').style.display = 'block';
+            updateNextSr();
+            render();
+        } else {
+            document.getElementById('errorMsg').style.display = 'block';
+        }
+    }
+
+    function logout() {
+        sessionStorage.removeItem('isLoggedIn');
+        document.getElementById('loginOverlay').style.display = 'flex';
+        document.getElementById('portalContent').style.display = 'none';
+        document.getElementById('loginId').value = "";
+        document.getElementById('loginPass').value = "";
+        document.getElementById('errorMsg').style.display = 'none';
+    }
+
+    window.addEventListener('online', () => {
+        let pending = JSON.parse(localStorage.getItem('pendingSync')) || [];
+        if (pending.length > 0) {
+            pending.forEach(entry => {
+                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(entry) });
+            });
+            localStorage.removeItem('pendingSync');
+            alert("Offline data sync ho gaya!");
+        }
+    });
+
+    function updateNextSr() {
+        if(data.length > 0) {
+            let lastEndSr = Math.max(...data.map(i => parseInt(i.end) || 0));
+            if (lastEndSr > 0) {
+                document.getElementById('startSr').value = lastEndSr + 1;
+            }
+        }
+    }
+
+    function calculateEndSr() {
+        let s = parseInt(document.getElementById('startSr').value) || 0;
+        let c = parseInt(document.getElementById('countBox').value) || 0;
+        if (s > 0 && c > 0) document.getElementById('endSr').value = s + c - 1;
+    }
+
+    function resetForm() {
+        document.getElementById('editIndex').value = "";
+        document.getElementById('startSr').value = "";
+        document.getElementById('countBox').value = "";
+        document.getElementById('endSr').value = "";
+        document.getElementById('teacher').value = "";
+        document.getElementById('classSec').value = "";
+        document.getElementById('entryDate').value = "";
+        updateNextSr();
+    }
+
+    function saveData() {
+        let startVal = document.getElementById('startSr').value;
+        let teacherVal = document.getElementById('teacher').value;
+
+        if(!startVal || !teacherVal) {
+            alert("Kripya Start SR aur Teacher Name zaroor bharein!");
+            return;
+        }
+
+        let entry = {
+            start: startVal,
+            count: document.getElementById('countBox').value,
+            end: document.getElementById('endSr').value,
+            teacher: teacherVal,
+            classSec: document.getElementById('classSec').value,
+            date: document.getElementById('entryDate').value
+        };
+
+        let index = document.getElementById('editIndex').value;
+        if(index === "") {
+            data.push(entry); 
+        } else {
+            data[index] = entry;
+        }
+        
+        localStorage.setItem('admissions', JSON.stringify(data));
+        syncToSheet(entry);
+        resetForm();
+        render();
+    }
+
+    function syncToSheet(entry) {
+        if (navigator.onLine) {
+            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(entry) });
+        } else {
+            let pending = JSON.parse(localStorage.getItem('pendingSync')) || [];
+            pending.push(entry);
+            localStorage.setItem('pendingSync', JSON.stringify(pending));
+            alert("Offline mode: Data local storage mein save ho gaya hai. Internet aane par sync hoga.");
+        }
+    }
+
+    function render() {
+        let qTeacher = document.getElementById('searchBox').value.toLowerCase();
+        let qClass = document.getElementById('searchClassBox').value.toLowerCase();
+        let tbody = document.querySelector('#dataTable tbody');
+        tbody.innerHTML = '';
+        let total = 0;
+        
+        data.forEach((item, i) => {
+            let matchTeacher = (item.teacher || "").toLowerCase().includes(qTeacher);
+            let matchClass = (item.classSec || "").toLowerCase().includes(qClass);
+
+            if(matchTeacher && matchClass) {
+                tbody.innerHTML += `<tr>
+                    <td>${item.start}-${item.end}</td>
+                    <td>${item.teacher}</td>
+                    <td>${item.classSec}</td>
+                    <td>${item.count}</td>
+                    <td>${item.date}</td>
+                    <td><button class="edit-btn" onclick="edit(${i})">Edit</button> <button class="del-btn" onclick="del(${i})">Delete</button></td>
+                </tr>`;
+                total += parseInt(item.count || 0);
+            }
+        });
+        document.getElementById('liveTotalSr').innerText = total;
+    }
+
+    function edit(i) {
+        document.getElementById('editIndex').value = i;
+        document.getElementById('startSr').value = data[i].start;
+        document.getElementById('countBox').value = data[i].count;
+        document.getElementById('endSr').value = data[i].end;
+        document.getElementById('teacher').value = data[i].teacher;
+        document.getElementById('classSec').value = data[i].classSec;
+        document.getElementById('entryDate').value = data[i].date;
+    }
+
+    function unlockDelete() {
+        let p = prompt("Password:");
+        if(p === "1234") {
+            document.querySelectorAll('.del-btn').forEach(b => b.style.display = 'inline-block');
+        } else if(p !== null) {
+            alert("Galat Password!");
+        }
+    }
+
+    function del(i) {
+        if(confirm("Confirm Delete?")) {
+            let itemToDelete = data[i];
+            
+            // Local Storage se remove kar rahe hain
+            data.splice(i,1); 
+            localStorage.setItem('admissions', JSON.stringify(data)); 
+            
+            // Google Sheet se bhi Delete karne ke liye request bhej rahe hain
+            if (navigator.onLine) {
+                fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ action: "delete", start: itemToDelete.start })
+                });
+            }
+
+            render(); 
+            updateNextSr(); 
+        }
+    }
+
+    if(sessionStorage.getItem('isLoggedIn') === 'true') {
+        updateNextSr();
+        render();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>प्रगति-पत्र सॉफ्टवेयर - श्री कृष्ण इ० का० सेमरा कठकुइयाँ</title>
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #34a853;
+            --danger-color: #d93025;
+            --warning-color: #fbbc04;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #202124;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Login Screen Modal */
+        #loginModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .login-box button {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .login-box button:hover {
+            background-color: #1557b0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none; /* Initially hidden until login */
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .school-logo {
+            position: absolute;
+            left: 20px;
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            background: #fff;
+        }
+
+        .logout-btn {
+            position: absolute;
+            right: 20px;
+            background-color: var(--danger-color);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .logout-btn:hover {
+            background-color: #b31412;
+        }
+
+        .header-content {
+            margin: 0 auto;
+        }
+
+        header h1 { margin: 0; color: var(--primary-color); font-size: 26px; }
+        header h2 { margin: 5px 0 0 0; font-size: 18px; color: #5f6368; }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        h3 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 8px; color: var(--primary-color); }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group { display: flex; flex-direction: column; }
+
+        label { font-weight: 600; margin-bottom: 5px; font-size: 14px; }
+        
+        input, select {
+            padding: 7px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        input:focus, select:focus { border-color: var(--primary-color); outline: none; }
+
+        .btn-container { display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        button {
+            padding: 10px 20px; border: none; border-radius: 4px;
+            cursor: pointer; font-weight: 600; font-size: 14px; transition: background 0.2s;
+        }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-primary:hover { background-color: #1557b0; }
+        .btn-success { background-color: var(--secondary-color); color: white; }
+        .btn-success:hover { background-color: #2b8443; }
+        .btn-warning { background-color: var(--warning-color); color: black; }
+        .btn-warning:hover { background-color: #f2a600; }
+        .btn-danger { background-color: var(--danger-color); color: white; }
+        .btn-danger:hover { background-color: #b31412; }
+
+        .search-box { display: flex; gap: 10px; margin-bottom: 15px; }
+        .search-box input { flex: 1; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #dee2e6; padding: 8px; text-align: left; font-size: 13px; }
+        th { background-color: #f1f3f4; text-align: center; }
+
+        .actions { display: flex; gap: 5px; }
+        .actions button { padding: 5px 8px; font-size: 12px; }
+
+        #dynamicSubjectsContainer {
+            grid-column: 1 / -1; border: 2px dashed var(--primary-color);
+            padding: 15px; border-radius: 6px; background: #f9fbfd;
+        }
+
+        .sub-row {
+            background: white; padding: 12px; border: 1px solid #ddd;
+            border-radius: 4px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .term-title {
+            font-size: 12.5px;
+            font-weight: bold;
+            color: #d93025;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 5px;
+            padding-bottom: 2px;
+            margin-top: 6px;
+        }
+
+        .marks-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+        }
+
+        .marks-row div { display: flex; flex-direction: column; }
+        .marks-row label { font-size: 10.5px; font-weight: normal; color: #444; margin-bottom: 2px; }
+
+        /* Marksheet Modal / A4 Print Area */
+        #marksheetModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); justify-content: center; align-items: center;
+            overflow-y: auto; padding: 20px; z-index: 1000;
+        }
+
+        .marksheet-print {
+            background: white; width: 210mm; min-height: 297mm;
+            padding: 15mm; margin: auto; border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); position: relative; box-sizing: border-box;
+        }
+
+        .marksheet-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+            border-bottom: 3px double #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .marksheet-logo {
+            position: absolute;
+            left: 0;
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+
+        .marksheet-header-content {
+            margin: 0 auto;
+        }
+
+        .marksheet-header h2 { margin: 0; color: #000; font-size: 24px; font-weight: bold; }
+        .marksheet-header h3 { margin: 5px 0; color: #333; font-size: 16px; border: none; }
+        .marksheet-header p { margin: 2px 0; font-size: 13px; font-weight: bold; }
+
+        .student-info-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+            margin-bottom: 15px; font-size: 14px; background: #fcfcfc; padding: 10px; border: 1px solid #ddd; border-radius: 4px;
+        }
+
+        .print-table th, .print-table td { text-align: center; vertical-align: middle; padding: 6px; font-size: 13px;}
+        .print-table td:first-child { text-align: left; font-weight: bold; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #marksheetModal, #marksheetModal * { visibility: visible; }
+            #marksheetModal { position: absolute; left: 0; top: 0; background: white; padding: 0; width: 100%; height: 100%; }
+            .marksheet-print { width: 100%; height: 100%; box-shadow: none; padding: 10mm; }
+            .no-print { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .marks-row { grid-template-columns: repeat(2, 1fr); }
+            .student-info-grid { grid-template-columns: 1fr; }
+            .school-logo, .marksheet-logo { width: 50px; height: 50px; }
+            .logout-btn { position: relative; right: 0; margin-top: 10px; }
+            header { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login Modal -->
+<div id="loginModal">
+    <div class="login-box">
+        <h2>सॉफ़्टवेयर लॉगिन</h2>
+        <input type="text" id="loginId" placeholder="लॉगिन ID दर्ज करें">
+        <input type="password" id="loginPassword" placeholder="पासवर्ड दर्ज करें">
+        <button onclick="checkLogin()">लॉगिन करें</button>
+        <p id="loginError" style="color: red; display: none; margin-top: 10px; font-size: 13px;">गलत लॉगिन ID या पासवर्ड!</p>
+    </div>
+</div>
+
+<div class="container" id="mainContainer">
+    <header>
+        <img src="logo.png" alt="School Logo" class="school-logo" id="mainLogoImg" onerror="this.src='logo.jpg'">
+        <div class="header-content">
+            <h1>श्री कृष्ण इ० का० सेमरा कठकुइयाँ</h1>
+            <h2>प्रगति-पत्र प्रबंधन प्रणाली </h2>
+        </div>
+        <button class="logout-btn" onclick="logout()">लॉग आउट</button>
+    </header>
+
+    <!-- Input Form Card -->
+    <div class="card">
+        <h3 id="formTitle">नया प्रविष्टि जोड़ें (Add Student Record)</h3>
+        <form id="studentForm">
+            <input type="hidden" id="editIndex" value="">
+            <div class="form-grid">
+                <!-- Basic Details -->
+                <div class="form-group">
+                    <label>कक्षा एवं सेक्शन (Class & Section)</label>
+                    <input type="text" id="studentClass" placeholder="जैसे: कक्षा 6-A या 9-B" required oninput="handleClassChange()">
+                </div>
+                <div class="form-group">
+                    <label>शैक्षणिक सत्र (Academic Session)</label>
+                    <input type="text" id="academicSession" value="2025-2026" placeholder="जैसे: 2025-2026" required>
+                </div>
+                <div class="form-group">
+                    <label>अनुक्रमांक (Roll No)</label>
+                    <input type="text" id="rollNo" required>
+                </div>
+                <div class="form-group">
+                    <label>विद्यार्थी का नाम (Student Name)</label>
+                    <input type="text" id="studentName" required>
+                </div>
+                <div class="form-group">
+                    <label>पिता का नाम (Father's Name)</label>
+                    <input type="text" id="fatherName" required>
+                </div>
+                <div class="form-group">
+                    <label>UDAISE Code</label>
+                    <input type="text" id="udiseCode" placeholder="स्कूल/छात्र UDAISE">
+                </div>
+                <div class="form-group">
+                    <label>PEN Number</label>
+                    <input type="text" id="penNumber" placeholder="Permanent Education Number">
+                </div>
+
+                <!-- Fully Dynamic Subjects Section -->
+                <div id="dynamicSubjectsContainer">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <label style="color: var(--primary-color); font-size: 16px; margin:0;">विषय एवं प्राप्तांक विवरण (Subjects List)</label>
+                        <button type="button" class="btn-primary" onclick="addSubjectField()" style="padding: 6px 14px; font-size: 13px;">+ नया विषय जोड़ें</button>
+                    </div>
+                    <div id="subjectsList"></div>
+                </div>
+
+                <!-- नैतिक खेल (केवल कक्षा 9 और 11 के लिए) -->
+                <div class="form-group" id="naitikContainer" style="background: #e8f0fe; padding: 12px; border-radius: 6px; display: none; grid-column: 1 / -1;">
+                    <label>नैतिक खेल (नाम):</label>
+                    <input type="text" id="labelNaitik" value="नैतिक खेल एवं शारीरिक शिक्षा" style="margin-bottom: 8px;">
+                    <label>वार्षिक प्राप्तांक (Max 100)</label>
+                    <input type="number" id="naitik_y" value="0" min="0" max="100">
+                </div>
+            </div>
+
+            <div class="btn-container" style="margin-top: 15px;">
+                <button type="submit" class="btn-success" id="saveBtn">सुरक्षित करें (Save)</button>
+                <button type="button" class="btn-warning" id="resetBtn" onclick="resetForm()">रीसेट (Reset)</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Data Management Card -->
+    <div class="card">
+        <h3>विद्यार्थी सूची एवं खोज (Search & Records)</h3>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="नाम या रोल नंबर से खोजें..." onkeyup="searchRecords()">
+            <input type="text" id="filterClass" placeholder="कक्षा से फ़िल्टर करें..." onkeyup="searchRecords()" style="max-width: 200px;">
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>रोल नं०</th>
+                        <th>नाम</th>
+                        <th>कक्षा</th>
+                        <th>पिता का नाम</th>
+                        <th>कुल प्राप्तांक</th>
+                        <th>प्रतिशत (%)</th>
+                        <th>कार्रवाई (Actions)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Data will load dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Marksheet View Modal (A4 Size) -->
+<div id="marksheetModal">
+    <div class="marksheet-print">
+        <div class="marksheet-header">
+            <img src="logo.png" alt="Logo" class="marksheet-logo" id="modalLogoImg" onerror="this.src='logo.jpg'">
+            <div class="marksheet-header-content">
+                <h2>श्री कृष्ण इण्टरमीडिएट कालेज सेमरा कठकुइयाँ</h2>
+                <h3>प्रगति-पत्र  (Progress Report Card)</h3>
+                <p>सत्र: <span id="mSession">2025-2026</span></p>
+            </div>
+        </div>
+        
+        <div class="student-info-grid">
+            <div><strong>अनुक्रमांक:</strong> <span id="mRoll"></span></div>
+            <div><strong>कक्षा:</strong> <span id="mClass"></span></div>
+            <div><strong>विद्यार्थी का नाम:</strong> <span id="mName"></span></div>
+            <div><strong>पिता का नाम:</strong> <span id="mFather"></span></div>
+            <div><strong>UDAISE Code:</strong> <span id="mUdise"></span></div>
+            <div><strong>PEN No.:</strong> <span id="mPen"></span></div>
+        </div>
+
+        <table class="print-table" id="printTableElement">
+            <!-- Dynamic Table Headers & Body will be injected via JS -->
+        </table>
+
+        <!-- नैतिक खेल (केवल 9 और 11 के लिए) -->
+        <div id="mNaitikBox" style="margin-top: 15px; border: 1px solid #ccc; padding: 10px; border-radius: 4px; background: #fafafa; display: none;">
+            <strong id="mNaitikLabel">नैतिक खेल एवं शारीरिक शिक्षा</strong>: 
+            पूर्णांक: <span style="font-weight: bold;">100</span> | 
+            प्राप्तांक: <span id="mNaitikObt" style="font-weight: bold; color: #d93025;"></span> | 
+            ग्रेड: <span id="mNaitikGrade" style="font-weight: bold; color: var(--primary-color); font-size: 15px;"></span>
+        </div>
+
+        <p style="margin-top: 20px; font-size: 16px;">
+            <strong>महायोग (Grand Total):</strong> <span id="mTotal"></span> / <span id="mMaxTotal"></span> | 
+            <strong>प्रतिशत (Percentage):</strong> <span id="mPercent"></span>% | 
+            <strong>परिणाम (Result):</strong> <span id="mResult" style="color: green; font-weight: bold;">उत्तीर्ण (Pass)</span>
+        </p>
+
+        <div style="margin-top: 60px; display: flex; justify-content: space-between; font-weight: bold;">
+            <div style="border-top: 1px solid #000; padding-top: 5px; width: 200px; text-align: center;">हस्ताक्षर कक्षा अध्यापक</div>
+            <div style="border-top: 1px solid #000; padding-top: 5px; width: 200px; text-align: center;">हस्ताक्षर प्रधानाचार्य (मोहर)</div>
+        </div>
+
+        <div class="btn-container no-print" style="margin-top: 30px; justify-content: flex-end;">
+            <button class="btn-primary" onclick="window.print()">प्रिंट करें (Print)</button>
+            <button class="btn-danger" onclick="closeMarksheet()">बंद करें (Close)</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEY = 'SKIC_SEMRA_MARKSHEETS_V14_LOGO'; 
+    const LOGIN_SESSION_KEY = 'SKIC_LOGGED_IN';
+
+    // चेक करें कि क्या यूजर पहले से लॉग इन है
+    document.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem(LOGIN_SESSION_KEY) === 'true') {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            loadTableData();
+        }
+    });
+
+    function checkLogin() {
+        const id = document.getElementById('loginId').value;
+        const pass = document.getElementById('loginPassword').value;
+        const errorMsg = document.getElementById('loginError');
+
+        if (id === "result" && pass === "123") {
+            localStorage.setItem(LOGIN_SESSION_KEY, 'true'); // Session save
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('mainContainer').style.display = 'block';
+            document.getElementById('loginId').value = '';
+            document.getElementById('loginPassword').value = '';
+            errorMsg.style.display = 'none';
+            loadTableData();
+        } else {
+            errorMsg.style.display = 'block';
+        }
+    }
+
+    function logout() {
+        if (confirm("क्या आप वाकई लॉग आउट करना चाहते हैं?")) {
+            localStorage.removeItem(LOGIN_SESSION_KEY); // Remove Session
+            document.getElementById('mainContainer').style.display = 'none';
+            document.getElementById('loginModal').style.display = 'flex';
+        }
+    }
+
+    function checkIs9Or11(clsVal) {
+        const text = clsVal.toLowerCase();
+        return text.includes('9') || text.includes('11');
+    }
+
+    function handleClassChange() {
+        const cls = document.getElementById('studentClass').value;
+        const naitikContainer = document.getElementById('naitikContainer');
+        const is9_11 = checkIs9Or11(cls);
+        
+        if (is9_11) {
+            naitikContainer.style.display = 'block';
+        } else {
+            naitikContainer.style.display = 'none';
+            document.getElementById('naitik_y').value = 0;
+        }
+
+        document.querySelectorAll('.practical-box').forEach(box => {
+            box.style.display = is9_11 ? 'none' : 'grid';
+        });
+    }
+
+    function addSubjectField(d = {}) {
+        const cls = document.getElementById('studentClass').value;
+        const is9_11 = checkIs9Or11(cls);
+        const container = document.getElementById('subjectsList');
+        const div = document.createElement('div');
+        div.className = 'sub-row';
+        
+        let practicalStyle = is9_11 ? 'style="display:none;"' : '';
+
+        div.innerHTML = `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <input type="text" placeholder="विषय का नाम (जैसे: हिंदी, गणित)" class="sub-name" value="${d.name || ''}" required style="flex: 1; margin-right: 10px; font-weight: 600; color: #1a73e8;">
+                <button type="button" class="btn-danger" onclick="this.parentElement.parentElement.remove()" style="padding: 4px 8px; font-size: 12px;">हटाएं</button>
+            </div>
+            <div class="term-title" ${practicalStyle}>अर्द्धवार्षिक (Half-Yearly)</div>
+            <div class="marks-row practical-box" ${practicalStyle}>
+                <div><label>लि० पू०</label><input type="number" class="h_maxT" value="${d.h_maxT !== undefined ? d.h_maxT : 50}"></div>
+                <div><label>लि० प्रा०</label><input type="number" class="h_obtT" value="${d.h_obtT || 0}"></div>
+                <div><label>प्रयो० पू०</label><input type="number" class="h_maxP" value="${d.h_maxP || 0}"></div>
+                <div><label>प्रयो० प्रा०</label><input type="number" class="h_obtP" value="${d.h_obtP || 0}"></div>
+            </div>
+            <div class="term-title">वार्षिक (Annual)</div>
+            <div class="marks-row">
+                <div><label>लि० पू०</label><input type="number" class="y_maxT" value="${d.y_maxT !== undefined ? d.y_maxT : 50}" required></div>
+                <div><label>लि० प्रा०</label><input type="number" class="y_obtT" value="${d.y_obtT || 0}" required></div>
+                <div class="practical-box" ${practicalStyle} style="display: contents;">
+                    <div><label>प्रयो० पू०</label><input type="number" class="y_maxP" value="${d.y_maxP || 0}" required></div>
+                    <div><label>प्रयो० प्रा०</label><input type="number" class="y_obtP" value="${d.y_obtP || 0}" required></div>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    function calculateGrade(marks) {
+        if (marks >= 90) return 'A+ ( उत्कृष्ट )';
+        if (marks >= 75) return 'A ( बहुत अच्छा )';
+        if (marks >= 60) return 'B (अच्छा )';
+        if (marks >= 45) return 'C ( संतोषजनक )';
+        if (marks >= 33) return 'D ( साधारण )';
+        return 'E (प्रयास करें)';
+    }
+
+    document.getElementById('studentForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const editIndex = document.getElementById('editIndex').value;
+        const cls = document.getElementById('studentClass').value;
+        const is9_11 = checkIs9Or11(cls);
+        
+        const subjects = [];
+        const subRows = document.querySelectorAll('#subjectsList .sub-row');
+        
+        if (subRows.length === 0) {
+            alert("कृपया कम से कम एक विषय अवश्य जोड़ें!");
+            return;
+        }
+
+        subRows.forEach(r => {
+            subjects.push({
+                name: r.querySelector('.sub-name').value,
+                h_maxT: is9_11 ? 0 : (Number(r.querySelector('.h_maxT').value) || 0),
+                h_obtT: is9_11 ? 0 : (Number(r.querySelector('.h_obtT').value) || 0),
+                h_maxP: is9_11 ? 0 : (Number(r.querySelector('.h_maxP').value) || 0),
+                h_obtP: is9_11 ? 0 : (Number(r.querySelector('.h_obtP').value) || 0),
+                y_maxT: Number(r.querySelector('.y_maxT').value) || 0,
+                y_obtT: Number(r.querySelector('.y_obtT').value) || 0,
+                y_maxP: is9_11 ? 0 : (Number(r.querySelector('.y_maxP').value) || 0),
+                y_obtP: is9_11 ? 0 : (Number(r.querySelector('.y_obtP').value) || 0)
+            });
+        });
+
+        const studentData = {
+            studentClass: cls,
+            academicSession: document.getElementById('academicSession').value,
+            rollNo: document.getElementById('rollNo').value,
+            studentName: document.getElementById('studentName').value,
+            fatherName: document.getElementById('fatherName').value,
+            udiseCode: document.getElementById('udiseCode').value,
+            penNumber: document.getElementById('penNumber').value,
+            subjects: subjects,
+            labelNaitik: is9_11 ? document.getElementById('labelNaitik').value : '',
+            marksNaitikTotal: is9_11 ? (Number(document.getElementById('naitik_y').value) || 0) : 0
+        };
+
+        let records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        if (editIndex === "") {
+            records.push(studentData);
+            alert("डेटा सफलतापूर्वक सुरक्षित हो गया है!");
+        } else {
+            records[editIndex] = studentData;
+            alert("डेटा सफलतापूर्वक अपडेट हो गया है!");
+            document.getElementById('formTitle').innerText = "नया प्रविष्टि जोड़ें (Add Student Record)";
+            document.getElementById('saveBtn').innerText = "सुरक्षित करें (Save)";
+            document.getElementById('editIndex').value = "";
+        }
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        resetForm();
+        loadTableData();
+    });
+
+    function calculateTotals(rec) {
+        let total = 0, maxTotal = 0;
+        const is9_11 = checkIs9Or11(rec.studentClass);
+        
+        if (rec.subjects) {
+            rec.subjects.forEach(sub => {
+                if (!is9_11) {
+                    total += (sub.h_obtT + sub.h_obtP);
+                    maxTotal += (sub.h_maxT + sub.h_maxP);
+                }
+                total += (sub.y_obtT + sub.y_obtP);
+                maxTotal += (sub.y_maxT + sub.y_maxP);
+            });
+        }
+        return { total, maxTotal };
+    }
+
+    function loadTableData(filteredRecords = null) {
+        const records = filteredRecords || JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        if (records.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align: center;">कोई रिकॉर्ड उपलब्ध नहीं है।</td></tr>`;
+            return;
+        }
+
+        records.forEach((rec, index) => {
+            const { total, maxTotal } = calculateTotals(rec);
+            const percentage = maxTotal > 0 ? (total / maxTotal) * 100 : 0;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${rec.rollNo}</td>
+                <td>${rec.studentName}</td>
+                <td>${rec.studentClass}</td>
+                <td>${rec.fatherName}</td>
+                <td>${total} / ${maxTotal}</td>
+                <td>${percentage.toFixed(2)}%</td>
+                <td class="actions">
+                    <button class="btn-primary" onclick="viewMarksheet(${index})">Report Card</button>
+                    <button class="btn-warning" onclick="editRecord(${index})">Return Data</button>
+                    <button class="btn-danger" onclick="deleteRecord(${index})">Delete</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function searchRecords() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filterClass = document.getElementById('filterClass').value.toLowerCase();
+        const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        const filtered = records.filter(rec => {
+            const matchesQuery = rec.studentName.toLowerCase().includes(query) || rec.rollNo.toLowerCase().includes(query);
+            const matchesClass = filterClass === "" || rec.studentClass.toLowerCase().includes(filterClass);
+            return matchesQuery && matchesClass;
+        });
+        loadTableData(filtered);
+    }
+
+    function editRecord(index) {
+        const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        const rec = records[index];
+
+        document.getElementById('studentClass').value = rec.studentClass;
+        document.getElementById('academicSession').value = rec.academicSession || "2025-2026";
+        handleClassChange();
+        document.getElementById('rollNo').value = rec.rollNo;
+        document.getElementById('studentName').value = rec.studentName;
+        document.getElementById('fatherName').value = rec.fatherName;
+        document.getElementById('udiseCode').value = rec.udiseCode || '';
+        document.getElementById('penNumber').value = rec.penNumber || '';
+        
+        if (checkIs9Or11(rec.studentClass)) {
+            document.getElementById('labelNaitik').value = rec.labelNaitik || "नैतिक खेल एवं शारीरिक शिक्षा";
+            document.getElementById('naitik_y').value = rec.marksNaitikTotal || 0;
+        }
+
+        document.getElementById('subjectsList').innerHTML = '';
+        if (rec.subjects) {
+            rec.subjects.forEach(sub => addSubjectField(sub));
+        }
+
+        document.getElementById('editIndex').value = index;
+        document.getElementById('formTitle').innerText = "रिकॉर्ड अपडेट करें (Update Record)";
+        document.getElementById('saveBtn').innerText = "अपडेट करें (Update)";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteRecord(index) {
+        if (confirm("क्या आप वाकई इस रिकॉर्ड को हटाना चाहते हैं?")) {
+            let records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            records.splice(index, 1);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            loadTableData();
+            alert("रिकॉर्ड सफलतापूर्वक हटा दिया गया है।");
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('studentForm').reset();
+        document.getElementById('academicSession').value = "2025-2026";
+        handleClassChange();
+        document.getElementById('subjectsList').innerHTML = '';
+        document.getElementById('editIndex').value = "";
+        document.getElementById('formTitle').innerText = "नया प्रविष्टि जोड़ें (Add Student Record)";
+        document.getElementById('saveBtn').innerText = "सुरक्षित करें (Save)";
+    }
+
+    function viewMarksheet(index) {
+        const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        const rec = records[index];
+        const is9_11 = checkIs9Or11(rec.studentClass);
+        const { total, maxTotal } = calculateTotals(rec);
+        const percentage = maxTotal > 0 ? (total / maxTotal) * 100 : 0;
+
+        document.getElementById('mSession').innerText = rec.academicSession || "2025-2026";
+        document.getElementById('mRoll').innerText = rec.rollNo;
+        document.getElementById('mClass').innerText = rec.studentClass;
+        document.getElementById('mName').innerText = rec.studentName;
+        document.getElementById('mFather').innerText = rec.fatherName;
+        document.getElementById('mUdise').innerText = rec.udiseCode || 'N/A';
+        document.getElementById('mPen').innerText = rec.penNumber || 'N/A';
+        
+        const printTable = document.getElementById('printTableElement');
+        if (is9_11) {
+            printTable.innerHTML = `
+                <thead>
+                    <tr>
+                        <th style="width: 50%;">विषय (Subject)</th>
+                        <th>( प्राप्तांक / पूर्णांक )</th>
+                        <th>कुल योग</th>
+                    </tr>
+                </thead>
+                <tbody id="mSubjectsBody"></tbody>
+            `;
+        } else {
+            printTable.innerHTML = `
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width: 25%;">विषय (Subject)</th>
+                        <th colspan="2">अर्द्धवार्षिक</th>
+                        <th colspan="2">वार्षिक</th>
+                        <th rowspan="2">कुल योग</th>
+                    </tr>
+                    <tr>
+                        <th>लिखित</th><th>प्रयो०</th>
+                        <th>लिखित</th><th>प्रयो०</th>
+                    </tr>
+                </thead>
+                <tbody id="mSubjectsBody"></tbody>
+            `;
+        }
+
+        let subjectsHtml = '';
+        if (rec.subjects) {
+            rec.subjects.forEach(sub => {
+                if (is9_11) {
+                    let subTotal = sub.y_obtT;
+                    let subMax = sub.y_maxT;
+                    subjectsHtml += `
+                        <tr>
+                            <td>${sub.name}</td>
+                            <td>${sub.y_obtT} / ${sub.y_maxT}</td>
+                            <td><strong>${subTotal} / ${subMax}</strong></td>
+                        </tr>
+                    `;
+                } else {
+                    let subTotal = sub.h_obtT + sub.h_obtP + sub.y_obtT + sub.y_obtP;
+                    let subMax = sub.h_maxT + sub.h_maxP + sub.y_maxT + sub.y_maxP;
+                    subjectsHtml += `
+                        <tr>
+                            <td>${sub.name}</td>
+                            <td>${sub.h_obtT} / ${sub.h_maxT}</td>
+                            <td>${sub.h_obtP} / ${sub.h_maxP}</td>
+                            <td>${sub.y_obtT} / ${sub.y_maxT}</td>
+                            <td>${sub.y_obtP} / ${sub.y_maxP}</td>
+                            <td><strong>${subTotal} / ${subMax}</strong></td>
+                        </tr>
+                    `;
+                }
+            });
+        }
+
+        document.getElementById('mSubjectsBody').innerHTML = subjectsHtml;
+        document.getElementById('mMaxTotal').innerText = maxTotal;
+        document.getElementById('mTotal').innerText = total;
+        document.getElementById('mPercent').innerText = percentage.toFixed(2);
+        
+        const mNaitikBox = document.getElementById('mNaitikBox');
+        if (is9_11) {
+            mNaitikBox.style.display = 'block';
+            document.getElementById('mNaitikLabel').innerText = rec.labelNaitik || "नैतिक खेल एवं शारीरिक शिक्षा";
+            const naitikObt = rec.marksNaitikTotal || 0;
+            document.getElementById('mNaitikObt').innerText = `${naitikObt}`;
+            document.getElementById('mNaitikGrade').innerText = calculateGrade(naitikObt);
+        } else {
+            mNaitikBox.style.display = 'none';
+        }
+
+        document.getElementById('marksheetModal').style.display = 'flex';
+    }
+
+    function closeMarksheet() {
+        document.getElementById('marksheetModal').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

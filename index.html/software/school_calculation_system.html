@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Fees System</title>
+
+<style>
+/* रीसेट और बेस स्टाइल */
+*{
+box-sizing:border-box;
+margin: 0;
+padding: 0;
+}
+
+body{
+padding: 12px;
+font-family: Arial, sans-serif;
+font-weight: bold;
+background: pink;
+height: 100vh;
+overflow: hidden;
+display: flex;
+flex-direction: column;
+}
+
+/* LOGIN OVERLAY STYLES */
+#login-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.85);
+display: flex;
+justify-content: center;
+align-items: center;
+z-index: 99999;
+}
+
+.login-box {
+background: #ffffff;
+padding: 30px;
+border-radius: 12px;
+box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+width: 320px;
+text-align: center;
+border: 3px solid #003366;
+}
+
+.login-box h2 {
+margin-bottom: 20px;
+color: #003366;
+font-size: 22px;
+background: none;
+padding: 0;
+}
+
+.input-group {
+margin-bottom: 15px;
+text-align: left;
+}
+
+.input-group label {
+display: block;
+margin-bottom: 5px;
+color: #333;
+font-size: 13px;
+text-align: left;
+}
+
+.input-group input {
+width: 100%;
+padding: 8px;
+border: 2px solid #003366;
+border-radius: 6px;
+font-size: 15px;
+background: #fff;
+color: #000;
+text-align: left;
+}
+
+.login-btn {
+width: 100%;
+padding: 10px;
+background: #27ae60;
+color: white;
+border: none;
+border-radius: 6px;
+font-size: 16px;
+font-weight: bold;
+cursor: pointer;
+margin-top: 5px;
+}
+
+.login-btn:hover {
+background: #219150;
+}
+
+.error-msg {
+color: red;
+margin-top: 12px;
+font-size: 13px;
+display: none;
+}
+
+/* MAIN APP CONTAINER */
+#main-app {
+display: none;
+height: 100%;
+flex-direction: column;
+}
+
+/* विशिष्ट टेक्स्टबॉक्स कलर्स */
+#txt4,#txt5,#txt6,#txt7{
+background:red;
+color:white;
+font-weight:bold;
+border:2px solid darkgreen;
+}
+
+#txt25{
+background:black;
+color:white;
+font-weight:bold;
+border:2px solid darkgreen;
+}
+
+#txt2,#txt3{
+background:green;
+color:white;
+font-weight:bold;
+border:2px solid darkgreen;
+}
+
+#txt23,#txt24,#txt26,#txt8{
+background:pink;
+color:black;
+font-weight:bold;
+border:2px solid red;
+}
+
+/* Registration & Board Textboxes Colors */
+#txt29, #txt30, #txt31, #txt32 {
+background: #fef3c7;
+color: #92400e;
+font-weight: bold;
+border: 2px solid #f59e0b;
+}
+
+#txt33, #txt34 {
+background: #e0f2fe;
+color: #0369a1;
+font-weight: bold;
+border: 2px solid #0284c7;
+}
+
+/* मारकी पट्टी */
+.marquee{
+width:100%;
+background:green;
+color:white;
+padding:8px;
+font-size:16px;
+border-radius:8px;
+margin-bottom:8px;
+overflow:hidden;
+white-space:nowrap;
+flex-shrink: 0;
+}
+
+.marquee span{
+display:inline-block;
+padding-left:100%;
+animation:move 12s linear infinite;
+}
+
+@keyframes move{
+0%{transform:translateX(0);}
+100%{transform:translateX(-100%);}
+}
+
+/* मुख्य कंटेनर */
+.container{
+width: 100%;
+max-width: 100%;
+background: white;
+padding: 15px;
+border-radius: 10px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+flex-grow: 1;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+}
+
+.header-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: #003366;
+border-radius: 8px;
+padding: 4px 10px;
+margin-bottom: 5px;
+flex-shrink: 0;
+}
+
+.header-row h2 {
+background: none;
+color: white;
+padding: 0;
+margin: 0;
+font-size: 20px;
+}
+
+.logout-btn {
+background: #dc2626;
+color: white;
+border: none;
+padding: 4px 12px;
+border-radius: 4px;
+font-size: 12px;
+cursor: pointer;
+font-weight: bold;
+height: auto;
+}
+
+/* मैसेज बॉक्स */
+.message{
+margin-bottom:8px;
+padding:4px 8px;
+background:#dbeeff;
+border:2px solid blue;
+border-radius:6px;
+text-align:center;
+font-size:14px;
+height: 36px;
+line-height: 26px;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+flex-shrink: 0;
+}
+
+/* कंट्रोल पैनल */
+.top-control-panel {
+display: flex;
+flex-direction: column;
+gap: 10px;
+background: #f8fafc;
+border: 2px solid #64748b;
+border-radius: 8px;
+padding: 10px;
+margin-bottom: 10px;
+flex-shrink: 0;
+}
+
+/* बटन्स ग्रिड */
+.btns{
+display:grid;
+grid-template-columns: repeat(9, 1fr);
+gap:8px;
+direction: rtl;
+align-items: center;
+}
+
+button{
+padding:6px;
+border:none;
+border-radius:6px;
+font-size:12px;
+font-weight:bold;
+color:white;
+cursor:pointer;
+direction: ltr;
+transition: transform 0.1s;
+height: 36px;
+}
+
+button:active {
+transform: scale(0.97);
+}
+
+.calc-box-wrapper {
+direction: ltr;
+width: 100%;
+}
+
+.calc-box-wrapper input {
+border: 2px solid #8e44ad;
+background: #f4ecf7;
+color: #000;
+height: 36px;
+font-size: 14px;
+text-align: center;
+font-weight: bold;
+}
+
+/* बटन कलर्स */
+.btns button:nth-child(2){background:#0066cc;}   /* Save */
+.btns button:nth-child(3){background:orange;}    /* Search */
+.btns button:nth-child(4){background:red;}       /* Update */
+.btns button:nth-child(5){background:#8e44ad;}   /* Google Sheet */
+.btns button:nth-child(6){background:black;}     /* Clear */
+.btns button:nth-child(7){background:#b91c1c;}   /* Delete */
+.btns button:nth-child(8){background:#27ae60;}   /* Sync */
+.btns button:nth-child(9){background:#c2410c;}   /* Reset Reg/Board */
+
+/* कॉम्पैक्ट टोटल बॉक्स पट्टी */
+.summary-container {
+display: flex;
+align-items: center;
+justify-content: space-between;
+background: #ffffff;
+border: 1px solid #cbd5e1;
+border-radius: 6px;
+padding: 6px;
+height: 60px;
+}
+
+.total-scroll-box {
+flex-grow: 1;
+overflow-x: auto;
+white-space: nowrap;
+background: #ffffff;
+padding: 2px;
+height: 100%;
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.total-item {
+display: inline-flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-width: 130px;
+background: #f1f5f9;
+padding: 4px 8px;
+border-radius: 4px;
+border: 1px solid #cbd5e1;
+height: 44px;
+}
+
+.total-item-label {
+font-size: 11px;
+color: #334155;
+margin-bottom: 2px;
+white-space: nowrap;
+font-weight: bold;
+}
+
+.total-item-val {
+font-size: 13px;
+color: #b91c1c;
+font-weight: bold;
+}
+
+/* इनपुट रो */
+.extra-fields-row {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+background: #f1f5f9;
+border-radius: 6px;
+padding: 6px;
+border: 1px dashed #cbd5e1;
+overflow-x: auto;
+}
+
+.left-totals-group {
+display: flex;
+align-items: center;
+gap: 8px;
+flex-shrink: 0;
+}
+
+.extra-field-group {
+display: flex;
+align-items: center;
+gap: 4px;
+}
+
+.extra-field-group label {
+font-size: 12px;
+color: black;
+font-weight: bold;
+margin-bottom: 0;
+white-space: nowrap;
+}
+
+.extra-field-group input {
+width: 100px;
+height: 28px;
+font-size: 12px;
+border: 1px solid #475569;
+border-radius: 4px;
+padding: 2px;
+text-align: center;
+font-weight: bold;
+background: #fff;
+}
+
+.search-inputs-group {
+display: flex;
+align-items: center;
+gap: 6px;
+flex-shrink: 0;
+}
+
+.search-field-card {
+display: flex;
+flex-direction: column;
+gap: 2px;
+background: #fff;
+border: 1px solid #94a3b8;
+border-radius: 6px;
+padding: 4px 6px;
+}
+
+.search-field-card label {
+font-size: 10px;
+color: #0f172a;
+font-weight: bold;
+margin: 0;
+}
+
+.search-field-card input {
+width: 95px;
+height: 24px;
+font-size: 11px;
+border: 1px solid #0284c7;
+border-radius: 4px;
+padding: 2px;
+text-align: center;
+font-weight: bold;
+background: #f0f9ff;
+}
+
+.class-summary-boxes {
+display: flex;
+align-items: center;
+gap: 6px;
+flex-shrink: 0;
+}
+
+.class-card {
+background: #ffffff;
+border: 1px solid #0284c7;
+border-radius: 6px;
+padding: 3px 6px;
+min-width: 125px;
+}
+
+.class-card-header {
+font-size: 11px;
+background: #0284c7;
+color: white;
+text-align: center;
+border-radius: 3px;
+padding: 1px 0;
+margin-bottom: 3px;
+}
+
+.class-card-body {
+font-size: 10px;
+color: #1e293b;
+}
+
+.class-card-body div {
+display: flex;
+justify-content: space-between;
+}
+
+.class-card-body span.val {
+color: #b91c1c;
+font-weight: bold;
+}
+
+/* फॉर्म एरिया */
+.scrollable-form-area {
+flex-grow: 1;
+overflow-y: auto;
+padding-right: 5px;
+}
+
+.top-grid{
+display:grid;
+grid-template-columns: repeat(4, 1fr);
+gap:15px;
+margin-bottom: 10px;
+}
+
+.jan-special-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 15px;
+background: #fdf2e9;
+padding: 8px;
+border: 2px dashed #e67e22;
+border-radius: 8px;
+margin-bottom: 10px;
+}
+
+.grid{
+display:grid;
+grid-template-columns: repeat(9, 1fr);
+column-gap: 15px;
+row-gap: 14px;
+margin-top: 5px;
+margin-bottom: 10px;
+align-content: center;
+}
+
+label{
+display:block;
+margin-bottom:4px;
+font-size:14px;
+color: black;
+text-align: center;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+input, select{
+width:100%;
+height: 34px;
+padding:4px;
+border:2px solid black;
+border-radius:6px;
+font-size:15px;
+font-weight:bold;
+text-align:center;
+background: white;
+color: black;
+}
+
+select{
+border:2px solid #0f172a;
+background: #1a365d;
+color: white;
+cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+    <div class="login-box">
+        <h2>System Login</h2>
+        <div class="input-group">
+            <label>Login ID</label>
+            <input type="text" id="loginUser" placeholder="Enter Login ID">
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="loginPass" placeholder="Enter Password">
+        </div>
+        <button class="login-btn" onclick="checkLogin()">Login</button>
+        <div class="error-msg" id="loginError">गलत Login ID या Password!</div>
+    </div>
+</div>
+
+<!-- MAIN SOFTWARE -->
+<div id="main-app">
+    <div class="marquee">
+        <span>School Fees System - Shri Krishn Inter College Semra Kathkuiyan</span>
+    </div>
+
+    <div class="container">
+        <div class="header-row">
+            <h2>S K I C Software</h2>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <div class="message" id="msg">&nbsp;</div>
+
+        <div class="top-control-panel">
+            <div class="btns">
+                <div class="calc-box-wrapper">
+                    <input type="text" id="calcBox" placeholder="Calc (+,-,*,/,%)" tabindex="12">
+                </div>
+                <button id="btnSaveElement" onclick="saveData()" tabindex="11">Save</button>
+                <button onclick="searchData()" tabindex="13">Search</button>
+                <button onclick="updateData()" tabindex="14">Update</button>
+                <button onclick="openGoogleSheet()" tabindex="15">Google Sheet</button> 
+                <button onclick="clearForm()" tabindex="16">Clear</button>
+                <button onclick="deleteRecord()" tabindex="16">Delete</button>
+                <button onclick="syncOfflineData(false)" tabindex="17">Sync Data</button>
+                <button onclick="resetRegBoardData()">Reg/Board Reset</button>
+            </div>
+
+            <div class="summary-container">
+                <div class="total-scroll-box" id="liveTotalContainer">
+                    लोड हो रहा है...
+                </div>
+            </div>
+
+            <div class="extra-fields-row">
+                <div class="left-totals-group">
+                    <div class="extra-field-group">
+                        <label>बैंक</label>
+                        <input type="text" id="customBankInput" placeholder="0" readonly style="background:#f4f4f5;">
+                    </div>
+                    <div class="extra-field-group">
+                        <label>हेड</label>
+                        <input type="text" id="customHeadInput" placeholder="0" readonly style="background:#f4f4f5;">
+                    </div>
+                    <div class="extra-field-group">
+                        <label>दोनों का टोटल</label>
+                        <input type="text" id="customTotalInput" placeholder="0" readonly style="background:#e0f2fe; color:#0369a1;">
+                    </div>
+                </div>
+
+                <div class="search-inputs-group">
+                    <div class="search-field-card">
+                        <label>दिनांक सर्च</label>
+                        <input type="text" id="searchDateInput" placeholder="DD/MM/YYYY">
+                    </div>
+                    <div class="search-field-card">
+                        <label>क्लास सर्च</label>
+                        <input type="text" id="searchClassInput" placeholder="e.g. 9A / 10">
+                    </div>
+                </div>
+
+                <div class="class-summary-boxes">
+                    <div class="class-card">
+                        <div class="class-card-header">कक्षा 9</div>
+                        <div class="class-card-body">
+                            <div>सा०/पिछड़ा: <span class="val" id="c9_gen">0</span></div>
+                            <div>अनु०जाति: <span class="val" id="c9_sc">0</span></div>
+                            <div>कुल छात्र: <span class="val" id="c9_total_count">0</span></div>
+                            <div>कुल फीस: ₹<span class="val" id="c9_fee">0</span></div>
+                        </div>
+                    </div>
+                    <div class="class-card">
+                        <div class="class-card-header">कक्षा 10</div>
+                        <div class="class-card-body">
+                            <div>सा०/पिछड़ा: <span class="val" id="c10_gen">0</span></div>
+                            <div>अनु०जाति: <span class="val" id="c10_sc">0</span></div>
+                            <div>कुल छात्र: <span class="val" id="c10_total_count">0</span></div>
+                            <div>कुल फीस: ₹<span class="val" id="c10_fee">0</span></div>
+                        </div>
+                    </div>
+                    <div class="class-card">
+                        <div class="class-card-header">कक्षा 11</div>
+                        <div class="class-card-body">
+                            <div>सा०/पिछड़ा: <span class="val" id="c11_gen">0</span></div>
+                            <div>अनु०जाति: <span class="val" id="c11_sc">0</span></div>
+                            <div>कुल छात्र: <span class="val" id="c11_total_count">0</span></div>
+                            <div>कुल फीस: ₹<span class="val" id="c11_fee">0</span></div>
+                        </div>
+                    </div>
+                    <div class="class-card">
+                        <div class="class-card-header">कक्षा 12</div>
+                        <div class="class-card-body">
+                            <div>सा०/पिछड़ा: <span class="val" id="c12_gen">0</span></div>
+                            <div>अनु०जाति: <span class="val" id="c12_sc">0</span></div>
+                            <div>कुल छात्र: <span class="val" id="c12_total_count">0</span></div>
+                            <div>कुल फीस: ₹<span class="val" id="c12_fee">0</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scrollable-form-area">
+            <div class="top-grid">
+                <div>
+                <label>ID</label>
+                <input type="text" id="txt1" tabindex="1">
+                </div>
+
+                <div>
+                <label>Month</label>
+                <select id="combMonth" tabindex="2">
+                <option value="">Select</option>
+                <option>Jul</option>
+                <option>Aug</option>
+                <option>Sep</option>
+                <option>Oct</option>
+                <option>Jan</option>
+                <option>Feb</option>
+                <option>March</option>
+                <option>Jul/Jan</option>
+                </select>
+                </div>
+
+                <div>
+                <label>Category</label>
+                <select id="combCoste" tabindex="3">
+                <option value="">Select</option>
+                <option>Gen/Sc</option>
+                <option>Gen</option>
+                <option>Sc</option>
+                </select>
+                </div>
+
+                <div>
+                <label>Class</label>
+                <select id="combClass" tabindex="4">
+                <option value="">Select</option>
+                <option>9A</option>
+                <option>9B</option>
+                <option>9C</option>
+                <option>9D</option>
+                <option>9E</option>
+                <option>10A</option>
+                <option>10B</option>
+                <option>10C</option>
+                <option>10D</option>
+                <option>10E</option>
+                <option>11A</option>
+                <option>11B</option>
+                <option>12A</option>
+                <option>12B</option>
+                </select>
+                </div>
+            </div>
+
+            <div class="jan-special-grid" id="janSection" style="display: none;">
+                <div>
+                    <label>जन० संख्या सा०/पिछड़ा</label>
+                    <input type="text" id="janTxt2" placeholder="0">
+                </div>
+                <div>
+                    <label>जन० संख्या अनु०जाति</label>
+                    <input type="text" id="janTxt3" placeholder="0">
+                </div>
+                <div>
+                    <label>जन० विलम्ब</label>
+                    <input type="text" id="janTxt4" placeholder="0">
+                </div>
+            </div>
+
+            <div class="grid" id="textboxArea"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+/* CLASS TEACHER MAPPING */
+const teacherMapping = {
+    "9A": "Santosh Kumar",
+    "9B": "Arvind Prasad",
+    "9C": "Arvind Prasad",
+    "9D": "Punita Upadhyay",
+    "9E": "Anil Kukar Singh",
+    "10A": "Onkareshwar Mishra",
+    "10B": "Shambhu Sharan Pandey",
+    "10C": "Vijay Kumar",
+    "10D": "Parveen Kumar Pandey",
+    "10E": "Manoj Kumar Tripathi",
+    "11A": "Manoj Kumar",
+    "11B": "Manoj Kumar",
+    "12A": "Vinay Mani Tripathi",
+    "12B": "Vinay Mani Tripathi"
+};
+
+/* LOGIN LOGIC */
+window.addEventListener("DOMContentLoaded", function() {
+    let logged = sessionStorage.getItem("isLoggedIn");
+    if(logged === "true") {
+        document.getElementById("login-overlay").style.display = "none";
+        document.getElementById("main-app").style.display = "flex";
+        loadPersistentRegBoardData();
+        updateLiveGrandTotal();
+    } else {
+        document.getElementById("login-overlay").style.display = "flex";
+        document.getElementById("main-app").style.display = "none";
+    }
+});
+
+function checkLogin() {
+    let u = document.getElementById("loginUser").value.trim();
+    let p = document.getElementById("loginPass").value.trim();
+    if(u === "fees" && p === "123") {
+        sessionStorage.setItem("isLoggedIn", "true");
+        document.getElementById("login-overlay").style.display = "none";
+        document.getElementById("main-app").style.display = "flex";
+        loadPersistentRegBoardData();
+        updateLiveGrandTotal();
+    } else {
+        document.getElementById("loginError").style.display = "block";
+    }
+}
+
+function logout() {
+    sessionStorage.removeItem("isLoggedIn");
+    location.reload();
+}
+
+const WEB_APP_URL ="https://script.google.com/macros/s/AKfycbzymTqWIc2xIBUC1ZO6T-MlrIMVzV9VovInqdoIklh9JVnlf_jQXAU2yBtbyvkxfsoOBQ/exec";
+
+/* LABELS 2 TO 34 */
+const labels={
+2:"संख्या सा०/पिछड़ा",
+3:"संख्या अनु०जाति",
+4:"विलम्ब",
+5:"पुन:प्रवेश",
+6:"टी०सी०",
+7:"महंगाई",
+8:"योग",
+9:"विकास",
+10:"विज्ञान",
+11:"कला",
+12:"पंखा",
+13:"प्रगति पत्र",
+14:"वाचनालय",
+15:"जलपान",
+16:"परीक्षा",
+17:"पत्रिका",
+18:"श्रव्य दृश्य",
+19:"निर्धन",
+20:"स्काउट",
+21:"रेडक्रास",
+22:"क्रीड़ा",
+23:"योग",
+24:"महायोग",
+25:"पी.टी.ए.",
+26:"कुल योग",
+27:"दिनांक",
+28:"समय",
+29:"कक्षा 9 Registration",
+30:"कक्षा 10 Board",
+31:"कक्षा 11 Registration",
+32:"कक्षा 12 Board",
+33:"Total Registration",
+34:"Total Board"
+};
+
+/* AUTO TEXTBOX GENERATION (2 TO 34) */
+let area=document.getElementById("textboxArea");
+for(let i=2; i<=34; i++){
+    let tabIdx = -1; 
+    if(i >= 2 && i <= 6) tabIdx = 4 + (i - 1); 
+    else if(i === 25) tabIdx = 10; 
+    
+    let tabAttr = tabIdx !== -1 ? `tabindex="${tabIdx}"` : `tabindex="-1"`;
+
+    area.innerHTML+=`
+    <div>
+    <label title="${labels[i]}">${labels[i]}</label>
+    <input type="text" id="txt${i}" ${tabAttr}>
+    </div>
+    `;
+}
+
+let isManualDate = false;
+
+function val(id){ return Number(document.getElementById(id).value)||0; }
+function setVal(id,v){ document.getElementById(id).value=v; }
+function msg(m){
+    document.getElementById("msg").innerText=m;
+    setTimeout(()=>{ document.getElementById("msg").innerHTML="&nbsp;"; },15000);
+}
+
+function getNextId(){
+    let last=Number(localStorage.getItem("lastId")||0);
+    return last+1;
+}
+
+/* CALCULATOR FUNCTIONALITY */
+document.getElementById("calcBox").addEventListener("keydown", function(e) {
+    if(e.key === "Enter") {
+        e.preventDefault();
+        let exp = this.value.trim();
+        if(exp === "") return;
+        try {
+            exp = exp.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
+            if(/^[0-9\+\-\*\/\.\(\)\s]+$/.test(exp)) {
+                let res = Function('"use strict"; return (' + exp + ')')();
+                this.value = res;
+            } else {
+                msg("⚠️ गलत कैलकुलेशन इनपुट!");
+            }
+        } catch(err) {
+            msg("⚠️ गणना में त्रुटि!");
+        }
+    }
+});
+
+/* REGISTRATION & BOARD PERMANENT LOCAL STORAGE LOGIC */
+function loadPersistentRegBoardData() {
+    let saved = JSON.parse(localStorage.getItem("reg_board_data") || "{}");
+    setVal("txt29", saved.txt29 || "");
+    setVal("txt30", saved.txt30 || "");
+    setVal("txt31", saved.txt31 || "");
+    setVal("txt32", saved.txt32 || "");
+    setVal("txt33", saved.txt33 || "");
+    setVal("txt34", saved.txt34 || "");
+}
+
+function savePersistentRegBoardData() {
+    let data = {
+        txt29: document.getElementById("txt29").value,
+        txt30: document.getElementById("txt30").value,
+        txt31: document.getElementById("txt31").value,
+        txt32: document.getElementById("txt32").value,
+        txt33: document.getElementById("txt33").value,
+        txt34: document.getElementById("txt34").value
+    };
+    localStorage.setItem("reg_board_data", JSON.stringify(data));
+}
+
+/* PASSWORD PROTECTED REG/BOARD RESET */
+function resetRegBoardData() {
+    let pwd = prompt("Reg/Board रीसेट करने के लिए पासवर्ड दर्ज करें:");
+    if(pwd === null) return;
+    if(pwd === "123") {
+        localStorage.removeItem("reg_board_data");
+        setVal("txt29", "");
+        setVal("txt30", "");
+        setVal("txt31", "");
+        setVal("txt32", "");
+        setVal("txt33", "");
+        setVal("txt34", "");
+        msg("🗑️ Reg/Board डाटा सफलतापूर्वक रीसेट कर दिया गया है!");
+        updateLiveGrandTotal();
+    } else {
+        alert("❌ गलत पासवर्ड! रीसेट नहीं किया गया।");
+    }
+}
+
+/* LIVE GRAND TOTAL & CLASS SUMMARY */
+function updateLiveGrandTotal() {
+    let searchDate = (document.getElementById("searchDateInput") ? document.getElementById("searchDateInput").value.trim().toLowerCase() : "");
+    let searchCls = (document.getElementById("searchClassInput") ? document.getElementById("searchClassInput").value.trim().toLowerCase() : "");
+
+    let grandTotals = {};
+    let grandBankTotal = 0;
+    let grandHeadTotal = 0;
+    let grandCombinedTotal = 0;
+
+    let classStats = {
+        9:  { gen: 0, sc: 0, totalCount: 0, fee: 0 },
+        10: { gen: 0, sc: 0, totalCount: 0, fee: 0 },
+        11: { gen: 0, sc: 0, totalCount: 0, fee: 0 },
+        12: { gen: 0, sc: 0, totalCount: 0, fee: 0 }
+    };
+
+    for(let i=2; i<=34; i++) grandTotals[i] = 0;
+
+    for(let key in localStorage) {
+        if(localStorage.hasOwnProperty(key) && /^\d+$/.test(key)) {
+            try {
+                let record = JSON.parse(localStorage.getItem(key));
+                if(record) {
+                    let recordDate = (record.txt27 || "").toLowerCase();
+                    let recordCls = (record.className || "").toLowerCase();
+
+                    let matchesDate = (searchDate === "" || recordDate.includes(searchDate));
+                    let matchesClass = (searchCls === "" || recordCls.includes(searchCls));
+
+                    if(matchesDate && matchesClass) {
+                        for(let i=2; i<=34; i++) grandTotals[i] += Number(record["txt" + i]) || 0;
+                        grandBankTotal += Number(record["customBank"]) || 0;
+                        grandHeadTotal += Number(record["customHead"]) || 0;
+                        grandCombinedTotal += Number(record["customTotal"]) || 0;
+
+                        let cls = record.className || "";
+                        let mainCls = 0;
+                        if(cls.startsWith("9")) mainCls = 9;
+                        else if(cls.startsWith("10")) mainCls = 10;
+                        else if(cls.startsWith("11")) mainCls = 11;
+                        else if(cls.startsWith("12")) mainCls = 12;
+
+                        if(mainCls > 0) {
+                            let genCnt = (Number(record.txt2) || 0) + (Number(record.janTxt2) || 0);
+                            let scCnt = (Number(record.txt3) || 0) + (Number(record.janTxt3) || 0);
+                            let totalFee = Number(record.txt26) || 0; // कुल योग (txt26) का प्रयोग
+
+                            classStats[mainCls].gen += genCnt;
+                            classStats[mainCls].sc += scCnt;
+                            classStats[mainCls].totalCount += (genCnt + scCnt);
+                            classStats[mainCls].fee += totalFee;
+                        }
+                    }
+                }
+            } catch(e) { }
+        }
+    }
+
+    setVal("customBankInput", Number(grandBankTotal.toFixed(2)));
+    setVal("customHeadInput", Number(grandHeadTotal.toFixed(2)));
+    setVal("customTotalInput", Number(grandCombinedTotal.toFixed(2)));
+
+    [9, 10, 11, 12].forEach(c => {
+        document.getElementById(`c${c}_gen`).innerText = classStats[c].gen;
+        document.getElementById(`c${c}_sc`).innerText = classStats[c].sc;
+        document.getElementById(`c${c}_total_count`).innerText = classStats[c].totalCount;
+        document.getElementById(`c${c}_fee`).innerText = classStats[c].fee;
+    });
+
+    let html = "";
+    for(let i=2; i<=34; i++) {
+        html += `
+        <div class="total-item">
+            <div class="total-item-label">${labels[i]}</div>
+            <div class="total-item-val" id="gt_${i}">${grandTotals[i]}</div>
+        </div>`;
+    }
+
+    document.getElementById("liveTotalContainer").innerHTML = html;
+}
+
+function calculateBankAndHead(baseAmount, currentMahangai) {
+    let bankRaw = baseAmount * 0.85;
+    let headRaw = baseAmount * 0.15;
+    let bankFinal = bankRaw + currentMahangai;
+    let headFinal = headRaw;
+    return {
+        bank: Number(bankFinal.toFixed(2)),
+        head: Number(headFinal.toFixed(2)),
+        total: Number((bankFinal + headFinal).toFixed(2))
+    };
+}
+
+/* AUTOMATIC LIVE CALCULATE */
+function calculateData(){
+    let cls = combClass.value;
+    let month = combMonth.value;
+
+    /* Class Teacher Message Display Logic */
+    if(cls && teacherMapping[cls]) {
+        let tName = teacherMapping[cls];
+        msg(cls + " - " + tName + " : शुल्क विवरण प्रदर्शित हो रहा है...");
+    }
+
+    if(month === "Jul/Jan") {
+        document.getElementById("janSection").style.display = "grid";
+    } else {
+        document.getElementById("janSection").style.display = "none";
+    }
+
+    let a = val("txt2");
+    let b = val("txt3");
+    let c = val("txt4"); 
+    let d = val("txt5");
+    let e = val("txt6");
+
+    let jan_a = (month === "Jul/Jan") ? val("janTxt2") : 0;
+    let jan_b = (month === "Jul/Jan") ? val("janTxt3") : 0;
+    let jan_c = (month === "Jul/Jan") ? val("janTxt4") : 0;
+
+    // Caste combo auto select
+    let txt2Value = document.getElementById("txt2").value.trim();
+    let txt3Value = document.getElementById("txt3").value.trim();
+    if(txt2Value !== "" && txt3Value !== "") {
+        document.getElementById("combCoste").value = "Gen/Sc";
+    } else if(txt2Value !== "") {
+        document.getElementById("combCoste").value = "Gen";
+    } else if(txt3Value !== "") {
+        document.getElementById("combCoste").value = "Sc";
+    }
+
+    // Normal Fee Calculations
+    let mahangai = (a * 6) + (jan_a * 6);
+    setVal("txt7", mahangai);
+
+    if(month === "Jul/Jan" && jan_c > 0) setVal("txt4", c + jan_c);
+
+    setVal("txt8", val("txt4") + d + e + val("txt7"));
+
+    let multiplier = 0;
+    if(["9A","9B","9C","9D","9E","10A","10B","10C","10D","10E"].includes(cls)){
+        multiplier = 60;
+    } else if(["11A","11B","12A","12B"].includes(cls)){
+        multiplier = 90;
+    }
+    setVal("txt9", (a * multiplier) + (jan_a * multiplier));
+
+    if(["9A","9B","9C","9D","9E","10A","10B","10C","10D","10E"].includes(cls)){
+        setVal("txt10", ((a + b) * 30) + ((jan_a + jan_b) * 30));
+    } else {
+        setVal("txt10", "");
+    }
+
+    if(["Jul", "Aug", "Sep", "Oct", "Jul/Jan"].includes(month) && ["9A","9B","9C","9D","9E","10A","10B","10C","10D","10E"].includes(cls)){
+        setVal("txt11", (a + b) * 2);
+    } else { setVal("txt11", ""); }
+
+    if(["Jul", "Aug", "Sep", "Oct", "Jul/Jan"].includes(month)){
+        setVal("txt12", (a + b) * 20); 
+        setVal("txt13", (a + b) * 5);   
+        setVal("txt14", a * 12);        
+        setVal("txt17", (a + b) * 20); 
+        setVal("txt18", (a + b) * 2);   
+        setVal("txt19", (a + b) * 10); 
+    } else {
+        setVal("txt12",""); setVal("txt13",""); setVal("txt14","");
+        setVal("txt17",""); setVal("txt18",""); setVal("txt19","");
+    }
+
+    setVal("txt15", ((a + b) * 12) + ((jan_a + jan_b) * 12)); 
+    setVal("txt20", ((a + b) * 12) + ((jan_a + jan_b) * 12)); 
+    setVal("txt21", ((a + b) * 6) + ((jan_a + jan_b) * 6));    
+    setVal("txt22", (a * 30) + (jan_a * 30));                 
+
+    let examFee = 0;
+    if(["Jul", "Aug", "Sep", "Oct"].includes(month)){
+        examFee = (a + b) * 25;
+    } else if(["Jan", "Feb", "March"].includes(month) && ["9A","9B","9C","9D","9E","11A","11B"].includes(cls)){
+        examFee = (a + b) * 25;
+    } else if(month === "Jul/Jan") {
+        examFee += (a + b) * 25; 
+        examFee += (jan_a + jan_b) * 25; 
+    }
+    if(examFee > 0) { setVal("txt16", examFee); } else { setVal("txt16", ""); }
+
+    let total = val("txt9") + val("txt10") + val("txt11") + val("txt12") + val("txt13") + val("txt14") + val("txt15") + val("txt16") + val("txt17") + val("txt18") + val("txt19") + val("txt20") + val("txt21") + val("txt22");
+
+    setVal("txt23", total);
+    setVal("txt24", val("txt8") + total);
+
+    // --- REGISTRATION & BOARD LOGIC ---
+    setVal("txt29", "");
+    setVal("txt30", "");
+    setVal("txt31", "");
+    setVal("txt32", "");
+
+    let isJulyMonth = (month === "Jul" || month === "Jul/Jan");
+    
+    // केवल जुलाई के छात्रों की संख्या से Registration/Board फीस बनेगी
+    let julyStudents = (a + b); 
+
+    if(isJulyMonth && julyStudents > 0) {
+        if(["9A","9B","9C","9D","9E"].includes(cls)){
+            setVal("txt29", julyStudents * 50);
+        } else if(["10A","10B","10C","10D","10E"].includes(cls)){
+            setVal("txt30", julyStudents * 501);
+        } else if(["11A","11B"].includes(cls)){
+            setVal("txt31", julyStudents * 50);
+        } else if(["12A","12B"].includes(cls)){
+            setVal("txt32", julyStudents * 601);
+        }
+    }
+
+    let regTotal = val("txt29") + val("txt31");
+    setVal("txt33", regTotal > 0 ? regTotal : "");
+
+    let boardTotal = val("txt30") + val("txt32");
+    setVal("txt34", boardTotal > 0 ? boardTotal : "");
+
+    savePersistentRegBoardData();
+
+    // --- कुल योग (txt26) : अब इसमें txt33 (Reg) तथा txt34 (Board) भी जुड़ेंगे ---
+    setVal("txt26", val("txt24") + val("txt25") + val("txt33") + val("txt34"));
+
+    // Bank and Head calculation updates
+    let currentMahangai = val("txt7");
+    let currentVilamb = val("txt4");
+    let currentPunhPravesh = val("txt5");
+    let currentTc = val("txt6"); 
+    let mixBaseAmount = currentVilamb + currentPunhPravesh + currentTc;
+
+    if (mixBaseAmount > 0 || currentMahangai > 0) {
+        let result = calculateBankAndHead(mixBaseAmount, currentMahangai);
+        setVal("customBankInput", result.bank);
+        setVal("customHeadInput", result.head);
+        setVal("customTotalInput", result.total);
+    } else {
+        updateLiveGrandTotal();
+    }
+
+    if(!isManualDate) {
+        let now = new Date();
+        setVal("txt27", now.toLocaleDateString("en-IN"));
+        setVal("txt28", now.toLocaleTimeString("en-IN"));
+    }
+}
+
+document.getElementById("combMonth").addEventListener("change", calculateData);
+document.getElementById("combClass").addEventListener("change", calculateData);
+document.getElementById("combCoste").addEventListener("change", calculateData);
+document.getElementById("janTxt2").addEventListener("input", calculateData);
+document.getElementById("janTxt3").addEventListener("input", calculateData);
+document.getElementById("janTxt4").addEventListener("input", calculateData);
+
+document.getElementById("txt27").addEventListener("input", function() {
+    isManualDate = this.value.trim() !== "";
+});
+
+document.getElementById("searchDateInput").addEventListener("input", updateLiveGrandTotal);
+document.getElementById("searchClassInput").addEventListener("input", updateLiveGrandTotal);
+
+for(let i=2; i<=34; i++){
+    let element = document.getElementById("txt" + i);
+    if(element){ element.addEventListener("input", calculateData); }
+}
+
+function saveData(){
+    let currentMahangai = val("txt7");
+    let currentVilamb = val("txt4");
+    let currentPunhPravesh = val("txt5");
+    let currentTc = val("txt6"); 
+
+    let mixBaseAmount = currentVilamb + currentPunhPravesh + currentTc;
+    let bFinal = 0, hFinal = 0, tFinal = 0;
+
+    if (mixBaseAmount > 0 || currentMahangai > 0) {
+        let result = calculateBankAndHead(mixBaseAmount, currentMahangai);
+        bFinal = result.bank;
+        hFinal = result.head;
+        tFinal = result.total;
+    }
+
+    let id = document.getElementById("txt1").value.trim();
+    if(id == ""){ 
+        id = String(getNextId()); 
+        setVal("txt1", id); 
+    }
+
+    let selectedCls = combClass.value;
+    let data = {
+        action: "SAVE", 
+        id: id,
+        month: combMonth.value,
+        category: combCoste.value,
+        className: selectedCls,
+        classTeacher: teacherMapping[selectedCls] || "",
+        janTxt2: document.getElementById("janTxt2").value,
+        janTxt3: document.getElementById("janTxt3").value,
+        janTxt4: document.getElementById("janTxt4").value,
+        customBank: bFinal,
+        customHead: hFinal,
+        customTotal: tFinal
+    };
+
+    for(let i=2; i<=34; i++){ 
+        let elem = document.getElementById("txt"+i);
+        data["txt"+i] = elem ? elem.value : ""; 
+    }
+
+    localStorage.setItem(id, JSON.stringify(data));
+    localStorage.setItem("lastId", id);
+
+    updateLiveGrandTotal();
+
+    if (navigator.onLine) {
+        msg("Sending data to Sheet...");
+        fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify(data) })
+        .then(res=>res.text())
+        .then((responseText)=>{
+            msg("✅ " + responseText); 
+            clearForm();
+            setVal("txt1", Number(id) + 1);
+            syncOfflineData(true);
+        })
+        .catch(err=>{ 
+            addToOfflineQueue(data);
+            setVal("txt1", Number(id) + 1);
+        });
+    } else {
+        addToOfflineQueue(data);
+        setVal("txt1", Number(id) + 1);
+    }
+}
+
+function updateData(){
+    let id = document.getElementById("txt1").value.trim();
+    if(id === "") { msg("⚠️ kripya UPDATE ke liye ID darj karein!"); return; }
+
+    let currentMahangai = val("txt7");
+    let currentVilamb = val("txt4");
+    let currentPunhPravesh = val("txt5");
+    let currentTc = val("txt6"); 
+
+    let mixBaseAmount = currentVilamb + currentPunhPravesh + currentTc;
+    let bFinal = 0, hFinal = 0, tFinal = 0;
+
+    if (mixBaseAmount > 0 || currentMahangai > 0) {
+        let result = calculateBankAndHead(mixBaseAmount, currentMahangai);
+        bFinal = result.bank;
+        hFinal = result.head;
+        tFinal = result.total;
+    }
+
+    let selectedCls = combClass.value;
+    let data = {
+        action: "UPDATE", 
+        id: id,
+        month: combMonth.value,
+        category: combCoste.value,
+        className: selectedCls,
+        classTeacher: teacherMapping[selectedCls] || "",
+        janTxt2: document.getElementById("janTxt2").value,
+        janTxt3: document.getElementById("janTxt3").value,
+        janTxt4: document.getElementById("janTxt4").value,
+        customBank: bFinal,
+        customHead: hFinal,
+        customTotal: tFinal
+    };
+
+    for(let i=2; i<=34; i++){ 
+        let elem = document.getElementById("txt"+i);
+        data["txt"+i] = elem ? elem.value : ""; 
+    }
+
+    localStorage.setItem(id, JSON.stringify(data));
+    updateLiveGrandTotal();
+
+    if (navigator.onLine) {
+        msg("Updating data in Sheet...");
+        fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify(data) })
+        .then(res=>res.text())
+        .then((responseText)=>{
+            msg("✅ " + responseText);
+            clearForm();
+        })
+        .catch(err=>{ addToOfflineQueue(data); });
+    } else {
+        addToOfflineQueue(data);
+    }
+}
+
+function searchData(){
+    let id = document.getElementById("txt1").value.trim();
+    if(id === "") { msg("⚠️ kripya SEARCH ke liye ID darj karein!"); return; }
+
+    let recordStr = localStorage.getItem(id);
+    if(recordStr) {
+        try {
+            let record = JSON.parse(recordStr);
+            setVal("combMonth", record.month || "");
+            setVal("combCoste", record.category || "");
+            setVal("combClass", record.className || "");
+            
+            if(record.className && teacherMapping[record.className]){
+                msg(record.className + " - " + teacherMapping[record.className] + " : शुल्क विवरण प्रदर्शित हो रहा है...");
+            }
+            
+            if(record.month === "Jul/Jan") {
+                document.getElementById("janSection").style.display = "grid";
+                setVal("janTxt2", record.janTxt2 || "");
+                setVal("janTxt3", record.janTxt3 || "");
+                setVal("janTxt4", record.janTxt4 || "");
+            } else {
+                document.getElementById("janSection").style.display = "none";
+                setVal("janTxt2", ""); setVal("janTxt3", ""); setVal("janTxt4", "");
+            }
+
+            for(let i=2; i<=34; i++){ setVal("txt" + i, record["txt" + i] || ""); }
+
+            setVal("customBankInput", record.customBank || 0);
+            setVal("customHeadInput", record.customHead || 0);
+            setVal("customTotalInput", record.customTotal || 0);
+
+            msg("✅ Record mil gaya (ID: " + id + ")");
+        } catch(e) { msg("❌ Data parse karne me error aayi!"); }
+    } else { msg("⚠️ Is ID par koi record nahi mila!"); }
+}
+
+function deleteRecord(){
+    let id = document.getElementById("txt1").value.trim();
+    if(id === "") { msg("⚠️ kripya DELETE ke liye ID darj karein!"); return; }
+
+    if(confirm("Kya aap wakayi ID " + id + " ko delete karna chahte hain?")) {
+        localStorage.removeItem(id);
+        let data = { action: "DELETE", id: id };
+        if (navigator.onLine) {
+            fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify(data) });
+        }
+        clearForm();
+        updateLiveGrandTotal();
+    }
+}
+
+/* CLEAR FORM */
+function clearForm(){
+    setVal("txt1", "");
+    setVal("combMonth", "");
+    setVal("combCoste", "");
+    setVal("combClass", "");
+    setVal("janTxt2", "");
+    setVal("janTxt3", "");
+    setVal("janTxt4", "");
+    document.getElementById("janSection").style.display = "none";
+
+    for(let i=2; i<=28; i++){ setVal("txt" + i, ""); }
+
+    setVal("customBankInput", "");
+    setVal("customHeadInput", "");
+    setVal("customTotalInput", "");
+    isManualDate = false;
+
+    loadPersistentRegBoardData();
+    msg("✨ Form clear kar diya gaya hai.");
+}
+
+function openGoogleSheet(){
+    window.open("https://docs.google.com/spreadsheets/d/1_your_sheet_id_here/edit", "_blank");
+}
+
+function addToOfflineQueue(data) {
+    let queue = JSON.parse(localStorage.getItem("offlineQueue") || "[]");
+    queue.push(data);
+    localStorage.setItem("offlineQueue", JSON.stringify(queue));
+    msg("💾 Offline saved!");
+}
+
+function syncOfflineData(isSilent) {
+    let queue = JSON.parse(localStorage.getItem("offlineQueue") || "[]");
+    if(queue.length === 0) {
+        if(!isSilent) msg("ℹ️ Koi offline data pending nahi hai.");
+        return;
+    }
+    if(!navigator.onLine) { msg("⚠️ Internet connection nahi hai!"); return; }
+
+    msg("🔄 Syncing offline data...");
+    let currentData = queue.shift();
+
+    fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify(currentData) })
+    .then(res => res.text())
+    .then(res => {
+        localStorage.setItem("offlineQueue", JSON.stringify(queue));
+        if(queue.length > 0) syncOfflineData(true);
+        else msg("✅ Sabhi offline data sync ho gaye!");
+    })
+    .catch(err => { msg("❌ Sync fail ho gaya."); });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fixed Auto-Calculation Dashboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 6px;
+        }
+        .dashboard-container {
+            width: 100%;
+            max-width: 1650px;
+            height: 98vh;
+            background: #C4A484;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        /* TOP MASTER BAR */
+        .top-horizontal-bar {
+            display: flex;
+            background: #C4A484;
+            padding: 6px 10px;
+            border-radius: 6px;
+            align-items: center;
+            margin-bottom: 6px;
+            position: relative; 
+        }
+        
+        .top-center-wrapper {
+            display: flex;
+            gap: 14px;
+            margin: 0 auto; 
+        }
+
+        .top-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .top-group label {
+            font-size: 0.7rem;
+            text-align: center;
+            font-weight: bold;
+            color: #475569;
+        }
+        .top-group input, .top-group select {
+            height: 24px;
+            padding: 0 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border: 1px solid #black;
+            border-radius: 4px;
+        }
+        
+        #TextBox77 {
+            border: none;
+            background: transparent;
+            color: #black;
+            font-weight: bold;
+
+            font-size: 0.95rem;
+            text-align: center;
+            width: 250px;
+            margin-top: 10px;
+            margin-right: 25px; 
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-content {
+            display: flex;
+            gap: 8px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* LEFT SIDE: HORIZONTAL ROWS */
+        .horizontal-rows-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 4.5;
+            overflow-y: auto;
+        }
+        .horizontal-section {
+            background: #AFEEEE;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .section-title {
+            background: #006400;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: bold;
+            padding: 1px 5px;
+            border-radius: 3px;
+            width: fit-content;
+            margin-bottom: 3px;
+        }
+        .fields-horizontal {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 10px;
+            align-items: flex-end;
+        }
+        
+        /* UPDATED FOR CENTER ALIGNMENT */
+        .field-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* टेक्स्टबॉक्स और लेबल को सेंटर में रखने के लिए */
+            gap: 2px;
+        }
+        .field-item label {
+            font-size: 0.72rem;
+            font-weight: bold;
+            color: #000000;
+            white-space: nowrap;
+            text-align: center; /* लेबल का टेक्स्ट सेंटर करने के लिए */
+            width: 100%;
+        }
+        .field-item input {
+            width: 65px; 
+            height: 22px;
+            padding: 2px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border: 1px solid #black;
+            border-radius: 3px;
+            text-align: right;
+        }
+
+        /* NEW PINK INPUT STYLE */
+        .custom-pink-input {
+            background-color: #ffd1dc !important;
+            border: 1px solid #black !important;
+            color: #0f172a !important;
+        }
+
+        /* COLORS (GREEN & RED SHADES) */
+        .custom-green-box {
+            background-color: #15803d !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            border: 1px solid #black !important;
+        }
+        .custom-red-box {
+            background-color: #b91c1c !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            border: 1px solid #black !important;
+        }
+
+        /* RIGHT SIDE: VERTICAL SUMMARY */
+        .vertical-blocks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 0.8;
+            min-width: 160px;
+        }
+        .vertical-block {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .v-section-title {
+            background: #1e293b;
+            color: white;
+            font-size: 0.68rem;
+            font-weight: bold;
+            padding: 2px;
+            border-radius: 3px;
+            text-align: center;
+        }
+        
+        /* UPDATED FOR CENTER ALIGNMENT */
+        .field-vertical-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* वर्टिकल ब्लॉक के लिए भी सेंटर अलाइनमेंट */
+            gap: 1px;
+        }
+        .field-vertical-item label {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #black;
+            text-align: center;
+            width: 100%;
+        }
+        .field-vertical-item input {
+            width: 100%;
+            height: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border: 1px solid #black;
+            border-radius: 3px;
+            text-align: right;
+        }
+
+        /* SPECIAL READONLY & END HIGHLIGHT */
+        input:readonly:not(.custom-green-box):not(.custom-red-box):not(.special-end-field) {
+            background-color: #e2e8f0;
+            color: #0f172a;
+        }
+        .special-end-field {
+            border: 1px solid #f59e0b !important;
+            background-color: #fef3c7 !important;
+            color: #0f172a !important;
+        }
+
+        /* FOOTER ACTIONS */
+        .footer-action-bar {
+            margin-top: 4px;
+            padding-top: 4px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        button {
+            padding: 4px 18px;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            height: 28px;
+        }
+        .btn-save { background-color: #22c55e; color: white; }
+        .btn-save:hover { background-color: #16a34a; }
+        .btn-clear { background-color: #ef4444; color: white; }
+        .btn-clear:hover { background-color: #dc2626; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    
+    <div class="top-horizontal-bar">
+        <div class="top-center-wrapper">
+            <div class="top-group">
+                <label>Month List</label>
+                <select id="ComboBox1">
+                    <option value="">Select Month</option>
+                    <option value="Apr">Apr</option><option value="May">May</option><option value="Jun">Jun</option>
+                    <option value="Jul">Jul</option><option value="Aug">Aug</option><option value="Sep">Sep</option>
+                    <option value="Oct">Oct</option><option value="Nov">Nov</option><option value="Dec">Dec</option>
+                    <option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option>
+                </select>
+            </div>
+            <div class="top-group">
+                <label>दिनांक </label>
+                <input type="text" id="TextBox1" style="width: 110px;">
+            </div>
+            <div class="top-group">
+                <label> Opening Bal</label>
+                <input type="number" id="TextBox2" style="width: 95px;" class="custom-pink-input">
+            </div>
+        </div>
+        
+        <div class="top-group">
+            <input type="text" id="TextBox77" readonly placeholder="Cash Book">
+        </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="horizontal-rows-container">
+            
+            <div class="horizontal-section">
+                <div class="section-title">बैंक से प्राप्त ब्याज ( T4,T11 ) </div>
+                <div class="fields-horizontal">
+                    <div class="field-item"><label>ब्याज </label><input type="number" id="TextBox4" class="custom-pink-input"></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक </label><input type="number" id="TextBox5" readonly></div>
+                    <div class="field-item"><label>शेष राशी </label><input type="number" id="TextBox6" readonly></div>
+                    <div class="field-item"><label>योग </label><input type="number" id="TextBox7" readonly></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक </label><input type="number" id="TextBox8" readonly></div>
+                    <div class="field-item"><label>शेष राशी </label><input type="number" id="TextBox9" readonly></div>
+                    <div class="field-item"><label>बैंक में </label><input type="number" id="TextBox10" class="custom-green-box"></div>
+                    <div class="field-item"><label>हाथ में </label><input type="number" id="TextBox11" readonly class="special-end-field"></div>
+                </div>
+            </div>
+
+            <div class="horizontal-section">
+                <div class="section-title">बैंक से प्राप्त ब्याज ( T12,T19 )</div>
+                <div class="fields-horizontal">
+                    <div class="field-item"><label>ब्याज</label><input type="number" id="TextBox12" class="custom-pink-input"></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक</label><input type="number" id="TextBox13" readonly></div>
+                    <div class="field-item"><label>शेष राशी</label><input type="number" id="TextBox14" readonly></div>
+                    <div class="field-item"><label>योग</label><input type="number" id="TextBox15" readonly></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक</label><input type="number" id="TextBox16" readonly></div>
+                    <div class="field-item"><label>शेष राशी</label><input type="number" id="TextBox17" readonly></div>
+                    <div class="field-item"><label>बैंक में</label><input type="number" id="TextBox18" class="custom-green-box"></div>
+                    <div class="field-item"><label>हाथ में</label><input type="number" id="TextBox19" readonly class="special-end-field"></div>
+                </div>
+            </div>
+
+            <div class="horizontal-section">
+                <div class="section-title">फीस से आय  ( TB 20 - 30 )</div>
+                <div class="fields-horizontal">
+                    <div class="field-item"><label>पुन: प्रवेश </label><input type="number" id="TextBox20" class="custom-pink-input"></div>
+                    <div class="field-item"><label>टी० सी० </label><input type="number" id="TextBox21" class="custom-pink-input"></div>
+                    <div class="field-item"><label>विलम्ब </label><input type="number" id="TextBox22" class="custom-pink-input"></div>
+                    <div class="field-item"><label>महंगाई </label><input type="number" id="TextBox23" class="custom-pink-input"></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक</label><input type="number" id="TextBox24" readonly></div>
+                    <div class="field-item"><label>शेष राशी</label><input type="number" id="TextBox25" readonly></div>
+                    <div class="field-item"><label>योग</label><input type="number" id="TextBox26" readonly></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक</label><input type="number" id="TextBox27" readonly></div>
+                    <div class="field-item"><label>शेष राशी</label><input type="number" id="TextBox28" readonly></div>
+                    <div class="field-item"><label>बैंक में</label><input type="number" id="TextBox29" class="custom-green-box"></div>
+                    <div class="field-item"><label>हाथ में</label><input type="number" id="TextBox30" readonly class="special-end-field"></div>
+                </div>
+            </div>
+
+            <div class="horizontal-section">
+                <div class="section-title">फीस से आय ( TB 31 - 41 )</div>
+                <div class="fields-horizontal">
+                    <div class="field-item"><label>पुन: प्रवेश</label><input type="number" id="TextBox31" class="custom-pink-input"></div>
+                    <div class="field-item"><label>टी० सी०</label><input type="number" id="TextBox32" class="custom-pink-input"></div>
+                    <div class="field-item"><label>विलम्ब</label><input type="number" id="TextBox33" class="custom-pink-input"></div>
+                    <div class="field-item"><label>महंगाई</label><input type="number" id="TextBox34" class="custom-pink-input"></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक</label><input type="number" id="TextBox35" readonly></div>
+                    <div class="field-item"><label>शेष राशी</label><input type="number" id="TextBox36" readonly></div>
+                    <div class="field-item"><label>योग</label><input type="number" id="TextBox37" readonly></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>ब्याज</label><input type="number" id="TextBox38" readonly></div>
+                    <div class="field-item"><label>दैनिक</label><input type="number" id="TextBox39" readonly></div>
+                    <div class="field-item"><label>शेष राशी</label><input type="number" id="TextBox40" class="custom-green-box"></div>
+                    <div class="field-item"><label>योग</label><input type="number" id="TextBox41" readonly class="special-end-field"></div>
+                </div>
+            </div>
+
+            <div class="horizontal-section">
+                <div class="section-title">व्यय बैंक को ( TB 43 - 46 )</div>
+                <div class="fields-horizontal">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <div class="field-item"><label>चालन </label><input type="number" id="TextBox43" readonly class="custom-red-box"></div>
+                    <div class="field-item"><label>शेष राशी </label><input type="number" id="TextBox44" readonly></div>
+                    <div class="field-item"><label>बैंक में </label><input type="number" id="TextBox45" readonly class="custom-green-box"></div>
+                    <div class="field-item"><label>हाथ में </label><input type="number" id="TextBox46" readonly class="special-end-field"></div>
+                </div>
+            </div>
+
+            <div class="horizontal-section">
+                <div class="section-title">बैंक से प्राप्त ब्याज ( TB 47 - 54 )</div>
+                <div class="fields-horizontal">
+                    <div class="field-item"><label>ब्याज </label><input type="number" id="TextBox47" class="custom-pink-input"></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक </label><input type="number" id="TextBox48" readonly></div>
+                    <div class="field-item"><label>शेष राशी </label><input type="number" id="TextBox49" readonly></div>
+                    <div class="field-item"><label>योग </label><input type="number" id="TextBox50" readonly></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक </label><input type="number" id="TextBox51" readonly></div>
+                    <div class="field-item"><label>शेष राशी </label><input type="number" id="TextBox52" readonly></div>
+                    <div class="field-item"><label>बैंक में </label><input type="number" id="TextBox53" class="custom-green-box"></div>
+                    <div class="field-item"><label>हाथ में </label><input type="number" id="TextBox54" readonly class="special-end-field"></div>
+                </div>
+            </div>
+
+            <div class="horizontal-section">
+                <div class="section-title">फीस से आय ( TB 55 - 65 )</div>
+                <div class="fields-horizontal">
+                    <div class="field-item"><label>पुन: प्रवेश </label><input type="number" id="TextBox55" class="custom-pink-input"></div>
+                    <div class="field-item"><label>टी० सी०</label><input type="number" id="TextBox56" class="custom-pink-input"></div>
+                    <div class="field-item"><label>विलम्ब </label><input type="number" id="TextBox57" class="custom-pink-input"></div>
+                    <div class="field-item"><label>महंगाई </label><input type="number" id="TextBox58" class="custom-pink-input"></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक </label><input type="number" id="TextBox59" readonly></div>
+                    <div class="field-item"><label>शेष राशी </label><input type="number" id="TextBox60"></div>
+                    <div class="field-item"><label>योग </label><input type="number" id="TextBox61" readonly></div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="field-item"><label>दैनिक </label><input type="number" id="TextBox62" readonly></div>
+                    <div class="field-item"><label>शेष राशी </label><input type="number" id="TextBox63" readonly></div>
+                    <div class="field-item"><label>बैंक में </label><input type="number" id="TextBox64" readonly class="custom-green-box"></div>
+                    <div class="field-item"><label>हाथ में </label><input type="number" id="TextBox65" readonly class="special-end-field"></div>
+                </div>
+            </div>
+
+            <div class="horizontal-section">
+                <div class="section-title">व्यय बैंक को ( TB 67 - 70 )</div>
+                <div class="fields-horizontal">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<div class="field-item"><label>चालन </label><input type="number" id="TextBox67" class="custom-red-box"></div>
+                    <div class="field-item"><label>शेष राशी </label><input type="number" id="TextBox68" readonly></div>
+                    <div class="field-item"><label>बैंक में  </label><input type="number" id="TextBox69" readonly class="custom-green-box"></div>
+                    <div class="field-item"><label>हाथ में </label><input type="number" id="TextBox70" readonly class="special-end-field"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="vertical-blocks-container">
+            
+            <div class="vertical-block">
+                <div class="v-section-title">आय भाग  (71-73)</div>
+                <div class="field-vertical-item"><label>आय </label><input type="number" id="TextBox71" readonly></div>
+                <div class="field-vertical-item"><label>शेष राशी </label><input type="number" id="TextBox72" readonly></div>
+                <div class="field-vertical-item"><label>योग </label><input type="number" id="TextBox73" readonly></div>
+            </div>
+
+            <div class="vertical-block" style="border-color: #3498db;">
+                <div class="v-section-title" style="background:#black;">व्यय भाग  (74-76)</div>
+                <div class="field-vertical-item"><label>व्यय भाग </label><input type="number" id="TextBox74" readonly></div>
+                <div class="field-vertical-item"><label>शेष राशी </label><input type="number" id="TextBox75" readonly></div>
+                <div class="field-vertical-item"><label>योग </label><input type="number" id="TextBox76" readonly></div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer-action-bar">
+        <button type="button" class="btn-save" onclick="saveAndClear()">Save & Clear</button>
+        <button type="button" class="btn-clear" onclick="clearForm()">Clear Form</button>
+    </div>
+</div>
+
+<script>
+    function getVal(id) {
+        const el = document.getElementById(id);
+        if (!el) return 0;
+        const val = parseFloat(el.value);
+        return isNaN(val) ? 0 : val;
+    }
+
+    function setVal(id, value) {
+        const el = document.getElementById(id);
+        if (el) {
+            el.value = Number(value.toFixed(2)) === 0 ? 0 : Number(value.toFixed(2));
+        }
+    }
+
+    function vbaRound(value, isGte = true) {
+        const diff = value - Math.floor(value);
+        if (isGte) {
+            return diff >= 0.5 ? Math.floor(value) + 1 : Math.floor(value);
+        } else {
+            return diff > 0.5 ? Math.floor(value) + 1 : Math.floor(value);
+        }
+    }
+
+    function autoCalculate() {
+        // Step 1
+        setVal('TextBox6', getVal('TextBox2'));
+        setVal('TextBox5', getVal('TextBox4'));
+        setVal('TextBox7', getVal('TextBox6') + getVal('TextBox5'));
+
+        // Step 2
+        setVal('TextBox8', getVal('TextBox7'));
+        setVal('TextBox9', getVal('TextBox7'));
+        setVal('TextBox10', getVal('TextBox9') - getVal('TextBox11'));
+
+        // Step 3
+        setVal('TextBox13', getVal('TextBox12'));
+        setVal('TextBox14', getVal('TextBox7'));
+        setVal('TextBox15', getVal('TextBox13') + getVal('TextBox14'));
+        setVal('TextBox16', getVal('TextBox15'));
+        setVal('TextBox17', getVal('TextBox15'));
+        setVal('TextBox18', getVal('TextBox15') - getVal('TextBox19'));
+
+        // Step 4
+        setVal('TextBox24', getVal('TextBox20') + getVal('TextBox21') + getVal('TextBox22') + getVal('TextBox23'));
+        setVal('TextBox25', getVal('TextBox15'));
+        setVal('TextBox26', getVal('TextBox24') + getVal('TextBox25'));
+        setVal('TextBox27', getVal('TextBox26'));
+        setVal('TextBox28', getVal('TextBox26'));
+        setVal('TextBox29', getVal('TextBox18'));
+        setVal('TextBox30', getVal('TextBox28') - getVal('TextBox29'));
+
+        // Step 5
+        setVal('TextBox35', getVal('TextBox31') + getVal('TextBox32') + getVal('TextBox33') + getVal('TextBox34'));
+        setVal('TextBox36', getVal('TextBox26'));
+        setVal('TextBox37', getVal('TextBox35') + getVal('TextBox36'));
+        setVal('TextBox38', getVal('TextBox37'));
+        setVal('TextBox39', getVal('TextBox37'));
+        setVal('TextBox40', getVal('TextBox29'));
+        setVal('TextBox41', getVal('TextBox39') - getVal('TextBox40'));
+
+        // Step 6
+        let total1 = getVal('TextBox20') + getVal('TextBox21') + getVal('TextBox22') + getVal('TextBox31') + getVal('TextBox32') + getVal('TextBox33');
+        let round85_1 = vbaRound(total1 * 0.85, true);
+        setVal('TextBox43', round85_1 + getVal('TextBox23') + getVal('TextBox34'));
+        setVal('TextBox44', getVal('TextBox37'));
+        
+        let round15_1 = vbaRound(total1 * 0.15, false);
+        setVal('TextBox45', round15_1 + getVal('TextBox40'));
+        setVal('TextBox44', (getVal('TextBox43') + getVal('TextBox45')) - getVal('TextBox46'));
+
+        // Step 7
+        setVal('TextBox48', getVal('TextBox47'));
+        setVal('TextBox49', getVal('TextBox45'));
+        setVal('TextBox50', getVal('TextBox48') + getVal('TextBox49'));
+        setVal('TextBox51', getVal('TextBox50'));
+        setVal('TextBox52', getVal('TextBox50'));
+        setVal('TextBox53', getVal('TextBox52') - getVal('TextBox54'));
+
+        // Step 8
+        setVal('TextBox59', getVal('TextBox55') + getVal('TextBox56') + getVal('TextBox57') + getVal('TextBox58'));
+        setVal('TextBox60', getVal('TextBox50'));
+        setVal('TextBox61', getVal('TextBox59') + getVal('TextBox60'));
+        setVal('TextBox62', getVal('TextBox61'));
+        setVal('TextBox63', getVal('TextBox61'));
+        setVal('TextBox64', getVal('TextBox53'));
+        setVal('TextBox65', getVal('TextBox63') - getVal('TextBox64'));
+
+        // Step 9
+        let total2 = getVal('TextBox55') + getVal('TextBox56') + getVal('TextBox57');
+        let round15_2 = vbaRound(total2 * 0.15, false);
+        setVal('TextBox69', round15_2 + getVal('TextBox64'));
+
+        let round85_2 = vbaRound(total2 * 0.85, true);
+        setVal('TextBox67', round85_2 + getVal('TextBox58'));
+
+        setVal('TextBox68', getVal('TextBox61') - getVal('TextBox67'));
+        setVal('TextBox70', getVal('TextBox68') - getVal('TextBox69'));
+
+        // Step 10
+        setVal('TextBox74', getVal('TextBox43') + getVal('TextBox67'));
+        setVal('TextBox75', getVal('TextBox69'));
+        setVal('TextBox76', getVal('TextBox74') + getVal('TextBox75'));
+
+        setVal('TextBox71', getVal('TextBox5') + getVal('TextBox13') + getVal('TextBox24') + getVal('TextBox35') + getVal('TextBox48') + getVal('TextBox59'));
+        setVal('TextBox72', getVal('TextBox6'));
+        setVal('TextBox73', getVal('TextBox71') + getVal('TextBox72'));
+    }
+
+    const allInputIds = [2, 4, 10, 12, 18, 20, 21, 22, 23, 29, 31, 32, 33, 34, 40, 47, 53, 55, 56, 57, 58, 60, 67];
+    allInputIds.forEach(num => {
+        const el = document.getElementById('TextBox' + num);
+        if (el) {
+            el.addEventListener('input', autoCalculate);
+        }
+    });
+
+    function saveAndClear() {
+        let currentBal = getVal('TextBox69');
+        const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+        inputs.forEach(input => {
+            if (input.id !== "TextBox2" && input.id !== "TextBox77") {
+                input.value = "";
+            }
+        });
+        document.getElementById('ComboBox1').value = "";
+        
+        setVal('TextBox2', currentBal);
+        autoCalculate();
+        document.getElementById('TextBox77').value = "Saved & Recalculated!";
+        setTimeout(() => document.getElementById('TextBox77').value = "", 2000);
+    }
+
+    function clearForm() {
+        let currentBal = getVal('TextBox69');
+        const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+        inputs.forEach(input => {
+            if (input.id !== "TextBox2" && input.id !== "TextBox77") {
+                input.value = "";
+            }
+        });
+        document.getElementById('ComboBox1').value = "";
+        
+        setVal('TextBox2', currentBal);
+        autoCalculate();
+        document.getElementById('TextBox77').value = "Cleared successfully";
+        setTimeout(() => document.getElementById('TextBox77').value = "", 2000);
+    }
+
+    window.onload = autoCalculate;
+</script>
+</body>
+</html>

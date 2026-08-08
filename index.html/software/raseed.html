@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>शुल्क रसीद प्रणाली - Shri Krishn Inter College Semra</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #eef2f7;
+            padding: 15px;
+            color: #333;
+        }
+
+        .no-print {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .main-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #1e3a8a;
+        }
+
+        .main-header h1 {
+            font-size: 22px;
+        }
+
+        .main-header h3 {
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        /* Form Grid Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #374151;
+        }
+
+        .form-group input, .form-group select {
+            padding: 8px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        /* Buttons Toolbar */
+        .btn-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-save { background-color: #16a34a; }
+        .btn-update { background-color: #2563eb; }
+        .btn-delete { background-color: #dc2626; }
+        .btn-clear { background-color: #6b7280; }
+        .btn-print { background-color: #7c3aed; }
+        .btn-search { background-color: #0284c7; }
+
+        /* Search Section */
+        .search-box {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+        }
+
+        .print-selector {
+            margin-top: 15px;
+            background: #f0fdf4;
+            padding: 10px;
+            border: 1px solid #bbf7d0;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            color: #166534;
+        }
+
+        /* 4-Up Printable Layout on A4 Landscape with Tear Gaps */
+        .print-page {
+            width: 297mm;
+            height: 210mm;
+            background: white;
+            margin: 0 auto;
+            padding: 4mm;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8mm 12mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .receipt {
+            border: 1.5px dashed #444;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #fff;
+            height: 96mm;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .receipt.blank-receipt {
+            visibility: hidden;
+        }
+
+        .r-header {
+            text-align: center;
+            border-bottom: 1px solid #000;
+            padding-bottom: 3px;
+            margin-bottom: 4px;
+        }
+
+        .r-header h2 { font-size: 13px; font-weight: bold; }
+        .r-header h4 { font-size: 10px; font-weight: normal; }
+        .r-header h3 { font-size: 11px; border: 1px solid #000; padding: 1px 6px; background: #f3f4f6; }
+
+        .r-details, .r-fee-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-bottom: 4px;
+        }
+
+        .r-fee-table th, .r-fee-table td {
+            border: 1px solid #000;
+            padding: 3px 4px;
+        }
+
+        .r-fee-table th { background-color: #f3f4f6; }
+        .text-right { text-align: right !important; }
+
+        .r-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+
+        /* Print Media Styles */
+        @media print {
+            body { background: none; padding: 0; }
+            .no-print { display: none !important; }
+            .print-page { 
+                box-shadow: none; 
+                margin: 0; 
+                width: 297mm; 
+                height: 210mm; 
+                padding: 4mm; 
+            }
+            @page { size: A4 landscape; margin: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SCREEN INTERFACE (NO PRINT) -->
+    <div class="no-print">
+        <div class="main-header">
+            <h1>Shri Krishn Inter College Semra</h1>
+            <h3>Kathkuiyan, Kushinagar — शुल्क प्रबंधन एवं रसीद प्रणाली</h3>
+        </div>
+
+        <!-- SEARCH BAR -->
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Sr. No. (ID) या नाम से खोजें...">
+            <button class="btn btn-search" onclick="searchRecord()">खोजें (Search)</button>
+        </div>
+
+        <!-- INPUT FORM -->
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Sr. No. (ID Number):</label>
+                <input type="text" id="srNo" readonly style="background-color: #f3f4f6; font-weight: bold;">
+            </div>
+            <div class="form-group">
+                <label>छात्र का नाम:</label>
+                <input type="text" id="studentName">
+            </div>
+            <div class="form-group">
+                <label>कक्षा (Class):</label>
+                <select id="studentClass" onchange="autoCalculateBaseFee()">
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+            
+            <!-- SECTION DROPDOWN (A, B, C, D, E) -->
+            <div class="form-group">
+                <label>वर्ग (Section):</label>
+                <select id="studentSection">
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>जाति (Category):</label>
+                <select id="studentCaste" onchange="autoCalculateBaseFee()">
+                    <option value="GEN/OBC">GEN/OBC</option>
+                    <option value="SC">SC</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>महीना (Month):</label>
+                <select id="feeMonth" onchange="autoCalculateBaseFee()">
+                    <option value="July">जुलाई (July)</option>
+                    <option value="January">जनवरी (January)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>नियत फीस (Auto Base Fee ₹):</label>
+                <input type="number" id="baseFee" readonly style="background-color: #f3f4f6;">
+            </div>
+            <div class="form-group">
+                <label>अन्य शुल्क (Other Fee Entry ₹):</label>
+                <input type="number" id="otherFeeInput" value="0" oninput="calculateTotalFee()">
+            </div>
+            <div class="form-group">
+                <label>कुल शिक्षण शुल्क (Base + Other ₹):</label>
+                <input type="number" id="tuitionFeeFinal" readonly style="background-color: #e0f2fe; font-weight: bold;">
+            </div>
+        </div>
+
+        <!-- BUTTONS TOOLBAR -->
+        <div class="btn-toolbar">
+            <button class="btn btn-save" onclick="saveRecord()">सेव करें (Save)</button>
+            <button class="btn btn-update" onclick="updateRecord()">अपडेट करें (Update)</button>
+            <button class="btn btn-delete" onclick="deleteRecord()">हटाएं (Delete)</button>
+            <button class="btn btn-clear" onclick="clearForm()">क्लियर (Clear)</button>
+            <button class="btn btn-print" onclick="window.print()">प्रिंट करें (Print 4-Up)</button>
+        </div>
+
+        <div class="print-selector">
+            <span>प्रिंट के लिए जानकारी: अंतिम 4 रसीदें A4 Landscape पेज पर ✂ कैंची कटिंग गैप के साथ प्रिंट होंगी।</span>
+            <span id="recordCountInfo">कुल सुरक्षित रिकॉर्ड्स: 0</span>
+        </div>
+    </div>
+
+    <!-- PRINTABLE AREA (A4 LANDSCAPE: 4 RECEIPTS GRID WITH TEAR GAP) -->
+    <div class="print-page">
+        <!-- Receipt 1 -->
+        <div class="receipt" id="receipt1">
+            <div>
+                <div class="r-header">
+                    <h2>Shri Krishn Inter College Semra</h2>
+                    <h4>Kathkuiyan, Kushinagar</h4>
+                    <h3>Half Yearly Fees</h3>
+                </div>
+                <table class="r-details">
+                    <tr><td><label>Sr. No. (ID):</label> <span id="r1_sr">-</span></td><td class="text-right"><label>दिनांक:</label> <span id="r1_date">-</span></td></tr>
+                    <tr><td colspan="2"><label>नाम:</label> <span id="r1_name">-</span></td></tr>
+                    <tr><td><label>कक्षा:</label> <span id="r1_class">-</span> (<span id="r1_sec">-</span>)</td><td class="text-right"><label>जाति:</label> <span id="r1_caste">-</span></td></tr>
+                    <tr><td colspan="2"><label>समय:</label> <span id="r1_time">-</span></td></tr>
+                </table>
+                <table class="r-fee-table">
+                    <thead><tr><th>क्र.</th><th>विवरण</th><th class="text-right">राशि (₹)</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>शिक्षण शुल्क (नियत + अन्य)</td><td class="text-right" id="r1_tuition">0.00</td></tr>
+                        <tr><td>2</td><td>अन्य शुल्क</td><td class="text-right" id="r1_other">0.00</td></tr>
+                        <tr><th colspan="2" class="text-right">कुल योग:</th><th class="text-right" id="r1_total">0.00</th></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="r-footer"><span>हस्ताक्षर छात्र</span><span>हस्ताक्षर प्राप्तकर्ता / सील</span></div>
+        </div>
+
+        <!-- Receipt 2 -->
+        <div class="receipt" id="receipt2">
+            <div>
+                <div class="r-header">
+                    <h2>Shri Krishn Inter College Semra</h2>
+                    <h4>Kathkuiyan, Kushinagar</h4>
+                    <h3>Half Yearly Fees</h3>
+                </div>
+                <table class="r-details">
+                    <tr><td><label>Sr. No. (ID):</label> <span id="r2_sr">-</span></td><td class="text-right"><label>दिनांक:</label> <span id="r2_date">-</span></td></tr>
+                    <tr><td colspan="2"><label>नाम:</label> <span id="r2_name">-</span></td></tr>
+                    <tr><td><label>कक्षा:</label> <span id="r2_class">-</span> (<span id="r2_sec">-</span>)</td><td class="text-right"><label>जाति:</label> <span id="r2_caste">-</span></td></tr>
+                    <tr><td colspan="2"><label>समय:</label> <span id="r2_time">-</span></td></tr>
+                </table>
+                <table class="r-fee-table">
+                    <thead><tr><th>क्र.</th><th>विवरण</th><th class="text-right">राशि (₹)</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>शिक्षण शुल्क (नियत + अन्य)</td><td class="text-right" id="r2_tuition">0.00</td></tr>
+                        <tr><td>2</td><td>अन्य शुल्क</td><td class="text-right" id="r2_other">0.00</td></tr>
+                        <tr><th colspan="2" class="text-right">कुल योग:</th><th class="text-right" id="r2_total">0.00</th></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="r-footer"><span>हस्ताक्षर छात्र</span><span>हस्ताक्षर प्राप्तकर्ता / सील</span></div>
+        </div>
+
+        <!-- Receipt 3 -->
+        <div class="receipt" id="receipt3">
+            <div>
+                <div class="r-header">
+                    <h2>Shri Krishn Inter College Semra</h2>
+                    <h4>Kathkuiyan, Kushinagar</h4>
+                    <h3>Half Yearly Fees</h3>
+                </div>
+                <table class="r-details">
+                    <tr><td><label>Sr. No. (ID):</label> <span id="r3_sr">-</span></td><td class="text-right"><label>दिनांक:</label> <span id="r3_date">-</span></td></tr>
+                    <tr><td colspan="2"><label>नाम:</label> <span id="r3_name">-</span></td></tr>
+                    <tr><td><label>कक्षा:</label> <span id="r3_class">-</span> (<span id="r3_sec">-</span>)</td><td class="text-right"><label>जाति:</label> <span id="r3_caste">-</span></td></tr>
+                    <tr><td colspan="2"><label>समय:</label> <span id="r3_time">-</span></td></tr>
+                </table>
+                <table class="r-fee-table">
+                    <thead><tr><th>क्र.</th><th>विवरण</th><th class="text-right">राशि (₹)</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>शिक्षण शुल्क (नियत + अन्य)</td><td class="text-right" id="r3_tuition">0.00</td></tr>
+                        <tr><td>2</td><td>अन्य शुल्क</td><td class="text-right" id="r3_other">0.00</td></tr>
+                        <tr><th colspan="2" class="text-right">कुल योग:</th><th class="text-right" id="r3_total">0.00</th></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="r-footer"><span>हस्ताक्षर छात्र</span><span>हस्ताक्षर प्राप्तकर्ता / सील</span></div>
+        </div>
+
+        <!-- Receipt 4 -->
+        <div class="receipt" id="receipt4">
+            <div>
+                <div class="r-header">
+                    <h2>Shri Krishn Inter College Semra</h2>
+                    <h4>Kathkuiyan, Kushinagar</h4>
+                    <h3>Half Yearly Fees</h3>
+                </div>
+                <table class="r-details">
+                    <tr><td><label>Sr. No. (ID):</label> <span id="r4_sr">-</span></td><td class="text-right"><label>दिनांक:</label> <span id="r4_date">-</span></td></tr>
+                    <tr><td colspan="2"><label>नाम:</label> <span id="r4_name">-</span></td></tr>
+                    <tr><td><label>कक्षा:</label> <span id="r4_class">-</span> (<span id="r4_sec">-</span>)</td><td class="text-right"><label>जाति:</label> <span id="r4_caste">-</span></td></tr>
+                    <tr><td colspan="2"><label>समय:</label> <span id="r4_time">-</span></td></tr>
+                </table>
+                <table class="r-fee-table">
+                    <thead><tr><th>क्र.</th><th>विवरण</th><th class="text-right">राशि (₹)</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>शिक्षण शुल्क (नियत + अन्य)</td><td class="text-right" id="r4_tuition">0.00</td></tr>
+                        <tr><td>2</td><td>अन्य शुल्क</td><td class="text-right" id="r4_other">0.00</td></tr>
+                        <tr><th colspan="2" class="text-right">कुल योग:</th><th class="text-right" id="r4_total">0.00</th></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="r-footer"><span>हस्ताक्षर छात्र</span><span>हस्ताक्षर प्राप्तकर्ता / सील</span></div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const STORAGE_KEY = 'skic_fee_records';
+
+        function getRecords() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveRecordsToStorage(records) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            updateRecordCount();
+        }
+
+        function updateRecordCount() {
+            const records = getRecords();
+            document.getElementById('recordCountInfo').innerText = `कुल सुरक्षित रिकॉर्ड्स: ${records.length}`;
+        }
+
+        /* AUTO ID GENERATION (1, 2, 3...) */
+        function generateAutoID() {
+            const records = getRecords();
+            if (records.length === 0) return '1';
+            const maxID = records.reduce((max, r) => Math.max(max, parseInt(r.srNo) || 0), 0);
+            return (maxID + 1).toString();
+        }
+
+        /* UPDATED FEE CALCULATION LOGIC */
+        function getCalculatedBaseFee(cls, caste, month) {
+            cls = parseInt(cls);
+            let fee = 0;
+            if (month === "July") {
+                if ((cls === 9 || cls === 10) && caste === "GEN/OBC") fee = 252;
+                else if ((cls === 11 || cls === 12) && caste === "GEN/OBC") fee = 250;
+                else if ((cls === 9 || cls === 10) && caste === "SC") fee = 144;
+                else if ((cls === 11 || cls === 12) && caste === "SC") fee = 112;
+            } else if (month === "January") {
+                if (caste === "GEN/OBC") {
+                    if (cls === 9 || cls === 11) fee = 181;
+                    else if (cls === 10 || cls === 12) fee = 156;
+                } else if (caste === "SC") {
+                    if (cls === 9) fee = 85;
+                    else if (cls === 10) fee = 60;
+                    else if (cls === 11) fee = 55;
+                    else if (cls === 12) fee = 30;
+                }
+            }
+            return fee;
+        }
+
+        function autoCalculateBaseFee() {
+            const cls = document.getElementById('studentClass').value;
+            const caste = document.getElementById('studentCaste').value;
+            const month = document.getElementById('feeMonth').value;
+            const baseFee = getCalculatedBaseFee(cls, caste, month);
+            document.getElementById('baseFee').value = baseFee;
+            calculateTotalFee();
+        }
+
+        function calculateTotalFee() {
+            const baseFee = parseFloat(document.getElementById('baseFee').value) || 0;
+            const otherFee = parseFloat(document.getElementById('otherFeeInput').value) || 0;
+            const tuitionFinal = baseFee + otherFee;
+            document.getElementById('tuitionFeeFinal').value = tuitionFinal.toFixed(2);
+        }
+
+        function clearForm() {
+            document.getElementById('srNo').value = generateAutoID();
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentClass').value = '9';
+            document.getElementById('studentSection').value = 'A';
+            document.getElementById('studentCaste').value = 'GEN/OBC';
+            document.getElementById('feeMonth').value = 'July';
+            document.getElementById('otherFeeInput').value = '0';
+            autoCalculateBaseFee();
+        }
+
+        function saveRecord() {
+            const srNo = document.getElementById('srNo').value.trim();
+            const name = document.getElementById('studentName').value.trim();
+            if (!name) { alert('कृपया छात्र का नाम दर्ज करें!'); return; }
+
+            let records = getRecords();
+            if (records.some(r => r.srNo === srNo)) {
+                alert('यह Sr. No. पहले से मौजूद है!'); return;
+            }
+
+            const now = new Date();
+            const newRecord = {
+                srNo: srNo,
+                name: name,
+                class: document.getElementById('studentClass').value,
+                section: document.getElementById('studentSection').value,
+                caste: document.getElementById('studentCaste').value,
+                month: document.getElementById('feeMonth').value,
+                baseFee: parseFloat(document.getElementById('baseFee').value) || 0,
+                otherFee: parseFloat(document.getElementById('otherFeeInput').value) || 0,
+                tuitionFinal: parseFloat(document.getElementById('tuitionFeeFinal').value) || 0,
+                date: now.toLocaleDateString('hi-IN'),
+                time: now.toLocaleTimeString('hi-IN')
+            };
+
+            records.push(newRecord);
+            saveRecordsToStorage(records);
+            alert('रिकॉर्ड सेव हो गया!');
+            renderPrintGrid();
+            clearForm();
+        }
+
+        function updateRecord() {
+            const srNo = document.getElementById('srNo').value.trim();
+            let records = getRecords();
+            const index = records.findIndex(r => r.srNo === srNo);
+            if (index === -1) { alert('यह Sr. No. नहीं मिला!'); return; }
+
+            const now = new Date();
+            records[index] = {
+                srNo: srNo,
+                name: document.getElementById('studentName').value.trim(),
+                class: document.getElementById('studentClass').value,
+                section: document.getElementById('studentSection').value,
+                caste: document.getElementById('studentCaste').value,
+                month: document.getElementById('feeMonth').value,
+                baseFee: parseFloat(document.getElementById('baseFee').value) || 0,
+                otherFee: parseFloat(document.getElementById('otherFeeInput').value) || 0,
+                tuitionFinal: parseFloat(document.getElementById('tuitionFeeFinal').value) || 0,
+                date: now.toLocaleDateString('hi-IN'),
+                time: now.toLocaleTimeString('hi-IN')
+            };
+
+            saveRecordsToStorage(records);
+            alert('रिकॉर्ड अपडेट हो गया!');
+            renderPrintGrid();
+        }
+
+        function deleteRecord() {
+            const srNo = document.getElementById('srNo').value.trim();
+            let records = getRecords();
+            const index = records.findIndex(r => r.srNo === srNo);
+            if (index === -1) { alert('रिकॉर्ड नहीं मिला!'); return; }
+
+            if (confirm(`क्या आप Sr. No. ${srNo} को हटाना चाहते हैं?`)) {
+                records.splice(index, 1);
+                saveRecordsToStorage(records);
+                alert('रिकॉर्ड हटा दिया गया!');
+                renderPrintGrid();
+                clearForm();
+            }
+        }
+
+        function searchRecord() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!query) { alert('कृपया नाम या ID दर्ज करें!'); return; }
+
+            const records = getRecords();
+            const found = records.find(r => r.srNo.toLowerCase() === query || r.name.toLowerCase().includes(query));
+
+            if (found) {
+                document.getElementById('srNo').value = found.srNo;
+                document.getElementById('studentName').value = found.name;
+                document.getElementById('studentClass').value = found.class;
+                document.getElementById('studentSection').value = found.section;
+                document.getElementById('studentCaste').value = found.caste;
+                document.getElementById('feeMonth').value = found.month;
+                document.getElementById('otherFeeInput').value = found.otherFee;
+                autoCalculateBaseFee();
+                alert(`रिकॉर्ड मिल गया: ${found.name}`);
+            } else {
+                alert('कोई रिकॉर्ड नहीं मिला!');
+            }
+        }
+
+        function renderPrintGrid() {
+            const records = getRecords();
+            const displayRecords = records.slice(-4);
+
+            for (let i = 1; i <= 4; i++) {
+                const receiptEl = document.getElementById(`receipt${i}`);
+                const data = displayRecords[i - 1];
+
+                if (data && data.name) {
+                    receiptEl.classList.remove('blank-receipt');
+                    document.getElementById(`r${i}_sr`).innerText = data.srNo;
+                    document.getElementById(`r${i}_date`).innerText = data.date;
+                    document.getElementById(`r${i}_name`).innerText = data.name;
+                    document.getElementById(`r${i}_class`).innerText = data.class;
+                    document.getElementById(`r${i}_sec`).innerText = data.section;
+                    document.getElementById(`r${i}_caste`).innerText = data.caste;
+                    document.getElementById(`r${i}_time`).innerText = data.time;
+                    document.getElementById(`r${i}_tuition`).innerText = data.tuitionFinal.toFixed(2);
+                    document.getElementById(`r${i}_other`).innerText = data.otherFee.toFixed(2);
+                    document.getElementById(`r${i}_total`).innerText = data.tuitionFinal.toFixed(2);
+                } else {
+                    receiptEl.classList.add('blank-receipt');
+                }
+            }
+        }
+
+        window.onload = function() {
+            clearForm();
+            updateRecordCount();
+            renderPrintGrid();
+        };
+    </script>
+</body>
+</html>

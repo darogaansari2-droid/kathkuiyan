@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Admission Form - Shri Krishna Inter College</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%); 
+            margin: 0; 
+            padding: 20px 10px; 
+            color: #333;
+        }
+        .form-container { 
+            max-width: 100%; 
+            background: #ffffff; 
+            margin: 0 auto; 
+            padding: 25px 30px; 
+            border: 2px solid #1a365d; 
+            outline: 5px solid #1a365d;
+            outline-offset: -10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
+            box-sizing: border-box;
+        }
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 3px double #1a365d;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .logo-box {
+            flex: 0 0 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+        .header-text { flex: 1; text-align: center; padding: 0 15px; }
+        .school-name { font-size: 24px; font-weight: 800; color: #1a365d; text-transform: uppercase; margin: 0 0 2px 0; }
+        .school-subtitle { font-size: 13px; color: #555; font-style: italic; margin: 0 0 8px 0; }
+        .form-title { display: inline-block; background: #1a365d; color: #fff; padding: 4px 15px; font-size: 13px; font-weight: bold; border-radius: 20px; }
+        .row { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 10px; }
+        .col { flex: 1; min-width: 200px; display: flex; flex-direction: column; }
+        .col-3 { flex: 3; min-width: 300px; display: flex; flex-direction: column; }
+        .col-1 { flex: 1; min-width: 110px; display: flex; flex-direction: column; }
+
+        .photo-upload-box, .sig-upload-box {
+            border: 2px dashed #1a365d;
+            display: flex;
+            position: relative;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: #f8fafc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            color: #666;
+            overflow: hidden;
+        }
+        .photo-upload-box { height: 120px; width: 105px; align-self: flex-end; }
+        .sig-upload-box { height: 60px; width: 160px; margin: 2px auto 0 auto; }
+        .photo-upload-box input, .sig-upload-box input { display: none; }
+        .photo-upload-box img, .sig-upload-box img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; background: #ffffff; display: none;
+        }
+
+        .section-heading { 
+            font-size: 13px; font-weight: bold; color: #1a365d; background: #e2e8f0; padding: 4px 10px; margin: 15px 0 10px 0; border-left: 4px solid #1a365d; text-transform: uppercase;
+        }
+        label { font-weight: 600; margin-bottom: 4px; color: #2d3748; font-size: 12px; }
+        input, select, textarea { padding: 8px 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px; background-color: #fcfdfd; }
+
+        .instruction-box { margin-top: 15px; border: 2px dashed #e53e3e; padding: 12px; background-color: #fff5f5; color: #c53030; font-size: 12px; border-radius: 4px; }
+        .instruction-title { font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+
+        .declaration-section { margin-top: 20px; font-size: 11px; color: #4a5568; line-height: 1.5; border: 1px solid #e2e8f0; padding: 10px; border-radius: 4px; background-color: #f7fafc; }
+        .signature-container { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; padding: 0 10px; }
+        .sig-box { text-align: center; width: 220px; font-size: 12px; font-weight: bold; color: #2d3748; }
+        .sig-label-text { border-top: 1px dashed #718096; padding-top: 5px; margin-top: 5px; display: block; }
+        .office-section { margin-top: 25px; border: 2px dashed #718096; padding: 12px; background-color: #fff; }
+        .office-title { font-size: 12px; font-weight: bold; text-align: center; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
+          
+        .btn-container { text-align: center; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+        .btn { padding: 10px 22px; font-size: 14px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; font-weight: bold; }
+        .btn-submit { background-color: #2f855a; color: white; }
+        .btn-submit:disabled { background-color: #a0aec0; cursor: not-allowed; }
+        .btn-print { background-color: #2b6cb0; color: white; }
+        .btn-reset { background-color: #e53e3e; color: white; }
+        .btn-cancel { background-color: #dd6b20; color: white; }
+        .btn-update { background-color: #d69e2e; color: white; display: none; }
+        .btn-otp { background-color: #3182ce; color: white; padding: 8px 12px; font-size: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-admin-toggle { background-color: #4a5568; color: white; padding: 5px 10px; font-size: 11px; float: right; border-radius: 4px; cursor: pointer; border: none; font-weight: bold;}
+
+        .admin-search-panel { background: #edf2f7; padding: 15px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #cbd5e0; display: none; }
+          
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 54, 93, 0.85); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; color: #fff; font-size: 18px; font-weight: bold; }
+        .spinner { border: 5px solid #f3f3f3; border-top: 5px solid #d69e2e; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .password-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 10000; justify-content: center; align-items: center; }
+        .password-modal-box { background: #fff; padding: 25px; border-radius: 8px; width: 320px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); text-align: center; border: 2px solid #1a365d; }
+        .password-modal-box input[type="password"] { width: 90%; padding: 10px; margin: 15px 0; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 16px; text-align: center; letter-spacing: 3px; }
+        .modal-btn-group { display: flex; justify-content: space-between; gap: 10px; }
+        .modal-btn { flex: 1; padding: 8px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .modal-btn-submit { background: #2f855a; color: white; }
+        .modal-btn-cancel { background: #718096; color: white; }
+
+        .otp-box { background: #ebf8ff; border: 1px solid #90cdf4; padding: 12px; border-radius: 6px; margin-bottom: 15px; }
+        .otp-status { font-size: 12px; font-weight: bold; margin-top: 5px; }
+
+        @media print {
+            @page { size: A4; margin: 12mm 10mm; }
+            body { background: white; padding: 0; margin: 0; color: #000; font-size: 12px; }
+            .form-container { box-shadow: none; padding: 15px; border: 2px solid #000; outline: 3px solid #000; outline-offset: -6px; max-width: 800px; }
+            .btn-container, .photo-upload-box span, .sig-upload-box span, input[type="file"], .instruction-box, .admin-search-panel, .btn-admin-toggle, .loading-overlay, .password-modal-overlay, .otp-box { display: none !important; }
+            .photo-upload-box { border: 1px solid #000; background: transparent; height: 125px; width: 110px; }
+            .photo-upload-box img { display: block !important; object-fit: contain !important; }
+            .sig-upload-box { border: 1px dashed #000; background: transparent; height: 30px; width: 150px; }
+            .sig-upload-box img { display: block !important; object-fit: contain !important; }
+            .logo-box img { display: block !important; object-fit: contain !important; width: 100%; height: 100%; }
+            input, select, textarea { border: none !important; border-bottom: 1px dotted #000 !important; background: transparent !important; padding: 2px 0 !important; font-size: 14px; }
+            .section-heading { background: #f0f0f0 !important; border-left: 4px solid #000 !important; color: #000; padding: 3px 5px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .school-name { color: #000; }
+            .form-title { background: #000 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .declaration-section { background: transparent !important; border: 1px solid #000; margin-top: 15px; font-size: 11px; }
+            .office-section { border: 1px dashed #000; background: transparent !important; margin-top: 15px; }
+            .signature-container { margin-top: 20px; }
+            .sig-label-text { border-top: 1px solid #000; color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <div id="loadingText">कृपया प्रतीक्षा करें...</div>
+</div>
+
+<div id="passwordModal" class="password-modal-overlay">
+    <div class="password-modal-box">
+        <h3>एडमिन सुरक्षा प्रमाणीकरण (Security)</h3>
+        <input type="password" id="modalPasswordInput" placeholder="••••••••" autofocus>
+        <div class="modal-btn-group">
+            <button type="button" class="modal-btn modal-btn-submit" onclick="verifyAdminPassword()">प्रवेश करें</button>
+            <button type="button" class="modal-btn modal-btn-cancel" onclick="closePasswordModal()">रद्द करें</button>
+        </div>
+    </div>
+</div>
+
+<button type="button" class="btn-admin-toggle" onclick="toggleAdminPanel()">Admin Panel 🔐</button>
+<div style="clear: both;"></div>
+
+<div class="form-container">
+     
+    <div id="adminSearchPanel" class="admin-search-panel">
+        <label style="color: #1a365d; font-size: 14px; margin-bottom: 8px;"><strong>Admin Control - ID/Sr.No द्वारा छात्र खोजें:</strong></label>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="searchIdInput" placeholder="क्रम संख्या (Sr. No.) दर्ज करें, उदा: 1001" style="flex: 1;">
+            <button type="button" class="btn btn-print" style="margin:0; padding: 8px 20px;" onclick="searchStudentById()">खोजें (Search)</button>
+        </div>
+    </div>
+
+    <div class="header-container">
+        <div class="logo-box">
+            <img src="https://i.imgur.com/aZd9QXz.jpeg" alt="School Logo" style="width: 100%; height: 100%; object-fit: contain; display: block;">
+        </div>
+        <div class="header-text">
+            <div class="school-name">श्री कृष्ण इण्टर कालेज सेमरा, कठकुइयाँ</div>
+            <div class="school-subtitle">जनपद-कुशीनगर पिन कोड- 274303 | Recognized by Govt.</div>
+            <div class="form-title">ONLINE ADMISSION FORM (सत्र: 2026-27)</div>
+        </div>
+        <div style="width: 80px;"></div>
+    </div>
+
+    <!-- OTP सत्यापन अनुभाग -->
+    <div class="otp-box" id="otpSection">
+        <div style="font-weight: bold; color: #2b6cb0; margin-bottom: 8px;">📲 मोबाइल नंबर सत्यापन (Mobile Number OTP Verification):</div>
+        <div class="row" style="align-items: flex-end; margin-bottom: 5px;">
+            <div class="col">
+                <label>सत्यापन हेतु मोबाइल नंबर (Enter Mobile No.):</label>
+                <input type="tel" id="otpMobileInput" pattern="[0-9]{10}" maxlength="10" placeholder="10 अंकों का मोबाइल नंबर डालें">
+            </div>
+            <div class="col" style="flex: 0 0 auto;">
+                <button type="button" class="btn-otp" onclick="sendOTP()">Send OTP</button>
+            </div>
+        </div>
+        <div class="row" id="otpVerifyRow" style="display: none; align-items: flex-end; margin-top: 10px;">
+            <div class="col">
+                <label>प्राप्त OTP दर्ज करें (Enter 6-Digit OTP):</label>
+                <input type="text" id="enteredOtp" maxlength="6" placeholder="6 अंकों का OTP">
+            </div>
+            <div class="col" style="flex: 0 0 auto;">
+                <button type="button" class="btn-otp" style="background-color: #2f855a;" onclick="verifyOTP()">Verify OTP</button>
+            </div>
+        </div>
+        <div id="otpStatusMsg" class="otp-status" style="color: #c53030;">⚠️ कृपया फॉर्म भरने से पहले अपना मोबाइल नंबर OTP द्वारा सत्यापित करें।</div>
+    </div>
+
+    <form id="admissionForm">
+        <input type="hidden" name="action" id="formAction" value="submit">
+
+        <div class="row" style="align-items: flex-start;">
+            <div class="col-3">
+                <div class="row">
+                    <div class="col">
+                        <label>क्रम संख्या (Sr. No.):</label>
+                        <input type="text" name="serialNumber" id="serialNumber" style="font-weight: bold; color: #2b6cb0; background-color: #edf2f7;" placeholder="ऑटो आईडी" readonly required>
+                    </div>
+                    <div class="col">
+                        <label>Form Fill Date (आवेदन तिथि):</label>
+                        <input type="date" name="formDate" id="formDate" required>
+                    </div>
+                    <div class="col">
+                        <label>Namankan Kaksha (Class):</label>
+                        <select name="class" id="studentClass" required>
+                            <option value="">Class Chunein</option>
+                            <option value="6">Class 6</option>
+                            <option value="7">Class 7</option>
+                            <option value="8">Class 8</option>
+                            <option value="9">Class 9</option>
+                            <option value="10">Class 10</option>
+                            <option value="11">Class 11</option>
+                            <option value="12">Class 12</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-1" style="align-items: flex-end;">
+                <label class="photo-upload-box" id="photoLabel">
+                    <span id="uploadText">📸<br>Upload Photo</span>
+                    <img id="photoPreview" src="" alt="Student Photo">
+                    <input type="file" id="photoInput" name="studentPhoto" accept="image/*">
+                </label>
+            </div>
+        </div>
+
+        <div class="section-heading">1. Chhatr Ka Vivaran (Student Details)</div>
+        <div class="row">
+            <div class="col">
+                <label>Chhatr Ka Naam (Student Name):</label>
+                <input type="text" name="studentName" id="studentName" placeholder="Capital Letters me bharein" required>
+            </div>
+            <div class="col">
+                <label>Janmtithi (Date of Birth):</label>
+                <input type="date" name="dob" id="dob" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label>Chhatr Aadhaar No.:</label>
+                <input type="text" name="studentAadhaar" placeholder="12 अंक का आधार नंबर" maxlength="12" pattern="[0-9]{12}" required>
+            </div>
+            <div class="col">
+                <label>Dharm (Religion):</label>
+                <select name="religion" required>
+                    <option value="">Dharm Chunein</option>
+                    <option value="Hindu">Hindu</option>
+                    <option value="Islam">Islam</option>
+                    <option value="Sikh">Sikh</option>
+                    <option value="Isai">Isai</option>
+                    <option value="Baudh">Baudh</option>
+                </select>
+            </div>
+            <div class="col">
+                <label>Jati (Caste/Category):</label>
+                <input type="text" name="category" placeholder="अपनी जाति दर्ज करें" required>
+            </div>
+        </div>
+
+        <div class="section-heading">2. Abhibhavak Ka Vivaran (Parents Details)</div>
+        <div class="row">
+            <div class="col">
+                <label>Pita Ka Naam (Father's Name):</label>
+                <input type="text" name="fatherName" placeholder="Pita ka naam" required>
+            </div>
+            <div class="col">
+                <label>Pita Ka Aadhaar No.:</label>
+                <input type="text" name="fatherAadhaar" placeholder="आधार नंबर (ऐच्छिक)" maxlength="12">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label>Mata Ka Naam (Mother's Name):</label>
+                <input type="text" name="motherName" placeholder="Mata ka naam" required>
+            </div>
+            <div class="col">
+                <label>Mata Ka Aadhaar No.:</label>
+                <input type="text" name="motherAadhaar" placeholder="आधार नंबर (ऐच्छिक)" maxlength="12">
+            </div>
+        </div>
+
+        <div class="section-heading">3. Sampark Aur Shaikshik Vivaran (Contact & Academic)</div>
+        <div class="row">
+            <div class="col">
+                <label>Mobile Number (WhatsApp Number):</label>
+                <input type="tel" id="studentMobile" name="mobile" pattern="[0-9]{10}" maxlength="10" placeholder="सत्यापित नंबर यहाँ लॉक रहेगा" readonly required style="background-color: #edf2f7; font-weight: bold; color: #2b6cb0;">
+            </div>
+            <div class="col">
+                <label>Email ID:</label>
+                <input type="email" name="email" placeholder="example@email.com">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label>Antim Vidyalay Ka Naam (Last School Name):</label>
+                <input type="text" name="lastSchool" placeholder="Pichle school ka naam aur pata" required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <label>Pura Pata (Full Address):</label>
+                <textarea name="address" rows="2" placeholder="Gram, Post, Jila, Pin Code..." required></textarea>
+            </div>
+        </div>
+
+        <div class="declaration-section">
+            <strong>घोषणा पत्र (Declaration):</strong> मैं यह प्रमाणित करता/करती हूँ कि इस आवेदन फॉर्म में दी गई सभी जानकारियाँ पूरी तरह सत्य और सही हैं। यदि कोई भी विवरण गलत पाया जाता है, तो विद्यालय प्रबंधन को नामांकन रद्द करने का पूर्ण अधिकार होगा।
+        </div>
+
+        <div class="signature-container">
+            <div class="sig-box" style="text-align: left; width: auto; display: flex; flex-direction: column; gap: 8px;">
+                <div>
+                    <label style="display:inline-block; width: 80px;">स्थान (Place):</label>
+                    <input type="text" name="inputPlace" id="inputPlace" placeholder="यहाँ स्थान लिखें" style="padding: 4px 8px; width: 140px;" required>
+                </div>
+                <div>
+                    <label style="display:inline-block; width: 80px;">तिथि (Date):</label>
+                    <input type="date" name="inputDate" id="inputDate" style="padding: 3px 8px; width: 140px;" required>
+                </div>
+            </div>
+            
+            <div class="sig-box">
+                <label class="sig-upload-box">
+                    <span id="studentSigText">✍️ Upload Signature</span>
+                    <img id="studentSigPreview" src="" alt="Student Signature">
+                    <input type="file" id="studentSigInput" name="studentSig" accept="image/*">
+                </label>
+                <span class="sig-label-text">Chhatr Ka Hastakshar<br>(Student's Signature)</span>
+            </div>
+            
+            <div class="sig-box">
+                <label class="sig-upload-box">
+                    <span id="parentSigText">✍️ Upload Signature</span>
+                    <img id="parentSigPreview" src="" alt="Parent Signature">
+                    <input type="file" id="parentSigInput" name="parentSig" accept="image/*">
+                </label>
+                <span class="sig-label-text">Abhibhavak Ka Hastakshar<br>(Parent's Signature)</span>
+            </div>
+        </div>
+
+        <div class="office-section">
+            <div class="office-title">— केवल कार्यालय के उपयोग के लिए (For Office Use Only) —</div>
+            <div class="row" style="margin-top: 12px;">
+                <div class="col"><label>सत्यापन की स्थिति (Verification Status):</label> Verified / Pending</div>
+                <div class="col"><label>नामांकन संख्या (Admission No.):</label> ....................................</div>
+                <div class="col"><label>हस्ताक्षर प्रधानाचार्य (Principal Sig):</label> ............................</div>
+            </div>
+        </div>
+
+        <div class="instruction-box">
+            <div class="instruction-title">⚠️ आवश्यक निर्देश (Important Instructions):</div>
+            <p style="margin: 5px 0;">शुल्क नगद विद्यालय पर जमा होगा। यदि 5 दिन बीत जाने पर शुल्क या कागजात जमा नहीं होते हैं, तो नामांकन निरस्त कर दिया जायेगा।</p>
+             
+            <div class="row" style="margin-top: 10px; background: #fff; padding: 10px; border-top: 1px solid #feb2b2; align-items: flex-end;">
+                <div class="col">
+                    <label style="color: #333;">निरस्त करने का कारण चुनें:</label>
+                    <select id="cancelReason">
+                        <option value="5 दिन के भीतर शुल्क न जमा करने के कारण">शुल्क जमा न होना (Fee Pending)</option>
+                        <option value="5 दिन के भीतर आवश्यक कागजात जमा न करने के कारण">कागजात की कमी (Documents Missing)</option>
+                        <option value="शुल्क एवं आवश्यक कागजात दोनों जमा न करने के कारण">शुल्क एवं कागजात दोनों लम्बित (Fee Pending & Documents Missing)</option>
+                    </select>
+                </div>
+                <div class="col" style="flex: 0 0 auto;">
+                    <button type="button" class="btn btn-cancel" onclick="cancelAdmissionAndSendWhatsApp()">WhatsApp से निरस्त करें व डिलीट करें</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button type="submit" class="btn btn-submit" id="submitBtn" disabled>Form Submit & WhatsApp Send</button>
+            <button type="button" class="btn btn-update" id="updateBtn" onclick="updateStudentData()">डेटा अपडेट करें (Update)</button>
+            <button type="button" class="btn btn-print" onclick="window.print()">केवल प्रिंट करें (Print)</button>
+            <button type="button" class="btn btn-reset" id="resetBtn" onclick="resetFormCustom()">Reset (साफ करें)</button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7DJrNjPKSMp-NNHXZsDIO5CEc-Pi5l5xlEx2VrUWb5euKob7W9k3Kf39ygAWWDXlXZg/exec";
+    const ADMIN_PASSWORD = "admin@123"; 
+
+    let generatedOTP = null;
+    let isMobileVerified = false;
+
+    const photoInput = document.getElementById('photoInput');
+    const photoPreview = document.getElementById('photoPreview');
+    const uploadText = document.getElementById('uploadText');
+    let base64PhotoData = ""; 
+
+    const studentSigInput = document.getElementById('studentSigInput');
+    const studentSigPreview = document.getElementById('studentSigPreview');
+    const studentSigText = document.getElementById('studentSigText');
+    let base64StudentSig = "";
+
+    const parentSigInput = document.getElementById('parentSigInput');
+    const parentSigPreview = document.getElementById('parentSigPreview');
+    const parentSigText = document.getElementById('parentSigText');
+    let base64ParentSig = "";
+
+    function showLoading(text) {
+        document.getElementById('loadingText').innerText = text;
+        document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+    function hideLoading() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+
+    // Auto ID Fetching Function
+    function fetchNextSerialNumber() {
+        fetch(SCRIPT_URL + "?action=getNextId")
+        .then(res => res.json())
+        .then(data => {
+            if(data && data.nextId) {
+                document.getElementById('serialNumber').value = data.nextId;
+            }
+        })
+        .catch(err => console.log("Auto ID Error: ", err));
+    }
+
+    // OTP Generation & Verification Logic
+    function sendOTP() {
+        const mob = document.getElementById('otpMobileInput').value.trim();
+        if(!mob || mob.length !== 10 || isNaN(mob)) {
+            alert("कृपया 10 अंकों का वैध मोबाइल नंबर दर्ज करें!");
+            return;
+        }
+        
+        generatedOTP = Math.floor(100000 + Math.random() * 900000).toString();
+        document.getElementById('otpVerifyRow').style.display = 'flex';
+        
+        document.getElementById('otpStatusMsg').style.color = "#2b6cb0";
+        document.getElementById('otpStatusMsg').innerHTML = `📩 OTP मोबाइल नंबर <b>${mob}</b> पर भेज दिया गया है।<br><b>सत्यापन हेतु OTP: <span style="font-size:16px; color:#c53030;">${generatedOTP}</span></b>`;
+        
+        alert(`OTP आपके मोबाइल (${mob}) पर भेजा गया है: ${generatedOTP}`);
+    }
+
+    function verifyOTP() {
+        const entered = document.getElementById('enteredOtp').value.trim();
+        const mob = document.getElementById('otpMobileInput').value.trim();
+
+        if (entered === generatedOTP && generatedOTP !== null) {
+            isMobileVerified = true;
+            document.getElementById('studentMobile').value = mob;
+            document.getElementById('otpStatusMsg').style.color = "#2f855a";
+            document.getElementById('otpStatusMsg').innerHTML = `✅ मोबाइल नंबर (${mob}) सफलतापूर्वक सत्यापित (Verified) हो गया है!`;
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('otpMobileInput').disabled = true;
+            document.getElementById('enteredOtp').disabled = true;
+        } else {
+            alert("गलत OTP! कृपया पुनः प्रयास करें।");
+        }
+    }
+
+    function handleImageUpload(file, previewImg, hideText, callback) {
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_WIDTH = 200; 
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+                    
+                    previewImg.src = compressedDataUrl;
+                    previewImg.style.display = 'block';
+                    hideText.style.display = 'none';
+                    
+                    callback(compressedDataUrl);
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    photoInput.addEventListener('change', function() {
+        handleImageUpload(this.files[0], photoPreview, uploadText, function(data) { base64PhotoData = data; });
+    });
+    studentSigInput.addEventListener('change', function() {
+        handleImageUpload(this.files[0], studentSigPreview, studentSigText, function(data) { base64StudentSig = data; });
+    });
+    parentSigInput.addEventListener('change', function() {
+        handleImageUpload(this.files[0], parentSigPreview, parentSigText, function(data) { base64ParentSig = data; });
+    });
+
+    function resetFormCustom() {
+        const form = document.getElementById('admissionForm');
+        form.reset();
+        photoPreview.src = ''; photoPreview.style.display = 'none'; uploadText.style.display = 'block';
+        studentSigPreview.src = ''; studentSigPreview.style.display = 'none'; studentSigText.style.display = 'block';
+        parentSigPreview.src = ''; parentSigPreview.style.display = 'none'; parentSigText.style.display = 'block';
+        base64PhotoData = ""; base64StudentSig = ""; base64ParentSig = "";
+        
+        isMobileVerified = false;
+        generatedOTP = null;
+        document.getElementById('otpMobileInput').value = '';
+        document.getElementById('otpMobileInput').disabled = false;
+        document.getElementById('enteredOtp').value = '';
+        document.getElementById('enteredOtp').disabled = false;
+        document.getElementById('otpVerifyRow').style.display = 'none';
+        document.getElementById('otpStatusMsg').style.color = "#c53030";
+        document.getElementById('otpStatusMsg').innerHTML = "⚠️ कृपया फॉर्म भरने से पहले अपना मोबाइल नंबर OTP द्वारा सत्यापित करें।";
+        
+        document.getElementById('formAction').value = "submit";
+        document.getElementById('updateBtn').style.display = 'none';
+        document.getElementById('submitBtn').style.display = 'inline-block';
+        document.getElementById('submitBtn').disabled = true;
+        
+        document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
+        document.getElementById('inputDate').value = new Date().toISOString().substring(0,10);
+        
+        fetchNextSerialNumber();
+    }
+
+    function toggleAdminPanel() {
+        document.getElementById('passwordModal').style.display = 'flex';
+        const pInput = document.getElementById('modalPasswordInput');
+        pInput.value = '';
+        pInput.focus();
+    }
+
+    function verifyAdminPassword() {
+        const pass = document.getElementById('modalPasswordInput').value;
+        if (pass === ADMIN_PASSWORD) {
+            document.getElementById('adminSearchPanel').style.display = 'block';
+            closePasswordModal();
+        } else {
+            alert("गलत पासवर्ड!");
+            document.getElementById('modalPasswordInput').value = '';
+        }
+    }
+
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+    }
+
+    function searchStudentById() {
+        const searchId = document.getElementById('searchIdInput').value;
+        if (!searchId) {
+            alert("कृपया क्रम संख्या (Sr. No.) दर्ज करें!");
+            return;
+        }
+
+        showLoading("छात्र का विवरण खोजा जा रहा है...");
+
+        fetch(SCRIPT_URL + "?action=getStudent&serialNumber=" + searchId)
+        .then(res => res.json())
+        .then(data => {
+            hideLoading();
+            if (data.result === "error") {
+                alert(data.message);
+                return;
+            }
+
+            document.getElementById('serialNumber').value = data.serialNumber || '';
+            document.getElementById('studentClass').value = data.class || '';
+            document.getElementById('studentName').value = data.studentName || '';
+            document.getElementById('studentMobile').value = data.mobile || '';
+            document.querySelector('select[name="religion"]').value = data.religion || '';
+            document.querySelector('input[name="category"]').value = data.category || '';
+            document.querySelector('input[name="studentAadhaar"]').value = data.studentAadhaar || '';
+            document.querySelector('input[name="fatherName"]').value = data.fatherName || '';
+            document.querySelector('input[name="fatherAadhaar"]').value = data.fatherAadhaar || '';
+            document.querySelector('input[name="motherName"]').value = data.motherName || '';
+            document.querySelector('input[name="motherAadhaar"]').value = data.motherAadhaar || '';
+            document.querySelector('input[name="email"]').value = data.email || '';
+            document.querySelector('input[name="lastSchool"]').value = data.lastSchool || '';
+            document.querySelector('textarea[name="address"]').value = data.address || '';
+            document.getElementById('inputPlace').value = data.inputPlace || '';
+
+            if (data.formDate) document.getElementById('formDate').value = data.formDate;
+            if (data.dob) document.getElementById('dob').value = data.dob;
+            if (data.inputDate) document.getElementById('inputDate').value = data.inputDate;
+
+            if (data.photoData) { photoPreview.src = data.photoData; photoPreview.style.display = 'block'; uploadText.style.display = 'none'; base64PhotoData = data.photoData; }
+            if (data.studentSig) { studentSigPreview.src = data.studentSig; studentSigPreview.style.display = 'block'; studentSigText.style.display = 'none'; base64StudentSig = data.studentSig; }
+            if (data.parentSig) { parentSigPreview.src = data.parentSig; parentSigPreview.style.display = 'block'; parentSigText.style.display = 'none'; base64ParentSig = data.parentSig; }
+
+            document.getElementById('formAction').value = "update";
+            document.getElementById('updateBtn').style.display = 'inline-block';
+            document.getElementById('submitBtn').style.display = 'none';
+            closePasswordModal();
+        })
+        .catch(err => {
+            hideLoading();
+            alert("खोजने में त्रुटि हुई: " + err.toString());
+        });
+    }
+
+    window.onload = function() {
+        fetchNextSerialNumber();
+        document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
+        document.getElementById('inputDate').value = new Date().toISOString().substring(0,10);
+    }
+
+    // FORM SUBMIT HANDLER (सुरक्षित रेस्पॉन्स पार्सिंग के साथ)
+    document.getElementById('admissionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        if(!isMobileVerified) {
+            alert("कृपया फॉर्म सबमिट करने से पहले अपने मोबाइल नंबर को OTP से सत्यापित करें!");
+            return;
+        }
+
+        const verifiedMob = document.getElementById('otpMobileInput').value.trim();
+        const formMob = document.getElementById('studentMobile').value.trim();
+
+        if(verifiedMob !== formMob) {
+            alert("त्रुटि: केवल वही मोबाइल नंबर उपयोग किया जा सकता है जिससे OTP सत्यापित किया गया था!");
+            return;
+        }
+        
+        showLoading("डेटा विद्यालय पोर्टल पर सुरक्षित किया जा रहा है...");
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const obj = {};
+        formData.forEach((val, key) => {
+            if(key !== "studentPhoto" && key !== "studentSig" && key !== "parentSig") {
+                obj[key] = val;
+            }
+        });
+
+        obj.photoData = base64PhotoData;
+        obj.studentSig = base64StudentSig;
+        obj.parentSig = base64ParentSig;
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify(obj)
+        })
+        .then(res => res.text()) // सुरक्षित रूप से टेक्स्ट डेटा पहले प्राप्त करें
+        .then(textData => {
+            hideLoading();
+            let res;
+            try {
+                res = JSON.parse(textData);
+            } catch (e) {
+                alert("⚠️ सर्वर त्रुटि: " + textData);
+                return;
+            }
+
+            if(res.result === "success") {
+                alert("नामांकन फ़ॉर्म (Sr No: " + res.serialNumber + ") सफलतापूर्वक जमा कर लिया गया है!");
+
+                window.print();
+
+                const msgStudent = `प्रिय ${obj.studentName},\nश्री कृष्ण इण्टर कालेज सेमरा में आपका नामांकन फ़ॉर्म (Sr No: ${res.serialNumber}, Class: ${obj.class}) सफलतापूर्वक जमा कर लिया गया है।\n- धन्यवाद।`;
+                window.open(`https://api.whatsapp.com/send?phone=91${obj.mobile}&text=${encodeURIComponent(msgStudent)}`, '_blank');
+
+                resetFormCustom();
+            } else {
+                // गूगल स्क्रिप्ट से भेजा गया त्रुटि संदेश यहाँ दिखाई देगा
+                alert(res.message);
+            }
+        })
+        .catch(err => {
+            hideLoading();
+            alert("नेटवर्क या सर्वर त्रुटि: " + err.toString());
+        });
+    });
+
+    // CANCEL ADMISSION HANDLER
+    function cancelAdmissionAndSendWhatsApp() {
+        const mobile = document.getElementById('studentMobile').value;
+        const name = document.getElementById('studentName').value;
+        const srNo = document.getElementById('serialNumber').value;
+        const reason = document.getElementById('cancelReason').value;
+
+        if (!mobile || !name || !srNo) {
+            alert("कृपया पहले एडमिन पैनल से छात्र का विवरण खोजें जिसे निरस्त करना है!");
+            return;
+        }
+
+        const confirmDelete = confirm(`क्या आप निश्चित रूप से ${name} (Sr No: ${srNo}) का नामांकन निरस्त करना चाहते हैं?`);
+        if (!confirmDelete) return;
+
+        showLoading("डेटाबेस से रिकॉर्ड हटाया जा रहा है...");
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({
+                action: "delete",
+                serialNumber: srNo
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            hideLoading();
+            if (res.result === "success") {
+                alert("नामांकन निरस्त कर दिया गया है एवं विद्यालय पोर्टल से हटा दिया गया है।");
+
+                const cancelMsg = `प्रिय ${name},\nश्री कृष्ण इण्टर कालेज सेमरा में आपका आवेदन (Sr No: ${srNo}) *${reason}* निरस्त कर दिया गया है।\n- श्री कृष्ण इण्टर कालेज सेमरा`;
+                window.open(`https://api.whatsapp.com/send?phone=91${mobile}&text=${encodeURIComponent(cancelMsg)}`, '_blank');
+
+                resetFormCustom();
+            } else {
+                alert(res.message);
+            }
+        })
+        .catch(err => {
+            hideLoading();
+            alert("शीट से डिलीट करने में त्रुटि: " + err.toString());
+        });
+    }
+
+    // UPDATE DATA HANDLER
+    function updateStudentData() {
+        showLoading("डेटा अपडेट किया जा रहा है...");
+        const form = document.getElementById('admissionForm');
+        const formData = new FormData(form);
+        const obj = {};
+        formData.forEach((val, key) => {
+            if(key !== "studentPhoto" && key !== "studentSig" && key !== "parentSig") {
+                obj[key] = val;
+            }
+        });
+        obj.action = "update";
+        obj.photoData = base64PhotoData;
+        obj.studentSig = base64StudentSig;
+        obj.parentSig = base64ParentSig;
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify(obj)
+        })
+        .then(res => res.text())
+        .then(textData => {
+            hideLoading();
+            let res;
+            try {
+                res = JSON.parse(textData);
+            } catch (e) {
+                alert("⚠️ सर्वर त्रुटि: " + textData);
+                return;
+            }
+
+            if(res.result === "success") {
+                alert("डेटा सफलतापूर्वक अपडेट कर दिया गया है!");
+                resetFormCustom();
+            } else {
+                alert(res.message);
+            }
+        })
+        .catch(err => {
+            hideLoading();
+            alert("अपडेट करने में त्रुटि: " + err.toString());
+        });
+    }
+</script>
+
+</body>
+</html>
