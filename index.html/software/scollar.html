@@ -81,8 +81,9 @@
 
     <div class="scroll-area">
         <div class="search-container">
-            <input type="text" id="searchBox" placeholder="🔍 Search Teacher Name..." onkeyup="render()" style="flex: 2;">
-            <input type="text" id="searchClassBox" placeholder="🔍 Filter Class (e.g. 6A, 6B)..." onkeyup="render()" style="flex: 1;">
+            <input type="text" id="searchBox" placeholder="🔍 Search Teacher Name..." onkeyup="handleSearch()" style="flex: 2;">
+            <input type="text" id="searchClassBox" placeholder="🔍 Filter Class (e.g. 6A, 6B)..." onkeyup="handleSearch()" style="flex: 1;">
+            <button onclick="searchSheetData()" style="background:#2980b9; font-size:12px; padding: 8px 12px;">Search Sheet</button>
         </div>
         <div class="total-box">Total SR Issued (Filtered): <span id="liveTotalSr">0</span></div>
         <table id="dataTable">
@@ -102,7 +103,7 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx68m-bZdSycvaaQdm9dFwKikc-tSgnBkEN9g36MIHXVoT1UlToob33uvzIn3qfPHJu/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXWHdzayza-bQCF6xfHaFrg3yp6OYN2Q4Zp6bte6W4lweDNXHzKb3Apkdrbrdknjmj/exec";
     let data = JSON.parse(localStorage.getItem('admissions')) || [];
 
     if(sessionStorage.getItem('isLoggedIn') === 'true') {
@@ -160,6 +161,36 @@
         if (s > 0 && c > 0) document.getElementById('endSr').value = s + c - 1;
     }
 
+    // Strict Date Formatting (Bina Date Object Use Kiye Taaki Day-Month Swap Na Hon)
+    function formatDate(dateStr) {
+        if (!dateStr) return "";
+        let str = String(dateStr).trim();
+        
+        // Agar date DD/MM/YYYY format me hai (jaise 05/08/2026)
+        if (str.includes('/')) {
+            let parts = str.split('/');
+            if (parts.length === 3) {
+                let day = parts[0].padStart(2, '0');
+                let month = parts[1].padStart(2, '0');
+                let year = parts[2].split('T')[0].trim();
+                return `${day}/${month}/${year}`;
+            }
+        }
+
+        // Agar date YYYY-MM-DD format me hai
+        if (str.includes('-')) {
+            let parts = str.split('-');
+            if (parts.length === 3) {
+                let year = parts[0].trim();
+                let month = parts[1].padStart(2, '0');
+                let day = parts[2].split('T')[0].padStart(2, '0');
+                return `${day}/${month}/${year}`;
+            }
+        }
+
+        return str;
+    }
+
     function resetForm() {
         document.getElementById('editIndex').value = "";
         document.getElementById('startSr').value = "";
@@ -180,13 +211,16 @@
             return;
         }
 
+        let rawDate = document.getElementById('entryDate').value;
+        let finalFormattedDate = formatDate(rawDate);
+
         let entry = {
             start: startVal,
             count: document.getElementById('countBox').value,
             end: document.getElementById('endSr').value,
             teacher: teacherVal,
             classSec: document.getElementById('classSec').value,
-            date: document.getElementById('entryDate').value
+            date: finalFormattedDate
         };
 
         let index = document.getElementById('editIndex').value;
@@ -204,7 +238,13 @@
 
     function syncToSheet(entry) {
         if (navigator.onLine) {
-            fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(entry) });
+            fetch(SCRIPT_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify(entry) 
+            }).then(() => {
+                console.log("Data Sheet me sync ho gaya!");
+            }).catch(err => console.error("Sync Error:", err));
         } else {
             let pending = JSON.parse(localStorage.getItem('pendingSync')) || [];
             pending.push(entry);
@@ -213,30 +253,74 @@
         }
     }
 
-    function render() {
+    function handleSearch() {
+        render();
+    }
+
+    function searchSheetData() {
+        let qTeacher = document.getElementById('searchBox').value.trim().toLowerCase();
+        let qClass = document.getElementById('searchClassBox').value.trim().toLowerCase();
+
+        if (!qTeacher && !qClass) {
+            alert("Kripya Teacher Name ya Class bharein search karne ke liye!");
+            return;
+        }
+
+        if (!navigator.onLine) {
+            alert("Sheet se search karne ke liye Internet connection zaroori hai!");
+            return;
+        }
+
+        let searchQuery = qTeacher || qClass;
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: "search", query: searchQuery })
+        })
+        .then(response => response.json())
+        .then(sheetResults => {
+            if (sheetResults && sheetResults.length > 0) {
+                renderList(sheetResults);
+            } else {
+                alert("Google Sheet me koi record nahi mila!");
+            }
+        })
+        .catch(error => {
+            console.error("Error searching sheet:", error);
+            alert("Sheet se search karne me samasya aayi.");
+        });
+    }
+
+    function renderList(listData) {
         let qTeacher = document.getElementById('searchBox').value.toLowerCase();
         let qClass = document.getElementById('searchClassBox').value.toLowerCase();
         let tbody = document.querySelector('#dataTable tbody');
         tbody.innerHTML = '';
         let total = 0;
-        
-        data.forEach((item, i) => {
+
+        listData.forEach((item, i) => {
             let matchTeacher = (item.teacher || "").toLowerCase().includes(qTeacher);
             let matchClass = (item.classSec || "").toLowerCase().includes(qClass);
 
             if(matchTeacher && matchClass) {
+                let formattedDate = formatDate(item.date);
                 tbody.innerHTML += `<tr>
                     <td>${item.start}-${item.end}</td>
                     <td>${item.teacher}</td>
                     <td>${item.classSec}</td>
                     <td>${item.count}</td>
-                    <td>${item.date}</td>
+                    <td>${formattedDate}</td>
                     <td><button class="edit-btn" onclick="edit(${i})">Edit</button> <button class="del-btn" onclick="del(${i})">Delete</button></td>
                 </tr>`;
                 total += parseInt(item.count || 0);
             }
         });
         document.getElementById('liveTotalSr').innerText = total;
+    }
+
+    function render() {
+        renderList(data);
     }
 
     function edit(i) {
@@ -246,7 +330,7 @@
         document.getElementById('endSr').value = data[i].end;
         document.getElementById('teacher').value = data[i].teacher;
         document.getElementById('classSec').value = data[i].classSec;
-        document.getElementById('entryDate').value = data[i].date;
+        document.getElementById('entryDate').value = formatDate(data[i].date);
     }
 
     function unlockDelete() {
@@ -262,11 +346,9 @@
         if(confirm("Confirm Delete?")) {
             let itemToDelete = data[i];
             
-            // Local Storage se remove kar rahe hain
             data.splice(i,1); 
             localStorage.setItem('admissions', JSON.stringify(data)); 
             
-            // Google Sheet se bhi Delete karne ke liye request bhej rahe hain
             if (navigator.onLine) {
                 fetch(SCRIPT_URL, {
                     method: 'POST',
