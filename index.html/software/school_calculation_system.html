@@ -972,10 +972,9 @@ function updateLiveGrandTotal() {
                         else if(cls.startsWith("12")) mainCls = 12;
 
                         if(mainCls > 0) {
-                            // Jul/Jan की स्थिति में जन० संख्या (janTxt2 / janTxt3) को छात्र संख्या में नहीं जोड़ा जाएगा
                             let genCnt = Number(record.txt2) || 0;
                             let scCnt = Number(record.txt3) || 0;
-                            let totalFee = Number(record.txt26) || 0; // कुल योग (txt26) का प्रयोग
+                            let totalFee = Number(record.txt26) || 0;
 
                             classStats[mainCls].gen += genCnt;
                             classStats[mainCls].sc += scCnt;
@@ -1028,7 +1027,6 @@ function calculateData(){
     let cls = combClass.value;
     let month = combMonth.value;
 
-    /* Class Teacher Message Display Logic */
     if(cls && teacherMapping[cls]) {
         let tName = teacherMapping[cls];
         msg(cls + " - " + tName + " : शुल्क विवरण प्रदर्शित हो रहा है...");
@@ -1050,7 +1048,6 @@ function calculateData(){
     let jan_b = (month === "Jul/Jan") ? val("janTxt3") : 0;
     let jan_c = (month === "Jul/Jan") ? val("janTxt4") : 0;
 
-    // Caste combo auto select
     let txt2Value = document.getElementById("txt2").value.trim();
     let txt3Value = document.getElementById("txt3").value.trim();
     if(txt2Value !== "" && txt3Value !== "") {
@@ -1061,7 +1058,6 @@ function calculateData(){
         document.getElementById("combCoste").value = "Sc";
     }
 
-    // Normal Fee Calculations
     let mahangai = (a * 6) + (jan_a * 6);
     setVal("txt7", mahangai);
 
@@ -1120,15 +1116,12 @@ function calculateData(){
     setVal("txt23", total);
     setVal("txt24", val("txt8") + total);
 
-    // --- REGISTRATION & BOARD LOGIC ---
     setVal("txt29", "");
     setVal("txt30", "");
     setVal("txt31", "");
     setVal("txt32", "");
 
     let isJulyMonth = (month === "Jul" || month === "Jul/Jan");
-    
-    // केवल जुलाई के छात्रों की संख्या से Registration/Board फीस बनेगी
     let julyStudents = (a + b); 
 
     if(isJulyMonth && julyStudents > 0) {
@@ -1151,10 +1144,8 @@ function calculateData(){
 
     savePersistentRegBoardData();
 
-    // --- कुल योग (txt26) : अब इसमें txt33 (Reg) तथा txt34 (Board) भी जुड़ेंगे ---
     setVal("txt26", val("txt24") + val("txt25") + val("txt33") + val("txt34"));
 
-    // Bank and Head calculation updates
     let currentMahangai = val("txt7");
     let currentVilamb = val("txt4");
     let currentPunhPravesh = val("txt5");
@@ -1321,41 +1312,85 @@ function updateData(){
     }
 }
 
+/* UPDATED SEARCH FUNCTION (Local Storage + Google Sheet Sync) */
 function searchData(){
     let id = document.getElementById("txt1").value.trim();
     if(id === "") { msg("⚠️ kripya SEARCH ke liye ID darj karein!"); return; }
 
+    // Step 1: Pehle Local Storage check karein
     let recordStr = localStorage.getItem(id);
     if(recordStr) {
         try {
             let record = JSON.parse(recordStr);
-            setVal("combMonth", record.month || "");
-            setVal("combCoste", record.category || "");
-            setVal("combClass", record.className || "");
-            
-            if(record.className && teacherMapping[record.className]){
-                msg(record.className + " - " + teacherMapping[record.className] + " : शुल्क विवरण प्रदर्शित हो रहा है...");
-            }
-            
-            if(record.month === "Jul/Jan") {
-                document.getElementById("janSection").style.display = "grid";
-                setVal("janTxt2", record.janTxt2 || "");
-                setVal("janTxt3", record.janTxt3 || "");
-                setVal("janTxt4", record.janTxt4 || "");
+            populateFormData(record);
+            msg("✅ Record Local Storage se mil gaya (ID: " + id + ")");
+            return;
+        } catch(e) { }
+    }
+
+    // Step 2: Agar Local Storage me nahi mila, toh Google Sheet se Search karein
+    if (navigator.onLine) {
+        msg("🔍 Google Sheet me ID " + id + " search kiya ja raha hai...");
+        fetch(WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify({ action: "SEARCH", id: id })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === "SUCCESS" && data.rowData) {
+                // Sheet se aaye row data ko map karein
+                let row = data.rowData;
+                let record = {
+                    month: row[1] || "",
+                    category: row[2] || "",
+                    className: row[3] || ""
+                };
+
+                for (let i = 2; i <= 28; i++) {
+                    record["txt" + i] = row[i + 2] !== undefined ? row[i + 2] : "";
+                }
+
+                populateFormData(record);
+                // Future fast search ke liye Local Storage me save karein
+                localStorage.setItem(id, JSON.stringify(record));
+                msg("✅ Record Google Sheet se mil gaya (ID: " + id + ")");
             } else {
-                document.getElementById("janSection").style.display = "none";
-                setVal("janTxt2", ""); setVal("janTxt3", ""); setVal("janTxt4", "");
+                msg("⚠️ ID " + id + " Google Sheet aur Local Storage dono me nahi mila!");
             }
+        })
+        .catch(err => {
+            msg("❌ Search request me error aayi! Google Apps Script me SEARCH action check karein.");
+        });
+    } else {
+        msg("⚠️ Offline hone ke karan Google Sheet se search nahi kiya ja sakta!");
+    }
+}
 
-            for(let i=2; i<=34; i++){ setVal("txt" + i, record["txt" + i] || ""); }
+// Form fields fill karne ka helper function
+function populateFormData(record) {
+    setVal("combMonth", record.month || "");
+    setVal("combCoste", record.category || "");
+    setVal("combClass", record.className || "");
+    
+    if(record.className && teacherMapping[record.className]){
+        msg(record.className + " - " + teacherMapping[record.className] + " : शुल्क विवरण प्रदर्शित हो रहा है...");
+    }
+    
+    if(record.month === "Jul/Jan") {
+        document.getElementById("janSection").style.display = "grid";
+        setVal("janTxt2", record.janTxt2 || "");
+        setVal("janTxt3", record.janTxt3 || "");
+        setVal("janTxt4", record.janTxt4 || "");
+    } else {
+        document.getElementById("janSection").style.display = "none";
+        setVal("janTxt2", ""); setVal("janTxt3", ""); setVal("janTxt4", "");
+    }
 
-            setVal("customBankInput", record.customBank || 0);
-            setVal("customHeadInput", record.customHead || 0);
-            setVal("customTotalInput", record.customTotal || 0);
+    for(let i=2; i<=34; i++){ setVal("txt" + i, record["txt" + i] || ""); }
 
-            msg("✅ Record mil gaya (ID: " + id + ")");
-        } catch(e) { msg("❌ Data parse karne me error aayi!"); }
-    } else { msg("⚠️ Is ID par koi record nahi mila!"); }
+    setVal("customBankInput", record.customBank || 0);
+    setVal("customHeadInput", record.customHead || 0);
+    setVal("customTotalInput", record.customTotal || 0);
 }
 
 function deleteRecord(){
