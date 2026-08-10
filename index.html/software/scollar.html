@@ -20,8 +20,8 @@
         .search-container { display: flex; gap: 10px; margin-bottom: 5px; }
         .search-container input, .search-container select { padding: 8px; border: 2px solid #2c3e50; font-size: 13px; }
         
-        /* Login Page Styles */
-        #loginOverlay {
+        /* Login Page & Modal Styles */
+        #loginOverlay, .custom-modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.7);
@@ -30,17 +30,17 @@
             align-items: center;
             z-index: 9999;
         }
-        .login-box {
+        .login-box, .modal-box {
             background: white;
             padding: 25px;
             border-radius: 8px;
             width: 300px;
             box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
         }
-        .login-box h3 { margin-top: 0; text-align: center; color: #2c3e50; }
-        .login-box label { margin-top: 10px; }
-        .login-box input { margin-bottom: 12px; }
-        .login-box button { width: 100%; background: #27ae60; padding: 10px; font-weight: bold; }
+        .login-box h3, .modal-box h3 { margin-top: 0; text-align: center; color: #2c3e50; }
+        .login-box label, .modal-box label { margin-top: 10px; }
+        .login-box input, .modal-box input { margin-bottom: 12px; }
+        .login-box button, .modal-box button { width: 100%; background: #27ae60; padding: 10px; font-weight: bold; }
         .error-msg { color: red; font-size: 12px; text-align: center; margin-top: 5px; display: none; }
     </style>
 </head>
@@ -56,6 +56,18 @@
         <input type="password" id="loginPass" placeholder="Enter Password">
         <button onclick="checkLogin()">Login</button>
         <div id="errorMsg" class="error-msg">Galat Login ID ya Password!</div>
+    </div>
+</div>
+
+<!-- Hidden Password Modal (For Unlock Delete & Clear Local Data) -->
+<div id="passModalOverlay" class="custom-modal-overlay" style="display: none;">
+    <div class="modal-box">
+        <h3 id="modalTitle">Enter Security Password</h3>
+        <label>Password:</label>
+        <input type="password" id="securityPassInput" placeholder="****" onkeyup="handlePassEnter(event)">
+        <button onclick="submitSecurityPass()">Confirm</button>
+        <button onclick="closePassModal()" style="background:#7f8c8d; margin-top: 5px;">Cancel</button>
+        <div id="passErrorMsg" class="error-msg">Galat Password!</div>
     </div>
 </div>
 
@@ -76,7 +88,8 @@
         </div>
         <button onclick="saveData()" style="background:#27ae60;">Save / Update</button>
         <button onclick="resetForm()" style="background:#6c757d;">Reset</button>
-        <button onclick="unlockDelete()" style="background:#8e44ad;">Unlock Delete</button>
+        <button onclick="promptForAction('unlock')" style="background:#8e44ad;">Unlock Delete</button>
+        <button onclick="promptForAction('clearLocal')" style="background:#d35400;">Clear Local Data</button>
     </div>
 
     <div class="scroll-area">
@@ -105,6 +118,7 @@
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXWHdzayza-bQCF6xfHaFrg3yp6OYN2Q4Zp6bte6W4lweDNXHzKb3Apkdrbrdknjmj/exec";
     let data = JSON.parse(localStorage.getItem('admissions')) || [];
+    let currentActionTarget = "";
 
     if(sessionStorage.getItem('isLoggedIn') === 'true') {
         document.getElementById('loginOverlay').style.display = 'none';
@@ -152,6 +166,8 @@
             if (lastEndSr > 0) {
                 document.getElementById('startSr').value = lastEndSr + 1;
             }
+        } else {
+            document.getElementById('startSr').value = "";
         }
     }
 
@@ -161,12 +177,10 @@
         if (s > 0 && c > 0) document.getElementById('endSr').value = s + c - 1;
     }
 
-    // Strict Date Formatting (Bina Date Object Use Kiye Taaki Day-Month Swap Na Hon)
     function formatDate(dateStr) {
         if (!dateStr) return "";
         let str = String(dateStr).trim();
         
-        // Agar date DD/MM/YYYY format me hai (jaise 05/08/2026)
         if (str.includes('/')) {
             let parts = str.split('/');
             if (parts.length === 3) {
@@ -177,7 +191,6 @@
             }
         }
 
-        // Agar date YYYY-MM-DD format me hai
         if (str.includes('-')) {
             let parts = str.split('-');
             if (parts.length === 3) {
@@ -333,12 +346,46 @@
         document.getElementById('entryDate').value = formatDate(data[i].date);
     }
 
-    function unlockDelete() {
-        let p = prompt("Password:");
-        if(p === "1234") {
-            document.querySelectorAll('.del-btn').forEach(b => b.style.display = 'inline-block');
-        } else if(p !== null) {
-            alert("Galat Password!");
+    /* Secure Hidden Password Modal Functions */
+    function promptForAction(actionType) {
+        currentActionTarget = actionType;
+        document.getElementById('securityPassInput').value = "";
+        document.getElementById('passErrorMsg').style.display = "none";
+        
+        if(actionType === 'unlock') {
+            document.getElementById('modalTitle').innerText = "Unlock Delete Password";
+        } else if(actionType === 'clearLocal') {
+            document.getElementById('modalTitle').innerText = "Clear Local Data Password";
+        }
+        
+        document.getElementById('passModalOverlay').style.display = "flex";
+        document.getElementById('securityPassInput').focus();
+    }
+
+    function closePassModal() {
+        document.getElementById('passModalOverlay').style.display = "none";
+        currentActionTarget = "";
+    }
+
+    function handlePassEnter(e) {
+        if(e.key === 'Enter') {
+            submitSecurityPass();
+        }
+    }
+
+    function submitSecurityPass() {
+        let pass = document.getElementById('securityPassInput').value.trim();
+        
+        if(pass === "1234") {
+            closePassModal();
+            if(currentActionTarget === 'unlock') {
+                document.querySelectorAll('.del-btn').forEach(b => b.style.display = 'inline-block');
+                alert("Delete Buttons Unlocked!");
+            } else if(currentActionTarget === 'clearLocal') {
+                clearLocalStorageOnly();
+            }
+        } else {
+            document.getElementById('passErrorMsg').style.display = "block";
         }
     }
 
@@ -359,6 +406,17 @@
 
             render(); 
             updateNextSr(); 
+        }
+    }
+
+    function clearLocalStorageOnly() {
+        if(confirm("Kya aap sirf Local Storage ke data ko clear karna chahte hain? (Google Sheet ka data delete NAHI hoga)")) {
+            localStorage.removeItem('admissions');
+            localStorage.removeItem('pendingSync');
+            data = []; 
+            render();
+            resetForm();
+            alert("Local storage data safaltapurvak clear ho gaya hai!");
         }
     }
 
