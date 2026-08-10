@@ -258,7 +258,7 @@ flex-shrink: 0;
 /* बटन्स ग्रिड */
 .btns{
 display:grid;
-grid-template-columns: repeat(9, 1fr);
+grid-template-columns: repeat(10, 1fr);
 gap:8px;
 direction: rtl;
 align-items: center;
@@ -303,8 +303,9 @@ font-weight: bold;
 .btns button:nth-child(5){background:#8e44ad;}   /* Google Sheet */
 .btns button:nth-child(6){background:black;}     /* Clear */
 .btns button:nth-child(7){background:#b91c1c;}   /* Delete */
-.btns button:nth-child(8){background:#27ae60;}   /* Sync */
-.btns button:nth-child(9){background:#c2410c;}   /* Reset Reg/Board */
+.btns button:nth-child(8){background:#be123c;}   /* Delete Local Only */
+.btns button:nth-child(9){background:#27ae60;}   /* Sync */
+.btns button:nth-child(10){background:#c2410c;}  /* Reset Reg/Board */
 
 /* कॉम्पैक्ट टोटल बॉक्स पट्टी */
 .summary-container {
@@ -544,6 +545,63 @@ background: #1a365d;
 color: white;
 cursor: pointer;
 }
+
+/* Late Board Fee Setting Panel */
+.board-setting-panel {
+background: #e2e8f0;
+border: 2px solid #003366;
+border-radius: 8px;
+padding: 10px;
+margin-top: 15px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 15px;
+}
+
+.board-setting-title {
+font-size: 14px;
+color: #003366;
+font-weight: bold;
+white-space: nowrap;
+}
+
+.board-setting-inputs {
+display: flex;
+align-items: center;
+gap: 15px;
+flex-grow: 1;
+}
+
+.board-setting-inputs div {
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.board-setting-inputs label {
+font-size: 13px;
+margin: 0;
+white-space: nowrap;
+}
+
+.board-setting-inputs input {
+width: 120px;
+height: 30px;
+border: 1px solid #003366;
+background: #fff;
+}
+
+.save-setting-btn {
+background: #003366;
+color: white;
+padding: 0 15px;
+height: 32px;
+border-radius: 4px;
+font-size: 12px;
+font-weight: bold;
+cursor: pointer;
+}
 </style>
 </head>
 
@@ -591,6 +649,7 @@ cursor: pointer;
                 <button onclick="openGoogleSheet()" tabindex="15">Google Sheet</button> 
                 <button onclick="clearForm()" tabindex="16">Clear</button>
                 <button onclick="deleteRecord()" tabindex="16">Delete</button>
+                <button onclick="deleteLocalRecordOnly()">Delete Local</button>
                 <button onclick="syncOfflineData(false)" tabindex="17">Sync Data</button>
                 <button onclick="resetRegBoardData()">Reg/Board Reset</button>
             </div>
@@ -739,6 +798,22 @@ cursor: pointer;
             </div>
 
             <div class="grid" id="textboxArea"></div>
+
+            <!-- Board Late Fee Setting Box -->
+            <div class="board-setting-panel">
+                <div class="board-setting-title">⚙️ Penalaty / Late Board Fees Setting:</div>
+                <div class="board-setting-inputs">
+                    <div>
+                        <label>High School (10th) Late Fee:</label>
+                        <input type="number" id="settingClass10BoardFee" placeholder="Default: 501">
+                    </div>
+                    <div>
+                        <label>Inter (12th) Late Fee:</label>
+                        <input type="number" id="settingClass12BoardFee" placeholder="Default: 601">
+                    </div>
+                </div>
+                <button class="save-setting-btn" onclick="saveLateBoardFeeSettings()">Save Late Fees</button>
+            </div>
         </div>
 
     </div>
@@ -770,6 +845,7 @@ window.addEventListener("DOMContentLoaded", function() {
         document.getElementById("login-overlay").style.display = "none";
         document.getElementById("main-app").style.display = "flex";
         loadPersistentRegBoardData();
+        loadLateBoardFeeSettings();
         updateLiveGrandTotal();
     } else {
         document.getElementById("login-overlay").style.display = "flex";
@@ -785,6 +861,7 @@ function checkLogin() {
         document.getElementById("login-overlay").style.display = "none";
         document.getElementById("main-app").style.display = "flex";
         loadPersistentRegBoardData();
+        loadLateBoardFeeSettings();
         updateLiveGrandTotal();
     } else {
         document.getElementById("loginError").style.display = "block";
@@ -885,6 +962,31 @@ document.getElementById("calcBox").addEventListener("keydown", function(e) {
         }
     }
 });
+
+/* LATE BOARD FEE SETTINGS LOGIC */
+function saveLateBoardFeeSettings() {
+    let fee10 = document.getElementById("settingClass10BoardFee").value.trim();
+    let fee12 = document.getElementById("settingClass12BoardFee").value.trim();
+
+    let settings = {
+        class10: fee10 !== "" ? Number(fee10) : null,
+        class12: fee12 !== "" ? Number(fee12) : null
+    };
+
+    localStorage.setItem("late_board_fee_settings", JSON.stringify(settings));
+    msg("⚙️ Late Board Fee Settings saved successfully!");
+    calculateData();
+}
+
+function loadLateBoardFeeSettings() {
+    let saved = JSON.parse(localStorage.getItem("late_board_fee_settings") || "{}");
+    if(saved.class10 !== undefined && saved.class10 !== null) {
+        document.getElementById("settingClass10BoardFee").value = saved.class10;
+    }
+    if(saved.class12 !== undefined && saved.class12 !== null) {
+        document.getElementById("settingClass12BoardFee").value = saved.class12;
+    }
+}
 
 /* REGISTRATION & BOARD PERMANENT LOCAL STORAGE LOGIC */
 function loadPersistentRegBoardData() {
@@ -1124,15 +1226,20 @@ function calculateData(){
     let isJulyMonth = (month === "Jul" || month === "Jul/Jan");
     let julyStudents = (a + b); 
 
+    // Board Fee Setting check
+    let savedSettings = JSON.parse(localStorage.getItem("late_board_fee_settings") || "{}");
+    let c10BoardRate = (savedSettings.class10 !== undefined && savedSettings.class10 !== null) ? savedSettings.class10 : 501;
+    let c12BoardRate = (savedSettings.class12 !== undefined && savedSettings.class12 !== null) ? savedSettings.class12 : 601;
+
     if(isJulyMonth && julyStudents > 0) {
         if(["9A","9B","9C","9D","9E"].includes(cls)){
             setVal("txt29", julyStudents * 50);
         } else if(["10A","10B","10C","10D","10E"].includes(cls)){
-            setVal("txt30", julyStudents * 501);
+            setVal("txt30", julyStudents * c10BoardRate);
         } else if(["11A","11B"].includes(cls)){
             setVal("txt31", julyStudents * 50);
         } else if(["12A","12B"].includes(cls)){
-            setVal("txt32", julyStudents * 601);
+            setVal("txt32", julyStudents * c12BoardRate);
         }
     }
 
@@ -1338,7 +1445,6 @@ function searchData(){
         .then(res => res.json())
         .then(data => {
             if (data.status === "SUCCESS" && data.rowData) {
-                // Sheet se aaye row data ko map karein
                 let row = data.rowData;
                 let record = {
                     month: row[1] || "",
@@ -1351,7 +1457,6 @@ function searchData(){
                 }
 
                 populateFormData(record);
-                // Future fast search ke liye Local Storage me save karein
                 localStorage.setItem(id, JSON.stringify(record));
                 msg("✅ Record Google Sheet se mil gaya (ID: " + id + ")");
             } else {
@@ -1366,7 +1471,31 @@ function searchData(){
     }
 }
 
-// Form fields fill karne ka helper function
+/* FORMAT DATE & TIME HELPER FUNCTIONS */
+function formatDateString(dateVal) {
+    if(!dateVal) return "";
+    let str = String(dateVal);
+    if(str.includes("T")) {
+        let d = new Date(str);
+        if(!isNaN(d.getTime())) {
+            return d.toLocaleDateString("en-IN");
+        }
+    }
+    return str;
+}
+
+function formatTimeString(timeVal) {
+    if(!timeVal) return "";
+    let str = String(timeVal);
+    if(str.includes("T")) {
+        let d = new Date(str);
+        if(!isNaN(d.getTime())) {
+            return d.toLocaleTimeString("en-IN");
+        }
+    }
+    return str;
+}
+
 function populateFormData(record) {
     setVal("combMonth", record.month || "");
     setVal("combCoste", record.category || "");
@@ -1386,7 +1515,13 @@ function populateFormData(record) {
         setVal("janTxt2", ""); setVal("janTxt3", ""); setVal("janTxt4", "");
     }
 
-    for(let i=2; i<=34; i++){ setVal("txt" + i, record["txt" + i] || ""); }
+    for(let i=2; i<=34; i++){ 
+        let val = record["txt" + i] || "";
+        // Format Date (txt27) & Time (txt28) coming from ISO string
+        if(i === 27) val = formatDateString(val);
+        if(i === 28) val = formatTimeString(val);
+        setVal("txt" + i, val); 
+    }
 
     setVal("customBankInput", record.customBank || 0);
     setVal("customHeadInput", record.customHead || 0);
@@ -1397,7 +1532,7 @@ function deleteRecord(){
     let id = document.getElementById("txt1").value.trim();
     if(id === "") { msg("⚠️ kripya DELETE ke liye ID darj karein!"); return; }
 
-    if(confirm("Kya aap wakayi ID " + id + " ko delete karna chahte hain?")) {
+    if(confirm("Kya aap wakayi ID " + id + " ko Local aur Google Sheet dono se delete karna chahte hain?")) {
         localStorage.removeItem(id);
         let data = { action: "DELETE", id: id };
         if (navigator.onLine) {
@@ -1405,6 +1540,20 @@ function deleteRecord(){
         }
         clearForm();
         updateLiveGrandTotal();
+        msg("🗑️ Record Local Storage aur Google Sheet se delete ho gaya.");
+    }
+}
+
+/* NEW FUNCTION: Delete Local Storage Only */
+function deleteLocalRecordOnly(){
+    let id = document.getElementById("txt1").value.trim();
+    if(id === "") { msg("⚠️ kripya LOCAL DELETE ke liye ID darj karein!"); return; }
+
+    if(confirm("Kya aap ID " + id + " ko sirf Local Storage se delete karna chahte hain? (Google Sheet se delete NAHI hoga)")) {
+        localStorage.removeItem(id);
+        clearForm();
+        updateLiveGrandTotal();
+        msg("🗑️ Record sirf Local Storage se delete kiya gaya hai! (Sheet surakshit hai)");
     }
 }
 
