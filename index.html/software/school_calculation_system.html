@@ -627,7 +627,7 @@ cursor: pointer;
 <!-- MAIN SOFTWARE -->
 <div id="main-app">
     <div class="marquee">
-        <span>School Fees System - Shri Krishn Inter College Semra Kathkuiyan</span>
+        <span id="marqueeText">School Fees System - Shri Krishn Inter College Semra Kathkuiyan</span>
     </div>
 
     <div class="container">
@@ -938,6 +938,18 @@ function msg(m){
     setTimeout(()=>{ document.getElementById("msg").innerHTML="&nbsp;"; },15000);
 }
 
+/* MARQUEE TEXT UPDATE FUNCTION */
+function updateMarqueeInfo() {
+    let id = document.getElementById("txt1").value.trim();
+    let cls = document.getElementById("combClass").value;
+    let text = "School Fees System - Shri Krishn Inter College Semra Kathkuiyan";
+    
+    if (id !== "" || cls !== "") {
+        text += " | [ Active ID: " + (id || "N/A") + " | Class: " + (cls || "N/A") + " ]";
+    }
+    document.getElementById("marqueeText").innerText = text;
+}
+
 function getNextId(){
     let last=Number(localStorage.getItem("lastId")||0);
     return last+1;
@@ -1129,6 +1141,8 @@ function calculateData(){
     let cls = combClass.value;
     let month = combMonth.value;
 
+    updateMarqueeInfo();
+
     if(cls && teacherMapping[cls]) {
         let tName = teacherMapping[cls];
         msg(cls + " - " + tName + " : शुल्क विवरण प्रदर्शित हो रहा है...");
@@ -1275,6 +1289,7 @@ function calculateData(){
     }
 }
 
+document.getElementById("txt1").addEventListener("input", updateMarqueeInfo);
 document.getElementById("combMonth").addEventListener("change", calculateData);
 document.getElementById("combClass").addEventListener("change", calculateData);
 document.getElementById("combCoste").addEventListener("change", calculateData);
@@ -1419,7 +1434,7 @@ function updateData(){
     }
 }
 
-/* UPDATED SEARCH FUNCTION (Local Storage + Google Sheet Sync) */
+/* SEARCH FUNCTION (Local Storage + Google Sheet Sync & Auto Save back to Local Storage) */
 function searchData(){
     let id = document.getElementById("txt1").value.trim();
     if(id === "") { msg("⚠️ kripya SEARCH ke liye ID darj karein!"); return; }
@@ -1430,6 +1445,7 @@ function searchData(){
         try {
             let record = JSON.parse(recordStr);
             populateFormData(record);
+            updateMarqueeInfo();
             msg("✅ Record Local Storage se mil gaya (ID: " + id + ")");
             return;
         } catch(e) { }
@@ -1447,18 +1463,22 @@ function searchData(){
             if (data.status === "SUCCESS" && data.rowData) {
                 let row = data.rowData;
                 let record = {
+                    id: id,
                     month: row[1] || "",
                     category: row[2] || "",
                     className: row[3] || ""
                 };
 
-                for (let i = 2; i <= 28; i++) {
+                for (let i = 2; i <= 34; i++) {
                     record["txt" + i] = row[i + 2] !== undefined ? row[i + 2] : "";
                 }
 
                 populateFormData(record);
+                // Search ke baad wapas Local Storage me save karna taki grand total update ho jaye
                 localStorage.setItem(id, JSON.stringify(record));
-                msg("✅ Record Google Sheet se mil gaya (ID: " + id + ")");
+                updateLiveGrandTotal();
+                updateMarqueeInfo();
+                msg("✅ Record Google Sheet se mil gaya aur Local Storage me Update ho gaya (ID: " + id + ")");
             } else {
                 msg("⚠️ ID " + id + " Google Sheet aur Local Storage dono me nahi mila!");
             }
@@ -1544,16 +1564,28 @@ function deleteRecord(){
     }
 }
 
-/* NEW FUNCTION: Delete Local Storage Only */
+/* PASSWORD PROTECTED FULL LOCAL STORAGE CLEAR (Delete Local) */
 function deleteLocalRecordOnly(){
-    let id = document.getElementById("txt1").value.trim();
-    if(id === "") { msg("⚠️ kripya LOCAL DELETE ke liye ID darj karein!"); return; }
+    let pwd = prompt("पूरा Local Storage खाली करने के लिए Password (1234) दर्ज करें:");
+    if(pwd === null) return;
+    
+    if(pwd === "1234") {
+        if(confirm("⚠️ क्या आप निश्चित हैं कि आप पूरा Local Storage (Fees Data) खाली करना चाहते हैं?")) {
+            // IDs और डाटा पूरा clear करना लेकिन Settings सुरक्षित रखना
+            let regData = localStorage.getItem("reg_board_data");
+            let lateSettings = localStorage.getItem("late_board_fee_settings");
 
-    if(confirm("Kya aap ID " + id + " ko sirf Local Storage se delete karna chahte hain? (Google Sheet se delete NAHI hoga)")) {
-        localStorage.removeItem(id);
-        clearForm();
-        updateLiveGrandTotal();
-        msg("🗑️ Record sirf Local Storage se delete kiya gaya hai! (Sheet surakshit hai)");
+            localStorage.clear();
+
+            if(regData) localStorage.setItem("reg_board_data", regData);
+            if(lateSettings) localStorage.setItem("late_board_fee_settings", lateSettings);
+
+            clearForm();
+            updateLiveGrandTotal();
+            msg("🗑️ Local Storage का पूरा Fees Data सफलतापूर्वक खाली कर दिया गया है!");
+        }
+    } else {
+        alert("❌ गलत पासवर्ड! Local Storage खाली नहीं किया गया।");
     }
 }
 
@@ -1576,6 +1608,7 @@ function clearForm(){
     isManualDate = false;
 
     loadPersistentRegBoardData();
+    updateMarqueeInfo();
     msg("✨ Form clear kar diya gaya hai.");
 }
 
