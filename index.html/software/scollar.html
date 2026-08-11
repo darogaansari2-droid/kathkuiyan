@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <title>Admission Portal</title>
-    <style>
+    <style id="dynamicStyles">
         body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 5px; }
         .main-wrapper { max-width: 1200px; margin: auto; }
         .fixed-header { background: white; padding:14px; border: 2px solid #333; position: sticky; top: 0; z-index: 100; }
         .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
         input, select { width: 100%; padding: 13px 10px; border: 1px solid #999; box-sizing: border-box; font-size: 13px; }
         label { font-size: 11px; font-weight: bold; display: block; }
-        button { padding: 5px 10px; cursor: pointer; border: none; background: #2c3e50; color: white; font-size: 15px; }
+        button { padding: 5px 10px; cursor: pointer; border: none; background: #2c3e50; color: white; font-size: 13px; }
         .total-box { background: #2c3e50; color: white; padding: 2px 10px; border-radius: 15px; display: inline-block; font-weight: bold; margin: 5px 0; font-size: 13px; }
         .scroll-area { margin-top: 16px; background: white; padding: 10px; border: 1px solid #333; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th, td { border: 1px solid #000; padding: 4px 6px; text-align: left; }
+        
         .del-btn { background: #e74c3c; display: none; }
         .edit-btn { background: #f39c12; }
+        .clear-single-btn { background: #d35400; font-size: 11px; padding: 3px 6px; }
         .search-container { display: flex; gap: 10px; margin-bottom: 5px; }
         .search-container input, .search-container select { padding: 8px; border: 2px solid #2c3e50; font-size: 13px; }
         
@@ -59,7 +61,7 @@
     </div>
 </div>
 
-<!-- Hidden Password Modal (For Unlock Delete & Clear Local Data) -->
+<!-- Hidden Security Password Modal -->
 <div id="passModalOverlay" class="custom-modal-overlay" style="display: none;">
     <div class="modal-box">
         <h3 id="modalTitle">Enter Security Password</h3>
@@ -89,7 +91,7 @@
         <button onclick="saveData()" style="background:#27ae60;">Save / Update</button>
         <button onclick="resetForm()" style="background:#6c757d;">Reset</button>
         <button onclick="promptForAction('unlock')" style="background:#8e44ad;">Unlock Delete</button>
-        <button onclick="promptForAction('clearLocal')" style="background:#d35400;">Clear Local Data</button>
+        <button onclick="promptForAction('clearAllLocal')" style="background:#d35400;">Clear All Local</button>
     </div>
 
     <div class="scroll-area">
@@ -116,9 +118,10 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXWHdzayza-bQCF6xfHaFrg3yp6OYN2Q4Zp6bte6W4lweDNXHzKb3Apkdrbrdknjmj/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxg61wczAeGNd3H4hcVIPcP8J4ovb4gsfMWjgD-cAk6JdS1aAbKZscdEHBicAPZeST9/exec";
     let data = JSON.parse(localStorage.getItem('admissions')) || [];
     let currentActionTarget = "";
+    let isDeleteUnlocked = false;
 
     if(sessionStorage.getItem('isLoggedIn') === 'true') {
         document.getElementById('loginOverlay').style.display = 'none';
@@ -148,17 +151,6 @@
         document.getElementById('loginPass').value = "";
         document.getElementById('errorMsg').style.display = 'none';
     }
-
-    window.addEventListener('online', () => {
-        let pending = JSON.parse(localStorage.getItem('pendingSync')) || [];
-        if (pending.length > 0) {
-            pending.forEach(entry => {
-                fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(entry) });
-            });
-            localStorage.removeItem('pendingSync');
-            alert("Offline data sync ho gaya!");
-        }
-    });
 
     function updateNextSr() {
         if(data.length > 0) {
@@ -212,6 +204,7 @@
         document.getElementById('teacher').value = "";
         document.getElementById('classSec').value = "";
         document.getElementById('entryDate').value = "";
+        document.getElementById('startSr').readOnly = false;
         updateNextSr();
     }
 
@@ -237,10 +230,16 @@
         };
 
         let index = document.getElementById('editIndex').value;
-        if(index === "") {
-            data.push(entry); 
-        } else {
+        
+        // Match existing entry by Start SR
+        let existingIndex = data.findIndex(item => String(item.start).trim() === String(startVal).trim());
+
+        if(index !== "") {
             data[index] = entry;
+        } else if(existingIndex !== -1) {
+            data[existingIndex] = entry;
+        } else {
+            data.push(entry); 
         }
         
         localStorage.setItem('admissions', JSON.stringify(data));
@@ -256,13 +255,13 @@
                 mode: 'no-cors', 
                 body: JSON.stringify(entry) 
             }).then(() => {
-                console.log("Data Sheet me sync ho gaya!");
+                console.log("Data Sheet me sync/update ho gaya!");
             }).catch(err => console.error("Sync Error:", err));
         } else {
             let pending = JSON.parse(localStorage.getItem('pendingSync')) || [];
             pending.push(entry);
             localStorage.setItem('pendingSync', JSON.stringify(pending));
-            alert("Offline mode: Data local storage mein save ho gaya hai. Internet aane par sync hoga.");
+            alert("Offline mode: Local memory update ho gayi hai.");
         }
     }
 
@@ -275,12 +274,7 @@
         let qClass = document.getElementById('searchClassBox').value.trim().toLowerCase();
 
         if (!qTeacher && !qClass) {
-            alert("Kripya Teacher Name ya Class bharein search karne ke liye!");
-            return;
-        }
-
-        if (!navigator.onLine) {
-            alert("Sheet se search karne ke liye Internet connection zaroori hai!");
+            alert("Kripya Search Name ya Class likhein!");
             return;
         }
 
@@ -294,18 +288,18 @@
         .then(response => response.json())
         .then(sheetResults => {
             if (sheetResults && sheetResults.length > 0) {
-                renderList(sheetResults);
+                renderList(sheetResults, true);
             } else {
-                alert("Google Sheet me koi record nahi mila!");
+                alert("Google Sheet me record nahi mila!");
             }
         })
         .catch(error => {
             console.error("Error searching sheet:", error);
-            alert("Sheet se search karne me samasya aayi.");
+            alert("Sheet se search me dikkat aayi.");
         });
     }
 
-    function renderList(listData) {
+    function renderList(listData, isSheetResult = false) {
         let qTeacher = document.getElementById('searchBox').value.toLowerCase();
         let qClass = document.getElementById('searchClassBox').value.toLowerCase();
         let tbody = document.querySelector('#dataTable tbody');
@@ -318,13 +312,23 @@
 
             if(matchTeacher && matchClass) {
                 let formattedDate = formatDate(item.date);
+                let delDisplayStyle = isDeleteUnlocked ? 'inline-block' : 'none';
+                
+                let localClearBtn = (!isSheetResult) 
+                    ? `<button class="clear-single-btn" onclick="clearSingleLocal(${i})">Remove Local</button>` 
+                    : '';
+
                 tbody.innerHTML += `<tr>
                     <td>${item.start}-${item.end}</td>
                     <td>${item.teacher}</td>
                     <td>${item.classSec}</td>
                     <td>${item.count}</td>
                     <td>${formattedDate}</td>
-                    <td><button class="edit-btn" onclick="edit(${i})">Edit</button> <button class="del-btn" onclick="del(${i})">Delete</button></td>
+                    <td>
+                        <button class="edit-btn" onclick='editItem(${JSON.stringify(item)})'>Edit</button> 
+                        ${localClearBtn}
+                        <button class="del-btn" style="display:${delDisplayStyle}" onclick="del('${item.start}')">Delete Sheet</button>
+                    </td>
                 </tr>`;
                 total += parseInt(item.count || 0);
             }
@@ -333,20 +337,32 @@
     }
 
     function render() {
-        renderList(data);
+        renderList(data, false);
     }
 
-    function edit(i) {
-        document.getElementById('editIndex').value = i;
-        document.getElementById('startSr').value = data[i].start;
-        document.getElementById('countBox').value = data[i].count;
-        document.getElementById('endSr').value = data[i].end;
-        document.getElementById('teacher').value = data[i].teacher;
-        document.getElementById('classSec').value = data[i].classSec;
-        document.getElementById('entryDate').value = formatDate(data[i].date);
+    function editItem(item) {
+        let index = data.findIndex(d => String(d.start).trim() === String(item.start).trim());
+        document.getElementById('editIndex').value = (index !== -1) ? index : "";
+        document.getElementById('startSr').value = item.start;
+        document.getElementById('startSr').readOnly = true; // Unique ID lock
+        document.getElementById('countBox').value = item.count;
+        document.getElementById('endSr').value = item.end;
+        document.getElementById('teacher').value = item.teacher;
+        document.getElementById('classSec').value = item.classSec;
+        document.getElementById('entryDate').value = formatDate(item.date);
     }
 
-    /* Secure Hidden Password Modal Functions */
+    // SIRF WAHI WALI ROW LOCAL STORAGE SE KHALI KARNA
+    function clearSingleLocal(i) {
+        if(confirm("Kya aap is entry ko sirf Local Storage se hatana chahte hain? (Google Sheet ka data safe rahega)")) {
+            data.splice(i, 1);
+            localStorage.setItem('admissions', JSON.stringify(data));
+            render();
+            updateNextSr();
+            alert("Entry Local Storage se saaf ho gayi!");
+        }
+    }
+
     function promptForAction(actionType) {
         currentActionTarget = actionType;
         document.getElementById('securityPassInput').value = "";
@@ -354,12 +370,14 @@
         
         if(actionType === 'unlock') {
             document.getElementById('modalTitle').innerText = "Unlock Delete Password";
-        } else if(actionType === 'clearLocal') {
-            document.getElementById('modalTitle').innerText = "Clear Local Data Password";
+        } else if(actionType === 'clearAllLocal') {
+            document.getElementById('modalTitle').innerText = "Clear All Local Data Password";
         }
         
         document.getElementById('passModalOverlay').style.display = "flex";
-        document.getElementById('securityPassInput').focus();
+        setTimeout(() => {
+            document.getElementById('securityPassInput').focus();
+        }, 100);
     }
 
     function closePassModal() {
@@ -377,30 +395,32 @@
         let pass = document.getElementById('securityPassInput').value.trim();
         
         if(pass === "1234") {
+            let target = currentActionTarget;
             closePassModal();
-            if(currentActionTarget === 'unlock') {
+            
+            if(target === 'unlock') {
+                isDeleteUnlocked = true;
                 document.querySelectorAll('.del-btn').forEach(b => b.style.display = 'inline-block');
                 alert("Delete Buttons Unlocked!");
-            } else if(currentActionTarget === 'clearLocal') {
-                clearLocalStorageOnly();
+            } else if(target === 'clearAllLocal') {
+                clearAllLocalStorage();
             }
         } else {
             document.getElementById('passErrorMsg').style.display = "block";
         }
     }
 
-    function del(i) {
-        if(confirm("Confirm Delete?")) {
-            let itemToDelete = data[i];
-            
-            data.splice(i,1); 
+    function del(startSr) {
+        if(confirm("Kya aap Google Sheet se yeh row bilkul delete karna chahte hain?")) {
+            // Local se bhi remove karein
+            data = data.filter(item => String(item.start).trim() !== String(startSr).trim());
             localStorage.setItem('admissions', JSON.stringify(data)); 
             
             if (navigator.onLine) {
                 fetch(SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
-                    body: JSON.stringify({ action: "delete", start: itemToDelete.start })
+                    body: JSON.stringify({ action: "delete", start: startSr })
                 });
             }
 
@@ -409,14 +429,14 @@
         }
     }
 
-    function clearLocalStorageOnly() {
-        if(confirm("Kya aap sirf Local Storage ke data ko clear karna chahte hain? (Google Sheet ka data delete NAHI hoga)")) {
+    function clearAllLocalStorage() {
+        if(confirm("Kya aap SABHI local data clear karna chahte hain? (Google Sheet ka data delete NAHI hoga)")) {
             localStorage.removeItem('admissions');
             localStorage.removeItem('pendingSync');
             data = []; 
             render();
             resetForm();
-            alert("Local storage data safaltapurvak clear ho gaya hai!");
+            alert("Sari Local entries khali ho gayi hain!");
         }
     }
 
