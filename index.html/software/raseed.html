@@ -168,13 +168,28 @@
 
         .r-header h2 { font-size: 13px; font-weight: bold; }
         .r-header h4 { font-size: 10px; font-weight: normal; }
-        .r-header h3 { font-size: 11px; border: 1px solid #000; padding: 1px 6px; background: #f3f4f6; }
+        .r-header h3 { font-size: 11px; border: 1px solid #000; padding: 1px 6px; background: #f3f4f6; display: inline-block; }
 
         .r-details, .r-fee-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 10px;
             margin-bottom: 4px;
+        }
+
+        /* BOLD & SLIGHTLY LARGER INPUT VALUES IN RECEIPT */
+        .r-details span {
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .r-fee-table td {
+            font-size: 10.5px;
+        }
+
+        .r-fee-table td.text-right {
+            font-weight: bold;
+            font-size: 11px;
         }
 
         .r-fee-table th, .r-fee-table td {
@@ -243,7 +258,7 @@
                 </select>
             </div>
             
-            <!-- SECTION DROPDOWN (A, B, C, D, E) -->
+            <!-- SECTION DROPDOWN -->
             <div class="form-group">
                 <label>वर्ग (Section):</label>
                 <select id="studentSection">
@@ -262,6 +277,16 @@
                     <option value="SC">SC</option>
                 </select>
             </div>
+
+            <!-- FEE TYPE DROPDOWN -->
+            <div class="form-group">
+                <label>शुल्क प्रकार (Fee Type):</label>
+                <select id="feeType" onchange="autoCalculateBaseFee()">
+                    <option value="Half Yearly Fees">छमाही (Half Yearly)</option>
+                    <option value="Yearly Fees">वार्षिक (Yearly)</option>
+                </select>
+            </div>
+
             <div class="form-group">
                 <label>महीना (Month):</label>
                 <select id="feeMonth" onchange="autoCalculateBaseFee()">
@@ -270,7 +295,7 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>नियत फीस (Auto Base Fee ₹):</label>
+                <label>शिक्षण शुल्क (Base Fee ₹):</label>
                 <input type="number" id="baseFee" readonly style="background-color: #f3f4f6;">
             </div>
             <div class="form-group">
@@ -278,7 +303,7 @@
                 <input type="number" id="otherFeeInput" value="0" oninput="calculateTotalFee()">
             </div>
             <div class="form-group">
-                <label>कुल शिक्षण शुल्क (Base + Other ₹):</label>
+                <label>कुल योग (Base + Other ₹):</label>
                 <input type="number" id="tuitionFeeFinal" readonly style="background-color: #e0f2fe; font-weight: bold;">
             </div>
         </div>
@@ -306,24 +331,24 @@
                 <div class="r-header">
                     <h2>Shri Krishn Inter College Semra</h2>
                     <h4>Kathkuiyan, Kushinagar</h4>
-                    <h3>Half Yearly Fees</h3>
+                    <h3 id="r1_fee_type">Half Yearly Fees</h3>
                 </div>
                 <table class="r-details">
-                    <tr><td><label>Sr. No. (ID):</label> <span id="r1_sr">-</span></td><td class="text-right"><label>दिनांक:</label> <span id="r1_date">-</span></td></tr>
-                    <tr><td colspan="2"><label>नाम:</label> <span id="r1_name">-</span></td></tr>
-                    <tr><td><label>कक्षा:</label> <span id="r1_class">-</span> (<span id="r1_sec">-</span>)</td><td class="text-right"><label>जाति:</label> <span id="r1_caste">-</span></td></tr>
-                    <tr><td colspan="2"><label>समय:</label> <span id="r1_time">-</span></td></tr>
+                    <tr><td><label>क्र.सं. / Sr. No. (ID):</label> <span id="r1_sr">-</span></td><td class="text-right"><label>दिनांक / Date:</label> <span id="r1_date">-</span></td></tr>
+                    <tr><td colspan="2"><label>नाम / Name:</label> <span id="r1_name">-</span></td></tr>
+                    <tr><td><label>कक्षा / Class:</label> <span id="r1_class">-</span> (<label>वर्ग / Sec:</label> <span id="r1_sec">-</span>)</td><td class="text-right"><label>जाति / Category:</label> <span id="r1_caste">-</span></td></tr>
+                    <tr><td colspan="2"><label>समय / Time:</label> <span id="r1_time">-</span></td></tr>
                 </table>
                 <table class="r-fee-table">
-                    <thead><tr><th>क्र.</th><th>विवरण</th><th class="text-right">राशि (₹)</th></tr></thead>
+                    <thead><tr><th>क्र. / S.N.</th><th>विवरण / Details</th><th class="text-right">राशि / Amount (₹)</th></tr></thead>
                     <tbody>
-                        <tr><td>1</td><td>शिक्षण शुल्क (नियत + अन्य)</td><td class="text-right" id="r1_tuition">0.00</td></tr>
-                        <tr><td>2</td><td>अन्य शुल्क</td><td class="text-right" id="r1_other">0.00</td></tr>
-                        <tr><th colspan="2" class="text-right">कुल योग:</th><th class="text-right" id="r1_total">0.00</th></tr>
+                        <tr><td>1</td><td>शिक्षण शुल्क / Tuition Fee</td><td class="text-right" id="r1_tuition">0.00</td></tr>
+                        <tr><td>2</td><td>अन्य शुल्क / Other Fee</td><td class="text-right" id="r1_other">0.00</td></tr>
+                        <tr><th colspan="2" class="text-right">कुल योग / Total Amount:</th><th class="text-right" id="r1_total">0.00</th></tr>
                     </tbody>
                 </table>
             </div>
-            <div class="r-footer"><span>हस्ताक्षर छात्र</span><span>हस्ताक्षर प्राप्तकर्ता / सील</span></div>
+            <div class="r-footer"><span>हस्ताक्षर छात्र / Student Sign</span><span>हस्ताक्षर प्राप्तकर्ता / Receiver Sign & Stamp</span></div>
         </div>
 
         <!-- Receipt 2 -->
@@ -332,24 +357,24 @@
                 <div class="r-header">
                     <h2>Shri Krishn Inter College Semra</h2>
                     <h4>Kathkuiyan, Kushinagar</h4>
-                    <h3>Half Yearly Fees</h3>
+                    <h3 id="r2_fee_type">Half Yearly Fees</h3>
                 </div>
                 <table class="r-details">
-                    <tr><td><label>Sr. No. (ID):</label> <span id="r2_sr">-</span></td><td class="text-right"><label>दिनांक:</label> <span id="r2_date">-</span></td></tr>
-                    <tr><td colspan="2"><label>नाम:</label> <span id="r2_name">-</span></td></tr>
-                    <tr><td><label>कक्षा:</label> <span id="r2_class">-</span> (<span id="r2_sec">-</span>)</td><td class="text-right"><label>जाति:</label> <span id="r2_caste">-</span></td></tr>
-                    <tr><td colspan="2"><label>समय:</label> <span id="r2_time">-</span></td></tr>
+                    <tr><td><label>क्र.सं. / Sr. No. (ID):</label> <span id="r2_sr">-</span></td><td class="text-right"><label>दिनांक / Date:</label> <span id="r2_date">-</span></td></tr>
+                    <tr><td colspan="2"><label>नाम / Name:</label> <span id="r2_name">-</span></td></tr>
+                    <tr><td><label>कक्षा / Class:</label> <span id="r2_class">-</span> (<label>वर्ग / Sec:</label> <span id="r2_sec">-</span>)</td><td class="text-right"><label>जाति / Category:</label> <span id="r2_caste">-</span></td></tr>
+                    <tr><td colspan="2"><label>समय / Time:</label> <span id="r2_time">-</span></td></tr>
                 </table>
                 <table class="r-fee-table">
-                    <thead><tr><th>क्र.</th><th>विवरण</th><th class="text-right">राशि (₹)</th></tr></thead>
+                    <thead><tr><th>क्र. / S.N.</th><th>विवरण / Details</th><th class="text-right">राशि / Amount (₹)</th></tr></thead>
                     <tbody>
-                        <tr><td>1</td><td>शिक्षण शुल्क (नियत + अन्य)</td><td class="text-right" id="r2_tuition">0.00</td></tr>
-                        <tr><td>2</td><td>अन्य शुल्क</td><td class="text-right" id="r2_other">0.00</td></tr>
-                        <tr><th colspan="2" class="text-right">कुल योग:</th><th class="text-right" id="r2_total">0.00</th></tr>
+                        <tr><td>1</td><td>शिक्षण शुल्क / Tuition Fee</td><td class="text-right" id="r2_tuition">0.00</td></tr>
+                        <tr><td>2</td><td>अन्य शुल्क / Other Fee</td><td class="text-right" id="r2_other">0.00</td></tr>
+                        <tr><th colspan="2" class="text-right">कुल योग / Total Amount:</th><th class="text-right" id="r2_total">0.00</th></tr>
                     </tbody>
                 </table>
             </div>
-            <div class="r-footer"><span>हस्ताक्षर छात्र</span><span>हस्ताक्षर प्राप्तकर्ता / सील</span></div>
+            <div class="r-footer"><span>हस्ताक्षर छात्र / Student Sign</span><span>हस्ताक्षर प्राप्तकर्ता / Receiver Sign & Stamp</span></div>
         </div>
 
         <!-- Receipt 3 -->
@@ -358,24 +383,24 @@
                 <div class="r-header">
                     <h2>Shri Krishn Inter College Semra</h2>
                     <h4>Kathkuiyan, Kushinagar</h4>
-                    <h3>Half Yearly Fees</h3>
+                    <h3 id="r3_fee_type">Half Yearly Fees</h3>
                 </div>
                 <table class="r-details">
-                    <tr><td><label>Sr. No. (ID):</label> <span id="r3_sr">-</span></td><td class="text-right"><label>दिनांक:</label> <span id="r3_date">-</span></td></tr>
-                    <tr><td colspan="2"><label>नाम:</label> <span id="r3_name">-</span></td></tr>
-                    <tr><td><label>कक्षा:</label> <span id="r3_class">-</span> (<span id="r3_sec">-</span>)</td><td class="text-right"><label>जाति:</label> <span id="r3_caste">-</span></td></tr>
-                    <tr><td colspan="2"><label>समय:</label> <span id="r3_time">-</span></td></tr>
+                    <tr><td><label>क्र.सं. / Sr. No. (ID):</label> <span id="r3_sr">-</span></td><td class="text-right"><label>दिनांक / Date:</label> <span id="r3_date">-</span></td></tr>
+                    <tr><td colspan="2"><label>नाम / Name:</label> <span id="r3_name">-</span></td></tr>
+                    <tr><td><label>कक्षा / Class:</label> <span id="r3_class">-</span> (<label>वर्ग / Sec:</label> <span id="r3_sec">-</span>)</td><td class="text-right"><label>जाति / Category:</label> <span id="r3_caste">-</span></td></tr>
+                    <tr><td colspan="2"><label>समय / Time:</label> <span id="r3_time">-</span></td></tr>
                 </table>
                 <table class="r-fee-table">
-                    <thead><tr><th>क्र.</th><th>विवरण</th><th class="text-right">राशि (₹)</th></tr></thead>
+                    <thead><tr><th>क्र. / S.N.</th><th>विवरण / Details</th><th class="text-right">राशि / Amount (₹)</th></tr></thead>
                     <tbody>
-                        <tr><td>1</td><td>शिक्षण शुल्क (नियत + अन्य)</td><td class="text-right" id="r3_tuition">0.00</td></tr>
-                        <tr><td>2</td><td>अन्य शुल्क</td><td class="text-right" id="r3_other">0.00</td></tr>
-                        <tr><th colspan="2" class="text-right">कुल योग:</th><th class="text-right" id="r3_total">0.00</th></tr>
+                        <tr><td>1</td><td>शिक्षण शुल्क / Tuition Fee</td><td class="text-right" id="r3_tuition">0.00</td></tr>
+                        <tr><td>2</td><td>अन्य शुल्क / Other Fee</td><td class="text-right" id="r3_other">0.00</td></tr>
+                        <tr><th colspan="2" class="text-right">कुल योग / Total Amount:</th><th class="text-right" id="r3_total">0.00</th></tr>
                     </tbody>
                 </table>
             </div>
-            <div class="r-footer"><span>हस्ताक्षर छात्र</span><span>हस्ताक्षर प्राप्तकर्ता / सील</span></div>
+            <div class="r-footer"><span>हस्ताक्षर छात्र / Student Sign</span><span>हस्ताक्षर प्राप्तकर्ता / Receiver Sign & Stamp</span></div>
         </div>
 
         <!-- Receipt 4 -->
@@ -384,24 +409,24 @@
                 <div class="r-header">
                     <h2>Shri Krishn Inter College Semra</h2>
                     <h4>Kathkuiyan, Kushinagar</h4>
-                    <h3>Half Yearly Fees</h3>
+                    <h3 id="r4_fee_type">Half Yearly Fees</h3>
                 </div>
                 <table class="r-details">
-                    <tr><td><label>Sr. No. (ID):</label> <span id="r4_sr">-</span></td><td class="text-right"><label>दिनांक:</label> <span id="r4_date">-</span></td></tr>
-                    <tr><td colspan="2"><label>नाम:</label> <span id="r4_name">-</span></td></tr>
-                    <tr><td><label>कक्षा:</label> <span id="r4_class">-</span> (<span id="r4_sec">-</span>)</td><td class="text-right"><label>जाति:</label> <span id="r4_caste">-</span></td></tr>
-                    <tr><td colspan="2"><label>समय:</label> <span id="r4_time">-</span></td></tr>
+                    <tr><td><label>क्र.सं. / Sr. No. (ID):</label> <span id="r4_sr">-</span></td><td class="text-right"><label>दिनांक / Date:</label> <span id="r4_date">-</span></td></tr>
+                    <tr><td colspan="2"><label>नाम / Name:</label> <span id="r4_name">-</span></td></tr>
+                    <tr><td><label>कक्षा / Class:</label> <span id="r4_class">-</span> (<label>वर्ग / Sec:</label> <span id="r4_sec">-</span>)</td><td class="text-right"><label>जाति / Category:</label> <span id="r4_caste">-</span></td></tr>
+                    <tr><td colspan="2"><label>समय / Time:</label> <span id="r4_time">-</span></td></tr>
                 </table>
                 <table class="r-fee-table">
-                    <thead><tr><th>क्र.</th><th>विवरण</th><th class="text-right">राशि (₹)</th></tr></thead>
+                    <thead><tr><th>क्र. / S.N.</th><th>विवरण / Details</th><th class="text-right">राशि / Amount (₹)</th></tr></thead>
                     <tbody>
-                        <tr><td>1</td><td>शिक्षण शुल्क (नियत + अन्य)</td><td class="text-right" id="r4_tuition">0.00</td></tr>
-                        <tr><td>2</td><td>अन्य शुल्क</td><td class="text-right" id="r4_other">0.00</td></tr>
-                        <tr><th colspan="2" class="text-right">कुल योग:</th><th class="text-right" id="r4_total">0.00</th></tr>
+                        <tr><td>1</td><td>शिक्षण शुल्क / Tuition Fee</td><td class="text-right" id="r4_tuition">0.00</td></tr>
+                        <tr><td>2</td><td>अन्य शुल्क / Other Fee</td><td class="text-right" id="r4_other">0.00</td></tr>
+                        <tr><th colspan="2" class="text-right">कुल योग / Total Amount:</th><th class="text-right" id="r4_total">0.00</th></tr>
                     </tbody>
                 </table>
             </div>
-            <div class="r-footer"><span>हस्ताक्षर छात्र</span><span>हस्ताक्षर प्राप्तकर्ता / सील</span></div>
+            <div class="r-footer"><span>हस्ताक्षर छात्र / Student Sign</span><span>हस्ताक्षर प्राप्तकर्ता / Receiver Sign & Stamp</span></div>
         </div>
     </div>
 
@@ -424,7 +449,7 @@
             document.getElementById('recordCountInfo').innerText = `कुल सुरक्षित रिकॉर्ड्स: ${records.length}`;
         }
 
-        /* AUTO ID GENERATION (1, 2, 3...) */
+        /* AUTO ID GENERATION */
         function generateAutoID() {
             const records = getRecords();
             if (records.length === 0) return '1';
@@ -432,8 +457,8 @@
             return (maxID + 1).toString();
         }
 
-        /* UPDATED FEE CALCULATION LOGIC */
-        function getCalculatedBaseFee(cls, caste, month) {
+        /* SINGLE MONTH FEE CALCULATOR */
+        function getSingleMonthFee(cls, caste, month) {
             cls = parseInt(cls);
             let fee = 0;
             if (month === "July") {
@@ -455,11 +480,22 @@
             return fee;
         }
 
+        /* AUTO FEE CALCULATION FOR HALF YEARLY / YEARLY */
         function autoCalculateBaseFee() {
             const cls = document.getElementById('studentClass').value;
             const caste = document.getElementById('studentCaste').value;
             const month = document.getElementById('feeMonth').value;
-            const baseFee = getCalculatedBaseFee(cls, caste, month);
+            const feeType = document.getElementById('feeType').value;
+
+            let baseFee = 0;
+            if (feeType === "Yearly Fees") {
+                const julyFee = getSingleMonthFee(cls, caste, "July");
+                const janFee = getSingleMonthFee(cls, caste, "January");
+                baseFee = julyFee + janFee;
+            } else {
+                baseFee = getSingleMonthFee(cls, caste, month);
+            }
+
             document.getElementById('baseFee').value = baseFee;
             calculateTotalFee();
         }
@@ -477,6 +513,7 @@
             document.getElementById('studentClass').value = '9';
             document.getElementById('studentSection').value = 'A';
             document.getElementById('studentCaste').value = 'GEN/OBC';
+            document.getElementById('feeType').value = 'Half Yearly Fees';
             document.getElementById('feeMonth').value = 'July';
             document.getElementById('otherFeeInput').value = '0';
             autoCalculateBaseFee();
@@ -499,6 +536,7 @@
                 class: document.getElementById('studentClass').value,
                 section: document.getElementById('studentSection').value,
                 caste: document.getElementById('studentCaste').value,
+                feeType: document.getElementById('feeType').value,
                 month: document.getElementById('feeMonth').value,
                 baseFee: parseFloat(document.getElementById('baseFee').value) || 0,
                 otherFee: parseFloat(document.getElementById('otherFeeInput').value) || 0,
@@ -527,6 +565,7 @@
                 class: document.getElementById('studentClass').value,
                 section: document.getElementById('studentSection').value,
                 caste: document.getElementById('studentCaste').value,
+                feeType: document.getElementById('feeType').value,
                 month: document.getElementById('feeMonth').value,
                 baseFee: parseFloat(document.getElementById('baseFee').value) || 0,
                 otherFee: parseFloat(document.getElementById('otherFeeInput').value) || 0,
@@ -568,6 +607,7 @@
                 document.getElementById('studentClass').value = found.class;
                 document.getElementById('studentSection').value = found.section;
                 document.getElementById('studentCaste').value = found.caste;
+                document.getElementById('feeType').value = found.feeType || 'Half Yearly Fees';
                 document.getElementById('feeMonth').value = found.month;
                 document.getElementById('otherFeeInput').value = found.otherFee;
                 autoCalculateBaseFee();
@@ -593,8 +633,9 @@
                     document.getElementById(`r${i}_class`).innerText = data.class;
                     document.getElementById(`r${i}_sec`).innerText = data.section;
                     document.getElementById(`r${i}_caste`).innerText = data.caste;
+                    document.getElementById(`r${i}_fee_type`).innerText = data.feeType || 'Half Yearly Fees';
                     document.getElementById(`r${i}_time`).innerText = data.time;
-                    document.getElementById(`r${i}_tuition`).innerText = data.tuitionFinal.toFixed(2);
+                    document.getElementById(`r${i}_tuition`).innerText = data.baseFee.toFixed(2);
                     document.getElementById(`r${i}_other`).innerText = data.otherFee.toFixed(2);
                     document.getElementById(`r${i}_total`).innerText = data.tuitionFinal.toFixed(2);
                 } else {
