@@ -18,7 +18,6 @@
             color: #333;
             padding-top: 115px; 
         }
-
         /* Fixed Top Container */
         .top-sticky-container {
             position: fixed;
@@ -28,7 +27,6 @@
             z-index: 1000;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-
         /* Main Header Section */
         header {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
@@ -84,7 +82,6 @@
             flex-wrap: wrap;
             justify-content: flex-end;
         }
-
         /* Colors for Portal Links */
         .udise-link { color: #ff9800 !important; font-weight: bold; }
         .manav-link { color: #2ecc71 !important; font-weight: bold; }
@@ -156,7 +153,6 @@
             gap: 20px;
             align-items: stretch;
         }
-
         .card {
             background: white;
             padding: 20px;
@@ -167,7 +163,6 @@
             justify-content: center;
             border: 1px solid #e2e8f0;
         }
-
         .card h2 {
             font-size: 1.15rem;
             color: #1e3c72;
@@ -183,7 +178,6 @@
         .head-profile {
             text-align: center;
         }
-
         .head-photo {
             width: 130px;
             height: 160px;
@@ -196,13 +190,11 @@
             align-items: center;
             justify-content: center;
         }
-
         .head-photo img {
             width: 100%;
             height: 100%;
             object-fit: cover; 
         }
-
         .profile-details p {
             margin: 4px 0;
             font-size: 0.82rem;
@@ -231,7 +223,6 @@
             justify-content: flex-start;
             gap: 15px;
         }
-
         .image-wrapper {
             position: relative;
             height: 250px;
@@ -241,7 +232,6 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             background-color: #e2e8f0;
         }
-
         .image-wrapper img {
             position: absolute;
             top: 0;
@@ -253,12 +243,10 @@
             transition: opacity 1s ease-in-out; 
             z-index: 1;
         }
-
         .image-wrapper img.active {
             opacity: 1 !important;
             z-index: 2 !important;
         }
-
         .banner-text {
             position: absolute;
             bottom: 0;
@@ -272,7 +260,6 @@
             text-align: center;
             z-index: 3; 
         }
-
         .school-intro-text {
             color: #444;
             line-height: 1.6;
@@ -280,14 +267,72 @@
             text-align: justify;
             width: 100%;
         }
-
         .school-intro-text p {
             margin-bottom: 10px;
         }
-
         .highlight-blue {
             color: #1e3c72;
             font-weight: bold;
+        }
+
+        /* TIRANGA YATRA SECTION (2-COLUMN GRID AT BOTTOM) */
+        .tiranga-container {
+            max-width: 1350px;
+            margin: 20px auto 10px;
+            padding: 0 20px;
+        }
+        .tiranga-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+        }
+        .tiranga-card h2 {
+            font-size: 1.3rem;
+            color: #1e3c72;
+            border-bottom: 3px solid #ff9800;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .tiranga-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .tiranga-item {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+        }
+        .tiranga-img-box {
+            width: 100%;
+            height: 220px;
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: #eee;
+            border: 2px solid #ff9800;
+        }
+        .tiranga-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .tiranga-caption {
+            font-size: 0.88rem;
+            color: #333;
+            line-height: 1.5;
+            text-align: justify;
+            background: #ffffff;
+            padding: 8px 10px;
+            border-left: 3px solid #1e3c72;
+            border-radius: 4px;
         }
 
         /* LOWER LAYOUT RIGHT SIDE SHIFT */
@@ -299,11 +344,9 @@
             justify-content: flex-end; 
             scroll-margin-top: 240px; 
         }
-
         .content-container-right {
             width: 350px; 
         }
-
         .login-form {
             display: none;
             padding: 20px;
@@ -313,19 +356,16 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             animation: fadeIn 0.5s ease;
         }
-
         .form-group {
             margin-bottom: 12px;
             text-align: left;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 4px;
             font-weight: 600;
             font-size: 0.85rem;
         }
-
         .form-group input {
             width: 100%;
             padding: 8px 10px;
@@ -333,7 +373,6 @@
             border-radius: 5px;
             font-size: 0.9rem;
         }
-
         .btn {
             background-color: #1e3c72;
             color: white;
@@ -349,7 +388,6 @@
             justify-content: center;
             gap: 8px;
         }
-
         .btn:hover {
             background-color: #2a5298;
         }
@@ -363,27 +401,23 @@
             box-shadow: none;
             animation: fadeIn 0.5s ease;
         }
-
         .software-list-horizontal {
             display: flex;
-            flex-direction: row;      
-            flex-wrap: wrap;          
-            gap: 15px;                
-            align-items: center;      
+            flex-direction: row;        
+            flex-wrap: wrap;            
+            gap: 15px;                  
+            align-items: center;        
         }
-
         .software-list-item {
-            text-decoration: none;    
+            text-decoration: none;      
             display: inline-flex;
             align-items: center;
-            gap: 8px;                 
+            gap: 8px;               
         }
-
         .software-list-item:hover {
             background: #1e3c72;
             color: white !important;
         }
-
         .software-list-item:hover i {
             color: #ffeb3b;
         }
@@ -393,16 +427,13 @@
             background: transparent;
             color: #0b57d0;
         }
-
         .software-list-item.drive-highlight i {
             color: #0b57d0;
         }
-
         .software-list-item.drive-highlight:hover {
             background: #0b57d0;
             color: white !important;
         }
-
         .software-list-item.drive-highlight:hover i {
             color: #ffffff;
         }
@@ -421,7 +452,6 @@
             align-items: center;
             backdrop-filter: blur(3px);
         }
-
         .drive-modal-box {
             background: white;
             padding: 25px;
@@ -432,13 +462,11 @@
             animation: fadeIn 0.3s ease;
             border: 2px solid #0b57d0;
         }
-
         .drive-modal-box h3 {
             color: #0b57d0;
             margin-bottom: 15px;
             font-size: 1.1rem;
         }
-
         .drive-modal-box input {
             width: 100%;
             padding: 10px;
@@ -448,12 +476,10 @@
             font-size: 0.95rem;
             text-align: center;
         }
-
         .drive-modal-buttons {
             display: flex;
             gap: 10px;
         }
-
         .drive-modal-btn {
             flex: 1;
             padding: 10px;
@@ -463,21 +489,17 @@
             font-weight: bold;
             font-size: 0.9rem;
         }
-
         .drive-btn-submit {
             background-color: #0b57d0;
             color: white;
         }
-
         .drive-btn-submit:hover {
             background-color: #0044b3;
         }
-
         .drive-btn-cancel {
             background-color: #e2e8f0;
             color: #333;
         }
-
         .drive-btn-cancel:hover {
             background-color: #cbd5e1;
         }
@@ -514,6 +536,9 @@
                 grid-template-columns: 1fr;
                 margin-top: 15px;
             }
+            .tiranga-grid {
+                grid-template-columns: 1fr;
+            }
             body {
                 padding-top: 230px; 
             }
@@ -526,7 +551,6 @@
                 max-width: 400px;
             }
         }
-
         @media (max-width: 480px) {
             body {
                 padding-top: 290px; 
@@ -607,11 +631,13 @@
                 <img src="software/school photo 4.jpeg" alt="School Photo 4" onerror="handleSliderError(this)">
                 <img src="software/school photo 5.jpeg" alt="School Photo 5" onerror="handleSliderError(this)">
                 <img src="software/school photo 6.jpeg" alt="School Photo 6" onerror="handleSliderError(this)">
-                <img src="software/school photo 7.jpeg" alt="School Photo 7" onerror="handleSliderError(this)"> 
-                <img src="software/school photo 8.jpeg" alt="School Photo 8" onerror="handleSliderError(this)"> 
+                <img src="software/school photo 7.jpeg" alt="School Photo 7" onerror="handleSliderError(this)">
+                <img src="software/school photo 8.jpeg" alt="School Photo 8" onerror="handleSliderError(this)">
+                <img src="software/school photo 9.jpeg" alt="School Photo 9" onerror="handleSliderError(this)">
+                <img src="software/school photo 10.jpeg" alt="School Photo 10" onerror="handleSliderError(this)">
+                <img src="software/school photo 11.jpeg" alt="School Photo 11" onerror="handleSliderError(this)">
                 <div class="banner-text">Shri Krishn Inter College, Semra</div>
             </div>
-
             <div class="school-intro-text">
                 <p>हमारे विद्यालय, <span class="highlight-blue">श्री कृष्ण इण्टर कॉलेज, सेमरा (कठकुइयां - कुशीनगर)</span> में आपका हार्दिक स्वागत है। हमारे संस्थान ग्रामीण अंचल के छात्र-छात्राओं को <span class="highlight-blue">उत्तम शिक्षा, सुदृढ़ संस्कार और उज्जवल भविष्य</span> प्रदान करने के लिए निरंतर संकल्पित है।</p>
                 <p>अनुभवी शिक्षकों के मार्गदर्शन में यहाँ विद्यार्थियों के मानसिक, बौद्धिक और चारित्रिक विकास पर विशेष बल दिया जाता है। आधुनिक तकनीक, अनुशासित परिवेश और गुणवत्तापूर्ण शिक्षण पद्धतियों के माध्यम से हम प्रत्येक बच्चे की प्रतिभा को निखारने का कार्य कर रहे हैं ताकि वे राष्ट्र निर्माण में अपना अमूल्य योगदान दे सकें।</p>
@@ -628,6 +654,70 @@
                 <p><i class="fa-solid fa-phone"></i> <strong>Phone:</strong> +91 6306224922</p>
                 <p><i class="fa-solid fa-envelope"></i> <strong>Email:</strong> cbpathak967@gmail.com</p>
                 <p><i class="fa-solid fa-map-pin"></i> <strong>Add:</strong> Semra Kathkuiyan, Kushinagar</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TIRANGA YATRA SECTION (Photo 13 to Photo 18 in 2-Series Grid) -->
+    <div class="tiranga-container">
+        <div class="tiranga-card">
+            <h2><i class="fa-solid fa-flag" style="color: #ff9800;"></i> विद्यालय तिरंगा यात्रा एवं देशभक्ति झलकियां</h2>
+            <div class="tiranga-grid">
+                
+                <div class="tiranga-item">
+                    <div class="tiranga-img-box">
+                        <img src="tiranga photo 13.jpeg" alt="Tiranga Photo 13" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
+                    </div>
+                    <div class="tiranga-caption">
+                        हमारे विद्यालय द्वारा आयोजित तिरंगा यात्रा में विद्यार्थियों ने अत्यंत उत्साह और देशभक्ति के साथ भाग लिया। हाथों में तिरंगा लिए छात्र-छात्राओं के जयघोष से संपूर्ण परिसर देशप्रेम की भावना से गुंजायमान हो उठा।
+                    </div>
+                </div>
+
+                <div class="tiranga-item">
+                    <div class="tiranga-img-box">
+                        <img src="tiranga photo 14.jpeg" alt="Tiranga Photo 14" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
+                    </div>
+                    <div class="tiranga-caption">
+                        स्वतंत्रता दिवस के पावन अवसर पर निकाली गई इस यात्रा का मुख्य उद्देश्य समाज में राष्ट्रीय एकता और अखंडता का संदेश देना था। विद्यालय परिवार ने एकजुट होकर राष्ट्रध्वज के प्रति अपनी निष्ठा और सम्मान व्यक्त किया।
+                    </div>
+                </div>
+
+                <div class="tiranga-item">
+                    <div class="tiranga-img-box">
+                        <img src="tiranga photo 15.jpeg" alt="Tiranga Photo 15" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
+                    </div>
+                    <div class="tiranga-caption">
+                        तिरंगा यात्रा के माध्यम से युवाओं में देश सेवा और वीर स्वतंत्रता संग्राम सेनानियों के प्रति कृतज्ञता की भावना जागृत की गई। अनुशासित कतारों में चलते विद्यार्थियों ने समाज को राष्ट्र प्रथम का अमूल्य संदेश दिया।
+                    </div>
+                </div>
+
+                <div class="tiranga-item">
+                    <div class="tiranga-img-box">
+                        <img src="tiranga photo 16.jpeg" alt="Tiranga Photo 16" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
+                    </div>
+                    <div class="tiranga-caption">
+                        शिक्षकों के कुशल मार्गदर्शन में निकाली गई यह भव्य तिरंगा यात्रा क्षेत्रीय जनमानस के आकर्षण और प्रेरणा का केंद्र बनी। राष्ट्रध्वज की आन-बान और शान को सदैव ऊँचा रखने का संकल्प प्रत्येक चेहरे पर स्पष्ट झलक रहा था।
+                    </div>
+                </div>
+
+                <div class="tiranga-item">
+                    <div class="tiranga-img-box">
+                        <img src="tiranga photo 17.jpeg" alt="Tiranga Photo 17" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
+                    </div>
+                    <div class="tiranga-caption">
+                        'हर घर तिरंगा' अभियान को सफल बनाते हुए विद्यालय ने राष्ट्रभक्ति के इस पावन पर्व को भव्यता के साथ संपन्न किया। ऐसे आयोजन विद्यार्थियों में नैतिक मूल्यों और नागरिक कर्तव्यों का बीजारोपण करते हैं।
+                    </div>
+                </div>
+
+                <div class="tiranga-item">
+                    <div class="tiranga-img-box">
+                        <img src="tiranga photo 18.jpeg" alt="Tiranga Photo 18" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
+                    </div>
+                    <div class="tiranga-caption">
+                        देशभक्ति के तरानों और भारत माता की जयकारों से ओत-प्रोत इस यात्रा ने हर नागरिक के हृदय में राष्ट्रप्रेम की अलख जगाई। हमारा विद्यालय सदैव ऐसे गौरवशाली आयोजनों के माध्यम से देश सेवा की प्रेरणा देता रहेगा।
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -653,8 +743,8 @@
                     <i class="fa-solid fa-lock-open"></i> Software List
                 </h4>
                 <div class="software-list-horizontal">
-                    <a href="#" onclick="secureOpen('./software/letter_head.html'); return false;" class="software-list-item">
-                        <i class="fa-solid fa-file-lines"></i> Letter head
+                    <a href="#" onclick="secureOpen('./software/letter head.html'); return false;" class="software-list-item">
+                        <i class="fa-solid fa-file-lines"></i> Letter Head
                     </a>
                     <a href="#" onclick="secureOpen('./software/gpf form.html'); return false;" class="software-list-item">
                         <i class="fa-solid fa-wpforms"></i> GPF Form
@@ -698,10 +788,9 @@
                     <a href="#" onclick="secureOpen('./software/raseed.html'); return false;" class="software-list-item">
                         <i class="fa-solid fa-file-signature"></i> Raseed
                     </a>
-                <a href="#" onclick="secureOpen('./software/daily_cash_book.html'); return false;" class="software-list-item">
+                    <a href="#" onclick="secureOpen('./software/daily_cash_book.html'); return false;" class="software-list-item">
                         <i class="fa-solid fa-file-signature"></i> Daily Cash Book
                     </a>
-  
                     <a href="#" onclick="openSecureDrive(); return false;" class="software-list-item drive-highlight">
                         <i class="fa-solid fa-cloud-arrow-up"></i> Google Drive
                     </a>
@@ -827,6 +916,7 @@
         }
 
         var tsBackup = "?v=" + new Date().getTime();
+
         var logoFormats = ["logo.png" + tsBackup, "logo.jpeg" + tsBackup];
         var currentLogoTry = 0;
         function tryNextFormat(imgElement) {
@@ -849,7 +939,6 @@
                 imgElement.src = "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
             }
         }
-
 
         var photoFormats = ["photo.png" + tsBackup, "photo.jpeg" + tsBackup];
         var currentPhotoTry = 0;
