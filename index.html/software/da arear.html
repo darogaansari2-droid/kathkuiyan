@@ -255,6 +255,10 @@
                     <input type="text" id="designation" required placeholder="पदनाम दर्ज करें">
                 </div>
                 <div class="form-group">
+                    <label for="joiningDate">कार्यभार ग्रहण तिथि (Joining Date)</label>
+                    <input type="date" id="joiningDate" onchange="runMasterCalculations()">
+                </div>
+                <div class="form-group">
                     <label for="basicPay">मूल वेतन</label>
                     <input type="number" id="basicPay" required placeholder="मूल वेतन" oninput="runMasterCalculations()">
                 </div>
@@ -282,7 +286,7 @@
                     <input type="number" id="newDaRate" value="60" step="0.01" oninput="runMasterCalculations()">
                 </div>
                 <div class="form-group">
-                    <label for="yog">मासिक DA अंतर राशि</label>
+                    <label for="yog">मासिक पूर्ण DA अंतर राशि</label>
                     <input type="number" id="yog" readonly placeholder="अंतर राशि">
                 </div>
             </div>
@@ -415,6 +419,7 @@
 
 <script>
     const allMonths = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
+    const monthDaysList = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     let savedEmployeeList = [];
 
     window.onload = function() {
@@ -434,20 +439,17 @@
         let diffRate = newRate - prevRate;
 
         let basicPay = parseFloat(document.getElementById('basicPay').value) || 0;
-        let currentDaAmount = (basicPay * newRate) / 100;
+        let currentDaAmount = Math.round((basicPay * newRate) / 100);
         let basicPlusDaTotal = basicPay + currentDaAmount;
         
         document.getElementById('daAmount').value = currentDaAmount.toFixed(2);
         document.getElementById('basicPlusDa').value = basicPlusDaTotal.toFixed(2);
 
-        let monthlyDifference = (basicPay * diffRate) / 100;
+        let monthlyDifference = Math.round((basicPay * diffRate) / 100);
         document.getElementById('yog').value = monthlyDifference.toFixed(2);
 
-        let monthInputs = document.querySelectorAll('.month-input');
-        monthInputs.forEach(input => {
-            input.value = monthlyDifference.toFixed(2);
-        });
-
+        // Update Dynamic Month Inputs taking Joining Date & Rounding Rules into account
+        updateDynamicMonthValues(monthlyDifference);
         calculateGrandTotalOnly();
     }
 
@@ -460,19 +462,52 @@
         let monthlyDiff = parseFloat(document.getElementById('yog').value) || 0;
 
         for (let i = 0; i < count; i++) {
-            let monthName = allMonths[(startIdx + i) % 12];
+            let mIndex = (startIdx + i) % 12;
+            let monthName = allMonths[mIndex];
             let div = document.createElement('div');
             div.className = 'form-group';
             div.innerHTML = `
                 <label for="month_${i}">${monthName}</label>
-                <input type="number" id="month_${i}" data-month="${monthName}" class="month-input" value="${monthlyDiff.toFixed(2)}" oninput="calculateGrandTotalOnly()">
+                <input type="number" id="month_${i}" data-month="${monthName}" data-mindex="${mIndex}" class="month-input" value="${monthlyDiff.toFixed(2)}" oninput="calculateGrandTotalOnly()">
             `;
             container.appendChild(div);
         }
 
         document.getElementById('gpfMonths').value = count;
         document.getElementById('cashMonths').value = 0;
-        calculateGrandTotalOnly();
+        runMasterCalculations();
+    }
+
+    function updateDynamicMonthValues(fullMonthlyDiff) {
+        let monthInputs = document.querySelectorAll('.month-input');
+        if(monthInputs.length === 0) return;
+
+        let joiningDateVal = document.getElementById('joiningDate').value;
+        let joinDay = 1;
+
+        if (joiningDateVal) {
+            let parts = joiningDateVal.split('-');
+            if (parts.length === 3) joinDay = parseInt(parts[2]) || 1;
+        }
+
+        monthInputs.forEach((input, index) => {
+            if (index === 0 && joinDay > 1) {
+                // Calculate Pro-Rata Arrear for Joining Month
+                let mIdx = parseInt(input.getAttribute('data-mindex')) || 0;
+                let totalDaysInMonth = monthDaysList[mIdx];
+                let workingDays = (totalDaysInMonth - joinDay + 1);
+                if (workingDays < 0) workingDays = 0;
+
+                let rawProRata = (fullMonthlyDiff / totalDaysInMonth) * workingDays;
+                
+                // ROUND OFF RULE: .50 or more -> Next Integer, .49 or less -> Truncate
+                let roundedProRata = Math.round(rawProRata);
+
+                input.value = roundedProRata.toFixed(2);
+            } else {
+                input.value = fullMonthlyDiff.toFixed(2);
+            }
+        });
     }
 
     function calculateGrandTotalOnly() {
@@ -482,7 +517,7 @@
             grandTotal += parseFloat(input.value) || 0;
         });
 
-        document.getElementById('total').value = grandTotal.toFixed(2);
+        document.getElementById('total').value = Math.round(grandTotal).toFixed(2);
         toggleDeductionMode();
     }
 
@@ -522,12 +557,20 @@
     }
 
     function calculateSplitValues() {
-        let monthlyDiff = parseFloat(document.getElementById('yog').value) || 0;
+        let monthInputs = document.querySelectorAll('.month-input');
         let gpfM = parseFloat(document.getElementById('gpfMonths').value) || 0;
-        let cashM = parseFloat(document.getElementById('cashMonths').value) || 0;
+        let totalArrear = parseFloat(document.getElementById('total').value) || 0;
 
-        document.getElementById('gpf').value = (gpfM * monthlyDiff).toFixed(2);
-        document.getElementById('nagad').value = (cashM * monthlyDiff).toFixed(2);
+        let gpfTotal = 0;
+        monthInputs.forEach((input, idx) => {
+            if (idx < gpfM) {
+                gpfTotal += parseFloat(input.value) || 0;
+            }
+        });
+
+        gpfTotal = Math.round(gpfTotal);
+        document.getElementById('gpf').value = gpfTotal.toFixed(2);
+        document.getElementById('nagad').value = (totalArrear - gpfTotal).toFixed(2);
         document.getElementById('nps').value = 0;
     }
 
@@ -539,7 +582,7 @@
         }
     }
 
-    /* LOCAL STORAGE SAVE FUNCTION (PURELY LOCAL) */
+    /* LOCAL STORAGE SAVE FUNCTION */
     function saveDataToList() {
         let empId = document.getElementById('empId').value;
         let empName = document.getElementById('empName').value;
@@ -562,6 +605,7 @@
             id: empId,
             name: empName,
             designation: document.getElementById('designation').value,
+            joiningDate: document.getElementById('joiningDate').value,
             basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
             daAmount: parseFloat(document.getElementById('daAmount').value) || 0,
             basicPlusDa: parseFloat(document.getElementById('basicPlusDa').value) || 0,
@@ -737,6 +781,7 @@
         document.getElementById('empName').value = '';
         document.getElementById('designation').value = '';
         document.getElementById('basicPay').value = '';
+        document.getElementById('joiningDate').value = '';
         generateMonthInputs();
         runMasterCalculations();
         updateNextAutoId();
@@ -751,6 +796,7 @@
             document.getElementById('empName').value = localMatch.name;
             document.getElementById('designation').value = localMatch.designation;
             document.getElementById('basicPay').value = localMatch.basicPay;
+            document.getElementById('joiningDate').value = localMatch.joiningDate || '';
             runMasterCalculations();
             triggerNotificationBox('स्थानीय रिकॉर्ड से मिल गया!', true);
         } else {
