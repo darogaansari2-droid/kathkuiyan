@@ -103,6 +103,11 @@
             font-weight: bold;
         }
 
+        /* अंग्रेजी नाम में पहला अक्षर बड़ा (Title Case) के लिए */
+        input[type="text"] {
+            text-transform: capitalize;
+        }
+
         input[readonly] { background-color: #edf2f7; color: #4a5568; }
 
         .btn-panel {
@@ -147,11 +152,13 @@
             border: 1px solid #cbd5e0;
             padding: 6px;
             text-align: center;
+            text-transform: capitalize;
         }
 
         table.preview-table th {
             background-color: #edf2f7;
             color: var(--primary-color);
+            text-transform: none;
         }
 
         /* LANDSCAPE PRINT STYLES */
@@ -200,12 +207,25 @@
                 text-align: center;
                 font-size: 10px;
                 word-break: break-word;
+                text-transform: capitalize;
+            }
+
+            /* प्रिंट में नाम और पद को बड़ा और बोल्ड दिखाने के लिए नियम */
+            table.print-table td.print-emp-name {
+                font-size: 11px !important;
+                font-weight: bold !important;
+            }
+
+            table.print-table td.print-emp-desig {
+                font-size: 11px !important;
+                font-weight: 600 !important;
             }
 
             table.print-table th {
                 background-color: #f2f2f2 !important;
                 -webkit-print-color-adjust: exact;
                 font-weight: bold;
+                text-transform: none;
             }
         }
     </style>
@@ -229,7 +249,7 @@
             <div class="grid-3-col">
                 <div class="form-group" style="grid-column: span 2;">
                     <label for="schoolName">विद्यालय / संस्था का नाम</label>
-                    <input type="text" id="schoolName" value="शासकीय उच्चतर माध्यमिक विद्यालय" placeholder="विद्यालय का पूरा नाम">
+                    <input type="text" id="schoolName" value="शासकीय उच्चतर माध्यमिक विद्यालय" placeholder="विद्यालय का पूरा नाम" onblur="autoCapitalize(this)">
                 </div>
                 <div class="form-group">
                     <label for="arrearYear">वर्ष (Year)</label>
@@ -248,11 +268,11 @@
                 </div>
                 <div class="form-group">
                     <label for="empName">कर्मचारी का नाम</label>
-                    <input type="text" id="empName" required placeholder="नाम दर्ज करें">
+                    <input type="text" id="empName" required placeholder="नाम दर्ज करें" onblur="autoCapitalize(this)">
                 </div>
                 <div class="form-group">
                     <label for="designation">पदनाम</label>
-                    <input type="text" id="designation" required placeholder="पदनाम दर्ज करें">
+                    <input type="text" id="designation" required placeholder="पदनाम दर्ज करें" onblur="autoCapitalize(this)">
                 </div>
                 <div class="form-group">
                     <label for="joiningDate">कार्यभार ग्रहण तिथि (Joining Date)</label>
@@ -433,6 +453,12 @@
         document.getElementById('empId').value = savedEmployeeList.length + 1;
     }
 
+    // ऑटो कैपिटलाइज़ फ़ंक्शन (हर वर्ड का पहला अक्षर कैपिटल)
+    function autoCapitalize(inputElem) {
+        if (!inputElem.value) return;
+        inputElem.value = inputElem.value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+    }
+
     function runMasterCalculations() {
         let prevRate = parseFloat(document.getElementById('prevDaRate').value) || 0;
         let newRate = parseFloat(document.getElementById('newDaRate').value) || 0;
@@ -582,15 +608,24 @@
         }
     }
 
+    function toTitleCase(str) {
+        return str ? str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : '';
+    }
+
     /* LOCAL STORAGE SAVE FUNCTION */
     function saveDataToList() {
         let empId = document.getElementById('empId').value;
-        let empName = document.getElementById('empName').value;
+        let empNameInput = document.getElementById('empName');
+        autoCapitalize(empNameInput);
+        let empName = empNameInput.value;
 
         if (!empId || !empName) {
             triggerNotificationBox('कृपया ID और कर्मचारी का नाम दर्ज करें।', false);
             return;
         }
+
+        let designationInput = document.getElementById('designation');
+        autoCapitalize(designationInput);
 
         let monthInputs = document.querySelectorAll('.month-input');
         let monthData = [];
@@ -603,8 +638,8 @@
 
         let empObject = {
             id: empId,
-            name: empName,
-            designation: document.getElementById('designation').value,
+            name: toTitleCase(empName),
+            designation: toTitleCase(designationInput.value),
             joiningDate: document.getElementById('joiningDate').value,
             basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
             daAmount: parseFloat(document.getElementById('daAmount').value) || 0,
@@ -700,8 +735,8 @@
 
             bodyHTML += `<tr>
                 <td>${idx + 1}</td>
-                <td style="text-align:left;">${emp.name}</td>
-                <td>${emp.designation}</td>
+                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
                 <td>${emp.basicPay}</td>
                 <td>${emp.daAmount.toFixed(2)}</td>
                 <td>${emp.basicPlusDa.toFixed(2)}</td>`;
@@ -751,7 +786,9 @@
             return;
         }
 
-        document.getElementById('pSchoolName').innerText = document.getElementById('schoolName').value || 'विद्यालय का नाम';
+        let schInput = document.getElementById('schoolName');
+        autoCapitalize(schInput);
+        document.getElementById('pSchoolName').innerText = schInput.value || 'विद्यालय का नाम';
         
         let startIdx = parseInt(document.getElementById('startMonth').value);
         let count = parseInt(document.getElementById('monthCount').value);
@@ -793,8 +830,8 @@
 
         let localMatch = savedEmployeeList.find(e => e.id === empId);
         if (localMatch) {
-            document.getElementById('empName').value = localMatch.name;
-            document.getElementById('designation').value = localMatch.designation;
+            document.getElementById('empName').value = toTitleCase(localMatch.name);
+            document.getElementById('designation').value = toTitleCase(localMatch.designation);
             document.getElementById('basicPay').value = localMatch.basicPay;
             document.getElementById('joiningDate').value = localMatch.joiningDate || '';
             runMasterCalculations();
