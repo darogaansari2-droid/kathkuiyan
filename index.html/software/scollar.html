@@ -11,7 +11,7 @@
         input, select { width: 100%; padding: 13px 10px; border: 1px solid #999; box-sizing: border-box; font-size: 13px; }
         label { font-size: 11px; font-weight: bold; display: block; }
         button { padding: 5px 10px; cursor: pointer; border: none; background: #2c3e50; color: white; font-size: 13px; }
-        .total-box { background: #2c3e50; color: white; padding: 2px 10px; border-radius: 15px; display: inline-block; font-weight: bold; margin: 5px 0; font-size: 13px; }
+        .total-box { background: #2c3e50; color: white; padding: 5px 12px; border-radius: 15px; display: inline-block; font-weight: bold; margin: 5px 0; font-size: 13px; }
         .scroll-area { margin-top: 16px; background: white; padding: 10px; border: 1px solid #333; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th, td { border: 1px solid #000; padding: 4px 6px; text-align: left; }
@@ -99,8 +99,9 @@
             <input type="text" id="searchBox" placeholder="🔍 Search Teacher Name..." onkeyup="handleSearch()" style="flex: 2;">
             <input type="text" id="searchClassBox" placeholder="🔍 Filter Class (e.g. 6A, 6B)..." onkeyup="handleSearch()" style="flex: 1;">
             <button onclick="searchSheetData()" style="background:#2980b9; font-size:12px; padding: 8px 12px;">Search Sheet</button>
+            <button onclick="fetchTotalFromSheet()" style="background:#27ae60; font-size:12px; padding: 8px 12px;">Get Sheet Total</button>
         </div>
-        <div class="total-box">Total SR Issued (Filtered): <span id="liveTotalSr">0</span></div>
+        <div class="total-box">Total SR Issued: <span id="liveTotalSr">0</span></div>
         <table id="dataTable">
             <thead>
                 <tr>
@@ -118,7 +119,7 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxg61wczAeGNd3H4hcVIPcP8J4ovb4gsfMWjgD-cAk6JdS1aAbKZscdEHBicAPZeST9/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRHecC-RyyayoKiEJkoun33bpZb7GeageArponOcn-MTpXhW4aZHpK1zbZQdEW6PGg/exec";
     let data = JSON.parse(localStorage.getItem('admissions')) || [];
     let currentActionTarget = "";
     let isDeleteUnlocked = false;
@@ -152,6 +153,7 @@
         document.getElementById('errorMsg').style.display = 'none';
     }
 
+    // UPDATED FUNCTION: Local me data ho toh vahan se le, warna Google Sheet se fetch kare
     function updateNextSr() {
         if(data.length > 0) {
             let lastEndSr = Math.max(...data.map(i => parseInt(i.end) || 0));
@@ -159,7 +161,27 @@
                 document.getElementById('startSr').value = lastEndSr + 1;
             }
         } else {
-            document.getElementById('startSr').value = "";
+            // Local Data khali hai, toh Sheet se manga rahe hain
+            document.getElementById('startSr').placeholder = "Loading SR...";
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: "getLastSr" })
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res && res.lastEndSr !== undefined && res.lastEndSr > 0) {
+                    document.getElementById('startSr').value = parseInt(res.lastEndSr) + 1;
+                } else {
+                    document.getElementById('startSr').value = "";
+                }
+                document.getElementById('startSr').placeholder = "";
+            })
+            .catch(err => {
+                console.error("Error fetching last SR:", err);
+                document.getElementById('startSr').value = "";
+                document.getElementById('startSr').placeholder = "";
+            });
         }
     }
 
@@ -230,8 +252,6 @@
         };
 
         let index = document.getElementById('editIndex').value;
-        
-        // Match existing entry by Start SR
         let existingIndex = data.findIndex(item => String(item.start).trim() === String(startVal).trim());
 
         if(index !== "") {
@@ -267,6 +287,25 @@
 
     function handleSearch() {
         render();
+    }
+
+    function fetchTotalFromSheet() {
+        document.getElementById('liveTotalSr').innerText = "Loading...";
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: "getTotal" })
+        })
+        .then(response => response.json())
+        .then(res => {
+            if (res && res.total !== undefined) {
+                document.getElementById('liveTotalSr').innerText = res.total;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            document.getElementById('liveTotalSr').innerText = "Error";
+        });
     }
 
     function searchSheetData() {
@@ -333,7 +372,12 @@
                 total += parseInt(item.count || 0);
             }
         });
-        document.getElementById('liveTotalSr').innerText = total;
+
+        if (data.length === 0 && !isSheetResult) {
+            fetchTotalFromSheet();
+        } else {
+            document.getElementById('liveTotalSr').innerText = total;
+        }
     }
 
     function render() {
@@ -344,7 +388,7 @@
         let index = data.findIndex(d => String(d.start).trim() === String(item.start).trim());
         document.getElementById('editIndex').value = (index !== -1) ? index : "";
         document.getElementById('startSr').value = item.start;
-        document.getElementById('startSr').readOnly = true; // Unique ID lock
+        document.getElementById('startSr').readOnly = true;
         document.getElementById('countBox').value = item.count;
         document.getElementById('endSr').value = item.end;
         document.getElementById('teacher').value = item.teacher;
@@ -352,7 +396,6 @@
         document.getElementById('entryDate').value = formatDate(item.date);
     }
 
-    // SIRF WAHI WALI ROW LOCAL STORAGE SE KHALI KARNA
     function clearSingleLocal(i) {
         if(confirm("Kya aap is entry ko sirf Local Storage se hatana chahte hain? (Google Sheet ka data safe rahega)")) {
             data.splice(i, 1);
@@ -412,7 +455,6 @@
 
     function del(startSr) {
         if(confirm("Kya aap Google Sheet se yeh row bilkul delete karna chahte hain?")) {
-            // Local se bhi remove karein
             data = data.filter(item => String(item.start).trim() !== String(startSr).trim());
             localStorage.setItem('admissions', JSON.stringify(data)); 
             
