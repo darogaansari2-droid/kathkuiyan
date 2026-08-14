@@ -27,7 +27,88 @@
             line-height: 1.3;
         }
 
-        .container {
+        /* LOGIN SCREEN STYLES */
+        #loginOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 54, 93, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: #ffffff;
+            padding: 30px 25px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 18px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .login-form-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .login-form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 5px;
+        }
+
+        .login-form-group input {
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover {
+            background-color: var(--primary-color);
+        }
+
+        .login-error {
+            color: var(--danger-color);
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* MAIN APP CONTAINER (Initially Hidden) */
+        #mainContainer {
+            display: none;
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
@@ -38,15 +119,33 @@
         }
 
         .header-section {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: #ffffff;
-            padding: 10px;
+            padding: 10px 15px;
             border-radius: 6px;
             margin-bottom: 8px;
         }
 
-        h1 { margin: 0; font-size: 20px; font-weight: 700; }
+        h1 { margin: 0; font-size: 20px; font-weight: 700; flex-grow: 1; text-align: center; }
+
+        .btn-logout {
+            background-color: var(--danger-color);
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-logout:hover {
+            background-color: #9b2c2c;
+        }
 
         .msg-box-container { min-height: 35px; margin-bottom: 8px; }
         .msg-box {
@@ -103,7 +202,6 @@
             font-weight: bold;
         }
 
-        /* अंग्रेजी नाम में पहला अक्षर बड़ा (Title Case) के लिए */
         input[type="text"] {
             text-transform: capitalize;
         }
@@ -136,7 +234,6 @@
         .btn-print:hover { background-color: #6b46c1; }
         .btn-reset-list { background-color: #718096; }
 
-        /* On-Screen Table Preview */
         .table-preview-container {
             overflow-x: auto;
             margin-top: 15px;
@@ -205,12 +302,11 @@
                 border: 1px solid #000;
                 padding: 5px 4px;
                 text-align: center;
-                font-size: 10px;
+                font-size: 11px;
                 word-break: break-word;
                 text-transform: capitalize;
             }
 
-            /* प्रिंट में नाम और पद को बड़ा और बोल्ड दिखाने के लिए नियम */
             table.print-table td.print-emp-name {
                 font-size: 11px !important;
                 font-weight: bold !important;
@@ -232,9 +328,28 @@
 </head>
 <body>
 
-<div class="container">
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay">
+    <div class="login-card">
+        <h2>DA Arrear System Login</h2>
+        <div class="login-form-group">
+            <label for="usernameInput">Login ID</label>
+            <input type="password" id="usernameInput" placeholder="Login ID दर्ज करें" style="text-transform: none;">
+        </div>
+        <div class="login-form-group">
+            <label for="passwordInput">Password</label>
+            <input type="password" id="passwordInput" placeholder="Password दर्ज करें">
+        </div>
+        <button type="button" class="btn-login" onclick="validateLogin()">Login</button>
+        <div id="loginError" class="login-error">गलत Login ID या Password!</div>
+    </div>
+</div>
+
+<!-- MAIN SOFTWARE CONTAINER -->
+<div id="mainContainer">
     <div class="header-section">
-        <h1>अवशेष महंगाई भत्ता (DA Arrear Master Sheet & Multi-Entry System)</h1>
+        <h1 style="margin-left: 60px;">अवशेष महंगाई भत्ता (DA Arrear Master Sheet System)</h1>
+        <button type="button" class="btn-logout" onclick="logoutApp()">Logout</button>
     </div>
 
     <div class="msg-box-container">
@@ -243,17 +358,17 @@
 
     <form id="arrearForm" onsubmit="event.preventDefault();">
         
-        <!-- विद्यालय एवं सत्र विवरण -->
+        <!-- 1. विद्यालय एवं सत्र विवरण -->
         <div class="panel" style="background-color: #ebf8ff;">
             <div class="section-title" style="color: #2b6cb0;">1. विद्यालय/संस्था एवं एरियर सत्र विवरण</div>
             <div class="grid-3-col">
                 <div class="form-group" style="grid-column: span 2;">
                     <label for="schoolName">विद्यालय / संस्था का नाम</label>
-                    <input type="text" id="schoolName" value="शासकीय उच्चतर माध्यमिक विद्यालय" placeholder="विद्यालय का पूरा नाम" onblur="autoCapitalize(this)">
+                    <input type="text" id="schoolName" value="श्री कृष्ण इण्टर कालेज सेमरा कठकुइयाँ, जिला - कुशीनगर " placeholder="विद्यालय का पूरा नाम" onblur="autoCapitalize(this)">
                 </div>
                 <div class="form-group">
                     <label for="arrearYear">वर्ष (Year)</label>
-                    <input type="text" id="arrearYear" value="2025-26" placeholder="उदा० 2025-26">
+                    <input type="text" id="arrearYear" value="2026-27" placeholder="उदा० 2026-27">
                 </div>
             </div>
         </div>
@@ -262,10 +377,8 @@
         <div class="panel">
             <div class="section-title">2. कर्मचारी विवरण एवं मूल वेतन</div>
             <div class="grid-3-col">
-                <div class="form-group">
-                    <label for="empId">क्रम सं० (ID)</label>
-                    <input type="text" id="empId" required placeholder="ID">
-                </div>
+                <input type="hidden" id="empId">
+                
                 <div class="form-group">
                     <label for="empName">कर्मचारी का नाम</label>
                     <input type="text" id="empName" required placeholder="नाम दर्ज करें" onblur="autoCapitalize(this)">
@@ -323,10 +436,10 @@
                         <option value="5">जून</option>
                         <option value="6">जुलाई</option>
                         <option value="7">अगस्त</option>
-                        <option value="8">सितंबर</option>
+                        <option value="8">सितम्बर</option>
                         <option value="9">अक्टूबर</option>
-                        <option value="10">नवंबर</option>
-                        <option value="11">दिसंबर</option>
+                        <option value="10">नवम्बर</option>
+                        <option value="11">दिसम्बर</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -442,18 +555,59 @@
     const monthDaysList = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     let savedEmployeeList = [];
 
-    window.onload = function() {
+    // Check Session on Page Load (Auto-login if session exists)
+    window.addEventListener('DOMContentLoaded', () => {
+        let isLoggedIn = localStorage.getItem('is_arrear_logged_in');
+        if (isLoggedIn === 'true') {
+            openAppUI();
+        }
+    });
+
+    // LOGIN VALIDATION FUNCTION
+    function validateLogin() {
+        const uInput = document.getElementById('usernameInput').value.trim();
+        const pInput = document.getElementById('passwordInput').value.trim();
+        const errDiv = document.getElementById('loginError');
+
+        if (uInput === 'arear' && pInput === '1234') {
+            localStorage.setItem('is_arrear_logged_in', 'true');
+            openAppUI();
+            errDiv.style.display = 'none';
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+        } else {
+            errDiv.style.display = 'block';
+        }
+    }
+
+    function openAppUI() {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('mainContainer').style.display = 'block';
+        
+        // Initialize App
         generateMonthInputs();
         runMasterCalculations();
         loadLocalStorageData();
         updateNextAutoId();
-    };
+    }
+
+    function logoutApp() {
+        localStorage.removeItem('is_arrear_logged_in');
+        document.getElementById('mainContainer').style.display = 'none';
+        document.getElementById('loginOverlay').style.display = 'flex';
+    }
+
+    // Enter Key Support for Login
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && document.getElementById('loginOverlay').style.display !== 'none') {
+            validateLogin();
+        }
+    });
 
     function updateNextAutoId() {
         document.getElementById('empId').value = savedEmployeeList.length + 1;
     }
 
-    // ऑटो कैपिटलाइज़ फ़ंक्शन (हर वर्ड का पहला अक्षर कैपिटल)
     function autoCapitalize(inputElem) {
         if (!inputElem.value) return;
         inputElem.value = inputElem.value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
@@ -474,7 +628,6 @@
         let monthlyDifference = Math.round((basicPay * diffRate) / 100);
         document.getElementById('yog').value = monthlyDifference.toFixed(2);
 
-        // Update Dynamic Month Inputs taking Joining Date & Rounding Rules into account
         updateDynamicMonthValues(monthlyDifference);
         calculateGrandTotalOnly();
     }
@@ -518,15 +671,12 @@
 
         monthInputs.forEach((input, index) => {
             if (index === 0 && joinDay > 1) {
-                // Calculate Pro-Rata Arrear for Joining Month
                 let mIdx = parseInt(input.getAttribute('data-mindex')) || 0;
                 let totalDaysInMonth = monthDaysList[mIdx];
                 let workingDays = (totalDaysInMonth - joinDay + 1);
                 if (workingDays < 0) workingDays = 0;
 
                 let rawProRata = (fullMonthlyDiff / totalDaysInMonth) * workingDays;
-                
-                // ROUND OFF RULE: .50 or more -> Next Integer, .49 or less -> Truncate
                 let roundedProRata = Math.round(rawProRata);
 
                 input.value = roundedProRata.toFixed(2);
@@ -612,15 +762,14 @@
         return str ? str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : '';
     }
 
-    /* LOCAL STORAGE SAVE FUNCTION */
     function saveDataToList() {
         let empId = document.getElementById('empId').value;
         let empNameInput = document.getElementById('empName');
         autoCapitalize(empNameInput);
         let empName = empNameInput.value;
 
-        if (!empId || !empName) {
-            triggerNotificationBox('कृपया ID और कर्मचारी का नाम दर्ज करें।', false);
+        if (!empName) {
+            triggerNotificationBox('कृपया कर्मचारी का नाम दर्ज करें।', false);
             return;
         }
 
@@ -683,7 +832,6 @@
         }
     }
 
-    /* MASTER TABLE RENDER */
     function renderMasterTable() {
         if (savedEmployeeList.length === 0) {
             document.getElementById('previewThead').innerHTML = '';
@@ -701,7 +849,6 @@
             });
         });
 
-        // Header
         let headerHTML = `<tr>
             <th>क्रम सं०</th>
             <th>कर्मचारी का नाम</th>
@@ -717,7 +864,6 @@
         document.getElementById('previewThead').innerHTML = headerHTML;
         document.getElementById('pThead').innerHTML = headerHTML;
 
-        // Rows
         let bodyHTML = '';
         let grandTotals = {
             basic: 0, da: 0, basicPlusDa: 0, totalArrear: 0, gpf: 0, nps: 0, nagad: 0
@@ -758,7 +904,6 @@
         document.getElementById('previewTbody').innerHTML = bodyHTML;
         document.getElementById('pTbody').innerHTML = bodyHTML;
 
-        // Footer (Totals)
         let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
             <td colspan="3">कुल योग (Total):</td>
             <td>${grandTotals.basic}</td>
@@ -779,7 +924,6 @@
         document.getElementById('pTfoot').innerHTML = footHTML;
     }
 
-    /* PRINT LANDSCAPE */
     function printLandscapeSheet() {
         if (savedEmployeeList.length === 0) {
             alert('प्रिंट करने के लिए कम से कम एक कर्मचारी का डेटा सेव करें!');
@@ -825,11 +969,12 @@
     }
 
     function searchEmployeeData() {
-        let empId = document.getElementById('empId').value;
+        let empId = prompt('खोजने के लिए ID दर्ज करें:');
         if (!empId) { triggerNotificationBox('ID दर्ज करें।', false); return; }
 
         let localMatch = savedEmployeeList.find(e => e.id === empId);
         if (localMatch) {
+            document.getElementById('empId').value = localMatch.id;
             document.getElementById('empName').value = toTitleCase(localMatch.name);
             document.getElementById('designation').value = toTitleCase(localMatch.designation);
             document.getElementById('basicPay').value = localMatch.basicPay;
