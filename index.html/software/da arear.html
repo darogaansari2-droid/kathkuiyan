@@ -229,10 +229,23 @@
 
         .btn-save { background-color: var(--success-color); }
         .btn-search { background-color: var(--secondary-color); }
-        .btn-clear { background-color: var(--danger-color); }
+        .btn-delete-item { background-color: #e53e3e; }
+        .btn-delete-item:hover { background-color: #9b2c2c; }
+        .btn-clear { background-color: #dd6b20; }
         .btn-print { background-color: #805ad5; }
         .btn-print:hover { background-color: #6b46c1; }
         .btn-reset-list { background-color: #718096; }
+
+        .btn-tbl-del {
+            background-color: var(--danger-color);
+            color: #fff;
+            border: none;
+            padding: 3px 7px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
 
         .table-preview-container {
             overflow-x: auto;
@@ -303,7 +316,7 @@
                 break-inside: avoid;
             }
 
-            /* कुल योग (Total Row) केवल अंतिम शीट पर प्रिंट करने के लिए नियम */
+            /* कुल योग केवल अंतिम पेज पर दिखाने का नियम */
             table.print-table tfoot {
                 display: table-row-group;
             }
@@ -332,6 +345,10 @@
                 -webkit-print-color-adjust: exact;
                 font-weight: bold;
                 text-transform: none;
+            }
+
+            .no-print-col {
+                display: none !important;
             }
         }
     </style>
@@ -527,6 +544,7 @@
         <div class="btn-panel">
             <button type="button" class="btn btn-save" onclick="saveDataToList()">Save Data</button>
             <button type="button" class="btn btn-search" onclick="searchEmployeeData()">Search</button>
+            <button type="button" class="btn btn-delete-item" onclick="deleteEmployeeData()">Delete Record</button>
             <button type="button" class="btn btn-print" onclick="printLandscapeSheet()">Print Landscape Sheet</button>
             <button type="button" class="btn btn-clear" onclick="resetFormFields()">Clear Form</button>
             <button type="button" class="btn btn-reset-list" onclick="clearLocalStorageData()">Clear Saved List</button>
@@ -822,7 +840,7 @@
         });
 
         let empObject = {
-            id: empId,
+            id: String(empId),
             name: toTitleCase(empName),
             designation: toTitleCase(designationInput.value),
             joiningDate: document.getElementById('joiningDate').value,
@@ -838,7 +856,7 @@
             accountType: document.getElementById('anm').value
         };
 
-        let existingIndex = savedEmployeeList.findIndex(e => e.id === empId);
+        let existingIndex = savedEmployeeList.findIndex(e => String(e.id) === String(empId));
         if (existingIndex >= 0) {
             savedEmployeeList[existingIndex] = empObject;
         } else {
@@ -872,8 +890,12 @@
     function renderMasterTable() {
         if (savedEmployeeList.length === 0) {
             document.getElementById('previewThead').innerHTML = '';
-            document.getElementById('previewTbody').innerHTML = '<tr><td colspan="10">कोई रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('previewTbody').innerHTML = '<tr><td colspan="11">कोई रिकॉर्ड नहीं है।</td></tr>';
             document.getElementById('previewTfoot').innerHTML = '';
+            
+            document.getElementById('pThead').innerHTML = '';
+            document.getElementById('pTbody').innerHTML = '<tr><td colspan="10">कोई रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('pTfoot').innerHTML = '';
             return;
         }
 
@@ -886,25 +908,28 @@
             });
         });
 
-        let headerHTML = `<tr>
+        // Preview Table Header (Includes Delete Action Column)
+        let headerHTMLPreview = `<tr>
             <th>क्रम सं०</th>
             <th>कर्मचारी का नाम</th>
             <th>पदनाम</th>
             <th>मूल वेतन</th>
             <th>महंगाई</th>
             <th>योग</th>`;
+        
         activeMonthNames.forEach(mName => {
-            headerHTML += `<th>${mName}</th>`;
+            headerHTMLPreview += `<th>${mName}</th>`;
         });
-        headerHTML += `<th>कुल योग</th><th>जी.पी.एफ</th><th>एन.पी.एस</th><th>नगद</th></tr>`;
+        
+        let headerHTMLPrint = headerHTMLPreview + `<th>कुल योग</th><th>जी.पी.एफ</th><th>एन.पी.एस</th><th>नगद</th></tr>`;
+        headerHTMLPreview += `<th>कुल योग</th><th>जी.पी.एफ</th><th>एन.पी.एस</th><th>नगद</th><th class="no-print-col">हटाएं</th></tr>`;
 
-        document.getElementById('previewThead').innerHTML = headerHTML;
-        document.getElementById('pThead').innerHTML = headerHTML;
+        document.getElementById('previewThead').innerHTML = headerHTMLPreview;
+        document.getElementById('pThead').innerHTML = headerHTMLPrint;
 
-        let bodyHTML = '';
-        let grandTotals = {
-            basic: 0, da: 0, basicPlusDa: 0, totalArrear: 0, gpf: 0, nps: 0, nagad: 0
-        };
+        let previewBodyHTML = '';
+        let printBodyHTML = '';
+        let grandTotals = { basic: 0, da: 0, basicPlusDa: 0, totalArrear: 0, gpf: 0, nps: 0, nagad: 0 };
         let monthTotals = Array(activeMonthNames.length).fill(0);
 
         savedEmployeeList.forEach((emp, idx) => {
@@ -921,7 +946,7 @@
                 displayName += ' <span style="color:red; font-size:10px;">(दिवंगत)</span>';
             }
 
-            bodyHTML += `<tr>
+            let commonCells = `
                 <td>${idx + 1}</td>
                 <td style="text-align:left;" class="print-emp-name">${displayName}</td>
                 <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
@@ -933,37 +958,46 @@
                 let foundMonth = emp.months.find(m => m.name === mName);
                 let val = foundMonth ? foundMonth.val : 0;
                 monthTotals[mIdx] += val;
-                bodyHTML += `<td>${val.toFixed(2)}</td>`;
+                commonCells += `<td>${val.toFixed(2)}</td>`;
             });
 
-            bodyHTML += `<td><b>${emp.total.toFixed(2)}</b></td>
+            commonCells += `<td><b>${emp.total.toFixed(2)}</b></td>
                 <td>${emp.gpf.toFixed(2)}</td>
                 <td>${emp.nps.toFixed(2)}</td>
-                <td><b>${emp.nagad.toFixed(2)}</b></td>
-            </tr>`;
+                <td><b>${emp.nagad.toFixed(2)}</b></td>`;
+
+            printBodyHTML += `<tr>${commonCells}</tr>`;
+            previewBodyHTML += `<tr>${commonCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
         });
 
-        document.getElementById('previewTbody').innerHTML = bodyHTML;
-        document.getElementById('pTbody').innerHTML = bodyHTML;
+        document.getElementById('previewTbody').innerHTML = previewBodyHTML;
+        document.getElementById('pTbody').innerHTML = printBodyHTML;
 
-        let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
+        let footHTMLPreview = `<tr style="font-weight:bold; background:#edf2f7;">
             <td colspan="3">कुल योग (Total):</td>
             <td>${grandTotals.basic}</td>
             <td>${grandTotals.da.toFixed(2)}</td>
             <td>${grandTotals.basicPlusDa.toFixed(2)}</td>`;
 
         monthTotals.forEach(mTot => {
-            footHTML += `<td>${mTot.toFixed(2)}</td>`;
+            footHTMLPreview += `<td>${mTot.toFixed(2)}</td>`;
         });
 
-        footHTML += `<td>${grandTotals.totalArrear.toFixed(2)}</td>
+        let footHTMLPrint = footHTMLPreview + `<td>${grandTotals.totalArrear.toFixed(2)}</td>
             <td>${grandTotals.gpf.toFixed(2)}</td>
             <td>${grandTotals.nps.toFixed(2)}</td>
             <td>${grandTotals.nagad.toFixed(2)}</td>
         </tr>`;
 
-        document.getElementById('previewTfoot').innerHTML = footHTML;
-        document.getElementById('pTfoot').innerHTML = footHTML;
+        footHTMLPreview += `<td>${grandTotals.totalArrear.toFixed(2)}</td>
+            <td>${grandTotals.gpf.toFixed(2)}</td>
+            <td>${grandTotals.nps.toFixed(2)}</td>
+            <td>${grandTotals.nagad.toFixed(2)}</td>
+            <td class="no-print-col"></td>
+        </tr>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTMLPreview;
+        document.getElementById('pTfoot').innerHTML = footHTMLPrint;
     }
 
     function printLandscapeSheet() {
@@ -1015,7 +1049,7 @@
         let empId = prompt('खोजने के लिए ID दर्ज करें:');
         if (!empId) { triggerNotificationBox('ID दर्ज करें।', false); return; }
 
-        let localMatch = savedEmployeeList.find(e => e.id === empId);
+        let localMatch = savedEmployeeList.find(e => String(e.id) === String(empId));
         if (localMatch) {
             document.getElementById('empId').value = localMatch.id;
             document.getElementById('empName').value = toTitleCase(localMatch.name);
@@ -1024,9 +1058,37 @@
             document.getElementById('joiningDate').value = localMatch.joiningDate || '';
             document.getElementById('deathDate').value = localMatch.deathDate || '';
             runMasterCalculations();
-            triggerNotificationBox('स्थानीय रिकॉर्ड से मिल गया!', true);
+            triggerNotificationBox('कर्मचारी रिकॉर्ड मिल गया!', true);
         } else {
             triggerNotificationBox('इस ID का रिकॉर्ड नहीं मिला।', false);
+        }
+    }
+
+    // किसी भी सर्च किए गए या ID वाले कर्मचारी को हटाने का फंक्शन
+    function deleteEmployeeData() {
+        let empId = document.getElementById('empId').value;
+        if (!empId) {
+            empId = prompt('हटाने के लिए कर्मचारी ID दर्ज करें:');
+        }
+
+        if (!empId) return;
+
+        deleteSpecificEmpById(empId);
+    }
+
+    function deleteSpecificEmpById(empId) {
+        let index = savedEmployeeList.findIndex(e => String(e.id) === String(empId));
+        if (index >= 0) {
+            let empName = savedEmployeeList[index].name;
+            if (confirm(`क्या आप कर्मचारी "${empName}" (ID: ${empId}) का रिकॉर्ड हटाना चाहते हैं?`)) {
+                savedEmployeeList.splice(index, 1);
+                localStorage.setItem('arrear_saved_list', JSON.stringify(savedEmployeeList));
+                renderMasterTable();
+                resetFormFields();
+                triggerNotificationBox('कर्मचारी का रिकॉर्ड सफलतापूर्वक हटा दिया गया है!', true);
+            }
+        } else {
+            triggerNotificationBox('इस ID का कोई रिकॉर्ड नहीं मिला!', false);
         }
     }
 </script>
