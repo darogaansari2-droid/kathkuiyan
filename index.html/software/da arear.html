@@ -106,7 +106,7 @@
             display: none;
         }
 
-        /* MAIN APP CONTAINER (Initially Hidden) */
+        /* MAIN APP CONTAINER */
         #mainContainer {
             display: none;
             width: 100%;
@@ -298,6 +298,16 @@
                 margin-bottom: 15px;
             }
 
+            table.print-table tr {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            /* कुल योग (Total Row) केवल अंतिम शीट पर प्रिंट करने के लिए नियम */
+            table.print-table tfoot {
+                display: table-row-group;
+            }
+
             table.print-table th, table.print-table td {
                 border: 1px solid #000;
                 padding: 5px 4px;
@@ -390,6 +400,10 @@
                 <div class="form-group">
                     <label for="joiningDate">कार्यभार ग्रहण तिथि (Joining Date)</label>
                     <input type="date" id="joiningDate" onchange="runMasterCalculations()">
+                </div>
+                <div class="form-group">
+                    <label for="deathDate" style="color: var(--danger-color);">मृत्यु तिथि (यदि बीच में हुई हो)</label>
+                    <input type="date" id="deathDate" onchange="runMasterCalculations()">
                 </div>
                 <div class="form-group">
                     <label for="basicPay">मूल वेतन</label>
@@ -555,7 +569,6 @@
     const monthDaysList = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     let savedEmployeeList = [];
 
-    // Check Session on Page Load (Auto-login if session exists)
     window.addEventListener('DOMContentLoaded', () => {
         let isLoggedIn = localStorage.getItem('is_arrear_logged_in');
         if (isLoggedIn === 'true') {
@@ -563,7 +576,6 @@
         }
     });
 
-    // LOGIN VALIDATION FUNCTION
     function validateLogin() {
         const uInput = document.getElementById('usernameInput').value.trim();
         const pInput = document.getElementById('passwordInput').value.trim();
@@ -584,7 +596,6 @@
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('mainContainer').style.display = 'block';
         
-        // Initialize App
         generateMonthInputs();
         runMasterCalculations();
         loadLocalStorageData();
@@ -597,7 +608,6 @@
         document.getElementById('loginOverlay').style.display = 'flex';
     }
 
-    // Enter Key Support for Login
     document.addEventListener('keypress', function(e) {
         if (e.key === 'Enter' && document.getElementById('loginOverlay').style.display !== 'none') {
             validateLogin();
@@ -662,27 +672,53 @@
         if(monthInputs.length === 0) return;
 
         let joiningDateVal = document.getElementById('joiningDate').value;
-        let joinDay = 1;
+        let deathDateVal = document.getElementById('deathDate').value;
+
+        let joinDay = 1, joinMonthIdx = -1;
+        let deathDay = 31, deathMonthIdx = 99;
 
         if (joiningDateVal) {
             let parts = joiningDateVal.split('-');
-            if (parts.length === 3) joinDay = parseInt(parts[2]) || 1;
+            if (parts.length === 3) {
+                joinMonthIdx = parseInt(parts[1]) - 1;
+                joinDay = parseInt(parts[2]) || 1;
+            }
         }
 
-        monthInputs.forEach((input, index) => {
-            if (index === 0 && joinDay > 1) {
-                let mIdx = parseInt(input.getAttribute('data-mindex')) || 0;
-                let totalDaysInMonth = monthDaysList[mIdx];
+        if (deathDateVal) {
+            let parts = deathDateVal.split('-');
+            if (parts.length === 3) {
+                deathMonthIdx = parseInt(parts[1]) - 1;
+                deathDay = parseInt(parts[2]) || 31;
+            }
+        }
+
+        monthInputs.forEach((input) => {
+            let mIdx = parseInt(input.getAttribute('data-mindex')) || 0;
+            let totalDaysInMonth = monthDaysList[mIdx];
+            let calculatedVal = fullMonthlyDiff;
+
+            if (mIdx > deathMonthIdx) {
+                calculatedVal = 0;
+            } 
+            else if (mIdx === deathMonthIdx) {
+                let startDayVal = (mIdx === joinMonthIdx) ? joinDay : 1;
+                let activeDays = deathDay - startDayVal + 1;
+                if (activeDays < 0) activeDays = 0;
+                if (activeDays > totalDaysInMonth) activeDays = totalDaysInMonth;
+
+                let rawProRata = (fullMonthlyDiff / totalDaysInMonth) * activeDays;
+                calculatedVal = Math.round(rawProRata);
+            } 
+            else if (mIdx === joinMonthIdx && joinDay > 1) {
                 let workingDays = (totalDaysInMonth - joinDay + 1);
                 if (workingDays < 0) workingDays = 0;
 
                 let rawProRata = (fullMonthlyDiff / totalDaysInMonth) * workingDays;
-                let roundedProRata = Math.round(rawProRata);
-
-                input.value = roundedProRata.toFixed(2);
-            } else {
-                input.value = fullMonthlyDiff.toFixed(2);
+                calculatedVal = Math.round(rawProRata);
             }
+
+            input.value = calculatedVal.toFixed(2);
         });
     }
 
@@ -790,6 +826,7 @@
             name: toTitleCase(empName),
             designation: toTitleCase(designationInput.value),
             joiningDate: document.getElementById('joiningDate').value,
+            deathDate: document.getElementById('deathDate').value,
             basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
             daAmount: parseFloat(document.getElementById('daAmount').value) || 0,
             basicPlusDa: parseFloat(document.getElementById('basicPlusDa').value) || 0,
@@ -879,9 +916,14 @@
             grandTotals.nps += emp.nps;
             grandTotals.nagad += emp.nagad;
 
+            let displayName = toTitleCase(emp.name);
+            if(emp.deathDate) {
+                displayName += ' <span style="color:red; font-size:10px;">(दिवंगत)</span>';
+            }
+
             bodyHTML += `<tr>
                 <td>${idx + 1}</td>
-                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td style="text-align:left;" class="print-emp-name">${displayName}</td>
                 <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
                 <td>${emp.basicPay}</td>
                 <td>${emp.daAmount.toFixed(2)}</td>
@@ -963,6 +1005,7 @@
         document.getElementById('designation').value = '';
         document.getElementById('basicPay').value = '';
         document.getElementById('joiningDate').value = '';
+        document.getElementById('deathDate').value = '';
         generateMonthInputs();
         runMasterCalculations();
         updateNextAutoId();
@@ -979,6 +1022,7 @@
             document.getElementById('designation').value = toTitleCase(localMatch.designation);
             document.getElementById('basicPay').value = localMatch.basicPay;
             document.getElementById('joiningDate').value = localMatch.joiningDate || '';
+            document.getElementById('deathDate').value = localMatch.deathDate || '';
             runMasterCalculations();
             triggerNotificationBox('स्थानीय रिकॉर्ड से मिल गया!', true);
         } else {
