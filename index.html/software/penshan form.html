@@ -276,7 +276,7 @@
     <div class="login-overlay" id="loginModal">
         <div class="login-box">
             <h3>पेंशन सिस्टम लॉगिन</h3>
-            <input type="text" id="loginId" placeholder="User ID दर्ज करें">
+            <input type="password" id="loginId" placeholder="User ID दर्ज करें">
             <input type="password" id="loginPassword" placeholder="Password दर्ज करें">
             <button onclick="checkLogin()">लॉगिन करें</button>
             <p class="login-error" id="loginError">गलत User ID या Password!</p>
@@ -378,7 +378,7 @@
             const passInput = document.getElementById('loginPassword').value.trim();
             const errorMsg = document.getElementById('loginError');
 
-            if (idInput === "penshan" && passInput === "123") {
+            if (idInput === "penshan" && passInput === "1234") {
                 localStorage.setItem('pensionLoggedIn', 'true'); // रिफ्रेश के लिए स्टेट सेव्ह करें
                 document.getElementById('loginModal').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'flex';
