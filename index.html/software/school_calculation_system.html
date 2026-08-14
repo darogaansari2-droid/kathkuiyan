@@ -613,7 +613,7 @@ cursor: pointer;
         <h2>System Login</h2>
         <div class="input-group">
             <label>Login ID</label>
-            <input type="text" id="loginUser" placeholder="Enter Login ID">
+            <input type="password" id="loginUser" placeholder="Enter Login ID">
         </div>
         <div class="input-group">
             <label>Password</label>
@@ -856,7 +856,7 @@ window.addEventListener("DOMContentLoaded", function() {
 function checkLogin() {
     let u = document.getElementById("loginUser").value.trim();
     let p = document.getElementById("loginPass").value.trim();
-    if(u === "fees" && p === "123") {
+    if(u === "fees" && p === "1234") {
         sessionStorage.setItem("isLoggedIn", "true");
         document.getElementById("login-overlay").style.display = "none";
         document.getElementById("main-app").style.display = "flex";
