@@ -286,7 +286,7 @@
         <h2>GPF System Login</h2>
         <div class="input-group">
             <label>Login ID</label>
-            <input type="text" id="loginUser" placeholder="Enter ID (hear)">
+            <input type="password" id="loginUser" placeholder="Enter ID (hear)">
         </div>
         <div class="input-group">
             <label>Password</label>
@@ -338,7 +338,7 @@
     function checkLogin() {
         let u = document.getElementById("loginUser").value.trim();
         let p = document.getElementById("loginPass").value.trim();
-        if(u === "gpf" && p === "123") {
+        if(u === "gpf" && p === "1234") {
             sessionStorage.setItem("isGpfLoggedIn", "true");
             document.getElementById("login-overlay").style.display = "none";
             document.getElementById("main-app").style.display = "flex";
