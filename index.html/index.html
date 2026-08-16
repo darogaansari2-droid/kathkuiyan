@@ -39,17 +39,14 @@
             align-items: center;
             gap: 15px;
         }
-
         .header-left {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
         .header-text {
             text-align: left; 
         }
-
         .school-logo-img {
             width: 42px; 
             height: 42px;
@@ -59,32 +56,27 @@
             flex-shrink: 0; 
             border: 2px solid #fff;
         }
-
         header h1 {
             font-size: 1rem; 
             letter-spacing: 0.5px;
             margin-bottom: 0px;
         }
-
         header p {
             font-size: 0.78rem; 
             opacity: 1;
             color: #ffffff;
             font-weight: 500;
         }
-
         .header-live-time {
             font-size: 0.75rem;
             color: #ffeb3b;
             margin-top: 1px;
             font-weight: 600;
         }
-
         .header-right-panel {
             display: flex;
             align-items: center;
         }
-
         .portal-links-container {
             display: flex;
             gap: 8px;
@@ -92,7 +84,6 @@
             flex-wrap: wrap;
             justify-content: flex-end;
         }
-
         /* Colors for Portal Links */
         .udise-link { color: #ff9800 !important; font-weight: bold; }
         .manav-link { color: #2ecc71 !important; font-weight: bold; }
@@ -122,7 +113,6 @@
             align-items: center;
             gap: 4px;
         }
-
         .portal-links-container a:hover, .portal-links-container span:hover {
             color: #ffffff !important;
             text-decoration: underline;
@@ -136,12 +126,10 @@
             font-size: 0.85rem;
             border-top: 1px solid rgba(255,255,255,0.2);
         }
-
         .marquee-container {
             width: 100%;
             overflow: hidden;
         }
-
         .marquee-link {
             text-decoration: none;
             margin: 0 10px;
@@ -153,7 +141,6 @@
             align-items: center;
             gap: 4px;
         }
-
         .marquee-link:hover {
             background: #ffffff;
             text-decoration: underline;
@@ -179,7 +166,6 @@
             justify-content: center;
             border: 1px solid #e2e8f0;
         }
-
         .card h2 {
             font-size: 1.15rem;
             color: #1e3c72;
@@ -188,7 +174,6 @@
             margin-bottom: 15px;
             text-align: center;
         }
-
         .card h2 i {
             margin-right: 8px;
         }
@@ -196,7 +181,6 @@
         .head-profile {
             text-align: center;
         }
-
         .head-photo {
             width: 130px;
             height: 160px;
@@ -209,13 +193,11 @@
             align-items: center;
             justify-content: center;
         }
-
         .head-photo img {
             width: 100%;
             height: 100%;
             object-fit: cover; 
         }
-
         .profile-details p {
             margin: 4px 0;
             font-size: 0.82rem;
@@ -228,7 +210,6 @@
             align-items: center;
             gap: 8px;
         }
-
         .profile-details p i {
             color: #1e3c72;
             width: 15px;
@@ -246,7 +227,7 @@
             gap: 15px;
         }
 
-        /* FIXED MAIN BANNER SLIDER CSS (BLACK STRIP REMOVED) */
+        /* FIXED MAIN BANNER SLIDER CSS (4-DIRECTION ANIMATION) */
         .image-wrapper {
             position: relative;
             height: 280px;
@@ -254,29 +235,43 @@
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            background-color: transparent; /* काला रंग हटाया गया */
+            background-color: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-
         .image-wrapper img {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* पूरी चौड़ाई और ऊँचाई में फिट करने के लिए (काली पट्टी गायब हो जाएगी) */
-            object-position: center; /* फ़ोटो का मुख्य हिस्सा केंद्र में रहेगा */
+            object-fit: cover;
+            object-position: center;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.8s ease-in-out, visibility 0.8s;
+            transition: transform 1s ease-in-out, opacity 1s ease-in-out, visibility 1s;
             z-index: 1;
+        }
+
+        /* 四ों दिशाओं के एनीमेशन प्रभाव */
+        .image-wrapper img.slide-from-left {
+            transform: translateX(-100%);
+        }
+        .image-wrapper img.slide-from-right {
+            transform: translateX(100%);
+        }
+        .image-wrapper img.slide-from-top {
+            transform: translateY(-100%);
+        }
+        .image-wrapper img.slide-from-bottom {
+            transform: translateY(100%);
         }
 
         .image-wrapper img.active {
             opacity: 1 !important;
             visibility: visible !important;
+            transform: translate(0, 0) !important;
             z-index: 2 !important;
         }
 
@@ -301,11 +296,9 @@
             text-align: justify;
             width: 100%;
         }
-
         .school-intro-text p {
             margin-bottom: 10px;
         }
-
         .highlight-blue {
             color: #1e3c72;
             font-weight: bold;
@@ -317,7 +310,6 @@
             margin: 20px auto 10px;
             padding: 0 20px;
         }
-
         .tiranga-card {
             background: white;
             padding: 25px;
@@ -325,7 +317,6 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.06);
             border: 1px solid #e2e8f0;
         }
-
         .tiranga-card h2 {
             font-size: 1.3rem;
             color: #1e3c72;
@@ -334,13 +325,11 @@
             margin-bottom: 20px;
             text-align: center;
         }
-
         .tiranga-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
         }
-
         .tiranga-item {
             background: #f8f9fa;
             border: 1px solid #e2e8f0;
@@ -351,7 +340,6 @@
             gap: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.04);
         }
-
         .tiranga-img-box {
             width: 100%;
             height: auto;
@@ -365,14 +353,12 @@
             align-items: center;
             justify-content: center;
         }
-
         .tiranga-img-box img {
             width: 100%;
             height: 100%;
             max-height: 450px;
             object-fit: contain;
         }
-
         .tiranga-caption {
             font-size: 0.88rem;
             color: #333;
@@ -407,19 +393,16 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             animation: fadeIn 0.5s ease;
         }
-
         .form-group {
             margin-bottom: 12px;
             text-align: left;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 4px;
             font-weight: 600;
             font-size: 0.85rem;
         }
-
         .form-group input {
             width: 100%;
             padding: 8px 10px;
@@ -427,7 +410,6 @@
             border-radius: 5px;
             font-size: 0.9rem;
         }
-
         .btn {
             background-color: #1e3c72;
             color: white;
@@ -443,7 +425,6 @@
             justify-content: center;
             gap: 8px;
         }
-
         .btn:hover {
             background-color: #2a5298;
         }
@@ -469,14 +450,12 @@
             text-decoration: none;      
             display: inline-flex;
             align-items: center;
-            gap: 8px;       
+            gap: 8px;   
         }
-
         .software-list-item:hover {
             background: #1e3c72;
             color: white !important;
         }
-
         .software-list-item:hover i {
             color: #ffeb3b;
         }
@@ -485,16 +464,13 @@
             background: transparent;
             color: #0b57d0;
         }
-
         .software-list-item.drive-highlight i {
             color: #0b57d0;
         }
-
         .software-list-item.drive-highlight:hover {
             background: #0b57d0;
             color: white !important;
         }
-
         .software-list-item.drive-highlight:hover i {
             color: #ffffff;
         }
@@ -559,7 +535,6 @@
             background-color: #0b57d0;
             color: white;
         }
-
         .drive-btn-submit:hover {
             background-color: #0044b3;
         }
@@ -568,7 +543,6 @@
             background-color: #e2e8f0;
             color: #333;
         }
-
         .drive-btn-cancel:hover {
             background-color: #cbd5e1;
         }
@@ -590,44 +564,35 @@
                 text-align: center;
                 padding: 12px;
             }
-
             .header-left {
                 flex-direction: column;
                 gap: 5px;
             }
-
             .header-text {
                 text-align: center;
             }
-
             .portal-links-container {
                 justify-content: center;
                 gap: 6px;
             }
-
             .main-banner-container {
                 grid-template-columns: 1fr;
                 margin-top: 15px;
             }
-
             .tiranga-grid {
                 grid-template-columns: 1fr;
             }
-
             body {
                 padding-top: 230px; 
             }
-
             .lower-layout {
                 justify-content: center; 
                 scroll-margin-top: 250px;
             }
-
             .content-container-right {
                 width: 100%;
                 max-width: 400px;
             }
-
             .tiranga-img-box {
                 min-height: 200px;
                 max-height: 350px;
@@ -665,6 +630,7 @@
                     <div class="header-live-time" id="liveDateTimeText">Loading Date & Time...</div>
                 </div>
             </div>
+            
             <div class="header-right-panel">
                 <div class="portal-links-container">
                     <a href="#" onclick="secureOpen('https://udiseplus.gov.in/'); return false;" class="udise-link"><i class="fa-solid fa-school"></i> Udise Plus</a> | 
@@ -714,7 +680,7 @@
         </div>
 
         <div class="card school-banner-card">
-            <!-- BANNER SLIDER WITH COVER FIT (NO BLACK BARS) -->
+            <!-- BANNER SLIDER WITH COVER FIT -->
             <div class="image-wrapper" id="schoolSlider">
                 <img src="software/school photo1.jpg" alt="School Photo 1" class="active" onerror="handleSliderError(this)">
                 <img src="software/school photo 2.jpeg" alt="School Photo 2" onerror="handleSliderError(this)">
@@ -729,6 +695,7 @@
                 <img src="software/school photo 11.jpeg" alt="School Photo 11" onerror="handleSliderError(this)">
                 <div class="banner-text">Shri Krishn Inter College, Semra</div>
             </div>
+
             <div class="school-intro-text">
                 <p>हमारे विद्यालय, <span class="highlight-blue">श्री कृष्ण इण्टर कॉलेज, सेमरा (कठकुइयां - कुशीनगर)</span> में आपका हार्दिक स्वागत है। हमारे संस्थान ग्रामीण अंचल के छात्र-छात्राओं को <span class="highlight-blue">उत्तम शिक्षा, सुदृढ़ संस्कार और उज्जवल भविष्य</span> प्रदान करने के लिए निरंतर संकल्पित है।</p>
                 <p>अनुभवी शिक्षकों के मार्गदर्शन में यहाँ विद्यार्थियों के मानसिक, बौद्धिक और चारित्रिक विकास पर विशेष बल दिया जाता है। आधुनिक तकनीक, अनुशासित परिवेश और गुणवत्तापूर्ण शिक्षण पद्धतियों के माध्यम से हम प्रत्येक बच्चे की प्रतिभा को निखारने का कार्य कर रहे हैं ताकि वे राष्ट्र निर्माण में अपना अमूल्य योगदान दे सकें।</p>
@@ -762,7 +729,6 @@
                         हमारे विद्यालय द्वारा आयोजित तिरंगा यात्रा में विद्यार्थियों ने अत्यंत उत्साह और देशभक्ति के साथ भाग लिया। हाथों में तिरंगा लिए छात्र-छात्राओं के जयघोष से संपूर्ण परिसर देशप्रेम की भावना से गुंजायमान हो उठा।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 14.jpeg" alt="Tiranga Photo 14" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -771,7 +737,6 @@
                         स्वतंत्रता दिवस के पावन अवसर पर निकाली गई इस यात्रा का मुख्य उद्देश्य समाज में राष्ट्रीय एकता और अखंडता का संदेश देना था। विद्यालय परिवार ने एकजुट होकर राष्ट्रध्वज के प्रति अपनी निष्ठा और सम्मान व्यक्त किया।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 15.jpeg" alt="Tiranga Photo 15" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -780,7 +745,6 @@
                         तिरंगा यात्रा के माध्यम से युवाओं में देश सेवा और वीर स्वतंत्रता संग्राम सेनानियों के प्रति कृतज्ञता की भावना जागृत की गई। अनुशासित कतारों में चलते विद्यार्थियों ने समाज को राष्ट्र प्रथम का अमूल्य संदेश दिया।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 16.jpeg" alt="Tiranga Photo 16" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -789,7 +753,6 @@
                         शिक्षकों के कुशल मार्गदर्शन में निकाली गई यह भव्य तिरंगा यात्रा क्षेत्रीय जनमानस के आकर्षण और प्रेरणा का केंद्र बनी। राष्ट्रध्वज की आन-बान और शान को सदैव ऊँचा रखने का संकल्प प्रत्येक चेहरे पर स्पष्ट झलक रहा था।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 17.jpeg" alt="Tiranga Photo 17" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -798,7 +761,6 @@
                         'हर घर तिरंगा' अभियान को सफल बनाते हुए विद्यालय ने राष्ट्रभक्ति के इस पावन पर्व को भव्यता के साथ संपन्न किया। ऐसे आयोजन विद्यार्थियों में नैतिक मूल्यों और नागरिक कर्तव्यों का बीजारोपण करते हैं।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 18.jpeg" alt="Tiranga Photo 18" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -807,7 +769,6 @@
                         देशभक्ति के तरानों और भारत माता की जयकारों से ओत-प्रोत इस यात्रा ने हर नागरिक के हृदय में राष्ट्रप्रेम की अलख जगाई। हमारा विद्यालय सदैव ऐसे गौरवशाली आयोजनों के माध्यम से देश सेवा की प्रेरणा देता रहेगा।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 19.jpeg" alt="Tiranga Photo 19" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -816,7 +777,6 @@
                          NCC कमांडर एवं समर्पित शिक्षकों के नेतृत्व में NCC कैडेट्स ने पूर्ण अनुशासन और उत्साह के साथ मार्च पास्ट किया। हमारे वीर कैडेट्स का जज्बा और देशभक्ति देखते ही बनती थी।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 20.jpeg" alt="Tiranga Photo 20" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -825,7 +785,6 @@
                         NCC कमांडर और शिक्षकों के कुशल मार्गदर्शन में कैडेट्स ने तिरंगा यात्रा का अग्रिम मोर्चा संभालकर अनुशासित नागरिकता की मिसाल पेश की। प्रधानाचार्य जी ने कैडेट्स और शिक्षकों के इस अप्रतिम प्रयास की सराहना करते हुए उज्ज्वल भविष्य की शुभकामनाएं दीं।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 21.jpeg" alt="Tiranga Photo 21" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -834,7 +793,6 @@
                         आदरणीय प्रबंधक महोदय ( पं० श्री सतीश मिश्र जी ) द्वारा गरिमामय उपस्थिति में पूर्ण विधि-विधान एवं सम्मान के साथ ध्वजारोहण संपन्न किया गया। इस गौरवमयी क्षण में राष्ट्रध्वज को सलामी देते हुए विद्यालय परिवार राष्ट्र की सेवा और उन्नति के प्रति पुनः संकल्पित हुआ।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 22.jpeg" alt="Tiranga Photo 22" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -843,7 +801,6 @@
                         ध्वजारोहण के उपरांत सामूहिक रूप से राष्ट्रगान 'जन गण मन' का सस्वर गायन किया गया, जिससे संपूर्ण परिसर में असीम राष्ट्रभक्ति और परम सम्मान का वातावरण निर्मित हो उठा।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 23.jpeg" alt="Tiranga Photo 23" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -852,7 +809,6 @@
                         राष्ट्रध्वज की आन, बान और शान का प्रतीक प्रसिद्ध झंडा गीत 'विजयी विश्व तिरंगा प्यारा, झंडा ऊँचा रहे हमारा' का सुमधुर एवं ओजस्वी गायन कर तिरंगे को नमन किया गया।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 24.jpeg" alt="Tiranga Photo 24" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -861,7 +817,6 @@
                         एन.सी.सी. कैडेट्स एवं विद्यालय के प्रतिभावान छात्र-छात्राओं ने एक स्वर में राष्ट्रगान का गायन कर अनुशासित एवं देशभक्ति से ओत-प्रोत मनमोहक प्रस्तुति दी।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 25.jpeg" alt="Tiranga Photo 25" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -870,7 +825,6 @@
                         ध्वजारोहण के पावन अवसर पर आदरणीय प्रबंधक महोदय ( पं० श्री सतीश मिश्र जी ) द्वारा विद्या की देवी माँ सरस्वती के चित्र पर माल्यार्पण एवं दीप प्रज्वलित कर विधिवत पूजन-अर्चन किया गया। माँ शारदे के चरणों में नमन करते हुए विद्यालय परिवार की सुख-समृद्धि एवं विद्यार्थियों के उज्ज्वल भविष्य की कामना की गई।
                     </div>
                 </div>
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 26.jpeg" alt="Tiranga Photo 26" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -977,11 +931,10 @@
     </footer>
 
     <script>
-        var SOFTWARE_USER_ID = "skickkt";     
-        var SOFTWARE_PASSWORD = "107827";    
-
-        var DRIVE_USER_ID = "dsahab";      
-        var DRIVE_PASSWORD = "786";        
+        var SOFTWARE_USER_ID = "skickkt"; 
+        var SOFTWARE_PASSWORD = "107827";
+        var DRIVE_USER_ID = "dsahab";  
+        var DRIVE_PASSWORD = "786";    
 
         function toggleLoginForm() {
             var form = document.getElementById("loginForm");
@@ -1054,16 +1007,38 @@
         setInterval(updateClock, 1000);
         updateClock(); 
 
+        /* 4-DIRECTION DYNAMIC SLIDER LOGIC */
         var currentSlideIndex = 0;
         var sliderImages = document.querySelectorAll('#schoolSlider img');
-        
+        var directions = ['slide-from-left', 'slide-from-top', 'slide-from-right', 'slide-from-bottom'];
+
+        function resetClasses(img) {
+            img.classList.remove('active', 'slide-from-left', 'slide-from-top', 'slide-from-right', 'slide-from-bottom');
+        }
+
         function startSchoolSlider() {
             if(sliderImages.length === 0) return;
-            sliderImages[currentSlideIndex].classList.remove('active');
+            
+            // पुरानी इमेज हटाना
+            var oldImage = sliderImages[currentSlideIndex];
+            oldImage.classList.remove('active');
+            
+            // अगली इमेज चुनना
             currentSlideIndex = (currentSlideIndex + 1) % sliderImages.length;
-            sliderImages[currentSlideIndex].classList.add('active');
+            var nextImage = sliderImages[currentSlideIndex];
+            
+            // नई दिशा (Direction) चुनना
+            var directionClass = directions[currentSlideIndex % directions.length];
+            
+            resetClasses(nextImage);
+            nextImage.classList.add(directionClass);
+            
+            // एनीमेशन ट्रिगर करने के लिए थोड़ा सा टाइमआउट
+            setTimeout(function() {
+                nextImage.classList.add('active');
+            }, 50);
         }
-        
+
         if (sliderImages.length > 0) {
             sliderImages[0].classList.add('active');
             setInterval(startSchoolSlider, 4000);
@@ -1074,7 +1049,6 @@
         }
 
         var tsBackup = "?v=" + new Date().getTime();
-
         var logoFormats = ["logo.png" + tsBackup, "logo.jpeg" + tsBackup];
         var currentLogoTry = 0;
         function tryNextFormat(imgElement) {
