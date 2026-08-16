@@ -18,6 +18,7 @@
             color: #333;
             padding-top: 115px; 
         }
+
         /* Fixed Top Container */
         .top-sticky-container {
             position: fixed;
@@ -27,6 +28,7 @@
             z-index: 1000;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
+
         /* Main Header Section */
         header {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
@@ -37,14 +39,17 @@
             align-items: center;
             gap: 15px;
         }
+
         .header-left {
             display: flex;
             align-items: center;
             gap: 12px;
         }
+
         .header-text {
             text-align: left; 
         }
+
         .school-logo-img {
             width: 42px; 
             height: 42px;
@@ -54,27 +59,32 @@
             flex-shrink: 0; 
             border: 2px solid #fff;
         }
+
         header h1 {
             font-size: 1rem; 
             letter-spacing: 0.5px;
             margin-bottom: 0px;
         }
+
         header p {
             font-size: 0.78rem; 
             opacity: 1;
             color: #ffffff;
             font-weight: 500;
         }
+
         .header-live-time {
             font-size: 0.75rem;
             color: #ffeb3b;
             margin-top: 1px;
             font-weight: 600;
         }
+
         .header-right-panel {
             display: flex;
             align-items: center;
         }
+
         .portal-links-container {
             display: flex;
             gap: 8px;
@@ -82,6 +92,7 @@
             flex-wrap: wrap;
             justify-content: flex-end;
         }
+
         /* Colors for Portal Links */
         .udise-link { color: #ff9800 !important; font-weight: bold; }
         .manav-link { color: #2ecc71 !important; font-weight: bold; }
@@ -111,6 +122,7 @@
             align-items: center;
             gap: 4px;
         }
+
         .portal-links-container a:hover, .portal-links-container span:hover {
             color: #ffffff !important;
             text-decoration: underline;
@@ -124,10 +136,12 @@
             font-size: 0.85rem;
             border-top: 1px solid rgba(255,255,255,0.2);
         }
+
         .marquee-container {
             width: 100%;
             overflow: hidden;
         }
+
         .marquee-link {
             text-decoration: none;
             margin: 0 10px;
@@ -139,6 +153,7 @@
             align-items: center;
             gap: 4px;
         }
+
         .marquee-link:hover {
             background: #ffffff;
             text-decoration: underline;
@@ -153,6 +168,7 @@
             gap: 20px;
             align-items: stretch;
         }
+
         .card {
             background: white;
             padding: 20px;
@@ -163,6 +179,7 @@
             justify-content: center;
             border: 1px solid #e2e8f0;
         }
+
         .card h2 {
             font-size: 1.15rem;
             color: #1e3c72;
@@ -171,6 +188,7 @@
             margin-bottom: 15px;
             text-align: center;
         }
+
         .card h2 i {
             margin-right: 8px;
         }
@@ -178,6 +196,7 @@
         .head-profile {
             text-align: center;
         }
+
         .head-photo {
             width: 130px;
             height: 160px;
@@ -190,11 +209,13 @@
             align-items: center;
             justify-content: center;
         }
+
         .head-photo img {
             width: 100%;
             height: 100%;
             object-fit: cover; 
         }
+
         .profile-details p {
             margin: 4px 0;
             font-size: 0.82rem;
@@ -207,6 +228,7 @@
             align-items: center;
             gap: 8px;
         }
+
         .profile-details p i {
             color: #1e3c72;
             width: 15px;
@@ -223,30 +245,41 @@
             justify-content: flex-start;
             gap: 15px;
         }
+
+        /* FIXED MAIN BANNER SLIDER CSS (BLACK STRIP REMOVED) */
         .image-wrapper {
             position: relative;
-            height: 250px;
+            height: 280px;
             width: 100%;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            background-color: #e2e8f0;
+            background-color: transparent; /* काला रंग हटाया गया */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         .image-wrapper img {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* पूरी चौड़ाई और ऊँचाई में फिट करने के लिए (काली पट्टी गायब हो जाएगी) */
+            object-position: center; /* फ़ोटो का मुख्य हिस्सा केंद्र में रहेगा */
             opacity: 0;
-            transition: opacity 1s ease-in-out; 
+            visibility: hidden;
+            transition: opacity 0.8s ease-in-out, visibility 0.8s;
             z-index: 1;
         }
+
         .image-wrapper img.active {
             opacity: 1 !important;
+            visibility: visible !important;
             z-index: 2 !important;
         }
+
         .banner-text {
             position: absolute;
             bottom: 0;
@@ -260,6 +293,7 @@
             text-align: center;
             z-index: 3; 
         }
+
         .school-intro-text {
             color: #444;
             line-height: 1.6;
@@ -267,20 +301,23 @@
             text-align: justify;
             width: 100%;
         }
+
         .school-intro-text p {
             margin-bottom: 10px;
         }
+
         .highlight-blue {
             color: #1e3c72;
             font-weight: bold;
         }
 
-        /* TIRANGA YATRA SECTION (2-COLUMN GRID AT BOTTOM) */
+        /* TIRANGA YATRA SECTION */
         .tiranga-container {
             max-width: 1350px;
             margin: 20px auto 10px;
             padding: 0 20px;
         }
+
         .tiranga-card {
             background: white;
             padding: 25px;
@@ -288,6 +325,7 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.06);
             border: 1px solid #e2e8f0;
         }
+
         .tiranga-card h2 {
             font-size: 1.3rem;
             color: #1e3c72;
@@ -296,11 +334,13 @@
             margin-bottom: 20px;
             text-align: center;
         }
+
         .tiranga-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
         }
+
         .tiranga-item {
             background: #f8f9fa;
             border: 1px solid #e2e8f0;
@@ -311,19 +351,28 @@
             gap: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.04);
         }
+
         .tiranga-img-box {
             width: 100%;
-            height: 220px;
+            height: auto;
+            min-height: 250px;
+            max-height: 450px;
             border-radius: 6px;
             overflow: hidden;
-            background-color: #eee;
+            background-color: #000;
             border: 2px solid #ff9800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
         .tiranga-img-box img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            max-height: 450px;
+            object-fit: contain;
         }
+
         .tiranga-caption {
             font-size: 0.88rem;
             color: #333;
@@ -344,9 +393,11 @@
             justify-content: flex-end; 
             scroll-margin-top: 240px; 
         }
+
         .content-container-right {
             width: 350px; 
         }
+
         .login-form {
             display: none;
             padding: 20px;
@@ -356,16 +407,19 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             animation: fadeIn 0.5s ease;
         }
+
         .form-group {
             margin-bottom: 12px;
             text-align: left;
         }
+
         .form-group label {
             display: block;
             margin-bottom: 4px;
             font-weight: 600;
             font-size: 0.85rem;
         }
+
         .form-group input {
             width: 100%;
             padding: 8px 10px;
@@ -373,6 +427,7 @@
             border-radius: 5px;
             font-size: 0.9rem;
         }
+
         .btn {
             background-color: #1e3c72;
             color: white;
@@ -388,11 +443,11 @@
             justify-content: center;
             gap: 8px;
         }
+
         .btn:hover {
             background-color: #2a5298;
         }
 
-        /* VERTICAL LIST SYSTEM (NO BOX, CLEAN AND CLOSE) */
         #secretFolderContent {
             display: none;
             padding: 5px 0px;
@@ -401,44 +456,49 @@
             box-shadow: none;
             animation: fadeIn 0.5s ease;
         }
+
         .software-list-horizontal {
             display: flex;
             flex-direction: row;        
             flex-wrap: wrap;            
             gap: 15px;                  
-            align-items: center;        
+            align-items: center;
         }
+
         .software-list-item {
             text-decoration: none;      
             display: inline-flex;
             align-items: center;
-            gap: 8px;               
+            gap: 8px;       
         }
+
         .software-list-item:hover {
             background: #1e3c72;
             color: white !important;
         }
+
         .software-list-item:hover i {
             color: #ffeb3b;
         }
 
-        /* Drive Special Link Style */
         .software-list-item.drive-highlight {
             background: transparent;
             color: #0b57d0;
         }
+
         .software-list-item.drive-highlight i {
             color: #0b57d0;
         }
+
         .software-list-item.drive-highlight:hover {
             background: #0b57d0;
             color: white !important;
         }
+
         .software-list-item.drive-highlight:hover i {
             color: #ffffff;
         }
 
-        /* DRIVE MODAL POPUP */
         .drive-modal-overlay {
             display: none;
             position: fixed;
@@ -452,6 +512,7 @@
             align-items: center;
             backdrop-filter: blur(3px);
         }
+
         .drive-modal-box {
             background: white;
             padding: 25px;
@@ -462,11 +523,13 @@
             animation: fadeIn 0.3s ease;
             border: 2px solid #0b57d0;
         }
+
         .drive-modal-box h3 {
             color: #0b57d0;
             margin-bottom: 15px;
             font-size: 1.1rem;
         }
+
         .drive-modal-box input {
             width: 100%;
             padding: 10px;
@@ -476,10 +539,12 @@
             font-size: 0.95rem;
             text-align: center;
         }
+
         .drive-modal-buttons {
             display: flex;
             gap: 10px;
         }
+
         .drive-modal-btn {
             flex: 1;
             padding: 10px;
@@ -489,17 +554,21 @@
             font-weight: bold;
             font-size: 0.9rem;
         }
+
         .drive-btn-submit {
             background-color: #0b57d0;
             color: white;
         }
+
         .drive-btn-submit:hover {
             background-color: #0044b3;
         }
+
         .drive-btn-cancel {
             background-color: #e2e8f0;
             color: #333;
         }
+
         .drive-btn-cancel:hover {
             background-color: #cbd5e1;
         }
@@ -521,39 +590,60 @@
                 text-align: center;
                 padding: 12px;
             }
+
             .header-left {
                 flex-direction: column;
                 gap: 5px;
             }
+
             .header-text {
                 text-align: center;
             }
+
             .portal-links-container {
                 justify-content: center;
                 gap: 6px;
             }
+
             .main-banner-container {
                 grid-template-columns: 1fr;
                 margin-top: 15px;
             }
+
             .tiranga-grid {
                 grid-template-columns: 1fr;
             }
+
             body {
                 padding-top: 230px; 
             }
+
             .lower-layout {
                 justify-content: center; 
                 scroll-margin-top: 250px;
             }
+
             .content-container-right {
                 width: 100%;
                 max-width: 400px;
             }
+
+            .tiranga-img-box {
+                min-height: 200px;
+                max-height: 350px;
+            }
         }
+
         @media (max-width: 480px) {
             body {
                 padding-top: 290px; 
+            }
+            .tiranga-img-box {
+                min-height: 180px;
+                max-height: 300px;
+            }
+            .image-wrapper {
+                height: 220px;
             }
         }
 
@@ -609,7 +699,7 @@
         </div>
     </div>
 
-    <div class="main-banner-container"> 
+    <div class="main-banner-container">
         <div class="card head-profile">
             <h2><i class="fa-solid fa-users-gear"></i> College Management</h2>
             <div class="head-photo">
@@ -624,6 +714,7 @@
         </div>
 
         <div class="card school-banner-card">
+            <!-- BANNER SLIDER WITH COVER FIT (NO BLACK BARS) -->
             <div class="image-wrapper" id="schoolSlider">
                 <img src="software/school photo1.jpg" alt="School Photo 1" class="active" onerror="handleSliderError(this)">
                 <img src="software/school photo 2.jpeg" alt="School Photo 2" onerror="handleSliderError(this)">
@@ -658,12 +749,11 @@
         </div>
     </div>
 
-   <!-- TIRANGA YATRA SECTION (Photo 13 to Photo 26 in 2-Series Grid) -->
+    <!-- TIRANGA YATRA SECTION -->
     <div class="tiranga-container">
         <div class="tiranga-card">
             <h2><i class="fa-solid fa-flag" style="color: #ff9800;"></i> विद्यालय तिरंगा यात्रा एवं देशभक्ति झलकियां</h2>
             <div class="tiranga-grid">
-
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 13.jpeg" alt="Tiranga Photo 13" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
@@ -741,7 +831,7 @@
                         <img src="tiranga photo 21.jpeg" alt="Tiranga Photo 21" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
                     </div>
                     <div class="tiranga-caption">
-                        आदरणीय प्रबंधक महोदय द्वारा गरिमामय उपस्थिति में पूर्ण विधि-विधान एवं सम्मान के साथ ध्वजारोहण संपन्न किया गया। इस गौरवमयी क्षण में राष्ट्रध्वज को सलामी देते हुए विद्यालय परिवार राष्ट्र की सेवा और उन्नति के प्रति पुनः संकल्पित हुआ।
+                        आदरणीय प्रबंधक महोदय ( पं० श्री सतीश मिश्र जी ) द्वारा गरिमामय उपस्थिति में पूर्ण विधि-विधान एवं सम्मान के साथ ध्वजारोहण संपन्न किया गया। इस गौरवमयी क्षण में राष्ट्रध्वज को सलामी देते हुए विद्यालय परिवार राष्ट्र की सेवा और उन्नति के प्रति पुनः संकल्पित हुआ।
                     </div>
                 </div>
 
@@ -772,13 +862,12 @@
                     </div>
                 </div>
 
-                <!-- NEW PHOTOS (25 & 26) ADDED BELOW -->
                 <div class="tiranga-item">
                     <div class="tiranga-img-box">
                         <img src="tiranga photo 25.jpeg" alt="Tiranga Photo 25" onerror="this.src='https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=600'">
                     </div>
                     <div class="tiranga-caption">
-                        ध्वजारोहण के पावन अवसर पर आदरणीय प्रबंधक महोदय द्वारा विद्या की देवी माँ सरस्वती के चित्र पर माल्यार्पण एवं दीप प्रज्वलित कर विधिवत पूजन-अर्चन किया गया। माँ शारदे के चरणों में नमन करते हुए विद्यालय परिवार की सुख-समृद्धि एवं विद्यार्थियों के उज्ज्वल भविष्य की कामना की गई।
+                        ध्वजारोहण के पावन अवसर पर आदरणीय प्रबंधक महोदय ( पं० श्री सतीश मिश्र जी ) द्वारा विद्या की देवी माँ सरस्वती के चित्र पर माल्यार्पण एवं दीप प्रज्वलित कर विधिवत पूजन-अर्चन किया गया। माँ शारदे के चरणों में नमन करते हुए विद्यालय परिवार की सुख-समृद्धि एवं विद्यार्थियों के उज्ज्वल भविष्य की कामना की गई।
                     </div>
                 </div>
 
@@ -790,10 +879,10 @@
                         राष्ट्रीय गीत 'वंदे मातरम्' के मधुर गायन के पश्चात छात्र-छात्राओं एवं शिक्षकों द्वारा 'भारत माता की जय' और 'वंदे मातरम्' के गगनभेदी नारे लगाए गए। इन ऊर्जावान जयकारों से संपूर्ण वातावरण राष्ट्रप्रेम के अद्भुत उत्साह और उमंग से सराबोर हो उठा।
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
+
     <div class="lower-layout">
         <div class="content-container-right">
             <div class="login-form" id="loginForm">
@@ -888,16 +977,11 @@
     </footer>
 
     <script>
-        // ==========================================
-        // 🔑 1. सॉफ्टवेयर का ID और Password (यहाँ से बदलें):
-        // ==========================================
-        var SOFTWARE_USER_ID = "skickkt";     // User ID बदलकर जो रखना चाहें रखें
-        var SOFTWARE_PASSWORD = "107827";    // Password बदलकर जो रखना चाहें रखें
+        var SOFTWARE_USER_ID = "skickkt";     
+        var SOFTWARE_PASSWORD = "107827";    
 
-        // 🔑 2. गूगल ड्राइव का ID और Password (यहाँ से बदलें):
-        var DRIVE_USER_ID = "dsahab";      // Drive ID बदलकर जो रखना चाहें रखें
-        var DRIVE_PASSWORD = "786";        // Drive Pass बदलकर जो रखना चाहें रखें
-        // ==========================================
+        var DRIVE_USER_ID = "dsahab";      
+        var DRIVE_PASSWORD = "786";        
 
         function toggleLoginForm() {
             var form = document.getElementById("loginForm");
@@ -914,7 +998,6 @@
             }
         }
 
-        // सॉफ्टवेयर लॉगिन चेक
         function checkLogin() {
             var u = document.getElementById("username").value;
             var p = document.getElementById("password").value;
@@ -949,7 +1032,6 @@
             document.getElementById("driveModal").style.display = "none";
         }
 
-        // गूगल ड्राइव लॉगिन चेक
         function verifyDriveAccess() {
             var driveID = document.getElementById("customDriveUser").value;
             var drivePass = document.getElementById("customDrivePass").value;
@@ -981,7 +1063,11 @@
             currentSlideIndex = (currentSlideIndex + 1) % sliderImages.length;
             sliderImages[currentSlideIndex].classList.add('active');
         }
-        setInterval(startSchoolSlider, 5000);
+        
+        if (sliderImages.length > 0) {
+            sliderImages[0].classList.add('active');
+            setInterval(startSchoolSlider, 4000);
+        }
 
         function handleSliderError(imgElement) {
             imgElement.src = "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600";
