@@ -2,85 +2,286 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>श्री कृष्ण इंटर कॉलेज - वेतन कैलकुलेटर</title>
     <style>
-        /* स्क्रीन फिक्सिंग स्टाइल */
-        body, html { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
-        .main-wrapper { height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 10px; box-sizing: border-box; overflow-y: auto; }
+        * { box-sizing: border-box; }
+        body, html { margin: 0; padding: 0; background-color: #f4f7f6; font-family: 'Segoe UI', Roboto, sans-serif; }
         
-        .container { width: 100%; max-width: 800px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h1, h2 { text-align: center; color: #1a2a6c; margin-top: 0; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        th { background-color: #2c3e50; color: white; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-        .input-box { flex: 1; min-width: 150px; }
-        input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background-color: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        .result-box { margin-top: 15px; padding: 10px; background: #e8f6f3; border-left: 5px solid #27ae60; }
-        .diff-box { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; margin-top: 10px; font-weight: bold; }
+        /* मुख्य लेआउट */
+        .main-wrapper { 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            padding: 20px; 
+            gap: 20px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            flex-wrap: wrap; 
+        }
         
-        /* स्वतंत्र कैलकुलेटर */
-        .independent-calc { width: 100%; max-width: 800px; border: 2px solid #2c3e50; padding: 15px; background: #fdfdfd; border-radius: 10px; }
+        /* बायां (नया वेतन) कैलकुलेटर */
+        .container { 
+            flex: 1 1 500px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            border-top: 5px solid #1a2a6c;
+        }
+        
+        /* दायां (वर्तमान वेतन) कैलकुलेटर */
+        .side-calc { 
+            flex: 1 1 400px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            border-top: 5px solid #2980b9; 
+        }
+        
+        h1 { text-align: center; color: #1a2a6c; margin-top: 0; font-size: 20px; }
+        h2 { text-align: center; color: #2980b9; margin-top: 0; font-size: 18px; }
+        
+        /* इनपुट ग्रिड */
+        .input-group { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+        .input-box { flex: 1 1 180px; }
+        
+        label { font-size: 13px; font-weight: bold; color: #333; display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        input[readonly] { background-color: #e9ecef; cursor: not-allowed; font-weight: bold; color: #1a2a6c; }
+        
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background-color: #27ae60; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: bold;
+            margin-top: 10px; 
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #219150; }
+        
+        /* रिजल्ट बॉक्स */
+        .result-box { margin-top: 15px; padding: 12px; background: #e8f6f3; border-left: 5px solid #27ae60; border-radius: 4px; }
+        .diff-box { background: #fff3cd; border: 1px solid #ffeeba; padding: 8px; margin-top: 8px; font-weight: bold; border-radius: 4px; }
+        
+        /* कुल लाभ (अंतर) दिखाने वाला मुख्य बॉक्स */
+        .profit-box { 
+            background: #d4edda; 
+            color: #155724; 
+            border: 2px dashed #28a745; 
+            padding: 15px; 
+            margin-top: 20px; 
+            text-align: center; 
+            font-size: 18px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+        }
+        
+        .section-header { font-weight: bold; color: #1a2a6c; margin-top: 15px; margin-bottom: 10px; border-bottom: 2px solid #1a2a6c; padding-bottom: 4px; font-size: 14px; }
+        
+        /* मोबाइल रिस्पॉन्सिव स्टाइल */
+        @media (max-width: 768px) {
+            .main-wrapper { padding: 10px; gap: 15px; }
+            .container, .side-calc { flex: 1 1 100%; }
+            h1 { font-size: 18px; }
+            h2 { font-size: 16px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="main-wrapper">
-    <!-- मुख्य वेतन कैलकुलेटर -->
+    <!-- बायां भाग: नया वेतन कैलकुलेटर -->
     <div class="container">
         <h1>श्री कृष्ण इण्टर कॉलेज सेमरा, कठकुइयाँ</h1>
-        <table>
-            <tr><th>घटक</th><th>दर (%)</th></tr>
-            <tr><td>महंगाई भत्ता (DA)</td><td><input type="number" id="daPercent" value="60" oninput="calculateSalary()"></td></tr>
-            <tr><td>वेतन वृद्धि</td><td><input type="number" id="hikePercent" value="25" oninput="calculateSalary()"></td></tr>
-        </table>
+        <h2 style="color:#1a2a6c;">( 8वाँ वेतन गणना )</h2>
+        
         <div class="input-group">
-            <div class="input-box"><label>मूल वेतन:</label><input type="number" id="currentPay" value="40400" oninput="calculateSalary()"></div>
-            <div class="input-box"><label>फिटमेंट:</label><input type="number" id="fitment" value="2.57" oninput="calculateSalary()"></div>
-            <div class="input-box"><label>HRA (₹):</label><input type="number" id="hraAmount" value="2000" oninput="calculateSalary()"></div>
+            <div class="input-box">
+                <label>वर्तमान मूल वेतन (₹):</label>
+                <input type="number" id="currentPay" value="40400" oninput="syncInputsAndCalculate()">
+            </div>
+            <div class="input-box">
+                <label>यूनिट्स (Units):</label>
+                <select id="unitCount" onchange="calculateSalary()">
+                    <option value="1">1 Unit</option>
+                    <option value="2">2 Units</option>
+                    <option value="3" selected>3 Units (फ़िक्स/मानक)</option>
+                    <option value="4">4 Units</option>
+                    <option value="5">5 Units</option>
+                    <option value="6">6 Units</option>
+                </select>
+            </div>
         </div>
+
+        <div class="input-group">
+            <div class="input-box">
+                <label>वर्तमान DA (%):</label>
+                <input type="number" id="daPercent" value="125" oninput="syncInputsAndCalculate()">
+            </div>
+            <div class="input-box">
+                <label>सरकार द्वारा देय वृद्धि (%):</label>
+                <input type="number" id="govtRate" value="14.3" step="0.1" oninput="calculateSalary()">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="input-box">
+                <label>गणना किया गया फिटमेंट फैक्टर:</label>
+                <input type="text" id="fitment" readonly>
+            </div>
+        </div>
+
+        <div class="section-header">नए वेतन हेतु इनपुट अलाउंस (New Allowances)</div>
+        <div class="input-group">
+            <div class="input-box">
+                <label>नया DA (% - पृथक इनपुट):</label>
+                <input type="number" id="newDaPercent" value="0" oninput="calculateSalary()">
+            </div>
+            <div class="input-box">
+                <label>नया HRA (₹):</label>
+                <input type="number" id="newHraAmount" value="2000" oninput="calculateSalary()">
+            </div>
+        </div>
+
         <button onclick="calculateSalary()">गणना करें</button>
+        
         <div id="result" class="result-box" style="display:none;">
-            <p><strong>नया मूल वेतन:</strong> ₹<span id="outBasic"></span></p>
-            <div class="diff-box">वेतन में अंतर: ₹<span id="outDiff"></span></div>
-            <p>कुल वेतन (Gross): <strong>₹<span id="outTotal"></span></strong></p>
+            <p style="margin:4px 0;"><strong>चयनित यूनिट्स:</strong> <span id="outUnits"></span> Units</p>
+            <p style="margin:4px 0;"><strong>नया मूल वेतन (Rounded):</strong> ₹<span id="outBasic"></span></p>
+            <div class="diff-box">मूल वेतन में अंतर: ₹<span id="outDiff"></span></div>
+            <p style="margin:4px 0; margin-top:8px;">नया DA राशि: ₹<span id="outNewDA"></span></p>
+            <p style="margin:4px 0;">नया HRA राशि: ₹<span id="outNewHRA"></span></p>
+            <p style="font-size: 17px; margin-top: 10px; margin-bottom:0;">नया कुल वेतन (Gross Salary): <strong>₹<span id="outTotal"></span></strong></p>
         </div>
     </div>
 
-    <!-- स्वतंत्र गणितीय कैलकुलेटर -->
-    <div class="independent-calc">
-        <h2 style="margin: 0 0 10px 0; font-size: 18px;"> कैलकुलेटर</h2>
-        <input type="text" id="mathInput" placeholder="यहाँ गणित लिखें (उदा: 500*2+50)" oninput="mathCalc()" style="padding: 10px; font-size: 16px;">
-        <div style="margin-top: 10px; font-weight: bold; color: #d35400;">परिणाम: <span id="mathOutput">0</span></div>
+    <!-- दायां भाग: वर्तमान वेतन कैलकुलेटर तथा लाभ (Profit) बॉक्स -->
+    <div class="side-calc">
+        <h2>वर्तमान वेतन (Current Salary)</h2>
+        
+        <div class="input-box" style="margin-bottom:10px;">
+            <label>वर्तमान मूल वेतन (Basic Pay ₹):</label>
+            <input type="number" id="curBasicInput" value="40400" oninput="syncFromRightAndCalculate()">
+        </div>
+        
+        <div class="input-group">
+            <div class="input-box">
+                <label>वर्तमान DA (%):</label>
+                <input type="number" id="curDaPercentInput" value="125" oninput="calculateCurrentSalary()">
+            </div>
+            
+            <div class="input-box">
+                <label>वर्तमान HRA (₹):</label>
+                <input type="number" id="curHraInput" value="1340" oninput="calculateCurrentSalary()">
+            </div>
+        </div>
+
+        <div class="result-box" style="background: #eaf2f8; border-left-color: #2980b9;">
+            <p style="margin:4px 0;">वर्तमान DA राशि: ₹<span id="outCurDA"></span></p>
+            <p style="font-size: 16px; margin:4px 0; margin-top:8px;"><strong>वर्तमान कुल वेतन: ₹<span id="outCurTotal"></span></strong></p>
+        </div>
+
+        <!-- अंतर / लाभ दिखाने के लिए बॉक्स -->
+        <div class="profit-box">
+            वेतन में कुल लाभ (अंतर):<br>
+            <span style="font-size: 26px; color: #27ae60; font-weight:bold;">₹<span id="outNetProfit">0</span></span>
+        </div>
     </div>
 </div>
 
 <script>
+    // बायां तरफ टाइप करने पर दायां ऑटो इनपुट (Auto Input) होगा
+    function syncInputsAndCalculate() {
+        document.getElementById('curBasicInput').value = document.getElementById('currentPay').value;
+        document.getElementById('curDaPercentInput').value = document.getElementById('daPercent').value;
+        calculateSalary();
+    }
+
+    // दायां तरफ मूल वेतन बदलने पर बायां भी सिंक होगा
+    function syncFromRightAndCalculate() {
+        document.getElementById('currentPay').value = document.getElementById('curBasicInput').value;
+        calculateSalary();
+    }
+
     function calculateSalary() {
         const cp = parseFloat(document.getElementById('currentPay').value) || 0;
-        const h = parseFloat(document.getElementById('hikePercent').value) || 0;
-        const f = parseFloat(document.getElementById('fitment').value) || 0;
+        const units = parseFloat(document.getElementById('unitCount').value) || 3;
         const da = parseFloat(document.getElementById('daPercent').value) || 0;
-        const hra = parseFloat(document.getElementById('hraAmount').value) || 0;
+        const govtRate = parseFloat(document.getElementById('govtRate').value) || 0;
         
-        let basic = Math.round(((cp * f) * (1 + h/100)) / 100) * 100;
+        const newDaPercent = parseFloat(document.getElementById('newDaPercent').value) || 0;
+        const newHraAmount = parseFloat(document.getElementById('newHraAmount').value) || 0;
+        
+        // 1. आपकी पद्धति से आधार फिटमेंट
+        let baseFitment = (100 + da) / 100;
+        let increment = (baseFitment * govtRate) / 100;
+        let standardFitment = baseFitment + increment;
+        
+        // 2. यूनिट्स समायोजन
+        let autoFitment = standardFitment * (units / 3);
+        
+        document.getElementById('fitment').value = autoFitment.toFixed(4) + " (लगभग " + autoFitment.toFixed(2) + ")";
+        
+        // 3. नया मूल वेतन
+        let rawBasic = cp * autoFitment;
+        let basic = Math.round(rawBasic / 100) * 100;
         let diff = basic - cp;
-        let total = basic + (basic * da/100) + hra;
+        
+        // 4. नया Gross Salary
+        let newDaAmount = (basic * newDaPercent) / 100;
+        let totalNew = basic + newDaAmount + newHraAmount;
 
+        document.getElementById('outUnits').innerText = units;
         document.getElementById('outBasic').innerText = basic.toLocaleString('en-IN');
         document.getElementById('outDiff').innerText = diff.toLocaleString('en-IN');
-        document.getElementById('outTotal').innerText = Math.round(total).toLocaleString('en-IN');
+        document.getElementById('outNewDA').innerText = Math.round(newDaAmount).toLocaleString('en-IN');
+        document.getElementById('outNewHRA').innerText = Math.round(newHraAmount).toLocaleString('en-IN');
+        document.getElementById('outTotal').innerText = Math.round(totalNew).toLocaleString('en-IN');
         document.getElementById('result').style.display = 'block';
+
+        // वर्तमान वेतन तथा लाभ की गणना अपडेट करें
+        calculateCurrentSalary(totalNew);
     }
 
-    function mathCalc() {
-        const input = document.getElementById('mathInput').value;
-        try {
-            const res = eval(input);
-            document.getElementById('mathOutput').innerText = isNaN(res) ? "0" : res.toLocaleString('en-IN');
-        } catch(e) { document.getElementById('mathOutput').innerText = "0"; }
+    function calculateCurrentSalary(newTotalSalary) {
+        const curBasic = parseFloat(document.getElementById('curBasicInput').value) || 0;
+        const curDaRate = parseFloat(document.getElementById('curDaPercentInput').value) || 0;
+        const curHra = parseFloat(document.getElementById('curHraInput').value) || 0;
+
+        let curDaAmount = (curBasic * curDaRate) / 100;
+        let curTotal = curBasic + curDaAmount + curHra;
+
+        document.getElementById('outCurDA').innerText = Math.round(curDaAmount).toLocaleString('en-IN');
+        document.getElementById('outCurTotal').innerText = Math.round(curTotal).toLocaleString('en-IN');
+
+        // नए वेतन और वर्तमान वेतन का अंतर (लाभ)
+        if (!newTotalSalary) {
+            const cp = parseFloat(document.getElementById('currentPay').value) || 0;
+            const units = parseFloat(document.getElementById('unitCount').value) || 3;
+            const da = parseFloat(document.getElementById('daPercent').value) || 0;
+            const govtRate = parseFloat(document.getElementById('govtRate').value) || 0;
+            const newDaPercent = parseFloat(document.getElementById('newDaPercent').value) || 0;
+            const newHraAmount = parseFloat(document.getElementById('newHraAmount').value) || 0;
+
+            let baseFitment = (100 + da) / 100;
+            let increment = (baseFitment * govtRate) / 100;
+            let autoFitment = (baseFitment + increment) * (units / 3);
+            let basic = Math.round((cp * autoFitment) / 100) * 100;
+            newTotalSalary = basic + ((basic * newDaPercent) / 100) + newHraAmount;
+        }
+
+        let profit = newTotalSalary - curTotal;
+        document.getElementById('outNetProfit').innerText = Math.round(profit).toLocaleString('en-IN');
     }
+
+    window.onload = syncInputsAndCalculate;
 </script>
 
 </body>
