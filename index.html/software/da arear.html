@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DA Arrear Master Sheet & Print System</title>
+    <title>DA Arrear & Bonus Master Sheet System</title>
     <style>
         :root {
             --primary-color: #1a365d;
@@ -94,9 +94,7 @@
             transition: background 0.2s;
         }
 
-        .btn-login:hover {
-            background-color: var(--primary-color);
-        }
+        .btn-login:hover { background-color: var(--primary-color); }
 
         .login-error {
             color: var(--danger-color);
@@ -143,9 +141,7 @@
             transition: background 0.2s;
         }
 
-        .btn-logout:hover {
-            background-color: #9b2c2c;
-        }
+        .btn-logout:hover { background-color: #9b2c2c; }
 
         .msg-box-container { min-height: 35px; margin-bottom: 8px; }
         .msg-box {
@@ -184,6 +180,12 @@
             gap: 12px;
         }
 
+        .grid-4-col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+
         .month-grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -202,10 +204,7 @@
             font-weight: bold;
         }
 
-        input[type="text"] {
-            text-transform: capitalize;
-        }
-
+        input[type="text"] { text-transform: capitalize; }
         input[readonly] { background-color: #edf2f7; color: #4a5568; }
 
         .btn-panel {
@@ -271,19 +270,21 @@
             text-transform: none;
         }
 
-        /* LANDSCAPE PRINT STYLES */
+        /* DATA SUMMARY & VERIFICATION BOX */
+        .summary-verify-box {
+            margin-top: 15px;
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 6px;
+            padding: 12px 15px;
+        }
+
+        /* PRINT STYLES */
         #printArea { display: none; }
 
         @media print {
-            @page {
-                size: A4 landscape;
-                margin: 8mm;
-            }
-
             body * { visibility: hidden; }
-
             #printArea, #printArea * { visibility: visible; }
-
             #printArea {
                 display: block !important;
                 position: absolute;
@@ -308,7 +309,7 @@
             table.print-table {
                 width: 100%;
                 border-collapse: collapse;
-                margin-bottom: 15px;
+                margin-bottom: 10px;
             }
 
             table.print-table tr {
@@ -316,30 +317,20 @@
                 break-inside: avoid;
             }
 
-            /* कुल योग केवल अंतिम पेज पर दिखाने का नियम */
-            table.print-table tfoot {
-                display: table-row-group;
-            }
+            table.print-table tfoot { display: table-row-group; }
 
-          table.print-table th, table.print-table td {
+            table.print-table th, table.print-table td {
                 border: 1px solid #000;
-                padding: 2px 3px; /* टेबल सेल्स की पैडिंग कम की गई जिससे हाइट घटेगी */
+                padding: 4px 5px;
                 text-align: center;
-                font-size: 11px; /* फ़ॉन्ट साइज घटाया गया */
-                line-height: 1.5; /* लाइन हाइट घटाई गई */
+                font-size: 11px;
+                line-height: 1.1;
                 word-break: break-word;
                 text-transform: capitalize;
             }
 
-            table.print-table td.print-emp-name {
-                font-size: 11px !important;
-                font-weight: bold !important;
-            }
-
-            table.print-table td.print-emp-desig {
-                font-size: 11px !important;
-                font-weight: 600 !important;
-            }
+            table.print-table td.print-emp-name { font-size: 11px !important; font-weight: bold !important; }
+            table.print-table td.print-emp-desig { font-size: 11px !important; font-weight: 600 !important; }
 
             table.print-table th {
                 background-color: #f2f2f2 !important;
@@ -348,8 +339,14 @@
                 text-transform: none;
             }
 
-            .no-print-col {
-                display: none !important;
+            .no-print-col { display: none !important; }
+
+            .print-summary-box {
+                border: 1px solid #000;
+                padding: 8px 10px;
+                margin-top: 10px;
+                font-size: 11px;
+                line-height: 1.1;
             }
         }
     </style>
@@ -359,7 +356,7 @@
 <!-- LOGIN OVERLAY -->
 <div id="loginOverlay">
     <div class="login-card">
-        <h2>DA Arrear System Login</h2>
+        <h2>DA Arrear / Bonus System Login</h2>
         <div class="login-form-group">
             <label for="usernameInput">Login ID</label>
             <input type="password" id="usernameInput" placeholder="Login ID दर्ज करें" style="text-transform: none;">
@@ -376,7 +373,7 @@
 <!-- MAIN SOFTWARE CONTAINER -->
 <div id="mainContainer">
     <div class="header-section">
-        <h1 style="margin-left: 60px;">अवशेष महंगाई भत्ता (DA Arrear Master Sheet System)</h1>
+        <h1 style="margin-left: 60px;" id="mainTitleHeader">अवशेष महंगाई भत्ता (DA Arrear System)</h1>
         <button type="button" class="btn-logout" onclick="logoutApp()">Logout</button>
     </div>
 
@@ -386,9 +383,23 @@
 
     <form id="arrearForm" onsubmit="event.preventDefault();">
         
+        <!-- MODE SELECTOR SETTING -->
+        <div class="panel" style="background-color: #fffaf0; border-color: #feebc8;">
+            <div class="section-title" style="color: #c05621;">माड्यूल सेटिंग चयन (Select Module Mode)</div>
+            <div class="grid-3-col">
+                <div class="form-group">
+                    <label for="calcMode" style="color: #c05621; font-weight: bold;">मोड चुनें (Select Mode)</label>
+                    <select id="calcMode" onchange="switchCalculationMode()" style="border: 2px solid #dd6b20;">
+                        <option value="DA">DA Arrear Setting (Landscape Print)</option>
+                        <option value="BONUS">Bonus Setting (Portrait Print)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <!-- 1. विद्यालय एवं सत्र विवरण -->
         <div class="panel" style="background-color: #ebf8ff;">
-            <div class="section-title" style="color: #2b6cb0;">1. विद्यालय/संस्था एवं एरियर सत्र विवरण</div>
+            <div class="section-title" style="color: #2b6cb0;">1. विद्यालय/संस्था एवं सत्र विवरण</div>
             <div class="grid-3-col">
                 <div class="form-group" style="grid-column: span 2;">
                     <label for="schoolName">विद्यालय / संस्था का नाम</label>
@@ -403,35 +414,47 @@
 
         <!-- 2. कर्मचारी विवरण -->
         <div class="panel">
-            <div class="section-title">2. कर्मचारी विवरण एवं मूल वेतन</div>
+            <div class="section-title">2. कर्मचारी विवरण एवं बैंक खाता जानकारी</div>
             <div class="grid-3-col">
                 <input type="hidden" id="empId">
                 
                 <div class="form-group">
-                    <label for="empName">कर्मचारी का नाम</label>
+                    <label for="empName">कर्मचारी का नाम (Employee Name)</label>
                     <input type="text" id="empName" required placeholder="नाम दर्ज करें" onblur="autoCapitalize(this)">
                 </div>
                 <div class="form-group">
-                    <label for="designation">पदनाम</label>
+                    <label for="designation">पदनाम (Designation)</label>
                     <input type="text" id="designation" required placeholder="पदनाम दर्ज करें" onblur="autoCapitalize(this)">
                 </div>
-                <div class="form-group">
+
+                <!-- Bonus Specific Fields -->
+                <div class="form-group bonus-only-field" style="display: none;">
+                    <label for="bankName">बैंक का नाम (Bank Name)</label>
+                    <input type="text" id="bankName" placeholder="उदा० SBI / PNB" onblur="autoCapitalize(this)">
+                </div>
+                <div class="form-group bonus-only-field" style="display: none;">
+                    <label for="accountNo">खाता संख्या (Account No.)</label>
+                    <input type="text" id="accountNo" placeholder="खाता संख्या दर्ज करें" style="text-transform: none;">
+                </div>
+
+                <!-- DA Specific Fields -->
+                <div class="form-group da-only-field">
                     <label for="joiningDate">कार्यभार ग्रहण तिथि (Joining Date)</label>
                     <input type="date" id="joiningDate" onchange="runMasterCalculations()">
                 </div>
-                <div class="form-group">
+                <div class="form-group da-only-field">
                     <label for="deathDate" style="color: var(--danger-color);">मृत्यु तिथि (यदि बीच में हुई हो)</label>
                     <input type="date" id="deathDate" onchange="runMasterCalculations()">
                 </div>
                 <div class="form-group">
-                    <label for="basicPay">मूल वेतन</label>
+                    <label for="basicPay" id="payLabel">मूल वेतन (Pay)</label>
                     <input type="number" id="basicPay" required placeholder="मूल वेतन" oninput="runMasterCalculations()">
                 </div>
-                <div class="form-group">
+                <div class="form-group da-only-field">
                     <label for="daAmount">महंगाई</label>
                     <input type="number" id="daAmount" readonly placeholder="0.00">
                 </div>
-                <div class="form-group">
+                <div class="form-group da-only-field">
                     <label for="basicPlusDa">योग (मूल+DA)</label>
                     <input type="number" id="basicPlusDa" readonly placeholder="0.00">
                 </div>
@@ -439,9 +462,10 @@
         </div>
 
         <!-- 3. DA दर एवं अवधि -->
-        <div class="panel">
+        <div class="panel da-only-field" style="flex-direction: column;">
             <div class="section-title">3. DA अंतर दर एवं महीने चुनिए</div>
-            <div class="grid-3-col" style="margin-bottom: 10px;">
+            
+            <div class="grid-4-col" style="margin-bottom: 12px;">
                 <div class="form-group">
                     <label for="prevDaRate">पूर्व DA दर (%)</label>
                     <input type="number" id="prevDaRate" value="58" step="0.01" oninput="runMasterCalculations()">
@@ -450,13 +474,6 @@
                     <label for="newDaRate">नवीन DA दर (%)</label>
                     <input type="number" id="newDaRate" value="60" step="0.01" oninput="runMasterCalculations()">
                 </div>
-                <div class="form-group">
-                    <label for="yog">मासिक पूर्ण DA अंतर राशि</label>
-                    <input type="number" id="yog" readonly placeholder="अंतर राशि">
-                </div>
-            </div>
-
-            <div class="grid-3-col" style="margin-bottom: 12px;">
                 <div class="form-group">
                     <label for="startMonth">प्रारंभिक माह</label>
                     <select id="startMonth" onchange="generateMonthInputs()">
@@ -493,28 +510,47 @@
                 </div>
             </div>
 
-            <div id="dynamicMonthGrid" class="month-grid-container"></div>
-        </div>
+            <div id="dynamicMonthGrid" class="month-grid-container" style="margin-bottom: 12px;"></div>
 
-        <!-- 4. भुगतान वितरण -->
-        <div class="panel">
-            <div class="section-title">4. कुल योग, खाता श्रेणी एवं भुगतान वितरण</div>
             <div class="grid-3-col">
                 <div class="form-group">
+                    <label for="yog">मासिक पूर्ण DA अंतर राशि</label>
+                    <input type="number" id="yog" readonly placeholder="अंतर राशि">
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. भुगतान वितरण एवं कटौती -->
+        <div class="panel">
+            <div class="section-title" id="section4Title">4. कुल योग, खाता श्रेणी एवं भुगतान वितरण</div>
+            
+            <div class="grid-3-col bonus-only-field" style="display: none; margin-bottom: 12px;">
+                <div class="form-group">
+                    <label for="bonusAmountInput">कुल बोनस राशि (Bonus)</label>
+                    <input type="number" id="bonusAmountInput" value="6908" oninput="runMasterCalculations()">
+                </div>
+                <div class="form-group">
+                    <label for="bonusGpfDeductionInput">GPF कटौती राशि (GPF Portion)</label>
+                    <input type="number" id="bonusGpfDeductionInput" value="5181" oninput="runMasterCalculations()">
+                </div>
+            </div>
+
+            <div class="grid-3-col">
+                <div class="form-group da-only-field">
                     <label for="total">कुल एरियर योग</label>
                     <input type="number" id="total" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="anm">खाता श्रेणी (GPF / NPS / CASH)</label>
+                    <label for="anm">खाता श्रेणी (GPF / NPS)</label>
                     <select id="anm" onchange="toggleDeductionMode()">
                         <option value="GPF">जी.पी.एफ (GPF)</option>
                         <option value="NPS">एन.पी.एस (NPS)</option>
-                        <option value="CASH">केवल नगद (No NPS/GPF - Naya Employee)</option>
+                        <option value="CASH" class="da-only-field">केवल नगद (No NPS/GPF - Naya Employee)</option>
                     </select>
                 </div>
             </div>
 
-            <div id="gpfSplitSection" class="grid-3-col" style="margin-top: 10px; background: #edf2f7; padding: 10px; border-radius: 6px;">
+            <div id="gpfSplitSection" class="grid-3-col da-only-field" style="margin-top: 10px; background: #edf2f7; padding: 10px; border-radius: 6px;">
                 <div class="form-group">
                     <label for="gpfMonths">GPF में जाने वाले महीने</label>
                     <input type="number" id="gpfMonths" min="0" value="0" oninput="calculateSplitValues()">
@@ -527,15 +563,15 @@
 
             <div class="grid-3-col" style="margin-top: 10px;">
                 <div class="form-group" id="gpfGroup">
-                    <label for="gpf">जी.पी.एफ जमा</label>
+                    <label for="gpf">जी.पी.एफ जमा (Gpf)</label>
                     <input type="number" id="gpf" value="0" readonly>
                 </div>
                 <div class="form-group" id="npsGroup" style="display: none;">
-                    <label for="nps">एन.पी.एस (10%)</label>
+                    <label for="nps">एन.पी.एस (Nps)</label>
                     <input type="number" id="nps" value="0" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="nagad">नकद भुगतान</label>
+                    <label for="nagad">नकद भुगतान (Cash)</label>
                     <input type="number" id="nagad" style="font-weight: bold; color: var(--success-color); background-color: #f0fff4;" oninput="handleManualNagadChange()">
                 </div>
             </div>
@@ -546,7 +582,7 @@
             <button type="button" class="btn btn-save" onclick="saveDataToList()">Save Data</button>
             <button type="button" class="btn btn-search" onclick="searchEmployeeData()">Search</button>
             <button type="button" class="btn btn-delete-item" onclick="deleteEmployeeData()">Delete Record</button>
-            <button type="button" class="btn btn-print" onclick="printLandscapeSheet()">Print Landscape Sheet</button>
+            <button type="button" class="btn btn-print" onclick="printLandscapeSheet()" id="btnPrintLabel">Print Sheet</button>
             <button type="button" class="btn btn-clear" onclick="resetFormFields()">Clear Form</button>
             <button type="button" class="btn btn-reset-list" onclick="clearLocalStorageData()">Clear Saved List</button>
         </div>
@@ -554,7 +590,7 @@
 
     <!-- On-Screen Preview Table -->
     <div class="panel" style="margin-top: 15px;">
-        <div class="section-title">सहेजे गए सभी कर्मचारियों की एरियर सूची (Preview)</div>
+        <div class="section-title" id="previewTitle">सहेजे गए सभी कर्मचारियों की सूची (Preview)</div>
         <div class="table-preview-container">
             <table class="preview-table">
                 <thead id="previewThead"></thead>
@@ -562,15 +598,20 @@
                 <tfoot id="previewTfoot"></tfoot>
             </table>
         </div>
+
+        <!-- डेटा मिलान एवं योग शब्द विजेट -->
+        <div class="summary-verify-box" id="uiVerifyBox">
+            <!-- JavaScript द्वारा भरा जाएगा -->
+        </div>
     </div>
 </div>
 
-<!-- LANDSCAPE PRINT FORMAT SECTION -->
+<!-- PRINT FORMAT SECTION -->
 <div id="printArea">
     <div class="print-header">
         <h2 id="pSchoolName">विद्यालय का नाम</h2>
-        <h3>महंगाई भत्ता (DA) अवशेष देयक (Consolidated Arrear Sheet)</h3>
-        <p style="margin: 3px 0; font-size: 12px;">
+        <h3 id="pSheetTitle">महंगाई भत्ता (DA) अवशेष देयक</h3>
+        <p style="margin: 3px 0; font-size: 12px;" id="pSubHeaderDetails">
             <b>अवधि:</b> <span id="pArrearPeriod">वर्ष एवं माह</span> | 
             <b>DA अंतर:</b> <span id="pDaRateDiff">0% से 0%</span>
         </p>
@@ -581,12 +622,16 @@
         <tbody id="pTbody"></tbody>
         <tfoot id="pTfoot"></tfoot>
     </table>
+
+    <!-- प्रिंट में दिखने वाला समरी एवं मिलान बॉक्स -->
+    <div class="print-summary-box" id="pSummaryBox"></div>
 </div>
 
 <script>
     const allMonths = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
     const monthDaysList = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     let savedEmployeeList = [];
+    let currentMode = 'DA';
 
     window.addEventListener('DOMContentLoaded', () => {
         let isLoggedIn = localStorage.getItem('is_arrear_logged_in');
@@ -615,10 +660,7 @@
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('mainContainer').style.display = 'block';
         
-        generateMonthInputs();
-        runMasterCalculations();
-        loadLocalStorageData();
-        updateNextAutoId();
+        switchCalculationMode();
     }
 
     function logoutApp() {
@@ -633,6 +675,41 @@
         }
     });
 
+    function switchCalculationMode() {
+        currentMode = document.getElementById('calcMode').value;
+
+        const daFields = document.querySelectorAll('.da-only-field');
+        const bonusFields = document.querySelectorAll('.bonus-only-field');
+
+        if (currentMode === 'BONUS') {
+            document.getElementById('mainTitleHeader').innerText = "बोनस भुगतान रजिस्टर मास्टर (Bonus Master System)";
+            document.getElementById('btnPrintLabel').innerText = "Print Bonus Sheet (Portrait)";
+            document.getElementById('previewTitle').innerText = "सहेजे गए कर्मचारियों का बोनस विवरण (Bonus List)";
+            
+            daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bonusFields.forEach(el => el.style.display = 'flex');
+
+            let cashOpt = document.querySelector('#anm option[value="CASH"]');
+            if(cashOpt) cashOpt.style.display = 'none';
+
+        } else {
+            document.getElementById('mainTitleHeader').innerText = "अवशेष महंगाई भत्ता (DA Arrear Master Sheet System)";
+            document.getElementById('btnPrintLabel').innerText = "Print Landscape Sheet";
+            document.getElementById('previewTitle').innerText = "सहेजे गए सभी कर्मचारियों की एरियर सूची (Preview)";
+            
+            daFields.forEach(el => el.style.display = 'flex');
+            bonusFields.forEach(el => el.style.display = 'none');
+
+            let cashOpt = document.querySelector('#anm option[value="CASH"]');
+            if(cashOpt) cashOpt.style.display = 'block';
+
+            generateMonthInputs();
+        }
+
+        loadLocalStorageData();
+        resetFormFields();
+    }
+
     function updateNextAutoId() {
         document.getElementById('empId').value = savedEmployeeList.length + 1;
     }
@@ -643,6 +720,11 @@
     }
 
     function runMasterCalculations() {
+        if (currentMode === 'BONUS') {
+            calculateBonusLogic();
+            return;
+        }
+
         let prevRate = parseFloat(document.getElementById('prevDaRate').value) || 0;
         let newRate = parseFloat(document.getElementById('newDaRate').value) || 0;
         let diffRate = newRate - prevRate;
@@ -661,7 +743,37 @@
         calculateGrandTotalOnly();
     }
 
+    function calculateBonusLogic() {
+        let selection = document.getElementById('anm').value;
+        let bonusAmount = parseFloat(document.getElementById('bonusAmountInput').value) || 6908;
+        let gpfDeduction = parseFloat(document.getElementById('bonusGpfDeductionInput').value) || 5181;
+
+        let gpfGroup = document.getElementById('gpfGroup');
+        let npsGroup = document.getElementById('npsGroup');
+
+        if (selection === 'GPF') {
+            gpfGroup.style.display = 'flex';
+            npsGroup.style.display = 'none';
+
+            let cashCalc = bonusAmount - gpfDeduction;
+            if (cashCalc < 0) cashCalc = 0;
+
+            document.getElementById('gpf').value = gpfDeduction.toFixed(2);
+            document.getElementById('nps').value = "0.00";
+            document.getElementById('nagad').value = cashCalc.toFixed(2);
+        } else if (selection === 'NPS') {
+            gpfGroup.style.display = 'none';
+            npsGroup.style.display = 'flex';
+
+            document.getElementById('gpf').value = "0.00";
+            document.getElementById('nps').value = "0.00"; 
+            document.getElementById('nagad').value = bonusAmount.toFixed(2);
+        }
+    }
+
     function generateMonthInputs() {
+        if(currentMode === 'BONUS') return;
+
         let startIdx = parseInt(document.getElementById('startMonth').value);
         let count = parseInt(document.getElementById('monthCount').value);
         let container = document.getElementById('dynamicMonthGrid');
@@ -753,6 +865,11 @@
     }
 
     function toggleDeductionMode() {
+        if(currentMode === 'BONUS') {
+            calculateBonusLogic();
+            return;
+        }
+
         let selection = document.getElementById('anm').value;
         let gpfSection = document.getElementById('gpfSplitSection');
         let gpfGroup = document.getElementById('gpfGroup');
@@ -806,7 +923,7 @@
     }
 
     function handleManualNagadChange() {
-        if (document.getElementById('anm').value === 'GPF') {
+        if (currentMode === 'DA' && document.getElementById('anm').value === 'GPF') {
             let total = parseFloat(document.getElementById('total').value) || 0;
             let nagad = parseFloat(document.getElementById('nagad').value) || 0;
             document.getElementById('gpf').value = (total - nagad) >= 0 ? (total - nagad).toFixed(2) : "0.00";
@@ -815,6 +932,47 @@
 
     function toTitleCase(str) {
         return str ? str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : '';
+    }
+
+    /* संख्या को हिन्दी शब्दों में बदलने वाला फ़ंक्शन */
+    function convertNumberToHindiWords(num) {
+        num = Math.round(num);
+        if (num === 0) return "शून्य रुपये मात्र";
+
+        const units = ["", "एक", "दो", "तीन", "चार", "पांच", "छह", "सात", "आठ", "नौ", "दस", 
+                       "ग्यारह", "बारह", "तेरह", "चौदह", "पंद्रह", "सोलह", "सत्रह", "अठारह", "उन्नीस"];
+        const tens = ["", "", "बीस", "तीस", "चालिस", "पचास", "साठ", "सत्तर", "अस्सी", "नब्बे"];
+
+        function getBelowHundred(n) {
+            if (n < 20) return units[n];
+            let tenPart = Math.floor(n / 10);
+            let unitPart = n % 10;
+            return tens[tenPart] + (unitPart > 0 ? " " + units[unitPart] : "");
+        }
+
+        let str = "";
+        
+        if (Math.floor(num / 10000000) > 0) {
+            str += getBelowHundred(Math.floor(num / 10000000)) + " करोड़ ";
+            num %= 10000000;
+        }
+        if (Math.floor(num / 100000) > 0) {
+            str += getBelowHundred(Math.floor(num / 100000)) + " लाख ";
+            num %= 100000;
+        }
+        if (Math.floor(num / 1000) > 0) {
+            str += getBelowHundred(Math.floor(num / 1000)) + " हजार ";
+            num %= 1000;
+        }
+        if (Math.floor(num / 100) > 0) {
+            str += getBelowHundred(Math.floor(num / 100)) + " सौ ";
+            num %= 100;
+        }
+        if (num > 0) {
+            str += getBelowHundred(num) + " ";
+        }
+
+        return str.trim() + " रुपये मात्र";
     }
 
     function saveDataToList() {
@@ -831,31 +989,55 @@
         let designationInput = document.getElementById('designation');
         autoCapitalize(designationInput);
 
-        let monthInputs = document.querySelectorAll('.month-input');
-        let monthData = [];
-        monthInputs.forEach(input => {
-            monthData.push({
-                name: input.getAttribute('data-month'),
-                val: parseFloat(input.value) || 0
-            });
-        });
+        let empObject = {};
 
-        let empObject = {
-            id: String(empId),
-            name: toTitleCase(empName),
-            designation: toTitleCase(designationInput.value),
-            joiningDate: document.getElementById('joiningDate').value,
-            deathDate: document.getElementById('deathDate').value,
-            basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
-            daAmount: parseFloat(document.getElementById('daAmount').value) || 0,
-            basicPlusDa: parseFloat(document.getElementById('basicPlusDa').value) || 0,
-            months: monthData,
-            total: parseFloat(document.getElementById('total').value) || 0,
-            gpf: parseFloat(document.getElementById('gpf').value) || 0,
-            nps: parseFloat(document.getElementById('nps').value) || 0,
-            nagad: parseFloat(document.getElementById('nagad').value) || 0,
-            accountType: document.getElementById('anm').value
-        };
+        if (currentMode === 'BONUS') {
+            let bankInput = document.getElementById('bankName');
+            autoCapitalize(bankInput);
+
+            empObject = {
+                id: String(empId),
+                mode: 'BONUS',
+                name: toTitleCase(empName),
+                designation: toTitleCase(designationInput.value),
+                bankName: bankInput.value || '-',
+                accountNo: document.getElementById('accountNo').value || '-',
+                basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
+                bonus: parseFloat(document.getElementById('bonusAmountInput').value) || 6908,
+                gpf: parseFloat(document.getElementById('gpf').value) || 0,
+                nps: parseFloat(document.getElementById('nps').value) || 0,
+                nagad: parseFloat(document.getElementById('nagad').value) || 0,
+                total: parseFloat(document.getElementById('bonusAmountInput').value) || 6908,
+                accountType: document.getElementById('anm').value
+            };
+        } else {
+            let monthInputs = document.querySelectorAll('.month-input');
+            let monthData = [];
+            monthInputs.forEach(input => {
+                monthData.push({
+                    name: input.getAttribute('data-month'),
+                    val: parseFloat(input.value) || 0
+                });
+            });
+
+            empObject = {
+                id: String(empId),
+                mode: 'DA',
+                name: toTitleCase(empName),
+                designation: toTitleCase(designationInput.value),
+                joiningDate: document.getElementById('joiningDate').value,
+                deathDate: document.getElementById('deathDate').value,
+                basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
+                daAmount: parseFloat(document.getElementById('daAmount').value) || 0,
+                basicPlusDa: parseFloat(document.getElementById('basicPlusDa').value) || 0,
+                months: monthData,
+                total: parseFloat(document.getElementById('total').value) || 0,
+                gpf: parseFloat(document.getElementById('gpf').value) || 0,
+                nps: parseFloat(document.getElementById('nps').value) || 0,
+                nagad: parseFloat(document.getElementById('nagad').value) || 0,
+                accountType: document.getElementById('anm').value
+            };
+        }
 
         let existingIndex = savedEmployeeList.findIndex(e => String(e.id) === String(empId));
         if (existingIndex >= 0) {
@@ -864,31 +1046,127 @@
             savedEmployeeList.push(empObject);
         }
 
-        localStorage.setItem('arrear_saved_list', JSON.stringify(savedEmployeeList));
+        saveToLocalStorageByMode();
         renderMasterTable();
         triggerNotificationBox('डेटा सफलतापूर्वक Local Storage में सेव हुआ!', true);
         resetFormFields();
     }
 
+    function saveToLocalStorageByMode() {
+        let storageKey = (currentMode === 'BONUS') ? 'bonus_saved_list' : 'arrear_saved_list';
+        localStorage.setItem(storageKey, JSON.stringify(savedEmployeeList));
+    }
+
     function loadLocalStorageData() {
-        let stored = localStorage.getItem('arrear_saved_list');
+        let storageKey = (currentMode === 'BONUS') ? 'bonus_saved_list' : 'arrear_saved_list';
+        let stored = localStorage.getItem(storageKey);
         if (stored) {
             savedEmployeeList = JSON.parse(stored);
-            renderMasterTable();
+        } else {
+            savedEmployeeList = [];
         }
+        renderMasterTable();
     }
 
     function clearLocalStorageData() {
-        if (confirm('क्या आप सहेजी गई पूरी सूची हटाना चाहते हैं?')) {
-            localStorage.removeItem('arrear_saved_list');
+        let modeText = (currentMode === 'BONUS') ? 'बोनस' : 'एरियर';
+        if (confirm(`क्या आप सहेजी गई पूरी ${modeText} सूची हटाना चाहते हैं?`)) {
+            let storageKey = (currentMode === 'BONUS') ? 'bonus_saved_list' : 'arrear_saved_list';
+            localStorage.removeItem(storageKey);
             savedEmployeeList = [];
             renderMasterTable();
             updateNextAutoId();
-            triggerNotificationBox('स्थानीय डेटा सूची साफ कर दी गई है।', true);
+            triggerNotificationBox(`स्थानीय ${modeText} डेटा सूची साफ कर दी गई है।`, true);
         }
     }
 
     function renderMasterTable() {
+        if (currentMode === 'BONUS') {
+            renderBonusTable();
+        } else {
+            renderDaTable();
+        }
+    }
+
+    function renderBonusTable() {
+        if (savedEmployeeList.length === 0) {
+            let emptyHTML = '<tr><td colspan="11">कोई बोनस रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('previewThead').innerHTML = '';
+            document.getElementById('previewTbody').innerHTML = emptyHTML;
+            document.getElementById('previewTfoot').innerHTML = '';
+
+            document.getElementById('pThead').innerHTML = '';
+            document.getElementById('pTbody').innerHTML = emptyHTML;
+            document.getElementById('pTfoot').innerHTML = '';
+
+            document.getElementById('uiVerifyBox').innerHTML = '<b>कोई डाटा नहीं है।</b>';
+            document.getElementById('pSummaryBox').innerHTML = '';
+            return;
+        }
+
+        let headerHTML = `<tr>
+            <th>Sr.no</th>
+            <th>Employee Name</th>
+            <th>Designation</th>
+            <th>Bank Name</th>
+            <th>Account No.</th>
+            <th>Pay</th>
+            <th>Bonus</th>
+            <th>Gpf</th>
+            <th>Nps</th>
+            <th>Cash</th>`;
+
+        let headerHTMLPreview = headerHTML + `<th class="no-print-col">हटाएं</th></tr>`;
+        let headerHTMLPrint = headerHTML + `</tr>`;
+
+        document.getElementById('previewThead').innerHTML = headerHTMLPreview;
+        document.getElementById('pThead').innerHTML = headerHTMLPrint;
+
+        let previewBodyHTML = '';
+        let printBodyHTML = '';
+        let totals = { pay: 0, bonus: 0, gpf: 0, nps: 0, cash: 0 };
+
+        savedEmployeeList.forEach((emp, idx) => {
+            totals.pay += emp.basicPay;
+            totals.bonus += emp.bonus;
+            totals.gpf += emp.gpf;
+            totals.nps += emp.nps;
+            totals.cash += emp.nagad;
+
+            let rowCells = `
+                <td>${idx + 1}</td>
+                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
+                <td>${emp.bankName}</td>
+                <td>${emp.accountNo}</td>
+                <td>${emp.basicPay}</td>
+                <td><b>${emp.bonus.toFixed(2)}</b></td>
+                <td>${emp.gpf.toFixed(2)}</td>
+                <td>${emp.nps.toFixed(2)}</td>
+                <td><b>${emp.nagad.toFixed(2)}</b></td>`;
+
+            printBodyHTML += `<tr>${rowCells}</tr>`;
+            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+        });
+
+        document.getElementById('previewTbody').innerHTML = previewBodyHTML;
+        document.getElementById('pTbody').innerHTML = printBodyHTML;
+
+        let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="5">कुल योग (Total):</td>
+            <td>${totals.pay}</td>
+            <td>${totals.bonus.toFixed(2)}</td>
+            <td>${totals.gpf.toFixed(2)}</td>
+            <td>${totals.nps.toFixed(2)}</td>
+            <td>${totals.cash.toFixed(2)}</td>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTML + `<td class="no-print-col"></td></tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTML + `</tr>`;
+
+        updateVerificationAndWordsSummary(totals.bonus, totals.gpf, totals.nps, totals.cash);
+    }
+
+    function renderDaTable() {
         if (savedEmployeeList.length === 0) {
             document.getElementById('previewThead').innerHTML = '';
             document.getElementById('previewTbody').innerHTML = '<tr><td colspan="11">कोई रिकॉर्ड नहीं है।</td></tr>';
@@ -897,19 +1175,23 @@
             document.getElementById('pThead').innerHTML = '';
             document.getElementById('pTbody').innerHTML = '<tr><td colspan="10">कोई रिकॉर्ड नहीं है।</td></tr>';
             document.getElementById('pTfoot').innerHTML = '';
+
+            document.getElementById('uiVerifyBox').innerHTML = '<b>कोई डाटा नहीं है।</b>';
+            document.getElementById('pSummaryBox').innerHTML = '';
             return;
         }
 
         let activeMonthNames = [];
         savedEmployeeList.forEach(emp => {
-            emp.months.forEach(m => {
-                if (!activeMonthNames.includes(m.name)) {
-                    activeMonthNames.push(m.name);
-                }
-            });
+            if(emp.months) {
+                emp.months.forEach(m => {
+                    if (!activeMonthNames.includes(m.name)) {
+                        activeMonthNames.push(m.name);
+                    }
+                });
+            }
         });
 
-        // Preview Table Header (Includes Delete Action Column)
         let headerHTMLPreview = `<tr>
             <th>क्रम सं०</th>
             <th>कर्मचारी का नाम</th>
@@ -934,13 +1216,13 @@
         let monthTotals = Array(activeMonthNames.length).fill(0);
 
         savedEmployeeList.forEach((emp, idx) => {
-            grandTotals.basic += emp.basicPay;
-            grandTotals.da += emp.daAmount;
-            grandTotals.basicPlusDa += emp.basicPlusDa;
-            grandTotals.totalArrear += emp.total;
-            grandTotals.gpf += emp.gpf;
-            grandTotals.nps += emp.nps;
-            grandTotals.nagad += emp.nagad;
+            grandTotals.basic += emp.basicPay || 0;
+            grandTotals.da += emp.daAmount || 0;
+            grandTotals.basicPlusDa += emp.basicPlusDa || 0;
+            grandTotals.totalArrear += emp.total || 0;
+            grandTotals.gpf += emp.gpf || 0;
+            grandTotals.nps += emp.nps || 0;
+            grandTotals.nagad += emp.nagad || 0;
 
             let displayName = toTitleCase(emp.name);
             if(emp.deathDate) {
@@ -952,20 +1234,20 @@
                 <td style="text-align:left;" class="print-emp-name">${displayName}</td>
                 <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
                 <td>${emp.basicPay}</td>
-                <td>${emp.daAmount.toFixed(2)}</td>
-                <td>${emp.basicPlusDa.toFixed(2)}</td>`;
+                <td>${(emp.daAmount || 0).toFixed(2)}</td>
+                <td>${(emp.basicPlusDa || 0).toFixed(2)}</td>`;
 
             activeMonthNames.forEach((mName, mIdx) => {
-                let foundMonth = emp.months.find(m => m.name === mName);
+                let foundMonth = emp.months ? emp.months.find(m => m.name === mName) : null;
                 let val = foundMonth ? foundMonth.val : 0;
                 monthTotals[mIdx] += val;
                 commonCells += `<td>${val.toFixed(2)}</td>`;
             });
 
-            commonCells += `<td><b>${emp.total.toFixed(2)}</b></td>
-                <td>${emp.gpf.toFixed(2)}</td>
-                <td>${emp.nps.toFixed(2)}</td>
-                <td><b>${emp.nagad.toFixed(2)}</b></td>`;
+            commonCells += `<td><b>${(emp.total || 0).toFixed(2)}</b></td>
+                <td>${(emp.gpf || 0).toFixed(2)}</td>
+                <td>${(emp.nps || 0).toFixed(2)}</td>
+                <td><b>${(emp.nagad || 0).toFixed(2)}</b></td>`;
 
             printBodyHTML += `<tr>${commonCells}</tr>`;
             previewBodyHTML += `<tr>${commonCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
@@ -999,6 +1281,44 @@
 
         document.getElementById('previewTfoot').innerHTML = footHTMLPreview;
         document.getElementById('pTfoot').innerHTML = footHTMLPrint;
+
+        updateVerificationAndWordsSummary(grandTotals.totalArrear, grandTotals.gpf, grandTotals.nps, grandTotals.nagad);
+    }
+
+    /* मुख्य बदलाव: समरी और विवरण को एक ही लाइन में अगल-बगल (Flex/Space-between) कर दिया गया है */
+    function updateVerificationAndWordsSummary(totalAmount, totalGpf, totalNps, totalNagad) {
+        let sumDeductionsAndCash = totalGpf + totalNps + totalNagad;
+        let wordsHindi = convertNumberToHindiWords(totalAmount);
+
+        let summaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <div style="margin-bottom: 4px;"><b>कुल देय राशि (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div><b>कुल देय राशि (शब्दों में):</b> <span style="color: var(--primary-color); font-weight: bold;">${wordsHindi}</span></div>
+                </div>
+                <div style="font-size: 13px; color: #4a5568; text-align: right; background: #edf2f7; padding: 6px 12px; border-radius: 4px; border: 1px solid #cbd5e0;">
+                    <div style="margin-bottom: 2px;"><b>भुगतान विवरण योग:</b></div>
+                    <div>(GPF: <b>₹${totalGpf.toFixed(2)}</b> + NPS: <b>₹${totalNps.toFixed(2)}</b> + नगद: <b>₹${totalNagad.toFixed(2)}</b>) = <b style="color: var(--success-color);">₹${sumDeductionsAndCash.toFixed(2)}</b></div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('uiVerifyBox').innerHTML = summaryHTML;
+
+        // प्रिंट आउट के लिए अपडेटेड समरी (एक लाइन में अगल-बगल)
+        let printSummaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="margin-bottom: 3px;"><b>कुल देय राशि (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div><b>कुल देय राशि (शब्दों में):</b> ${wordsHindi}</div>
+                </div>
+                <div style="text-align: right; border: 1px dashed #000; padding: 4px 8px;">
+                    <div style="margin-bottom: 2px;"><b>भुगतान विवरण योग:</b></div>
+                    <div>(GPF: ₹${totalGpf.toFixed(2)} + NPS: ₹${totalNps.toFixed(2)} + नगद: ₹${totalNagad.toFixed(2)}) = ₹${sumDeductionsAndCash.toFixed(2)}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('pSummaryBox').innerHTML = printSummaryHTML;
     }
 
     function printLandscapeSheet() {
@@ -1011,17 +1331,31 @@
         autoCapitalize(schInput);
         document.getElementById('pSchoolName').innerText = schInput.value || 'विद्यालय का नाम';
         
-        let startIdx = parseInt(document.getElementById('startMonth').value);
-        let count = parseInt(document.getElementById('monthCount').value);
-        let year = document.getElementById('arrearYear').value;
-        let endMonthName = allMonths[(startIdx + count - 1) % 12];
-        let startMonthName = allMonths[startIdx];
-        
-        let prevRate = document.getElementById('prevDaRate').value;
-        let newRate = document.getElementById('newDaRate').value;
+        let styleTag = document.getElementById('dynamicPrintStyle');
+        if(!styleTag) {
+            styleTag = document.createElement('style');
+            styleTag.id = 'dynamicPrintStyle';
+            document.head.appendChild(styleTag);
+        }
 
-        document.getElementById('pArrearPeriod').innerText = `${startMonthName} से ${endMonthName} (${year})`;
-        document.getElementById('pDaRateDiff').innerText = `${prevRate}% से ${newRate}%`;
+        if (currentMode === 'BONUS') {
+            styleTag.innerHTML = `@page { size: A4 portrait; margin: 8mm; }`;
+            document.getElementById('pSheetTitle').innerText = "उत्पादकता आधारित बोनस (Bonus Payment Sheet)";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>वित्तीय वर्ष:</b> ${document.getElementById('arrearYear').value}`;
+        } else {
+            styleTag.innerHTML = `@page { size: A4 landscape; margin: 8mm; }`;
+            let startIdx = parseInt(document.getElementById('startMonth').value);
+            let count = parseInt(document.getElementById('monthCount').value);
+            let year = document.getElementById('arrearYear').value;
+            let endMonthName = allMonths[(startIdx + count - 1) % 12];
+            let startMonthName = allMonths[startIdx];
+            
+            let prevRate = document.getElementById('prevDaRate').value;
+            let newRate = document.getElementById('newDaRate').value;
+
+            document.getElementById('pSheetTitle').innerText = "महंगाई भत्ता (DA) अवशेष देयक (Consolidated Arrear Sheet)";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>अवधि:</b> ${startMonthName} से ${endMonthName} (${year}) | <b>DA अंतर:</b> ${prevRate}% से ${newRate}%`;
+        }
 
         renderMasterTable();
         window.print();
@@ -1041,7 +1375,12 @@
         document.getElementById('basicPay').value = '';
         document.getElementById('joiningDate').value = '';
         document.getElementById('deathDate').value = '';
-        generateMonthInputs();
+        document.getElementById('bankName').value = '';
+        document.getElementById('accountNo').value = '';
+        
+        if (currentMode === 'DA') {
+            generateMonthInputs();
+        }
         runMasterCalculations();
         updateNextAutoId();
     }
@@ -1056,8 +1395,17 @@
             document.getElementById('empName').value = toTitleCase(localMatch.name);
             document.getElementById('designation').value = toTitleCase(localMatch.designation);
             document.getElementById('basicPay').value = localMatch.basicPay;
-            document.getElementById('joiningDate').value = localMatch.joiningDate || '';
-            document.getElementById('deathDate').value = localMatch.deathDate || '';
+
+            if (currentMode === 'BONUS') {
+                document.getElementById('bankName').value = localMatch.bankName || '';
+                document.getElementById('accountNo').value = localMatch.accountNo || '';
+                document.getElementById('anm').value = localMatch.accountType || 'GPF';
+            } else {
+                document.getElementById('joiningDate').value = localMatch.joiningDate || '';
+                document.getElementById('deathDate').value = localMatch.deathDate || '';
+                document.getElementById('anm').value = localMatch.accountType || 'GPF';
+            }
+
             runMasterCalculations();
             triggerNotificationBox('कर्मचारी रिकॉर्ड मिल गया!', true);
         } else {
@@ -1065,7 +1413,6 @@
         }
     }
 
-    // किसी भी सर्च किए गए या ID वाले कर्मचारी को हटाने का फंक्शन
     function deleteEmployeeData() {
         let empId = document.getElementById('empId').value;
         if (!empId) {
@@ -1083,7 +1430,7 @@
             let empName = savedEmployeeList[index].name;
             if (confirm(`क्या आप कर्मचारी "${empName}" (ID: ${empId}) का रिकॉर्ड हटाना चाहते हैं?`)) {
                 savedEmployeeList.splice(index, 1);
-                localStorage.setItem('arrear_saved_list', JSON.stringify(savedEmployeeList));
+                saveToLocalStorageByMode();
                 renderMasterTable();
                 resetFormFields();
                 triggerNotificationBox('कर्मचारी का रिकॉर्ड सफलतापूर्वक हटा दिया गया है!', true);
