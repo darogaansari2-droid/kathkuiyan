@@ -99,7 +99,7 @@ body {
     display: none;
 }
 
-/* MAIN CONTENT BLUR UNTIL LOGGED IN */
+/* MAIN CONTENT */
 #mainContent {
     width: 100%;
     display: flex;
@@ -123,7 +123,7 @@ body {
 /* Header container right-aligned */
 .top-inputs-container {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     margin-bottom: 15px; 
     justify-content: flex-end; 
     width: 100%;
@@ -136,19 +136,19 @@ body {
     flex-direction: column;
 }
 
-#acno-box { width: 160px; }
-#name-box { width: 250px; }
-#year-box { width: 130px; }
+#acno-box { width: 140px; }
+#name-box { width: 220px; }
+#year-box { width: 120px; }
+#lock-box { width: 180px; }
 
 .top-inputs-container label {
     display: block;
     margin-bottom: 5px;
-    font-size: 18px; 
+    font-size: 16px; 
     text-align: left;
     color: #333;
 }
 
-/* Top Inputs - Only input is White */
 .top-inputs-container input {
     width: 100%;
     text-align: left;
@@ -161,7 +161,36 @@ body {
     background-color: #ffffff; 
 }
 
-/* Horizontal Scroll Wrapper for Table Container */
+/* Lock Panel Style */
+.lock-control {
+    display: flex;
+    gap: 5px;
+}
+.lock-control input {
+    height: 38px;
+}
+.lock-btn {
+    padding: 0 10px;
+    height: 38px;
+    font-size: 12px;
+    border: 1px solid #000;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #d81b60;
+    color: #fff;
+    font-weight: bold;
+}
+.status-badge {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    margin-left: 5px;
+}
+.status-locked { background: #c62828; }
+.status-unlocked { background: #2e7d32; }
+
+/* Horizontal Scroll Wrapper */
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
@@ -175,10 +204,9 @@ body {
     grid-template-columns: repeat(7, minmax(180px, 1fr)); 
     gap: 15px;
     width: 100%;
-    min-width: 1280px; /* Ensures all 7 columns remain perfectly readable */
+    min-width: 1280px;
 }
 
-/* Columns background changed to Pink shade instead of White */
 .container > div {
     background: pink; 
     padding: 15px 10px; 
@@ -202,7 +230,6 @@ h3 {
     margin-bottom: 5px;
 }
 
-/* Rows layout */
 .form-row {
     display: flex;
     align-items: center;
@@ -221,7 +248,6 @@ label {
     color: #000000;
 }
 
-/* Textboxes inside columns - Explicitly White */
 input {
     width: 100%; 
     height: 30px; 
@@ -241,7 +267,6 @@ input:focus {
     box-shadow: 0 0 3px rgba(163, 0, 54, 0.5);
 }
 
-/* Buttons Container */
 .btnbox {
     margin-top: 10px;
     display: flex;
@@ -265,7 +290,6 @@ button {
     transition: background 0.2s;
 }
 
-/* Button Colors */
 .gpf-sheet { background: #8e44ad; } 
 .gpf-sheet:hover { background: #6c3483; }
 
@@ -284,36 +308,60 @@ button {
 .delete { background: #c62828; }
 .delete:hover { background: #b71c1c; }
 
+.clear-local { background: #d32f2f; }
+.clear-local:hover { background: #9a0007; }
+
 button:active {
     transform: scale(0.97);
 }
 
-/* Mobile Responsive Adjustments */
+/* LOCAL STORAGE DISPLAY TABLE STYLES */
+.local-table-section {
+    width: 100%;
+    margin-top: 25px;
+    background: #ffffff;
+    border: 2px solid #d81b60;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.local-table-section h3 {
+    text-align: left;
+    color: #2e7d32;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #2e7d32;
+    padding-bottom: 5px;
+}
+
+.local-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.local-data-table th, .local-data-table td {
+    border: 1px solid #ccc;
+    padding: 6px 8px;
+    text-align: center;
+}
+
+.local-data-table th {
+    background-color: #fce4ec;
+    color: #880e4f;
+}
+
+.local-data-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
 @media screen and (max-width: 768px) {
-    body {
-        padding: 8px;
-    }
-    .top-inputs-container {
-        justify-content: space-between;
-        gap: 10px;
-    }
-    #acno-box, #name-box, #year-box {
-        width: 31%;
-    }
-    .top-inputs-container label {
-        font-size: 12px;
-    }
-    .top-inputs-container input {
-        height: 34px;
-        font-size: 13px;
-    }
-    .container {
-        grid-template-columns: 1fr; /* Stack vertically on mobile */
-        min-width: 100%;
-    }
-    .table-wrapper {
-        overflow-x: visible;
-    }
+    body { padding: 8px; }
+    .top-inputs-container { justify-content: space-between; gap: 10px; }
+    #acno-box, #name-box, #year-box, #lock-box { width: 48%; }
+    .container { grid-template-columns: 1fr; min-width: 100%; }
+    .table-wrapper { overflow-x: visible; }
 }
 </style>
 </head>
@@ -341,7 +389,7 @@ button:active {
 
 <!-- MARQUEE DISPLAY PATTI -->
 <div class="marquee-container">
-    <marquee behavior="scroll" direction="left" scrollamount="10">S K I C     GPF INTEREST SOFTWARE</marquee>
+    <marquee behavior="scroll" direction="left" scrollamount="10">S K I C GPF INTEREST SOFTWARE</marquee>
 </div>
 
 <!-- TOP INPUT BAR -->
@@ -357,6 +405,14 @@ button:active {
     <div class="top-input-group" id="year-box">
         <label>Year</label>
         <input type="text" id="year" placeholder="e.g. 2018-19">
+    </div>
+    <!-- LOCK / UNLOCK CONTROLS -->
+    <div class="top-input-group" id="lock-box">
+        <label>Sheet Lock <span id="lockStatus" class="status-badge status-locked">LOCKED</span></label>
+        <div class="lock-control">
+            <input type="password" id="sheetPass" placeholder="Password">
+            <button class="lock-btn" id="lockToggleBtn" onclick="toggleSheetLock()">UNLOCK</button>
+        </div>
     </div>
 </div>
 
@@ -489,15 +545,73 @@ button:active {
     <button class="clear" onclick="clearAllData()">CLEAR ALL</button>
     <button class="update" onclick="updateData()">UPDATE</button>
     <button class="delete" onclick="deleteData()">DELETE</button>
+    <button class="clear-local" onclick="clearLocalStorageData()">DELETE LOCAL STORAGE</button>
 </div>
 </div>
 
 </div>
+</div>
+
+<!-- LOCAL STORAGE SAVED DATA DISPLAY TABLE -->
+<div class="local-table-section">
+    <h3>Local Storage Saved Records (Laser View)</h3>
+    <div style="overflow-x: auto;">
+        <table class="local-data-table">
+            <thead>
+                <tr>
+                    <th>S.No.</th>
+                    <th>Ac No / ID</th>
+                    <th>Name</th>
+                    <th>Year</th>
+                    <th>BF (t76)</th>
+                    <th>Current (t77)</th>
+                    <th>Total (t78)</th>
+                    <th>Interest (t79)</th>
+                    <th>Loan (t80)</th>
+                    <th>Grand Total (t81)</th>
+                    <th>Laser (t83)</th>
+                    <th>Diff (t84)</th>
+                </tr>
+            </thead>
+            <tbody id="localTableBody">
+                <!-- Local data rows dynamically added here -->
+            </tbody>
+        </table>
+    </div>
 </div>
 
 </div>
 
 <script>
+// SHEET LOCK SYSTEM (Password: daroga)
+const UNLOCK_PASSWORD = "daroga";
+let isSheetUnlocked = false;
+
+function toggleSheetLock() {
+    let passInput = document.getElementById("sheetPass");
+    let statusBadge = document.getElementById("lockStatus");
+    let toggleBtn = document.getElementById("lockToggleBtn");
+
+    if (!isSheetUnlocked) {
+        if (passInput.value.trim() === UNLOCK_PASSWORD) {
+            isSheetUnlocked = true;
+            statusBadge.innerText = "UNLOCKED";
+            statusBadge.className = "status-badge status-unlocked";
+            toggleBtn.innerText = "LOCK";
+            passInput.value = "";
+            alert("गूगल शीट अनलॉक हो गई है! अब सिस्टम Google Sheet मोड में काम करेगा।");
+        } else {
+            alert("गलत Password!");
+        }
+    } else {
+        isSheetUnlocked = false;
+        statusBadge.innerText = "LOCKED";
+        statusBadge.className = "status-badge status-locked";
+        toggleBtn.innerText = "UNLOCK";
+        alert("गूगल शीट लॉक हो गई है! अब सिस्टम Local Storage मोड में काम करेगा।");
+    }
+}
+
 // LOGIN CHECK FUNCTIONALITY
 function checkLogin() {
     let id = document.getElementById("loginId").value.trim();
@@ -516,11 +630,13 @@ window.addEventListener('DOMContentLoaded', () => {
     if (sessionStorage.getItem("isLoggedIn") === "true") {
         document.getElementById("loginModal").style.display = "none";
     }
+    renderLocalStorageTable();
 });
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzgnCYtgVb3wE9lnz4OSzC4szP_BGr1TKuM76WItxDG4t1rfbaoTtcZ3VNAfOnDSNg/exec";
 
 let isSearchMode = false;
+let manualEditedT53toT64 = {}; // t53-t64 Manual Edits Track karne ke liye
 
 const interestRateMaster = {
     "1956-57": 3.75, "1957-58": 3.75, "1958-59": 3.75, "1959-60": 3.75, "1960-61": 3.75, "1961-62": 3.75,
@@ -561,6 +677,17 @@ function fill(start,end){
     }
 }
 fill(1,12); fill(14,25);
+
+// Manual input tracking for t53 to t64
+for(let i=53; i<=64; i++){
+    let el = document.getElementById("t"+i);
+    if(el){
+        el.addEventListener("input", function(){
+            manualEditedT53toT64["t"+i] = true;
+            calc();
+        });
+    }
+}
 
 document.getElementById("year").addEventListener("input", function() {
     let yearVal = this.value.trim();
@@ -622,18 +749,19 @@ function calc(){
     let loanTotal=0; for(let i=40;i<=51;i++){ loanTotal += v("t"+i); }
     document.getElementById("t52").value=loanTotal;
 
-    document.getElementById("t53").value=v("t27")-v("t40")+v("t66");
-    document.getElementById("t54").value=v("t53")+v("t28")-v("t41");
-    document.getElementById("t55").value=v("t54")+v("t29")-v("t42");
-    document.getElementById("t56").value=v("t55")+v("t30")-v("t43");
-    document.getElementById("t57").value=v("t56")+v("t31")-v("t44");
-    document.getElementById("t58").value=v("t57")+v("t32")-v("t45");
-    document.getElementById("t59").value=v("t58")+v("t33")-v("t46");
-    document.getElementById("t60").value=v("t59")+v("t34")-v("t47");
-    document.getElementById("t61").value=v("t60")+v("t35")-v("t48");
-    document.getElementById("t62").value=v("t61")+v("t36")-v("t49");
-    document.getElementById("t63").value=v("t62")+v("t37")-v("t50");
-    document.getElementById("t64").value=v("t63")+v("t38")-v("t51");
+    // Auto-fill calculation for Grand Total (t53 to t64), respecting manual inputs
+    if (!manualEditedT53toT64["t53"]) document.getElementById("t53").value = v("t27") - v("t40") + v("t66");
+    if (!manualEditedT53toT64["t54"]) document.getElementById("t54").value = v("t53") + v("t28") - v("t41");
+    if (!manualEditedT53toT64["t55"]) document.getElementById("t55").value = v("t54") + v("t29") - v("t42");
+    if (!manualEditedT53toT64["t56"]) document.getElementById("t56").value = v("t55") + v("t30") - v("t43");
+    if (!manualEditedT53toT64["t57"]) document.getElementById("t57").value = v("t56") + v("t31") - v("t44");
+    if (!manualEditedT53toT64["t58"]) document.getElementById("t58").value = v("t57") + v("t32") - v("t45");
+    if (!manualEditedT53toT64["t59"]) document.getElementById("t59").value = v("t58") + v("t33") - v("t46");
+    if (!manualEditedT53toT64["t60"]) document.getElementById("t60").value = v("t59") + v("t34") - v("t47");
+    if (!manualEditedT53toT64["t61"]) document.getElementById("t61").value = v("t60") + v("t35") - v("t48");
+    if (!manualEditedT53toT64["t62"]) document.getElementById("t62").value = v("t61") + v("t36") - v("t49");
+    if (!manualEditedT53toT64["t63"]) document.getElementById("t63").value = v("t62") + v("t37") - v("t50");
+    if (!manualEditedT53toT64["t64"]) document.getElementById("t64").value = v("t63") + v("t38") - v("t51");
 
     let grand=0; for(let i=53;i<=64;i++){ grand += v("t"+i); }
     document.getElementById("t65").value=grand;
@@ -701,50 +829,44 @@ if(el82) {
     });
 }
 
-// ─── OFFLINE SYNC SYSTEM FOR LOCAL STORAGE ───
-
-async function syncOfflineData() {
-    if (!navigator.onLine) return; 
+// ─── LOCAL STORAGE TABLE RENDER ───
+function renderLocalStorageTable() {
+    let tbody = document.getElementById("localTableBody");
+    tbody.innerHTML = "";
+    let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
     
-    let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
-    if (offlineQueue.length === 0) return;
-
-    console.log("Offline data detected. Syncing with Google Sheets...");
-    let remainingQueue = [];
-    let successCount = 0;
-
-    for (let data of offlineQueue) {
-        try {
-            let res = await fetch(API_URL, { 
-                method: "POST", 
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(data) 
-            });
-            if (!res.ok) throw new Error("Server error");
-            successCount++;
-        } catch (error) {
-            remainingQueue.push(data);
-        }
+    if (localData.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='12'>Local Storage में कोई रिकॉर्ड नहीं है।</td></tr>";
+        return;
     }
 
-    localStorage.setItem("gpf_offline_queue", JSON.stringify(remainingQueue));
-    
-    if (remainingQueue.length === 0 && successCount > 0) {
-        alert("बधाई हो! इंटरनेट वापस आ गया है और ऑफ़लाइन सेव किया हुआ " + successCount + " डेटा गूगल शीट में सिंक हो गया है।");
-    } else if (remainingQueue.length > 0) {
-        console.log("Kuch data sync nahi ho paya, agli baar koshish hogi.");
-    }
+    localData.forEach((row, index) => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${row.acno || ''}</td>
+            <td>${row.empname || ''}</td>
+            <td>${row.year || ''}</td>
+            <td>${row.t76 || ''}</td>
+            <td>${row.t77 || ''}</td>
+            <td>${row.t78 || ''}</td>
+            <td>${row.t79 || ''}</td>
+            <td>${row.t80 || ''}</td>
+            <td>${row.t81 || ''}</td>
+            <td>${row.t83 || ''}</td>
+            <td>${row.t84 || ''}</td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
-window.addEventListener('online', syncOfflineData);
-window.addEventListener('load', syncOfflineData);
-
+// ─── SAVE DATA FUNCTION ───
 async function saveData(){
     let acnoInput = document.getElementById("acno");
     let yearInput = document.getElementById("year");
     let empnameInput = document.getElementById("empname");
     
-    if(!acnoInput.value || !yearInput.value) { alert("ID aur Year daalna zaroori hai!"); return; }
+    if(!acnoInput.value || !yearInput.value) { alert("ID और Year डालना जरूरी है!"); return; }
     
     let totalVal = document.getElementById("t81").value; 
     let data={ 
@@ -762,13 +884,16 @@ async function saveData(){
         t84: document.getElementById("t84").value
     };
 
-    if (!navigator.onLine) {
-        let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
-        offlineQueue.push(data);
-        localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
+    // 1. LOCKED MODE -> Purely Local Storage
+    if (!isSheetUnlocked) {
+        let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
+        localData.push(data);
+        localStorage.setItem("gpf_local_records", JSON.stringify(localData));
         
-        alert("Internet nahi hai! Data local storage me temporary save ho gaya hai. Net aane par sheet me update ho jayega.");
+        renderLocalStorageTable();
+        alert("Locked Mode: डेटा सफलतापूर्वक Local Storage में सेव हो गया है।");
         
+        // Save karne ke baad purane calculation inputs clear karke t81 ki value ko t66 (BF) me auto fill karein
         clearCalculationData(); 
         document.getElementById("t66").value = totalVal; 
         isSearchMode = false;
@@ -776,6 +901,7 @@ async function saveData(){
         return;
     }
 
+    // 2. UNLOCKED MODE -> Purely Google Sheet
     try{
         let res=await fetch(API_URL,{ 
             method:"POST", 
@@ -783,45 +909,91 @@ async function saveData(){
             body:JSON.stringify(data) 
         });
         let result = await res.text();
-        alert(result);
+        alert("Unlocked Mode: " + result);
         
         clearCalculationData(); 
-        
         document.getElementById("t66").value = totalVal; 
         isSearchMode = false;
         calc(); 
     }catch(error){ 
-        let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
-        offlineQueue.push(data);
-        localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
-        alert("Network Error: Data locally safe kar liya gaya hai."); 
-        console.error(error); 
+        alert("Network Error: Google Sheet में सेव नहीं हो पाया।"); 
     }
 }
 
+// ─── SEARCH DATA FUNCTION ───
 async function searchData(){
-    let acnoInput = document.getElementById("acno");
-    let yearInput = document.getElementById("year");
+    let acnoInput = document.getElementById("acno").value.trim();
+    let yearInput = document.getElementById("year").value.trim();
     let empnameInput = document.getElementById("empname");
 
-    if(!navigator.onLine) { alert("Data Search karne ke liye Internet zaroori hai!"); return; }
+    if(!acnoInput) { alert("ढूंढने के लिए ID / Ac No. डालें!"); return; }
 
-    if(!acnoInput.value || !yearInput.value) { alert("Dhundhne ke liye ID aur Year dono daalein!"); return; }
+    // 1. LOCKED MODE -> SEARCH ONLY IN LOCAL STORAGE
+    if (!isSheetUnlocked) {
+        let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
+        
+        // Find exact match or latest record for this Account Number
+        let matches = localData.filter(item => item.acno === acnoInput);
+        
+        if (matches.length === 0) {
+            alert("Local Storage में इस ID का कोई डेटा नहीं मिला!");
+            return;
+        }
+
+        let exactMatch = yearInput ? matches.find(item => item.year === yearInput) : null;
+        let latestMatch = matches[matches.length - 1]; // Sabse hal ka record
+
+        clearCalculationData();
+
+        if (exactMatch) {
+            // Same year ka data milne par pura form load hoga
+            empnameInput.value = exactMatch.empname || "";
+            document.getElementById("t66").value = exactMatch.t76 || "";
+            document.getElementById("t76").value = exactMatch.t76 || "";
+            document.getElementById("t77").value = exactMatch.t77 || "";
+            document.getElementById("t78").value = exactMatch.t78 || "";
+            document.getElementById("t79").value = exactMatch.t79 || "";
+            document.getElementById("t80").value = exactMatch.t80 || "";
+            document.getElementById("t81").value = exactMatch.t81 || "";
+            document.getElementById("t83").value = exactMatch.t83 || "";
+            document.getElementById("t84").value = exactMatch.t84 || "";
+            isSearchMode = true;
+            alert("Local Storage से इस साल का रिकॉर्ड मिल गया!");
+        } else {
+            // Agle year ki entry ke liye BF auto bhar jayega
+            empnameInput.value = latestMatch.empname || "";
+            if (latestMatch.t81) {
+                document.getElementById("t66").value = latestMatch.t81;
+                document.getElementById("t76").value = latestMatch.t81;
+            }
+            alert(`Local Storage से पिछला Grand Total (Year: ${latestMatch.year}) का ${latestMatch.t81} अपने आप BF (t66 & t76) में भर गया है!`);
+        }
+        
+        calc();
+        return;
+    }
+
+    // 2. UNLOCKED MODE -> SEARCH ONLY IN GOOGLE SHEET
+    if (!navigator.onLine) { alert("Google Sheet से सर्च करने के लिए इंटरनेट जरूरी है!"); return; }
+    if (!yearInput) { alert("Google Sheet में ढूंढने के लिए Year भी दर्ज करें!"); return; }
+
     try {
-        let res = await fetch(API_URL + "?action=search&acno=" + encodeURIComponent(acnoInput.value.trim()) + "&year=" + encodeURIComponent(yearInput.value.trim()));
+        let res = await fetch(API_URL + "?action=search&acno=" + encodeURIComponent(acnoInput) + "&year=" + encodeURIComponent(yearInput));
         let data = await res.json();
         
-        if(data.status == "NOT_FOUND"){ alert("Is ID aur Year ka koi data nahi mila!"); return; }
+        if(data.status == "NOT_FOUND"){ alert("Google Sheet में इस ID और Year का डेटा नहीं मिला!"); return; }
         
         clearCalculationData();
         
         empnameInput.value = data.empname || "";
-        acnoInput.value = data.acno || acnoInput.value.trim();
-        yearInput.value = data.year || yearInput.value.trim();
+        document.getElementById("acno").value = data.acno || acnoInput;
+        document.getElementById("year").value = data.year || yearInput;
         
         isSearchMode = true; 
         
-        document.getElementById("t76").value = data.t76 !== undefined ? data.t76 : ""; 
+        let bfVal = data.t76 !== undefined ? data.t76 : "";
+        document.getElementById("t66").value = bfVal;
+        document.getElementById("t76").value = bfVal; 
         document.getElementById("t77").value = data.t77 !== undefined ? data.t77 : ""; 
         document.getElementById("t78").value = data.t78 !== undefined ? data.t78 : ""; 
         document.getElementById("t79").value = data.t79 !== undefined ? data.t79 : ""; 
@@ -830,19 +1002,26 @@ async function searchData(){
         document.getElementById("t83").value = data.t83 !== undefined ? data.t83 : ""; 
         document.getElementById("t84").value = data.t84 !== undefined ? data.t84 : "";
         
-        alert("Data Successfully Loaded!");
+        calc();
+        alert("Google Sheet से Data Successfully Load हो गया!");
     } catch(error) { 
         console.error(error);
-        alert("Search Error: Sheet se data nahi aa raha hai."); 
+        alert("Search Error: Google Sheet से डेटा नहीं आ रहा है।"); 
     }
 }
 
+// ─── UPDATE DATA FUNCTION ───
 async function updateData(){
+    if (!isSheetUnlocked) {
+        alert("गूगल शीट Locked है! Local Storage के रिकॉर्ड्स को अपडेट करने के लिए फिर से Save बटन दबाएं या Sheet Unlock करें।");
+        return;
+    }
+
     let acnoInput = document.getElementById("acno");
     let yearInput = document.getElementById("year");
     let empnameInput = document.getElementById("empname");
 
-    if(!acnoInput.value || !yearInput.value) { alert("Update ke liye ID aur Year zaroori hai!"); return; }
+    if(!acnoInput.value || !yearInput.value) { alert("Update के लिए ID और Year जरूरी है!"); return; }
 
     let totalVal = document.getElementById("t81").value; 
     let data={ 
@@ -860,17 +1039,6 @@ async function updateData(){
         t84: document.getElementById("t84").value
     };
 
-    if (!navigator.onLine) {
-        let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
-        offlineQueue.push(data);
-        localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
-        alert("Internet nahi hai! Update Queue me save ho gaya hai, online aate hi sheet update ho jayegi.");
-        document.getElementById("t66").value = totalVal; 
-        isSearchMode = false;
-        calc();
-        return;
-    }
-
     try{
         let res=await fetch(API_URL,{ 
             method:"POST", 
@@ -886,14 +1054,20 @@ async function updateData(){
     }catch(error){ alert("Update Error"); }
 }
 
+// ─── DELETE DATA FUNCTION ───
 async function deleteData(){
+    if (!isSheetUnlocked) {
+        alert("गूगल शीट Locked है! Google Sheet से डेटा डिलीट करने के लिए Unlock करें। Local Storage डिलीट करने के लिए लाल बटन यूज़ करें।");
+        return;
+    }
+
     let acnoInput = document.getElementById("acno");
     let yearInput = document.getElementById("year");
 
-    if(!navigator.onLine) { alert("Data Delete karne ke liye Internet zaroori hai!"); return; }
+    if(!navigator.onLine) { alert("Data Delete करने के लिए इंटरनेट जरूरी है!"); return; }
 
-    if(!acnoInput.value || !yearInput.value) { alert("Delete karne ke liye ID aur Year daalein!"); return; }
-    if(!confirm("Kya aap sach me yeh record delete karna chahte hain?")) return;
+    if(!acnoInput.value || !yearInput.value) { alert("Delete करने के लिए ID और Year डालें!"); return; }
+    if(!confirm("क्या आप सच में गूगल शीट से यह रिकॉर्ड डिलीट करना चाहते हैं?")) return;
     try{
         let data={ action:"delete", acno:acnoInput.value.trim(), year:yearInput.value.trim() };
         let res=await fetch(API_URL,{ 
@@ -907,11 +1081,29 @@ async function deleteData(){
     }catch(error){ alert("Delete Error"); }
 }
 
+function clearLocalStorageData() {
+    let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
+    if (localData.length === 0) {
+        alert("Local Storage में कोई डेटा नहीं है!");
+        return;
+    }
+    if (confirm("क्या आप सच में Local Storage का सारा डेटा डिलीट करना चाहते हैं?")) {
+        localStorage.removeItem("gpf_local_records");
+        renderLocalStorageTable();
+        alert("Local Storage सफलतापूर्वक खाली कर दिया गया है।");
+    }
+}
+
 function openGpfSheet() {
+    if (!isSheetUnlocked) {
+        alert("गूगल शीट Locked है! देखने के लिए पहले Unlock करें।");
+        return;
+    }
     window.open("https://drive.google.com/drive/recent", '_blank');
 }
 
 function clearCalculationData(){
+    manualEditedT53toT64 = {};
     for(let i=1;i<=84;i++){
         let el = document.getElementById("t"+i);
         if(el) el.value="";
@@ -920,6 +1112,7 @@ function clearCalculationData(){
 
 function clearAllData(){
     isSearchMode = false;
+    manualEditedT53toT64 = {};
     document.getElementById("acno").value=""; 
     document.getElementById("empname").value=""; 
     document.getElementById("year").value="";
