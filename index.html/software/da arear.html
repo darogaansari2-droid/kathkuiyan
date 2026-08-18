@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DA Arrear & Bonus Master Sheet System</title>
+    <title>DA Arrear, Bonus & Remuneration Master Sheet System</title>
     <style>
         :root {
             --primary-color: #1a365d;
@@ -186,6 +186,19 @@
             gap: 12px;
         }
 
+        /* Fixed Left-to-Right 4 Column Layout for Remuneration Panel */
+        .flex-row-4-col {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .flex-row-4-col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         .month-grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -324,7 +337,7 @@
                 padding: 4px 5px;
                 text-align: center;
                 font-size: 11px;
-                line-height: 1.1;
+                line-height: 1.4;
                 word-break: break-word;
                 text-transform: capitalize;
             }
@@ -346,14 +359,13 @@
                 padding: 8px 10px;
                 margin-top: 10px;
                 font-size: 11px;
-                line-height: 1.1;
+                line-height: 1.5;
             }
         }
     </style>
 </head>
 <body>
 
-<!-- LOGIN OVERLAY -->
 <div id="loginOverlay">
     <div class="login-card">
         <h2>DA Arrear / Bonus System Login</h2>
@@ -370,7 +382,6 @@
     </div>
 </div>
 
-<!-- MAIN SOFTWARE CONTAINER -->
 <div id="mainContainer">
     <div class="header-section">
         <h1 style="margin-left: 60px;" id="mainTitleHeader">अवशेष महंगाई भत्ता (DA Arrear System)</h1>
@@ -383,7 +394,6 @@
 
     <form id="arrearForm" onsubmit="event.preventDefault();">
         
-        <!-- MODE SELECTOR SETTING -->
         <div class="panel" style="background-color: #fffaf0; border-color: #feebc8;">
             <div class="section-title" style="color: #c05621;">माड्यूल सेटिंग चयन (Select Module Mode)</div>
             <div class="grid-3-col">
@@ -392,12 +402,12 @@
                     <select id="calcMode" onchange="switchCalculationMode()" style="border: 2px solid #dd6b20;">
                         <option value="DA">DA Arrear Setting (Landscape Print)</option>
                         <option value="BONUS">Bonus Setting (Portrait Print)</option>
+                        <option value="PARISHRAMIK">Parishramik / Remuneration Bill (Landscape Print)</option>
                     </select>
                 </div>
             </div>
         </div>
 
-        <!-- 1. विद्यालय एवं सत्र विवरण -->
         <div class="panel" style="background-color: #ebf8ff;">
             <div class="section-title" style="color: #2b6cb0;">1. विद्यालय/संस्था एवं सत्र विवरण</div>
             <div class="grid-3-col">
@@ -412,7 +422,6 @@
             </div>
         </div>
 
-        <!-- 2. कर्मचारी विवरण -->
         <div class="panel">
             <div class="section-title">2. कर्मचारी विवरण एवं बैंक खाता जानकारी</div>
             <div class="grid-3-col">
@@ -422,22 +431,25 @@
                     <label for="empName">कर्मचारी का नाम (Employee Name)</label>
                     <input type="text" id="empName" required placeholder="नाम दर्ज करें" onblur="autoCapitalize(this)">
                 </div>
-                <div class="form-group">
+                <div class="form-group da-bonus-field">
                     <label for="designation">पदनाम (Designation)</label>
-                    <input type="text" id="designation" required placeholder="पदनाम दर्ज करें" onblur="autoCapitalize(this)">
+                    <input type="text" id="designation" placeholder="पदनाम दर्ज करें" onblur="autoCapitalize(this)">
                 </div>
 
-                <!-- Bonus Specific Fields -->
-                <div class="form-group bonus-only-field" style="display: none;">
+                <div class="form-group bank-info-field" style="display: none;">
                     <label for="bankName">बैंक का नाम (Bank Name)</label>
-                    <input type="text" id="bankName" placeholder="उदा० SBI / PNB" onblur="autoCapitalize(this)">
+                    <input type="text" id="bankName" placeholder="उदा० State Bank of India / PNB" onblur="autoCapitalize(this)" onchange="saveLastUsedBankInfo()">
                 </div>
-                <div class="form-group bonus-only-field" style="display: none;">
+                <div class="form-group bank-info-field" style="display: none;">
                     <label for="accountNo">खाता संख्या (Account No.)</label>
                     <input type="text" id="accountNo" placeholder="खाता संख्या दर्ज करें" style="text-transform: none;">
                 </div>
+                
+                <div class="form-group parishramik-only-field" style="display: none;">
+                    <label for="ifscCode">IFSC Code</label>
+                    <input type="text" id="ifscCode" placeholder="उदा० SBIN0001234" style="text-transform: uppercase;" onchange="saveLastUsedBankInfo()">
+                </div>
 
-                <!-- DA Specific Fields -->
                 <div class="form-group da-only-field">
                     <label for="joiningDate">कार्यभार ग्रहण तिथि (Joining Date)</label>
                     <input type="date" id="joiningDate" onchange="runMasterCalculations()">
@@ -446,9 +458,9 @@
                     <label for="deathDate" style="color: var(--danger-color);">मृत्यु तिथि (यदि बीच में हुई हो)</label>
                     <input type="date" id="deathDate" onchange="runMasterCalculations()">
                 </div>
-                <div class="form-group">
+                <div class="form-group da-bonus-field">
                     <label for="basicPay" id="payLabel">मूल वेतन (Pay)</label>
-                    <input type="number" id="basicPay" required placeholder="मूल वेतन" oninput="runMasterCalculations()">
+                    <input type="number" id="basicPay" placeholder="मूल वेतन" oninput="runMasterCalculations()">
                 </div>
                 <div class="form-group da-only-field">
                     <label for="daAmount">महंगाई</label>
@@ -461,7 +473,28 @@
             </div>
         </div>
 
-        <!-- 3. DA दर एवं अवधि -->
+        <div class="panel parishramik-only-field" style="display: none; background-color: #f0fff4; border-color: #c6f6d5;">
+            <div class="section-title" style="color: #276749;">3. परिश्रमक बिल गणना (Days & Rate Calculation)</div>
+            <div class="flex-row-4-col">
+                <div class="form-group">
+                    <label for="noOfDays">No. of Days (कार्य दिवस)</label>
+                    <input type="number" id="noOfDays" value="0" placeholder="दिन दर्ज करें" oninput="runMasterCalculations()">
+                </div>
+                <div class="form-group">
+                    <label for="ratePerDay">Rate Per Day (दर प्रति दिन)</label>
+                    <input type="number" id="ratePerDay" value="0" step="0.01" placeholder="दर दर्ज करें" oninput="runMasterCalculations()">
+                </div>
+                <div class="form-group">
+                    <label for="parishramikTotal">Total Amount (कुल योग)</label>
+                    <input type="number" id="parishramikTotal" value="0" placeholder="कुल राशि" oninput="handleManualParishramikTotal()">
+                </div>
+                <div class="form-group">
+                    <label for="otherRemark">Other (अन्य विवरण/टिप्पणी)</label>
+                    <input type="text" id="otherRemark" placeholder="अन्य रिमार्क / कोड" onblur="autoCapitalize(this)">
+                </div>
+            </div>
+        </div>
+
         <div class="panel da-only-field" style="flex-direction: column;">
             <div class="section-title">3. DA अंतर दर एवं महीने चुनिए</div>
             
@@ -520,8 +553,7 @@
             </div>
         </div>
 
-        <!-- 4. भुगतान वितरण एवं कटौती -->
-        <div class="panel">
+        <div class="panel da-bonus-field">
             <div class="section-title" id="section4Title">4. कुल योग, खाता श्रेणी एवं भुगतान वितरण</div>
             
             <div class="grid-3-col bonus-only-field" style="display: none; margin-bottom: 12px;">
@@ -577,7 +609,6 @@
             </div>
         </div>
 
-        <!-- बटन पैनल -->
         <div class="btn-panel">
             <button type="button" class="btn btn-save" onclick="saveDataToList()">Save Data</button>
             <button type="button" class="btn btn-search" onclick="searchEmployeeData()">Search</button>
@@ -588,7 +619,6 @@
         </div>
     </form>
 
-    <!-- On-Screen Preview Table -->
     <div class="panel" style="margin-top: 15px;">
         <div class="section-title" id="previewTitle">सहेजे गए सभी कर्मचारियों की सूची (Preview)</div>
         <div class="table-preview-container">
@@ -599,14 +629,11 @@
             </table>
         </div>
 
-        <!-- डेटा मिलान एवं योग शब्द विजेट -->
         <div class="summary-verify-box" id="uiVerifyBox">
-            <!-- JavaScript द्वारा भरा जाएगा -->
-        </div>
+            </div>
     </div>
 </div>
 
-<!-- PRINT FORMAT SECTION -->
 <div id="printArea">
     <div class="print-header">
         <h2 id="pSchoolName">विद्यालय का नाम</h2>
@@ -623,7 +650,6 @@
         <tfoot id="pTfoot"></tfoot>
     </table>
 
-    <!-- प्रिंट में दिखने वाला समरी एवं मिलान बॉक्स -->
     <div class="print-summary-box" id="pSummaryBox"></div>
 </div>
 
@@ -675,11 +701,29 @@
         }
     });
 
+    /* SAVE AND LOAD LAST USED BANK DETAILS */
+    function saveLastUsedBankInfo() {
+        let bank = document.getElementById('bankName').value;
+        let ifsc = document.getElementById('ifscCode').value;
+        if(bank) localStorage.setItem('last_used_bank', bank);
+        if(ifsc) localStorage.setItem('last_used_ifsc', ifsc);
+    }
+
+    function loadLastUsedBankInfo() {
+        let lastBank = localStorage.getItem('last_used_bank');
+        let lastIfsc = localStorage.getItem('last_used_ifsc');
+        if(lastBank) document.getElementById('bankName').value = lastBank;
+        if(lastIfsc) document.getElementById('ifscCode').value = lastIfsc;
+    }
+
     function switchCalculationMode() {
         currentMode = document.getElementById('calcMode').value;
 
         const daFields = document.querySelectorAll('.da-only-field');
         const bonusFields = document.querySelectorAll('.bonus-only-field');
+        const bankFields = document.querySelectorAll('.bank-info-field');
+        const daBonusFields = document.querySelectorAll('.da-bonus-field');
+        const parishramikFields = document.querySelectorAll('.parishramik-only-field');
 
         if (currentMode === 'BONUS') {
             document.getElementById('mainTitleHeader').innerText = "बोनस भुगतान रजिस्टर मास्टर (Bonus Master System)";
@@ -688,9 +732,23 @@
             
             daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bonusFields.forEach(el => el.style.display = 'flex');
+            bankFields.forEach(el => el.style.display = 'flex');
+            daBonusFields.forEach(el => el.style.display = 'flex');
+            parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
 
             let cashOpt = document.querySelector('#anm option[value="CASH"]');
             if(cashOpt) cashOpt.style.display = 'none';
+
+        } else if (currentMode === 'PARISHRAMIK') {
+            document.getElementById('mainTitleHeader').innerText = "परिश्रमिक बिल रजिस्टर (Remuneration Master System)";
+            document.getElementById('btnPrintLabel').innerText = "Print Remuneration Sheet (Landscape)";
+            document.getElementById('previewTitle').innerText = "सहेजे गए कर्मचारियों का परिश्रमिक विवरण (Remuneration List)";
+
+            daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bankFields.forEach(el => el.style.display = 'flex');
+            parishramikFields.forEach(el => el.style.display = 'block'); // Display block for container
 
         } else {
             document.getElementById('mainTitleHeader').innerText = "अवशेष महंगाई भत्ता (DA Arrear Master Sheet System)";
@@ -699,6 +757,9 @@
             
             daFields.forEach(el => el.style.display = 'flex');
             bonusFields.forEach(el => el.style.display = 'none');
+            bankFields.forEach(el => el.style.display = 'none');
+            daBonusFields.forEach(el => el.style.display = 'flex');
+            parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
 
             let cashOpt = document.querySelector('#anm option[value="CASH"]');
             if(cashOpt) cashOpt.style.display = 'block';
@@ -725,6 +786,14 @@
             return;
         }
 
+        if (currentMode === 'PARISHRAMIK') {
+            let days = parseFloat(document.getElementById('noOfDays').value) || 0;
+            let rate = parseFloat(document.getElementById('ratePerDay').value) || 0;
+            let calcTotal = Math.round(days * rate);
+            document.getElementById('parishramikTotal').value = calcTotal;
+            return;
+        }
+
         let prevRate = parseFloat(document.getElementById('prevDaRate').value) || 0;
         let newRate = parseFloat(document.getElementById('newDaRate').value) || 0;
         let diffRate = newRate - prevRate;
@@ -741,6 +810,10 @@
 
         updateDynamicMonthValues(monthlyDifference);
         calculateGrandTotalOnly();
+    }
+
+    function handleManualParishramikTotal() {
+        // Allows manual editing of total amount
     }
 
     function calculateBonusLogic() {
@@ -772,7 +845,7 @@
     }
 
     function generateMonthInputs() {
-        if(currentMode === 'BONUS') return;
+        if(currentMode === 'BONUS' || currentMode === 'PARISHRAMIK') return;
 
         let startIdx = parseInt(document.getElementById('startMonth').value);
         let count = parseInt(document.getElementById('monthCount').value);
@@ -934,7 +1007,7 @@
         return str ? str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : '';
     }
 
-    /* संख्या को हिन्दी शब्दों में बदलने वाला फ़ंक्शन */
+    /* Convert numbers to Hindi Words */
     function convertNumberToHindiWords(num) {
         num = Math.round(num);
         if (num === 0) return "शून्य रुपये मात्र";
@@ -986,14 +1059,35 @@
             return;
         }
 
-        let designationInput = document.getElementById('designation');
-        autoCapitalize(designationInput);
-
         let empObject = {};
 
-        if (currentMode === 'BONUS') {
+        if (currentMode === 'PARISHRAMIK') {
             let bankInput = document.getElementById('bankName');
             autoCapitalize(bankInput);
+            let otherInput = document.getElementById('otherRemark');
+            autoCapitalize(otherInput);
+
+            saveLastUsedBankInfo();
+
+            empObject = {
+                id: String(empId),
+                mode: 'PARISHRAMIK',
+                name: toTitleCase(empName),
+                bankName: bankInput.value || '-',
+                accountNo: document.getElementById('accountNo').value || '-',
+                ifscCode: (document.getElementById('ifscCode').value || '-').toUpperCase(),
+                noOfDays: parseFloat(document.getElementById('noOfDays').value) || 0,
+                ratePerDay: parseFloat(document.getElementById('ratePerDay').value) || 0,
+                total: parseFloat(document.getElementById('parishramikTotal').value) || 0,
+                other: otherInput.value || '-'
+            };
+        } else if (currentMode === 'BONUS') {
+            let bankInput = document.getElementById('bankName');
+            autoCapitalize(bankInput);
+            let designationInput = document.getElementById('designation');
+            autoCapitalize(designationInput);
+
+            saveLastUsedBankInfo();
 
             empObject = {
                 id: String(empId),
@@ -1011,6 +1105,8 @@
                 accountType: document.getElementById('anm').value
             };
         } else {
+            let designationInput = document.getElementById('designation');
+            autoCapitalize(designationInput);
             let monthInputs = document.querySelectorAll('.month-input');
             let monthData = [];
             monthInputs.forEach(input => {
@@ -1053,12 +1149,17 @@
     }
 
     function saveToLocalStorageByMode() {
-        let storageKey = (currentMode === 'BONUS') ? 'bonus_saved_list' : 'arrear_saved_list';
+        let storageKey = 'arrear_saved_list';
+        if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
+        if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
         localStorage.setItem(storageKey, JSON.stringify(savedEmployeeList));
     }
 
     function loadLocalStorageData() {
-        let storageKey = (currentMode === 'BONUS') ? 'bonus_saved_list' : 'arrear_saved_list';
+        let storageKey = 'arrear_saved_list';
+        if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
+        if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
+        
         let stored = localStorage.getItem(storageKey);
         if (stored) {
             savedEmployeeList = JSON.parse(stored);
@@ -1069,9 +1170,15 @@
     }
 
     function clearLocalStorageData() {
-        let modeText = (currentMode === 'BONUS') ? 'बोनस' : 'एरियर';
+        let modeText = 'एरियर';
+        if (currentMode === 'BONUS') modeText = 'बोनस';
+        if (currentMode === 'PARISHRAMIK') modeText = 'परिश्रमिक';
+
         if (confirm(`क्या आप सहेजी गई पूरी ${modeText} सूची हटाना चाहते हैं?`)) {
-            let storageKey = (currentMode === 'BONUS') ? 'bonus_saved_list' : 'arrear_saved_list';
+            let storageKey = 'arrear_saved_list';
+            if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
+            if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
+            
             localStorage.removeItem(storageKey);
             savedEmployeeList = [];
             renderMasterTable();
@@ -1083,9 +1190,125 @@
     function renderMasterTable() {
         if (currentMode === 'BONUS') {
             renderBonusTable();
+        } else if (currentMode === 'PARISHRAMIK') {
+            renderParishramikTable();
         } else {
             renderDaTable();
         }
+    }
+
+    function renderParishramikTable() {
+        if (savedEmployeeList.length === 0) {
+            let emptyHTML = '<tr><td colspan="10">कोई परिश्रमिक रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('previewThead').innerHTML = '';
+            document.getElementById('previewTbody').innerHTML = emptyHTML;
+            document.getElementById('previewTfoot').innerHTML = '';
+
+            document.getElementById('pThead').innerHTML = '';
+            document.getElementById('pTbody').innerHTML = emptyHTML;
+            document.getElementById('pTfoot').innerHTML = '';
+
+            document.getElementById('uiVerifyBox').innerHTML = '<b>कोई डाटा नहीं है।</b>';
+            document.getElementById('pSummaryBox').innerHTML = '';
+            return;
+        }
+
+        let headerHTML = `<tr>
+            <th>Sr. No.</th>
+            <th>Emp Name</th>
+            <th>Bank Name</th>
+            <th>Account No.</th>
+            <th>IFSC Code</th>
+            <th>No. of Days</th>
+            <th>Rate Per Day</th>
+            <th>Total</th>
+            <th>Other</th>`;
+
+        let headerHTMLPreview = headerHTML + `<th class="no-print-col">हटाएं</th></tr>`;
+        let headerHTMLPrint = headerHTML + `</tr>`;
+
+        document.getElementById('previewThead').innerHTML = headerHTMLPreview;
+        document.getElementById('pThead').innerHTML = headerHTMLPrint;
+
+        let previewBodyHTML = '';
+        let printBodyHTML = '';
+        let totals = { days: 0, totalAmount: 0, sbiTotal: 0, otherTotal: 0 };
+
+        savedEmployeeList.forEach((emp, idx) => {
+            totals.days += (emp.noOfDays || 0);
+            totals.totalAmount += (emp.total || 0);
+
+            let bankLower = (emp.bankName || '').toLowerCase();
+            let ifscLower = (emp.ifscCode || '').toLowerCase();
+            if (bankLower.includes('state bank') || bankLower.includes('sbi') || ifscLower.startsWith('sbin')) {
+                totals.sbiTotal += (emp.total || 0);
+            } else {
+                totals.otherTotal += (emp.total || 0);
+            }
+
+            let rowCells = `
+                <td>${idx + 1}</td>
+                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td>${emp.bankName}</td>
+                <td>${emp.accountNo}</td>
+                <td style="text-transform:uppercase;">${emp.ifscCode}</td>
+                <td>${emp.noOfDays}</td>
+                <td>${emp.ratePerDay.toFixed(2)}</td>
+                <td><b>${emp.total.toFixed(2)}</b></td>
+                <td>${emp.other || '-'}</td>`;
+
+            printBodyHTML += `<tr>${rowCells}</tr>`;
+            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+        });
+
+        document.getElementById('previewTbody').innerHTML = previewBodyHTML;
+        document.getElementById('pTbody').innerHTML = printBodyHTML;
+
+        let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="5">कुल योग (Total):</td>
+            <td>${totals.days}</td>
+            <td>-</td>
+            <td>${totals.totalAmount.toFixed(2)}</td>
+            <td>-</td>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTML + `<td class="no-print-col"></td></tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTML + `</tr>`;
+
+        updateParishramikSummaryBox(totals.days, totals.totalAmount, totals.sbiTotal, totals.otherTotal);
+    }
+
+    function updateParishramikSummaryBox(totalDays, totalAmount, sbiTotal, otherTotal) {
+        let wordsHindi = convertNumberToHindiWords(totalAmount);
+        let matchSum = sbiTotal + otherTotal;
+
+        let summaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <div style="margin-bottom: 4px;"><b>कुल कार्य दिवस (Total Days):</b> ${totalDays} | <b>कुल देय राशि (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div><b>कुल देय राशि (शब्दों में):</b> <span style="color: var(--primary-color); font-weight: bold;">${wordsHindi}</span></div>
+                </div>
+                <div style="font-size: 13px; color: #4a5568; text-align: right; background: #edf2f7; padding: 6px 12px; border-radius: 4px; border: 1px solid #cbd5e0;">
+                    <div style="margin-bottom: 2px;"><b>बैंक मिलान विवरण (Bank Wise Summary):</b></div>
+                    <div>(State Bank of India: <b>₹${sbiTotal.toFixed(2)}</b> + Other Banks: <b>₹${otherTotal.toFixed(2)}</b>) = <b style="color: var(--success-color);">₹${matchSum.toFixed(2)}</b></div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('uiVerifyBox').innerHTML = summaryHTML;
+
+        let printSummaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="margin-bottom: 3px;"><b>कुल कार्य दिवस:</b> ${totalDays} | <b>कुल देय राशि (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div><b>कुल देय राशि (शब्दों में):</b> ${wordsHindi}</div>
+                </div>
+                <div style="text-align: right; border: 1px dashed #000; padding: 4px 8px;">
+                    <div style="margin-bottom: 2px;"><b>बैंक मिलान विवरण:</b></div>
+                    <div>(SBI Total: ₹${sbiTotal.toFixed(2)} + Other Bank Total: ₹${otherTotal.toFixed(2)}) = ₹${matchSum.toFixed(2)}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('pSummaryBox').innerHTML = printSummaryHTML;
     }
 
     function renderBonusTable() {
@@ -1285,7 +1508,6 @@
         updateVerificationAndWordsSummary(grandTotals.totalArrear, grandTotals.gpf, grandTotals.nps, grandTotals.nagad);
     }
 
-    /* मुख्य बदलाव: समरी और विवरण को एक ही लाइन में अगल-बगल (Flex/Space-between) कर दिया गया है */
     function updateVerificationAndWordsSummary(totalAmount, totalGpf, totalNps, totalNagad) {
         let sumDeductionsAndCash = totalGpf + totalNps + totalNagad;
         let wordsHindi = convertNumberToHindiWords(totalAmount);
@@ -1305,7 +1527,6 @@
 
         document.getElementById('uiVerifyBox').innerHTML = summaryHTML;
 
-        // प्रिंट आउट के लिए अपडेटेड समरी (एक लाइन में अगल-बगल)
         let printSummaryHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
@@ -1342,6 +1563,10 @@
             styleTag.innerHTML = `@page { size: A4 portrait; margin: 8mm; }`;
             document.getElementById('pSheetTitle').innerText = "उत्पादकता आधारित बोनस (Bonus Payment Sheet)";
             document.getElementById('pSubHeaderDetails').innerHTML = `<b>वित्तीय वर्ष:</b> ${document.getElementById('arrearYear').value}`;
+        } else if (currentMode === 'PARISHRAMIK') {
+            styleTag.innerHTML = `@page { size: A4 landscape; margin: 8mm; }`;
+            document.getElementById('pSheetTitle').innerText = "परिश्रमिक भुगतान देयक (Remuneration Payment Sheet)";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>वित्तीय वर्ष:</b> ${document.getElementById('arrearYear').value}`;
         } else {
             styleTag.innerHTML = `@page { size: A4 landscape; margin: 8mm; }`;
             let startIdx = parseInt(document.getElementById('startMonth').value);
@@ -1375,9 +1600,15 @@
         document.getElementById('basicPay').value = '';
         document.getElementById('joiningDate').value = '';
         document.getElementById('deathDate').value = '';
-        document.getElementById('bankName').value = '';
         document.getElementById('accountNo').value = '';
+        document.getElementById('noOfDays').value = '0';
+        document.getElementById('ratePerDay').value = '0';
+        document.getElementById('parishramikTotal').value = '0';
+        document.getElementById('otherRemark').value = '';
         
+        /* Auto remember bank & IFSC */
+        loadLastUsedBankInfo();
+
         if (currentMode === 'DA') {
             generateMonthInputs();
         }
@@ -1393,14 +1624,24 @@
         if (localMatch) {
             document.getElementById('empId').value = localMatch.id;
             document.getElementById('empName').value = toTitleCase(localMatch.name);
-            document.getElementById('designation').value = toTitleCase(localMatch.designation);
-            document.getElementById('basicPay').value = localMatch.basicPay;
 
-            if (currentMode === 'BONUS') {
+            if (currentMode === 'PARISHRAMIK') {
+                document.getElementById('bankName').value = localMatch.bankName || '';
+                document.getElementById('accountNo').value = localMatch.accountNo || '';
+                document.getElementById('ifscCode').value = localMatch.ifscCode || '';
+                document.getElementById('noOfDays').value = localMatch.noOfDays || 0;
+                document.getElementById('ratePerDay').value = localMatch.ratePerDay || 0;
+                document.getElementById('parishramikTotal').value = localMatch.total || 0;
+                document.getElementById('otherRemark').value = localMatch.other || '';
+            } else if (currentMode === 'BONUS') {
+                document.getElementById('designation').value = toTitleCase(localMatch.designation);
+                document.getElementById('basicPay').value = localMatch.basicPay;
                 document.getElementById('bankName').value = localMatch.bankName || '';
                 document.getElementById('accountNo').value = localMatch.accountNo || '';
                 document.getElementById('anm').value = localMatch.accountType || 'GPF';
             } else {
+                document.getElementById('designation').value = toTitleCase(localMatch.designation);
+                document.getElementById('basicPay').value = localMatch.basicPay;
                 document.getElementById('joiningDate').value = localMatch.joiningDate || '';
                 document.getElementById('deathDate').value = localMatch.deathDate || '';
                 document.getElementById('anm').value = localMatch.accountType || 'GPF';
