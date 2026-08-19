@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DA Arrear, Bonus & Remuneration Master Sheet System</title>
+    <title>DA Arrear, Bonus, NPS & Remuneration Master Sheet System</title>
     <style>
         :root {
             --primary-color: #1a365d;
@@ -182,11 +182,16 @@
 
         .grid-4-col {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
         }
 
-        /* Fixed Left-to-Right 4 Column Layout for Remuneration Panel */
+        @media (max-width: 768px) {
+            .grid-4-col {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         .flex-row-4-col {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -247,6 +252,8 @@
         .btn-print { background-color: #805ad5; }
         .btn-print:hover { background-color: #6b46c1; }
         .btn-reset-list { background-color: #718096; }
+        .btn-excel { background-color: #276749; }
+        .btn-excel:hover { background-color: #1c4530; }
 
         .btn-tbl-del {
             background-color: var(--danger-color);
@@ -283,7 +290,6 @@
             text-transform: none;
         }
 
-        /* DATA SUMMARY & VERIFICATION BOX */
         .summary-verify-box {
             margin-top: 15px;
             background: #f7fafc;
@@ -368,7 +374,7 @@
 
 <div id="loginOverlay">
     <div class="login-card">
-        <h2>DA Arrear / Bonus System Login</h2>
+        <h2>DA Arrear / Bonus / NPS System Login</h2>
         <div class="login-form-group">
             <label for="usernameInput">Login ID</label>
             <input type="password" id="usernameInput" placeholder="Login ID दर्ज करें" style="text-transform: none;">
@@ -402,6 +408,7 @@
                     <select id="calcMode" onchange="switchCalculationMode()" style="border: 2px solid #dd6b20;">
                         <option value="DA">DA Arrear Setting (Landscape Print)</option>
                         <option value="BONUS">Bonus Setting (Portrait Print)</option>
+                        <option value="NPS_FORMAT">NPS Schedule (Landscape Print)</option>
                         <option value="PARISHRAMIK">Parishramik / Remuneration Bill (Landscape Print)</option>
                     </select>
                 </div>
@@ -422,6 +429,45 @@
             </div>
         </div>
 
+        <!-- NPS PERSISTENT INPUTS PANEL -->
+        <div class="panel nps-only-field" style="display: none; background-color: #f0f4fe; border-color: #bee3f8;">
+            <div class="section-title" style="color: #2b6cb0;">NPS सामान्य विवरण (Persistent Details)</div>
+            <div class="grid-4-col">
+                <div class="form-group">
+                    <label for="ddoRegNo">DDO Reg. No.</label>
+                    <input type="text" id="ddoRegNo" placeholder="DDO Reg. No." style="text-transform: uppercase;">
+                </div>
+                <div class="form-group">
+                    <label for="payMonth">Pay Month</label>
+                    <select id="payMonth">
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="payYear">Pay Year</label>
+                    <input type="text" id="payYear" value="2026" placeholder="2026">
+                </div>
+                <div class="form-group">
+                    <label for="contType">Cont. Type</label>
+                    <select id="contType">
+                        <option value="Regular">Regular</option>
+                        <option value="Arrear">Arrear</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <div class="panel">
             <div class="section-title">2. कर्मचारी विवरण एवं बैंक खाता जानकारी</div>
             <div class="grid-3-col">
@@ -431,6 +477,12 @@
                     <label for="empName">कर्मचारी का नाम (Employee Name)</label>
                     <input type="text" id="empName" required placeholder="नाम दर्ज करें" onblur="autoCapitalize(this)">
                 </div>
+
+                <div class="form-group nps-only-field" style="display: none;">
+                    <label for="pranNo">PRAN No.</label>
+                    <input type="text" id="pranNo" placeholder="PRAN Number दर्ज करें" style="text-transform: uppercase;">
+                </div>
+
                 <div class="form-group da-bonus-field">
                     <label for="designation">पदनाम (Designation)</label>
                     <input type="text" id="designation" placeholder="पदनाम दर्ज करें" onblur="autoCapitalize(this)">
@@ -458,17 +510,48 @@
                     <label for="deathDate" style="color: var(--danger-color);">मृत्यु तिथि (यदि बीच में हुई हो)</label>
                     <input type="date" id="deathDate" onchange="runMasterCalculations()">
                 </div>
-                <div class="form-group da-bonus-field">
-                    <label for="basicPay" id="payLabel">मूल वेतन (Pay)</label>
+
+                <div class="form-group da-bonus-nps-field">
+                    <label for="basicPay" id="payLabel">मूल वेतन (Basic Pay)</label>
                     <input type="number" id="basicPay" placeholder="मूल वेतन" oninput="runMasterCalculations()">
                 </div>
-                <div class="form-group da-only-field">
-                    <label for="daAmount">महंगाई</label>
-                    <input type="number" id="daAmount" readonly placeholder="0.00">
+
+                <!-- NPS DA RATE (%) FIELD -->
+                <div class="form-group nps-only-field" style="display: none;">
+                    <label for="npsDaRate">महंगाई प्रतिशत (DA %)</label>
+                    <input type="number" id="npsDaRate" value="60" step="0.01" placeholder="उदा० 60" oninput="runMasterCalculations()">
+                </div>
+
+                <div class="form-group da-nps-field">
+                    <label for="daAmount">महंगाई राशि (DA Amount)</label>
+                    <input type="number" id="daAmount" placeholder="0.00" oninput="runMasterCalculations()">
                 </div>
                 <div class="form-group da-only-field">
                     <label for="basicPlusDa">योग (मूल+DA)</label>
                     <input type="number" id="basicPlusDa" readonly placeholder="0.00">
+                </div>
+            </div>
+        </div>
+
+        <!-- NPS CALCULATION PANEL -->
+        <div class="panel nps-only-field" style="display: none; background-color: #fffaf0; border-color: #feebc8;">
+            <div class="section-title" style="color: #c05621;">3. NPS अंशदान गणना एवं रिमार्क</div>
+            <div class="grid-4-col">
+                <div class="form-group">
+                    <label for="subsContry">Subs. Contry. (10%)</label>
+                    <input type="number" id="subsContry" placeholder="10% Contribution" oninput="handleManualNpsSubs()">
+                </div>
+                <div class="form-group">
+                    <label for="govContry">Gov. Contry. (x1.4)</label>
+                    <input type="number" id="govContry" placeholder="Gov Contribution">
+                </div>
+                <div class="form-group">
+                    <label for="arearRemark">Arear Remark</label>
+                    <input type="text" id="arearRemark" placeholder="उदा० Arrear July to Oct">
+                </div>
+                <div class="form-group">
+                    <label for="npsRemark">Remark</label>
+                    <input type="text" id="npsRemark" placeholder="टिप्पणी दर्ज करें">
                 </div>
             </div>
         </div>
@@ -486,7 +569,7 @@
                 </div>
                 <div class="form-group">
                     <label for="parishramikTotal">Total Amount (कुल योग)</label>
-                    <input type="number" id="parishramikTotal" value="0" placeholder="कुल राशि" oninput="handleManualParishramikTotal()">
+                    <input type="number" id="parishramikTotal" value="0" placeholder="कुल राशि">
                 </div>
                 <div class="form-group">
                     <label for="otherRemark">Other (अन्य विवरण/टिप्पणी)</label>
@@ -573,7 +656,7 @@
                     <input type="number" id="total" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="anm">खाता श्रेणी (GPF / NPS)</label>
+                    <label for="anm" id="anmLabel">खाता श्रेणी (GPF / NPS)</label>
                     <select id="anm" onchange="toggleDeductionMode()">
                         <option value="GPF">जी.पी.एफ (GPF)</option>
                         <option value="NPS">एन.पी.एस (NPS)</option>
@@ -614,6 +697,11 @@
             <button type="button" class="btn btn-search" onclick="searchEmployeeData()">Search</button>
             <button type="button" class="btn btn-delete-item" onclick="deleteEmployeeData()">Delete Record</button>
             <button type="button" class="btn btn-print" onclick="printLandscapeSheet()" id="btnPrintLabel">Print Sheet</button>
+            
+            <!-- EXCEL COPY & EXPORT BUTTONS FOR NPS AND PARISHRAMIK -->
+            <button type="button" class="btn btn-excel excel-btn-field" style="display: none;" id="btnCopyExcel" onclick="copyTableToClipboard()">Copy for Excel</button>
+            <button type="button" class="btn btn-excel excel-btn-field" style="display: none;" id="btnExportCsv" onclick="exportToCsv()">Export Excel (.csv)</button>
+
             <button type="button" class="btn btn-clear" onclick="resetFormFields()">Clear Form</button>
             <button type="button" class="btn btn-reset-list" onclick="clearLocalStorageData()">Clear Saved List</button>
         </div>
@@ -621,7 +709,7 @@
 
     <div class="panel" style="margin-top: 15px;">
         <div class="section-title" id="previewTitle">सहेजे गए सभी कर्मचारियों की सूची (Preview)</div>
-        <div class="table-preview-container">
+        <div class="table-preview-container" id="previewTableContainer">
             <table class="preview-table">
                 <thead id="previewThead"></thead>
                 <tbody id="previewTbody"></tbody>
@@ -630,7 +718,7 @@
         </div>
 
         <div class="summary-verify-box" id="uiVerifyBox">
-            </div>
+        </div>
     </div>
 </div>
 
@@ -701,7 +789,6 @@
         }
     });
 
-    /* SAVE AND LOAD LAST USED BANK DETAILS */
     function saveLastUsedBankInfo() {
         let bank = document.getElementById('bankName').value;
         let ifsc = document.getElementById('ifscCode').value;
@@ -723,7 +810,11 @@
         const bonusFields = document.querySelectorAll('.bonus-only-field');
         const bankFields = document.querySelectorAll('.bank-info-field');
         const daBonusFields = document.querySelectorAll('.da-bonus-field');
+        const daBonusNpsFields = document.querySelectorAll('.da-bonus-nps-field');
+        const daNpsFields = document.querySelectorAll('.da-nps-field');
         const parishramikFields = document.querySelectorAll('.parishramik-only-field');
+        const npsFields = document.querySelectorAll('.nps-only-field');
+        const excelBtnFields = document.querySelectorAll('.excel-btn-field');
 
         if (currentMode === 'BONUS') {
             document.getElementById('mainTitleHeader').innerText = "बोनस भुगतान रजिस्टर मास्टर (Bonus Master System)";
@@ -734,10 +825,33 @@
             bonusFields.forEach(el => el.style.display = 'flex');
             bankFields.forEach(el => el.style.display = 'flex');
             daBonusFields.forEach(el => el.style.display = 'flex');
+            daBonusNpsFields.forEach(el => el.style.display = 'flex');
+            daNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            excelBtnFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
 
             let cashOpt = document.querySelector('#anm option[value="CASH"]');
             if(cashOpt) cashOpt.style.display = 'none';
+
+        } else if (currentMode === 'NPS_FORMAT') {
+            document.getElementById('mainTitleHeader').innerText = "NPS Schedule Master System (Landscape Print)";
+            document.getElementById('btnPrintLabel').innerText = "Print NPS Schedule (Landscape)";
+            document.getElementById('previewTitle').innerText = "सहेजे गए NPS कर्मचारियों का विवरण (NPS Schedule List)";
+
+            daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bankFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            
+            daBonusNpsFields.forEach(el => el.style.display = 'flex');
+            daNpsFields.forEach(el => el.style.display = 'flex');
+            npsFields.forEach(el => el.style.display = 'flex');
+
+            // Excel buttons setup for NPS
+            excelBtnFields.forEach(el => el.style.display = 'inline-block');
+            document.getElementById('btnCopyExcel').innerText = "Copy NPS for Excel";
 
         } else if (currentMode === 'PARISHRAMIK') {
             document.getElementById('mainTitleHeader').innerText = "परिश्रमिक बिल रजिस्टर (Remuneration Master System)";
@@ -747,8 +861,15 @@
             daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             daBonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bankFields.forEach(el => el.style.display = 'flex');
-            parishramikFields.forEach(el => el.style.display = 'block'); // Display block for container
+            parishramikFields.forEach(el => el.style.display = 'block');
+
+            // Excel buttons setup for Parishramik
+            excelBtnFields.forEach(el => el.style.display = 'inline-block');
+            document.getElementById('btnCopyExcel').innerText = "Copy Parishramik for Excel";
 
         } else {
             document.getElementById('mainTitleHeader').innerText = "अवशेष महंगाई भत्ता (DA Arrear Master Sheet System)";
@@ -759,7 +880,11 @@
             bonusFields.forEach(el => el.style.display = 'none');
             bankFields.forEach(el => el.style.display = 'none');
             daBonusFields.forEach(el => el.style.display = 'flex');
+            daBonusNpsFields.forEach(el => el.style.display = 'flex');
+            daNpsFields.forEach(el => el.style.display = 'flex');
             parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            excelBtnFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
 
             let cashOpt = document.querySelector('#anm option[value="CASH"]');
             if(cashOpt) cashOpt.style.display = 'block';
@@ -783,6 +908,11 @@
     function runMasterCalculations() {
         if (currentMode === 'BONUS') {
             calculateBonusLogic();
+            return;
+        }
+
+        if (currentMode === 'NPS_FORMAT') {
+            calculateNpsScheduleLogic();
             return;
         }
 
@@ -812,8 +942,25 @@
         calculateGrandTotalOnly();
     }
 
-    function handleManualParishramikTotal() {
-        // Allows manual editing of total amount
+    function calculateNpsScheduleLogic() {
+        let basic = parseFloat(document.getElementById('basicPay').value) || 0;
+        let daRate = parseFloat(document.getElementById('npsDaRate').value) || 0;
+        
+        let computedDa = Math.round((basic * daRate) / 100);
+        document.getElementById('daAmount').value = computedDa;
+
+        let totalBase = basic + computedDa;
+        let subs = Math.round(totalBase * 0.10);
+        let gov = Math.round(subs * 1.4);
+
+        document.getElementById('subsContry').value = subs;
+        document.getElementById('govContry').value = gov;
+    }
+
+    function handleManualNpsSubs() {
+        let subs = parseFloat(document.getElementById('subsContry').value) || 0;
+        let gov = Math.round(subs * 1.4);
+        document.getElementById('govContry').value = gov;
     }
 
     function calculateBonusLogic() {
@@ -845,7 +992,7 @@
     }
 
     function generateMonthInputs() {
-        if(currentMode === 'BONUS' || currentMode === 'PARISHRAMIK') return;
+        if(currentMode === 'BONUS' || currentMode === 'PARISHRAMIK' || currentMode === 'NPS_FORMAT') return;
 
         let startIdx = parseInt(document.getElementById('startMonth').value);
         let count = parseInt(document.getElementById('monthCount').value);
@@ -943,6 +1090,8 @@
             return;
         }
 
+        if(currentMode === 'NPS_FORMAT') return;
+
         let selection = document.getElementById('anm').value;
         let gpfSection = document.getElementById('gpfSplitSection');
         let gpfGroup = document.getElementById('gpfGroup');
@@ -1007,7 +1156,6 @@
         return str ? str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : '';
     }
 
-    /* Convert numbers to Hindi Words */
     function convertNumberToHindiWords(num) {
         num = Math.round(num);
         if (num === 0) return "शून्य रुपये मात्र";
@@ -1016,36 +1164,44 @@
                        "ग्यारह", "बारह", "तेरह", "चौदह", "पंद्रह", "सोलह", "सत्रह", "अठारह", "उन्नीस"];
         const tens = ["", "", "बीस", "तीस", "चालिस", "पचास", "साठ", "सत्तर", "अस्सी", "नब्बे"];
 
-        function getBelowHundred(n) {
+        const compoundNumbers = {
+            21: "इक्कीस", 22: "बाईस", 23: "तेईस", 24: "चौबीस", 25: "पच्चीस", 26: "छब्बीस", 27: "सत्ताईस", 28: "अट्ठाईस", 29: "उनतीस",
+            30: "तीस", 31: "इकत्तीस", 32: "बत्तीस", 33: "तैंतीस", 34: "चौंतीस", 35: "पैंतीस", 36: "छत्तीस", 37: "सैंतीस", 38: "अड़तीस", 39: "उनतालीस",
+            40: "चालिस", 41: "इकतालीस", 42: "बयालीस", 43: "तैंतालीस", 44: "चौंतालीस", 45: "पैंतालीस", 46: "छियालीस", 47: "सैंतीस", 48: "अड़तालीस", 49: "उनचास",
+            50: "पचास", 51: "इक्यावन", 52: "बावन", 53: "तिरपन", 54: "चौवन", 55: "पचपन", 56: "छप्पन", 57: "सत्तावन", 58: "अट्ठावन", 59: "उनसठ",
+            60: "साठ", 61: "इकसठ", 62: "बासठ", 63: "तिरसठ", 64: "चौंसठ", 65: "पैंसठ", 66: "छियासठ", 67: "सरसठ", 68: "अड़सठ", 69: "उनहत्तर",
+            70: "सत्तर", 71: "इकहत्तर", 72: "बहत्तर", 73: "तिहत्तर", 74: "चौहत्तर", 75: "पचहत्तर", 76: "छियत्तर", 77: "सतहत्तर", 78: "अठहत्तर", 79: "उनासी",
+            80: "अस्सी", 81: "इक्यासी", 82: "ब्यासी", 83: "तिरासी", 84: "चौरासी", 85: "पचासी", 86: "छियासी", 87: "सत्तासी", 88: "अट्टासी", 89: "नवासी",
+            90: "नब्बे", 91: "इक्यानवे", 92: "बानवे", 93: "तिरानवे", 94: "चौरानवे", 95: "पंचानवे", 96: "छानवे", 97: "संतानवे", 98: "अट्ठानवे", 99: "निन्यानवे"
+        };
+
+        function getTwoDigitWord(n) {
             if (n < 20) return units[n];
-            let tenPart = Math.floor(n / 10);
-            let unitPart = n % 10;
-            return tens[tenPart] + (unitPart > 0 ? " " + units[unitPart] : "");
+            if (compoundNumbers[n]) return compoundNumbers[n];
+            let t = Math.floor(n / 10);
+            let u = n % 10;
+            return tens[t] + (u > 0 ? " " + units[u] : "");
         }
 
-        let str = "";
-        
-        if (Math.floor(num / 10000000) > 0) {
-            str += getBelowHundred(Math.floor(num / 10000000)) + " करोड़ ";
-            num %= 10000000;
-        }
-        if (Math.floor(num / 100000) > 0) {
-            str += getBelowHundred(Math.floor(num / 100000)) + " लाख ";
-            num %= 100000;
-        }
+        let words = "";
+
         if (Math.floor(num / 1000) > 0) {
-            str += getBelowHundred(Math.floor(num / 1000)) + " हजार ";
+            let thousandPart = Math.floor(num / 1000);
+            words += getTwoDigitWord(thousandPart) + " हजार ";
             num %= 1000;
         }
+
         if (Math.floor(num / 100) > 0) {
-            str += getBelowHundred(Math.floor(num / 100)) + " सौ ";
+            let hundredPart = Math.floor(num / 100);
+            words += units[hundredPart] + " सौ ";
             num %= 100;
         }
+
         if (num > 0) {
-            str += getBelowHundred(num) + " ";
+            words += getTwoDigitWord(num);
         }
 
-        return str.trim() + " रुपये मात्र";
+        return words.trim() + " रुपये मात्र";
     }
 
     function saveDataToList() {
@@ -1061,7 +1217,27 @@
 
         let empObject = {};
 
-        if (currentMode === 'PARISHRAMIK') {
+        if (currentMode === 'NPS_FORMAT') {
+            let pran = (document.getElementById('pranNo').value || '-').toUpperCase();
+
+            empObject = {
+                id: String(empId),
+                mode: 'NPS_FORMAT',
+                ddoRegNo: document.getElementById('ddoRegNo').value || '-',
+                payMonth: document.getElementById('payMonth').value,
+                payYear: document.getElementById('payYear').value,
+                contType: document.getElementById('contType').value,
+                name: toTitleCase(empName),
+                pranNo: pran,
+                basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
+                daRate: parseFloat(document.getElementById('npsDaRate').value) || 0,
+                daAmount: parseFloat(document.getElementById('daAmount').value) || 0,
+                subsContry: parseFloat(document.getElementById('subsContry').value) || 0,
+                govContry: parseFloat(document.getElementById('govContry').value) || 0,
+                arearRemark: document.getElementById('arearRemark').value || '-',
+                remark: document.getElementById('npsRemark').value || '-'
+            };
+        } else if (currentMode === 'PARISHRAMIK') {
             let bankInput = document.getElementById('bankName');
             autoCapitalize(bankInput);
             let otherInput = document.getElementById('otherRemark');
@@ -1151,6 +1327,7 @@
     function saveToLocalStorageByMode() {
         let storageKey = 'arrear_saved_list';
         if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
+        if (currentMode === 'NPS_FORMAT') storageKey = 'nps_format_saved_list';
         if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
         localStorage.setItem(storageKey, JSON.stringify(savedEmployeeList));
     }
@@ -1158,6 +1335,7 @@
     function loadLocalStorageData() {
         let storageKey = 'arrear_saved_list';
         if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
+        if (currentMode === 'NPS_FORMAT') storageKey = 'nps_format_saved_list';
         if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
         
         let stored = localStorage.getItem(storageKey);
@@ -1172,11 +1350,13 @@
     function clearLocalStorageData() {
         let modeText = 'एरियर';
         if (currentMode === 'BONUS') modeText = 'बोनस';
+        if (currentMode === 'NPS_FORMAT') modeText = 'NPS Schedule';
         if (currentMode === 'PARISHRAMIK') modeText = 'परिश्रमिक';
 
         if (confirm(`क्या आप सहेजी गई पूरी ${modeText} सूची हटाना चाहते हैं?`)) {
             let storageKey = 'arrear_saved_list';
             if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
+            if (currentMode === 'NPS_FORMAT') storageKey = 'nps_format_saved_list';
             if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
             
             localStorage.removeItem(storageKey);
@@ -1190,11 +1370,228 @@
     function renderMasterTable() {
         if (currentMode === 'BONUS') {
             renderBonusTable();
+        } else if (currentMode === 'NPS_FORMAT') {
+            renderNpsTable();
         } else if (currentMode === 'PARISHRAMIK') {
             renderParishramikTable();
         } else {
             renderDaTable();
         }
+    }
+
+    /* MODIFIED NPS TABLE RENDER FUNCTION */
+    function renderNpsTable() {
+        if (savedEmployeeList.length === 0) {
+            let emptyHTML = '<tr><td colspan="13">कोई NPS रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('previewThead').innerHTML = '';
+            document.getElementById('previewTbody').innerHTML = emptyHTML;
+            document.getElementById('previewTfoot').innerHTML = '';
+
+            document.getElementById('pThead').innerHTML = '';
+            document.getElementById('pTbody').innerHTML = emptyHTML;
+            document.getElementById('pTfoot').innerHTML = '';
+
+            document.getElementById('uiVerifyBox').innerHTML = '<b>कोई डाटा नहीं है।</b>';
+            document.getElementById('pSummaryBox').innerHTML = '';
+            return;
+        }
+
+        let headerHTML = `<tr>
+            <th>Sr.</th>
+            <th>DDO Reg.No.</th>
+            <th>Employee Name</th>
+            <th>PRAN No.</th>
+            <th>Basic Pay</th>
+            <th>Subs. Contry.</th>
+            <th>Gov. Contry.</th>
+            <th>Pay Month</th>
+            <th>Pay Year</th>
+            <th>Cont. Type</th>
+            <th>Arear Remark</th>
+            <th>Remark</th>`;
+
+        let headerHTMLPreview = headerHTML + `<th class="no-print-col">हटाएं</th></tr>`;
+        let headerHTMLPrint = headerHTML + `</tr>`;
+
+        document.getElementById('previewThead').innerHTML = headerHTMLPreview;
+        document.getElementById('pThead').innerHTML = headerHTMLPrint;
+
+        let previewBodyHTML = '';
+        let printBodyHTML = '';
+        let totals = { basicPay: 0, subsContry: 0, govContry: 0 };
+
+        savedEmployeeList.forEach((emp, idx) => {
+            totals.basicPay += (emp.basicPay || 0);
+            totals.subsContry += (emp.subsContry || 0);
+            totals.govContry += (emp.govContry || 0);
+
+            let rowCells = `
+                <td>${idx + 1}</td>
+                <td>${emp.ddoRegNo}</td>
+                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td style="text-transform:uppercase;">${emp.pranNo}</td>
+                <td>${emp.basicPay}</td>
+                <td><b>${emp.subsContry.toFixed(2)}</b></td>
+                <td><b>${emp.govContry.toFixed(2)}</b></td>
+                <td>${emp.payMonth}</td>
+                <td>${emp.payYear}</td>
+                <td>${emp.contType}</td>
+                <td>${emp.arearRemark || '-'}</td>
+                <td>${emp.remark || '-'}</td>`;
+
+            printBodyHTML += `<tr>${rowCells}</tr>`;
+            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+        });
+
+        document.getElementById('previewTbody').innerHTML = previewBodyHTML;
+        document.getElementById('pTbody').innerHTML = printBodyHTML;
+
+        let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="4">कुल योग (Total):</td>
+            <td>${totals.basicPay}</td>
+            <td>${totals.subsContry.toFixed(2)}</td>
+            <td>${totals.govContry.toFixed(2)}</td>
+            <td colspan="5">-</td>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTML + `<td class="no-print-col"></td></tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTML + `</tr>`;
+
+        updateNpsSummaryBox(totals.subsContry, totals.govContry);
+    }
+
+    function updateNpsSummaryBox(totalSubs, totalGov) {
+        let totalAmount = totalSubs + totalGov;
+        let wordsHindi = convertNumberToHindiWords(totalAmount);
+
+        let summaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <div style="margin-bottom: 4px;"><b>कुल NPS अंशदान (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div><b>कुल NPS अंशदान (शब्दों में):</b> <span style="color: var(--primary-color); font-weight: bold;">${wordsHindi}</span></div>
+                </div>
+                <div style="font-size: 13px; color: #4a5568; text-align: right; background: #edf2f7; padding: 6px 12px; border-radius: 4px; border: 1px solid #cbd5e0;">
+                    <div style="margin-bottom: 2px;"><b>अंशदान विवरण (Contribution Breakdown):</b></div>
+                    <div>(कर्मचारी (10%): <b>₹${totalSubs.toFixed(2)}</b> + सरकार (14%): <b>₹${totalGov.toFixed(2)}</b>) = <b style="color: var(--success-color);">₹${totalAmount.toFixed(2)}</b></div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('uiVerifyBox').innerHTML = summaryHTML;
+
+        let printSummaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="margin-bottom: 3px;"><b>कुल अंशदान (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div><b>कुल अंशदान (शब्दों में):</b> ${wordsHindi}</div>
+                </div>
+                <div style="text-align: right; border: 1px dashed #000; padding: 4px 8px;">
+                    <div style="margin-bottom: 2px;"><b>NPS विवरण:</b></div>
+                    <div>(Employee Contry: ₹${totalSubs.toFixed(2)} + Govt Contry: ₹${totalGov.toFixed(2)}) = ₹${totalAmount.toFixed(2)}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('pSummaryBox').innerHTML = printSummaryHTML;
+    }
+
+    /* EXCEL COPY FUNCTION FOR NPS & PARISHRAMIK */
+    function copyTableToClipboard() {
+        if (currentMode !== 'NPS_FORMAT' && currentMode !== 'PARISHRAMIK') {
+            triggerNotificationBox('यह मोड Excel Copy सपोर्ट नहीं करता है!', false);
+            return;
+        }
+
+        let container = document.getElementById('previewTableContainer');
+        if (!container || savedEmployeeList.length === 0) {
+            triggerNotificationBox('कॉपी करने के लिए कोई डेटा नहीं है!', false);
+            return;
+        }
+
+        let range = document.createRange();
+        range.selectNode(container);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+
+        try {
+            let successful = document.execCommand('copy');
+            if (successful) {
+                let mLabel = currentMode === 'PARISHRAMIK' ? 'परिश्रमिक' : 'NPS';
+                triggerNotificationBox(`${mLabel} डेटा कॉपी हो गया है! अब Excel में Paste (Ctrl+V) करें।`, true);
+            } else {
+                triggerNotificationBox('Copy नहीं हो सका, कृपया मैनुअल सिलेक्ट करके कॉपी करें।', false);
+            }
+        } catch (err) {
+            triggerNotificationBox('ब्राउज़र कॉपी सपोर्ट नहीं कर रहा है।', false);
+        }
+
+        window.getSelection().removeAllRanges();
+    }
+
+    /* EXCEL (.CSV) DOWNLOAD FUNCTION FOR NPS & PARISHRAMIK */
+    function exportToCsv() {
+        if (currentMode !== 'NPS_FORMAT' && currentMode !== 'PARISHRAMIK') {
+            triggerNotificationBox('यह मोड CSV Export सपोर्ट नहीं करता है!', false);
+            return;
+        }
+
+        if (savedEmployeeList.length === 0) {
+            triggerNotificationBox('डाउनलोड करने के लिए कोई डेटा नहीं है!', false);
+            return;
+        }
+
+        let csvRows = [];
+
+        if (currentMode === 'NPS_FORMAT') {
+            let headers = ["Sr", "DDO Reg No", "Employee Name", "PRAN No", "Basic Pay", "Subs Contry", "Gov Contry", "Pay Month", "Pay Year", "Cont Type", "Arear Remark", "Remark"];
+            csvRows.push(headers.join(","));
+
+            savedEmployeeList.forEach((emp, idx) => {
+                let row = [
+                    idx + 1,
+                    `"${emp.ddoRegNo || ''}"`,
+                    `"${emp.name || ''}"`,
+                    `"${emp.pranNo || ''}"`,
+                    emp.basicPay || 0,
+                    emp.subsContry || 0,
+                    emp.govContry || 0,
+                    `"${emp.payMonth || ''}"`,
+                    `"${emp.payYear || ''}"`,
+                    `"${emp.contType || ''}"`,
+                    `"${emp.arearRemark || ''}"`,
+                    `"${emp.remark || ''}"`
+                ];
+                csvRows.push(row.join(","));
+            });
+        } else if (currentMode === 'PARISHRAMIK') {
+            let headers = ["Sr No", "Emp Name", "Bank Name", "Account No", "IFSC Code", "No of Days", "Rate Per Day", "Total", "Other"];
+            csvRows.push(headers.join(","));
+
+            savedEmployeeList.forEach((emp, idx) => {
+                let row = [
+                    idx + 1,
+                    `"${emp.name || ''}"`,
+                    `"${emp.bankName || ''}"`,
+                    `"${emp.accountNo || ''}"`,
+                    `"${emp.ifscCode || ''}"`,
+                    emp.noOfDays || 0,
+                    emp.ratePerDay || 0,
+                    emp.total || 0,
+                    `"${emp.other || ''}"`
+                ];
+                csvRows.push(row.join(","));
+            });
+        }
+
+        let fileNamePrefix = currentMode === 'PARISHRAMIK' ? 'Parishramik_Bill' : 'NPS_Schedule';
+        let csvString = csvRows.join("\n");
+        let blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `${fileNamePrefix}_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        triggerNotificationBox('Excel (.CSV) फ़ाइल डाउनलोड हो गई है!', true);
     }
 
     function renderParishramikTable() {
@@ -1563,6 +1960,10 @@
             styleTag.innerHTML = `@page { size: A4 portrait; margin: 8mm; }`;
             document.getElementById('pSheetTitle').innerText = "उत्पादकता आधारित बोनस (Bonus Payment Sheet)";
             document.getElementById('pSubHeaderDetails').innerHTML = `<b>वित्तीय वर्ष:</b> ${document.getElementById('arrearYear').value}`;
+        } else if (currentMode === 'NPS_FORMAT') {
+            styleTag.innerHTML = `@page { size: A4 landscape; margin: 8mm; }`;
+            document.getElementById('pSheetTitle').innerText = "NATIONAL PENSION SYSTEM (NPS) SCHEDULE SHEET";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>Pay Month / Year:</b> ${document.getElementById('payMonth').value} ${document.getElementById('payYear').value} | <b>DDO Reg. No:</b> ${document.getElementById('ddoRegNo').value} | <b>Type:</b> ${document.getElementById('contType').value}`;
         } else if (currentMode === 'PARISHRAMIK') {
             styleTag.innerHTML = `@page { size: A4 landscape; margin: 8mm; }`;
             document.getElementById('pSheetTitle').innerText = "परिश्रमिक भुगतान देयक (Remuneration Payment Sheet)";
@@ -1596,17 +1997,22 @@
 
     function resetFormFields() {
         document.getElementById('empName').value = '';
+        document.getElementById('pranNo').value = '';
         document.getElementById('designation').value = '';
         document.getElementById('basicPay').value = '';
+        document.getElementById('daAmount').value = '';
         document.getElementById('joiningDate').value = '';
         document.getElementById('deathDate').value = '';
         document.getElementById('accountNo').value = '';
+        document.getElementById('subsContry').value = '';
+        document.getElementById('govContry').value = '';
+        document.getElementById('arearRemark').value = '';
+        document.getElementById('npsRemark').value = '';
         document.getElementById('noOfDays').value = '0';
         document.getElementById('ratePerDay').value = '0';
         document.getElementById('parishramikTotal').value = '0';
         document.getElementById('otherRemark').value = '';
         
-        /* Auto remember bank & IFSC */
         loadLastUsedBankInfo();
 
         if (currentMode === 'DA') {
@@ -1625,7 +2031,20 @@
             document.getElementById('empId').value = localMatch.id;
             document.getElementById('empName').value = toTitleCase(localMatch.name);
 
-            if (currentMode === 'PARISHRAMIK') {
+            if (currentMode === 'NPS_FORMAT') {
+                document.getElementById('ddoRegNo').value = localMatch.ddoRegNo || '';
+                document.getElementById('pranNo').value = localMatch.pranNo || '';
+                document.getElementById('basicPay').value = localMatch.basicPay || 0;
+                document.getElementById('npsDaRate').value = localMatch.daRate || 60;
+                document.getElementById('daAmount').value = localMatch.daAmount || 0;
+                document.getElementById('subsContry').value = localMatch.subsContry || 0;
+                document.getElementById('govContry').value = localMatch.govContry || 0;
+                document.getElementById('payMonth').value = localMatch.payMonth || 'January';
+                document.getElementById('payYear').value = localMatch.payYear || '2026';
+                document.getElementById('contType').value = localMatch.contType || 'Regular';
+                document.getElementById('arearRemark').value = localMatch.arearRemark || '';
+                document.getElementById('npsRemark').value = localMatch.remark || '';
+            } else if (currentMode === 'PARISHRAMIK') {
                 document.getElementById('bankName').value = localMatch.bankName || '';
                 document.getElementById('accountNo').value = localMatch.accountNo || '';
                 document.getElementById('ifscCode').value = localMatch.ifscCode || '';
