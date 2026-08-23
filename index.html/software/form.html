@@ -99,7 +99,13 @@
         .btn-admin-toggle { background-color: #4a5568; color: white; padding: 5px 10px; font-size: 11px; float: right; border-radius: 4px; cursor: pointer; border: none; font-weight: bold;}
 
         .admin-search-panel { background: #edf2f7; padding: 15px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #cbd5e0; display: none; }
-          
+        
+        /* Admin Control Section Styling */
+        .admin-ctrl-box { background: #ffffff; border: 1px solid #1a365d; padding: 12px; border-radius: 6px; margin-top: 10px; }
+        .admin-ctrl-title { font-size: 13px; font-weight: bold; color: #1a365d; margin-bottom: 8px; border-bottom: 1px solid #cbd5e0; padding-bottom: 4px; }
+        .class-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-top: 8px; }
+        .class-item { background: #f7fafc; padding: 5px 8px; border: 1px solid #e2e8f0; border-radius: 4px; text-align: center; font-size: 11px; }
+
         .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(26, 54, 93, 0.85); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; color: #fff; font-size: 18px; font-weight: bold; }
         .spinner { border: 5px solid #f3f3f3; border-top: 5px solid #d69e2e; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -159,11 +165,55 @@
 
 <div class="form-container">
      
+    <!-- ADMIN PANEL -->
     <div id="adminSearchPanel" class="admin-search-panel">
         <label style="color: #1a365d; font-size: 14px; margin-bottom: 8px;"><strong>Admin Control - ID/Sr.No द्वारा छात्र खोजें:</strong></label>
         <div style="display: flex; gap: 10px;">
             <input type="text" id="searchIdInput" placeholder="क्रम संख्या (Sr. No.) दर्ज करें, उदा: 1001" style="flex: 1;">
             <button type="button" class="btn btn-print" style="margin:0; padding: 8px 20px;" onclick="searchStudentById()">खोजें (Search)</button>
+        </div>
+
+        <!-- NEW: ADMISSION OPEN / CLOSE SETTINGS PANEL -->
+        <div class="admin-ctrl-box">
+            <div class="admin-ctrl-title">🔒 एडमिशन चालू / बंद कंट्रोल (Admission Status Control)</div>
+            <div style="margin-bottom: 8px; font-size: 12px;">
+                <label><strong>सम्पूर्ण स्कूल का एडमिशन:</strong></label>
+                <select id="ctrlAllClosed" onchange="saveAdmissionSettings()" style="padding: 4px; font-weight: bold;">
+                    <option value="false">✅ चालू रखें (Open All)</option>
+                    <option value="true">⛔ सभी क्लास बंद करें (Close All)</option>
+                </select>
+            </div>
+            <div style="font-size: 12px; font-weight: bold; margin-top: 10px;">कक्षा-वार (Class-wise) एडमिशन स्थिति:</div>
+            <div class="class-grid">
+                <div class="class-item">
+                    Class 6<br>
+                    <select id="ctrl_6" onchange="saveAdmissionSettings()"><option value="false">Open</option><option value="true">Close</option></select>
+                </div>
+                <div class="class-item">
+                    Class 7<br>
+                    <select id="ctrl_7" onchange="saveAdmissionSettings()"><option value="false">Open</option><option value="true">Close</option></select>
+                </div>
+                <div class="class-item">
+                    Class 8<br>
+                    <select id="ctrl_8" onchange="saveAdmissionSettings()"><option value="false">Open</option><option value="true">Close</option></select>
+                </div>
+                <div class="class-item">
+                    Class 9<br>
+                    <select id="ctrl_9" onchange="saveAdmissionSettings()"><option value="false">Open</option><option value="true">Close</option></select>
+                </div>
+                <div class="class-item">
+                    Class 10<br>
+                    <select id="ctrl_10" onchange="saveAdmissionSettings()"><option value="false">Open</option><option value="true">Close</option></select>
+                </div>
+                <div class="class-item">
+                    Class 11<br>
+                    <select id="ctrl_11" onchange="saveAdmissionSettings()"><option value="false">Open</option><option value="true">Close</option></select>
+                </div>
+                <div class="class-item">
+                    Class 12<br>
+                    <select id="ctrl_12" onchange="saveAdmissionSettings()"><option value="false">Open</option><option value="true">Close</option></select>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -397,6 +447,40 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7DJrNjPKSMp-NNHXZsDIO5CEc-Pi5l5xlEx2VrUWb5euKob7W9k3Kf39ygAWWDXlXZg/exec";
     const ADMIN_PASSWORD = "admin@123"; 
 
+    // ADMISSION STATUS OBJECT
+    let ADMISSION_SETTINGS = {
+        allClosed: false,
+        closedClasses: {
+            "6": false, "7": false, "8": false, "9": false, "10": false, "11": false, "12": false
+        }
+    };
+
+    // Load admission settings from LocalStorage
+    function loadAdmissionSettings() {
+        const saved = localStorage.getItem('schoolAdmissionSettings');
+        if (saved) {
+            try {
+                ADMISSION_SETTINGS = JSON.parse(saved);
+            } catch(e) {}
+        }
+        // Update Admin UI Controls
+        document.getElementById('ctrlAllClosed').value = ADMISSION_SETTINGS.allClosed ? "true" : "false";
+        for (let c = 6; c <= 12; c++) {
+            const el = document.getElementById('ctrl_' + c);
+            if(el) el.value = ADMISSION_SETTINGS.closedClasses[c] ? "true" : "false";
+        }
+    }
+
+    // Save admission settings to LocalStorage
+    function saveAdmissionSettings() {
+        ADMISSION_SETTINGS.allClosed = (document.getElementById('ctrlAllClosed').value === "true");
+        for (let c = 6; c <= 12; c++) {
+            const el = document.getElementById('ctrl_' + c);
+            if(el) ADMISSION_SETTINGS.closedClasses[c] = (el.value === "true");
+        }
+        localStorage.setItem('schoolAdmissionSettings', JSON.stringify(ADMISSION_SETTINGS));
+    }
+
     let generatedOTP = null;
     let isMobileVerified = false;
 
@@ -423,7 +507,6 @@
         document.getElementById('loadingOverlay').style.display = 'none';
     }
 
-    // Auto ID Fetching Function
     function fetchNextSerialNumber() {
         fetch(SCRIPT_URL + "?action=getNextId")
         .then(res => res.json())
@@ -435,7 +518,6 @@
         .catch(err => console.log("Auto ID Error: ", err));
     }
 
-    // OTP Generation & Verification Logic
     function sendOTP() {
         const mob = document.getElementById('otpMobileInput').value.trim();
         if(!mob || mob.length !== 10 || isNaN(mob)) {
@@ -612,14 +694,41 @@
     }
 
     window.onload = function() {
+        loadAdmissionSettings();
         fetchNextSerialNumber();
         document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
         document.getElementById('inputDate').value = new Date().toISOString().substring(0,10);
+
+        // Class Selection Admission Checking
+        document.getElementById('studentClass').addEventListener('change', function() {
+            const selectedClass = this.value;
+
+            if (ADMISSION_SETTINGS.allClosed) {
+                alert("⚠️ क्षमा करें! सत्र 2026-27 के लिए सभी कक्षाओं के ऑनलाइन एडमिशन पूर्णतः बंद हो चुके हैं।");
+                this.value = "";
+                return;
+            }
+
+            if (selectedClass && ADMISSION_SETTINGS.closedClasses[selectedClass]) {
+                alert(`⚠️ क्षमा करें! Class ${selectedClass} के लिए ऑनलाइन एडमिशन की प्रक्रिया समाप्त हो चुकी है।`);
+                this.value = "";
+            }
+        });
     }
 
-    // FORM SUBMIT HANDLER (सुरक्षित रेस्पॉन्स पार्सिंग के साथ)
+    // FORM SUBMIT HANDLER
     document.getElementById('admissionForm').addEventListener('submit', function(e) {
         e.preventDefault();
+
+        const selectedClass = document.getElementById('studentClass').value;
+        if (ADMISSION_SETTINGS.allClosed) {
+            alert("⚠️ क्षमा करें! सत्र 2026-27 के लिए ऑनलाइन एडमिशन बंद कर दिया गया है।");
+            return;
+        }
+        if (selectedClass && ADMISSION_SETTINGS.closedClasses[selectedClass]) {
+            alert(`⚠️ क्षमा करें! Class ${selectedClass} के लिए ऑनलाइन एडमिशन बंद हो चुका है।`);
+            return;
+        }
 
         if(!isMobileVerified) {
             alert("कृपया फॉर्म सबमिट करने से पहले अपने मोबाइल नंबर को OTP से सत्यापित करें!");
@@ -656,7 +765,7 @@
             },
             body: JSON.stringify(obj)
         })
-        .then(res => res.text()) // सुरक्षित रूप से टेक्स्ट डेटा पहले प्राप्त करें
+        .then(res => res.text())
         .then(textData => {
             hideLoading();
             let res;
@@ -677,7 +786,6 @@
 
                 resetFormCustom();
             } else {
-                // गूगल स्क्रिप्ट से भेजा गया त्रुटि संदेश यहाँ दिखाई देगा
                 alert(res.message);
             }
         })
