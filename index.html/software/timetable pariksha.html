@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>एकीकृत विद्यालय सॉफ्टवेयर (Time Table & Exam Seating)</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --accent-color: #2b6cb0;
+            --bg-color: #f7fafc;
+            --border-color: #cbd5e0;
+            --row-padding: 2px;
+            --font-size: 11px;
+            --input-font-size: 13px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: var(--bg-color);
+            color: #1a202c;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 12px 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+        }
+
+        /* Top Unified Mode Selector Panel */
+        .software-mode-bar {
+            background: #1a365d;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .software-mode-bar label {
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .software-mode-bar select {
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 1px solid #cbd5e0;
+            background-color: #ffffff;
+            color: #1a365d;
+            cursor: pointer;
+        }
+
+        /* ==================== TIME TABLE STYLES ==================== */
+        .tt-header {
+            text-align: center;
+            border-bottom: 3px solid #000;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        .tt-header h1 { color: #000; margin: 0; font-size: 22px; font-weight: bold; text-transform: uppercase; }
+        .tt-header h2 { color: #000; margin: 8px 0 0 0; font-size: 18px; font-weight: bold; }
+        .tt-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .tt-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .tt-btn:hover { background-color: #2980b9; }
+        .tt-btn-print { background-color: #27ae60; }
+        .tt-btn-print:hover { background-color: #219653; }
+        .tt-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+        .tt-table th, .tt-table td {
+            border: 1px solid #000;
+            padding: 12px;
+            text-align: center;
+            font-size: 16px;
+            color: #000;
+            font-weight: bold;
+        }
+        .tt-table th { background-color: #e2e8f0; font-size: 17px; }
+        .tt-table tr:nth-child(even) { background-color: #f8fafc; }
+        .tt-settings-panel {
+            background: #fff;
+            border: 2px dashed #3498db;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            display: none;
+        }
+        .tt-settings-panel h3 { margin-top: 0; color: #2980b9; }
+        .tt-form-group { display: inline-block; margin-right: 20px; margin-bottom: 10px; }
+        .tt-form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; }
+        .tt-form-group input, .tt-form-group select { padding: 8px; width: 160px; border: 1px solid #ccc; border-radius: 4px; }
+
+        /* ==================== PARIKSHA STYLES ==================== */
+        .admin-controls {
+            background: #edf2f7;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+        }
+        .form-row { display: flex; gap: 12px; margin-bottom: 6px; align-items: center; flex-wrap: wrap; }
+        .form-row:last-child { margin-bottom: 0; }
+        .admin-controls label { font-weight: bold; font-size: 12px; }
+        .admin-controls input[type="text"], .admin-controls input[type="number"], .admin-controls select {
+            padding: 4px 8px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 12px;
+        }
+        .btn {
+            padding: 4px 10px; background-color: var(--primary-color); color: white; border: none;
+            border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px;
+        }
+        .btn:hover { background-color: var(--accent-color); }
+        .btn-print { background-color: #2f855a; }
+        .btn-print:hover { background-color: #276749; }
+        .btn-danger { background-color: #e53e3e; padding: 2px 5px; font-size: 10px; }
+        .print-header { text-align: center; border-bottom: 1.5px solid #000; padding-bottom: 2px; margin-bottom: 6px; }
+        .print-header h1 { margin: 0; font-size: 18px; letter-spacing: 1px; }
+        .print-header h3 { margin: 1px 0 0 0; font-size: 13px; font-weight: bold; }
+        .sub-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 12px; margin-bottom: 6px; }
+        .class-center-display { font-size: 14px; font-weight: bold; text-decoration: underline; }
+        
+        .exam-table { width: 100%; border-collapse: collapse; margin-top: 2px; }
+        .exam-table th, .exam-table td {
+            border: 1px solid #000; padding: var(--row-padding) 4px; text-align: center;
+            font-size: var(--font-size); transition: all 0.1s ease;
+        }
+        .exam-table thead tr { height: 1.5em !important; }
+        .exam-table th { background-color: #e2e8f0; font-weight: bold; height: 1.5em !important; line-height: 1.5em; }
+        
+        .table-input {
+            width: 100%; border: none; outline: none; text-align: center; background: transparent;
+            font-size: var(--input-font-size); font-family: inherit; padding: 0; margin: 0; font-weight: bold;
+        }
+        
+        /* Vidyalay Input Left Alignment */
+        .table-input.v-name {
+            text-align: left !important;
+            padding-left: 5px;
+        }
+
+        /* Yog (Total) Cell Increased Font Size */
+        .total-cell {
+            font-weight: bold !important;
+            font-size: 16px !important;
+            color: #000;
+        }
+
+        .grand-total-row { background-color: #edf2f7; font-weight: bold; }
+        .summary-section { margin-top: 8px; border-top: 1.5px solid #000; padding-top: 4px; }
+        .summary-section h3 { margin: 0 0 4px 0; text-align: center; font-size: 12px; }
+        .signature-block { margin-top: 10px; display: flex; justify-content: space-between; align-items: flex-end; height: 0.8inch; padding: 0 10px; }
+        .sig-box { text-align: center; width: 200px; font-weight: bold; font-size: 11px; }
+        .sig-line { border-bottom: 1px dashed #000; margin-bottom: 4px; height: 25px; }
+
+        /* PRINT STYLES */
+        @media print {
+            @page { size: A4 portrait; margin: 5mm 6mm 5mm 6mm; }
+            html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #fff !important; -webkit-print-color-adjust: exact; }
+            .container { box-shadow: none !important; max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            .no-print, .software-mode-bar, .admin-controls, .tt-controls, .tt-settings-panel, .btn, .tt-btn { display: none !important; }
+            
+            /* Exam Print Fixes */
+            .print-header h1 { font-size: 16px !important; }
+            .print-header h3 { font-size: 12px !important; }
+            .sub-header { font-size: 12px !important; margin-bottom: 4px !important; }
+            .class-center-display { font-size: 13px !important; }
+            .exam-table thead tr, .exam-table th { height: 1.5em !important; line-height: 1.5em !important; }
+            .exam-table th, .exam-table td { padding: var(--row-padding) 2px !important; font-size: var(--font-size) !important; }
+            .table-input { font-size: 13px !important; border: none !important; font-weight: bold !important; }
+            .table-input.v-name { text-align: left !important; padding-left: 4px !important; }
+            .total-cell { font-size: 16px !important; font-weight: bold !important; }
+            .exam-table td { font-weight: bold !important; }
+            .summary-section { margin-top: 6px !important; padding-top: 2px !important; }
+            .summary-section h3 { font-size: 11px !important; margin-bottom: 2px !important; }
+            .summary-section td { font-size: 12px !important; }
+            .signature-block { margin-top: auto !important; height: 0.8inch !important; padding-bottom: 2px; }
+            .sig-line { height: 20px !important; }
+            .exam-table th, .grand-total-row { background-color: #eaeaea !important; }
+            .tt-table th { background-color: #ddd !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Main Form Selector -->
+    <div class="software-mode-bar no-print">
+        <label for="masterFormatSelect">📋 सॉफ्टवेयर मोड / फॉर्मेट सेट करें:</label>
+        <div>
+            <select id="masterFormatSelect" onchange="switchFormat()">
+                <option value="pariksha" selected>परीक्षा (U.P. Board Seating Plan)</option>
+                <option value="timetable">समय सारिणी (School Time Table)</option>
+            </select>
+            <button class="btn" style="background-color: #27ae60; margin-left: 10px;" onclick="saveSelectedFormat()">सेटिंग सेव करें (Save Choice)</button>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 1. PARIKSHA FORM SECTION                                                  -->
+    <!-- ========================================================================= -->
+    <div id="parikshaSection">
+        <div>
+            <!-- Admin Settings & Controls -->
+            <div class="admin-controls no-print">
+                <div class="form-row">
+                    <label>परीक्षा वर्ग:</label>
+                    <select id="examType">
+                        <option value="हाई स्कूल">हाई स्कूल</option>
+                        <option value="इण्टरमीडिएट">इण्टरमीडिएट</option>
+                    </select>
+
+                    <label>वर्ष:</label>
+                    <input type="text" id="examYear" value="2026" style="width: 60px;">
+
+                    <button class="btn" onclick="updateHeader()">सेटिंग सेव करें</button>
+                    <button class="btn btn-print" style="margin-left: auto;" onclick="window.print()">🖨️ प्रिंट निकालें (A4 Page)</button>
+                </div>
+
+                <!-- Dynamic Height Adjuster Row -->
+                <div class="form-row" style="background: #e2e8f0; padding: 6px 10px; border-radius: 4px; border: 1px solid #cbd5e0; margin-top: 5px;">
+                    <label style="color: #1a365d;">📐 रो की ऊँचाई (Row Height Setting):</label>
+                    <select id="rowHeightSelect" onchange="adjustRowHeight(this.value)" style="font-weight: bold; background: #fff;">
+                        <option value="normal">सामान्य (Normal - 10 तक कक्ष)</option>
+                        <option value="compact" selected>मध्यम (Compact - 10-15 कक्ष)</option>
+                        <option value="ultra">अति-सूक्ष्म (Ultra Compact - 15+ कक्ष)</option>
+                    </select>
+                    <span style="font-size: 11px; color: #4a5568;">(कमरा संख्या अधिक होने पर 'अति-सूक्ष्म' चुनें ताकि सब एक पेज में आ जाए)</span>
+                </div>
+
+                <div class="form-row" style="margin-top: 6px;">
+                    <button class="btn" onclick="addRoomBlock()">+ नया कक्ष जोड़ें</button>
+                </div>
+            </div>
+
+            <!-- Master Header -->
+            <div class="print-header">
+                <h1>बैठक व्यवस्था</h1>
+                <h3 id="displayBoardYear">यू० पी० बोर्ड परीक्षा वर्ष - 2026</h3>
+            </div>
+
+            <!-- Sub Header -->
+            <div class="sub-header">
+                <div style="width: 30%;">पाली: <input type="text" id="paliInput" class="table-input" value="प्रथम (प्रातः)" style="width: 100px; font-weight: bold; text-align: left;"></div>
+                <div style="width: 40%; text-align: center;" class="class-center-display" id="displayClassType">हाई स्कूल</div>
+                <div style="width: 30%; text-align: right;">दिनांक: <input type="text" class="table-input" placeholder="DD/MM/YYYY" style="width: 90px; text-align: right; font-weight: bold;"></div>
+            </div>
+
+            <!-- Master Table -->
+            <table id="mainSeatingTable" class="exam-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;">कक्ष सं०</th>
+                        <th style="width: 13%;">दिनांक</th>
+                        <th style="width: 33%; text-align: left; padding-left: 8px;">विद्यालय का नाम</th>
+                        <th style="width: 13%;">रोल नं० से</th>
+                        <th style="width: 13%;">रोल नं० तक</th>
+                        <th style="width: 7%;">संख्या</th>
+                        <th style="width: 8%;">योग</th>
+                        <th class="no-print" style="width: 5%;">कार्य</th>
+                    </tr>
+                </thead>
+                <tbody id="masterTbody">
+                    <!-- Room Rows -->
+                </tbody>
+                <tfoot>
+                    <tr class="grand-total-row">
+                        <td colspan="6" style="text-align: right; font-weight: bold; padding-right: 10px; font-size: 14px;">कुल योग (Grand Total):</td>
+                        <td id="grandTotalCell" class="total-cell">0</td>
+                        <td class="no-print"></td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- Summary Section -->
+            <div class="summary-section">
+                <h3>विद्यालय-वार कुल विवरण (Summary)</h3>
+                <table class="exam-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 8%;">क्र० सं०</th>
+                            <th style="width: 34%; text-align: left; padding-left: 8px;">विद्यालय का नाम</th>
+                            <th style="width: 16%;">शुरुआती रोल नं०</th>
+                            <th style="width: 16%;">अंतिम रोल नं०</th>
+                            <th style="width: 13%;">संख्या</th>
+                            <th style="width: 13%;">योग</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summaryTableBody">
+                        <!-- Dynamic Summary Rows -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="grand-total-row">
+                            <td colspan="5" style="text-align: right; font-weight: bold; padding-right: 10px;">सभी विद्यालयों का कुल योग:</td>
+                            <td id="summaryGrandTotalCell" class="total-cell">0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Bottom 1-Inch Signature & Stamp Area -->
+        <div class="signature-block">
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                हस्ताक्षर / मुहर (केंद्र व्यवस्थापक)
+            </div>
+            <div class="sig-box">
+                <div class="sig-line"></div>
+                मोहर (परीक्षा केंद्र)
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 2. TIMETABLE FORM SECTION                                                 -->
+    <!-- ========================================================================= -->
+    <div id="timetableSection" style="display: none;">
+        <header class="tt-header">
+            <h1>समय सारिणी (Time Table)</h1>
+            <h2>विद्यालय का नाम - श्री कृष्ण इ० का० सेमरा कठकुइयां, जनपद- कुशीनगर</h2>
+        </header>
+
+        <div class="tt-controls no-print">
+            <div>
+                <label for="formatSelect"><strong>फॉर्मेट चुनें:</strong></label>
+                <select id="formatSelect" onchange="changeFormat()" style="padding: 8px; border-radius: 4px; font-size: 15px;">
+                    <option value="format1">फॉर्मेट 1 (प्रार्थना 7:50 AM)</option>
+                    <option value="format2">फॉर्मेट 2 (प्रार्थना 10:00 AM)</option>
+                </select>
+            </div>
+            <div>
+                <button class="tt-btn" onclick="toggleSettings()">⚙️ सेटिंग्स (Settings)</button>
+                <button class="tt-btn tt-btn-print" onclick="window.print()">🖨️ प्रिंट करें</button>
+            </div>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="tt-settings-panel no-print">
+            <h3>समय और घंटी की सेटिंग</h3>
+            <div class="tt-form-group">
+                <label>सामान्य घंटी अवधि (मिनट):</label>
+                <input type="number" id="periodDuration" value="40">
+            </div>
+            <div class="tt-form-group">
+                <label>छठी घंटी अवधि (मिनट):</label>
+                <input type="number" id="period6Duration" value="35">
+            </div>
+            <div class="tt-form-group">
+                <label>सातवीं घंटी अवधि (मिनट):</label>
+                <input type="number" id="period7Duration" value="35">
+            </div>
+            <div class="tt-form-group">
+                <label>आठवीं घंटी अवधि (मिनट):</label>
+                <input type="number" id="eighthPeriodDuration" value="30">
+            </div>
+            <div class="tt-form-group">
+                <label>मध्यांतर किस घंटी के बाद:</label>
+                <select id="intervalAfterPeriod">
+                    <option value="3">तीसरी घंटी के बाद</option>
+                    <option value="4">चौथी घंटी के बाद</option>
+                    <option value="5" selected>पाँचवीं घंटी के बाद</option>
+                    <option value="6">छठी घंटी के बाद</option>
+                </select>
+            </div>
+            <div class="tt-form-group">
+                <label>मध्यांतर अवधि (मिनट):</label>
+                <input type="number" id="intervalDuration" value="25">
+            </div>
+            <div class="tt-form-group">
+                <label>फॉर्मेट-1 प्रार्थना समय:</label>
+                <input type="time" id="f1Prayer" value="07:50">
+            </div>
+            <div class="tt-form-group">
+                <label>फॉर्मेट-1 प्रथम घंटी:</label>
+                <input type="time" id="f1FirstBell" value="08:00">
+            </div>
+            <div class="tt-form-group">
+                <label>फॉर्मेट-2 प्रार्थना समय:</label>
+                <input type="time" id="f2Prayer" value="10:00">
+            </div>
+            <div class="tt-form-group">
+                <label>फॉर्मेट-2 प्रथम घंटी:</label>
+                <input type="time" id="f2FirstBell" value="10:10">
+            </div>
+            <div style="margin-top: 10px;">
+                <button class="tt-btn" onclick="saveSettings()">सेव करें (Save)</button>
+                <button class="tt-btn" style="background-color: #95a5a6;" onclick="toggleSettings()">बंद करें</button>
+            </div>
+        </div>
+
+        <!-- Time Table Display Table -->
+        <div id="tableContainer">
+            <table id="timetable" class="tt-table">
+                <thead>
+                    <tr>
+                        <th>क्रम संख्या</th>
+                        <th>घंटी</th>
+                        <th>समय (Time)</th>
+                        <th>अवधि (Duration)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- JavaScript dynamic rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* MASTER SWITCH LOGIC */
+    function switchFormat() {
+        const selected = document.getElementById('masterFormatSelect').value;
+        if (selected === 'pariksha') {
+            document.getElementById('parikshaSection').style.display = 'block';
+            document.getElementById('timetableSection').style.display = 'none';
+        } else {
+            document.getElementById('parikshaSection').style.display = 'none';
+            document.getElementById('timetableSection').style.display = 'block';
+            generateTimetable();
+        }
+    }
+
+    function saveSelectedFormat() {
+        const selected = document.getElementById('masterFormatSelect').value;
+        localStorage.setItem('preferred_school_format', selected);
+        alert('आपकी फॉर्मेट पसंद ("' + (selected === 'pariksha' ? 'परीक्षा' : 'समय सारिणी') + '") सफलतापूर्वक सेव हो गई है!');
+    }
+
+    function loadSavedFormat() {
+        const savedFormat = localStorage.getItem('preferred_school_format');
+        if (savedFormat) {
+            document.getElementById('masterFormatSelect').value = savedFormat;
+        }
+        switchFormat();
+    }
+
+    /* PARIKSHA LOGIC */
+    let roomCounter = 0;
+
+    // Distinct bold colors for schools
+    const schoolColors = ['#002060', '#c00000', '#006600', '#000000', '#581845'];
+
+    function adjustRowHeight(level) {
+        const root = document.documentElement;
+        if (level === 'normal') {
+            root.style.setProperty('--row-padding', '5px');
+            root.style.setProperty('--font-size', '12px');
+            root.style.setProperty('--input-font-size', '14px');
+        } else if (level === 'compact') {
+            root.style.setProperty('--row-padding', '2px');
+            root.style.setProperty('--font-size', '11px');
+            root.style.setProperty('--input-font-size', '13px');
+        } else if (level === 'ultra') {
+            root.style.setProperty('--row-padding', '0px');
+            root.style.setProperty('--font-size', '9.5px');
+            root.style.setProperty('--input-font-size', '11.5px');
+        }
+    }
+
+    function updateHeader() {
+        const type = document.getElementById('examType').value;
+        const year = document.getElementById('examYear').value;
+        document.getElementById('displayBoardYear').innerText = `यू० पी० बोर्ड परीक्षा वर्ष - ${year}`;
+        document.getElementById('displayClassType').innerText = type;
+    }
+
+    function addRoomBlock() {
+        roomCounter++;
+        const tbody = document.getElementById('masterTbody');
+        
+        const rowHTML = `
+            <tr class="data-row room-start-row" data-room="${roomCounter}">
+                <td class="room-cell"><input type="text" class="table-input room-no" value="${roomCounter}"></td>
+                <td class="date-cell"><input type="text" class="table-input" placeholder="DD/MM/YYYY"></td>
+                <td><input type="text" class="table-input v-name" oninput="handleSchoolNameChange(this)"></td>
+                <td><input type="number" class="table-input r-from" oninput="calculateAll()"></td>
+                <td><input type="number" class="table-input r-to" readonly style="background-color: #fafafa;"></td>
+                <td><input type="number" class="table-input count" oninput="calculateAll()"></td>
+                <td class="total-cell">0</td>
+                <td class="no-print" style="white-space: nowrap;">
+                    <button class="btn" onclick="addRow(${roomCounter})" style="padding: 1px 4px; font-size: 10px;">+ स्कूल</button>
+                    <button class="btn btn-danger" onclick="removeRoom(${roomCounter})">हटाएं</button>
+                </td>
+            </tr>
+        `;
+        
+        tbody.insertAdjacentHTML('beforeend', rowHTML);
+        updateRowSpans(roomCounter);
+        calculateAll();
+    }
+
+    function createSubRowHTML(roomId) {
+        return `
+            <tr class="data-row" data-room="${roomId}">
+                <td class="room-cell" style="display:none;"></td>
+                <td class="date-cell" style="display:none;"></td>
+                <td><input type="text" class="table-input v-name" oninput="handleSchoolNameChange(this)"></td>
+                <td><input type="number" class="table-input r-from" oninput="calculateAll()"></td>
+                <td><input type="number" class="table-input r-to" readonly style="background-color: #fafafa;"></td>
+                <td><input type="number" class="table-input count" oninput="calculateAll()"></td>
+                <td class="total-cell" style="display:none;"></td>
+                <td class="no-print"><button class="btn btn-danger" onclick="removeRow(this)">X</button></td>
+            </tr>
+        `;
+    }
+
+    function addRow(roomId) {
+        const roomRows = document.querySelectorAll(`tr[data-room="${roomId}"]`);
+        const lastRow = roomRows[roomRows.length - 1];
+        lastRow.insertAdjacentHTML('afterend', createSubRowHTML(roomId));
+        updateRowSpans(roomId);
+    }
+
+    function removeRow(btn) {
+        const row = btn.closest('tr');
+        const roomId = row.getAttribute('data-room');
+        row.remove();
+        updateRowSpans(roomId);
+        calculateAll();
+    }
+
+    function removeRoom(roomId) {
+        const roomRows = document.querySelectorAll(`tr[data-room="${roomId}"]`);
+        roomRows.forEach(r => r.remove());
+        calculateAll();
+    }
+
+    function updateRowSpans(roomId) {
+        const roomRows = document.querySelectorAll(`tr[data-room="${roomId}"]`);
+        if (roomRows.length === 0) return;
+
+        roomRows.forEach((row, index) => {
+            const roomCell = row.querySelector('.room-cell');
+            const dateCell = row.querySelector('.date-cell');
+            const totalCell = row.querySelector('.total-cell');
+
+            if (index === 0) {
+                roomCell.style.display = '';
+                dateCell.style.display = '';
+                totalCell.style.display = '';
+                roomCell.setAttribute('rowspan', roomRows.length);
+                dateCell.setAttribute('rowspan', roomRows.length);
+                totalCell.setAttribute('rowspan', roomRows.length);
+            } else {
+                roomCell.style.display = 'none';
+                dateCell.style.display = 'none';
+                totalCell.style.display = 'none';
+            }
+        });
+    }
+
+    function handleSchoolNameChange(input) {
+        const currentName = input.value.trim().toLowerCase();
+        if (!currentName) {
+            calculateAll();
+            return;
+        }
+
+        const allRows = Array.from(document.querySelectorAll('.data-row'));
+        const currentIndex = allRows.indexOf(input.closest('tr'));
+
+        let lastRollTo = null;
+
+        for (let i = 0; i < currentIndex; i++) {
+            const row = allRows[i];
+            const name = row.querySelector('.v-name').value.trim().toLowerCase();
+            const rTo = parseInt(row.querySelector('.r-to').value);
+
+            if (name === currentName && !isNaN(rTo)) {
+                lastRollTo = rTo;
+            }
+        }
+
+        if (lastRollTo !== null) {
+            const currentFromInput = allRows[currentIndex].querySelector('.r-from');
+            currentFromInput.value = lastRollTo + 1;
+        }
+
+        calculateAll();
+    }
+
+    function calculateAll() {
+        const schoolSummary = {};
+        const schoolColorMap = {};
+        let schoolColorIndex = 0;
+
+        const roomTotals = {};
+        let grandTotal = 0;
+
+        const rows = document.querySelectorAll('.data-row');
+
+        // Map school names to unique colors
+        rows.forEach(row => {
+            const schoolName = row.querySelector('.v-name').value.trim();
+            if (schoolName && !schoolColorMap[schoolName]) {
+                schoolColorMap[schoolName] = schoolColors[schoolColorIndex % schoolColors.length];
+                schoolColorIndex++;
+            }
+        });
+
+        rows.forEach(row => {
+            const roomId = row.getAttribute('data-room');
+            const schoolName = row.querySelector('.v-name').value.trim();
+            const rFromInput = row.querySelector('.r-from');
+            const rToInput = row.querySelector('.r-to');
+            const countInput = row.querySelector('.count');
+            const vNameInput = row.querySelector('.v-name');
+
+            let rFrom = parseInt(rFromInput.value);
+            let count = parseInt(countInput.value);
+
+            let rTo = "";
+            if (!isNaN(rFrom) && !isNaN(count) && count > 0) {
+                rTo = rFrom + count - 1;
+                rToInput.value = rTo;
+            } else {
+                rToInput.value = "";
+                count = 0;
+            }
+
+            // Apply Gada Color to School Inputs
+            const assignedColor = schoolName ? (schoolColorMap[schoolName] || '#000000') : '#000000';
+            vNameInput.style.color = assignedColor;
+            rFromInput.style.color = assignedColor;
+            rToInput.style.color = assignedColor;
+            countInput.style.color = assignedColor;
+
+            if (!roomTotals[roomId]) roomTotals[roomId] = 0;
+            roomTotals[roomId] += count;
+            grandTotal += count;
+
+            if (schoolName && !isNaN(rFrom) && rTo !== "") {
+                if (!schoolSummary[schoolName]) {
+                    schoolSummary[schoolName] = {
+                        startRoll: rFrom,
+                        endRoll: rTo,
+                        totalCount: count,
+                        color: assignedColor
+                    };
+                } else {
+                    schoolSummary[schoolName].startRoll = Math.min(schoolSummary[schoolName].startRoll, rFrom);
+                    schoolSummary[schoolName].endRoll = Math.max(schoolSummary[schoolName].endRoll, rTo);
+                    schoolSummary[schoolName].totalCount += count;
+                }
+            }
+        });
+
+        for (let roomId in roomTotals) {
+            const firstRow = document.querySelector(`tr[data-room="${roomId}"]`);
+            if (firstRow) {
+                const totalCell = firstRow.querySelector('.total-cell');
+                if (totalCell) totalCell.innerText = roomTotals[roomId];
+            }
+        }
+
+        document.getElementById('grandTotalCell').innerText = grandTotal;
+
+        // Render Summary Table with Yog Column
+        const summaryTbody = document.getElementById('summaryTableBody');
+        summaryTbody.innerHTML = '';
+        let srNo = 1;
+        let summaryGrandTotal = 0;
+
+        for (let school in schoolSummary) {
+            const data = schoolSummary[school];
+            summaryGrandTotal += data.totalCount;
+            summaryTbody.innerHTML += `
+                <tr style="color: ${data.color}; font-weight: bold;">
+                    <td style="color: #000;">${srNo++}</td>
+                    <td style="text-align: left; padding-left: 8px; color: ${data.color};">${school}</td>
+                    <td style="color: ${data.color};">${data.startRoll}</td>
+                    <td style="color: ${data.color};">${data.endRoll}</td>
+                    <td style="color: ${data.color};">${data.totalCount}</td>
+                    <td class="total-cell" style="color: ${data.color};">${data.totalCount}</td>
+                </tr>
+            `;
+        }
+        
+        document.getElementById('summaryGrandTotalCell').innerText = summaryGrandTotal;
+    }
+
+    /* TIMETABLE LOGIC */
+    function getSettings() {
+        const saved = localStorage.getItem('school_timetable_settings_v12');
+        if (saved) return JSON.parse(saved);
+        return {
+            periodDuration: 40, period6Duration: 35, period7Duration: 35, eighthPeriodDuration: 30,
+            intervalAfterPeriod: 5, intervalDuration: 25, f1Prayer: "07:50", f1FirstBell: "08:00",
+            f2Prayer: "10:00", f2FirstBell: "10:10"
+        };
+    }
+
+    function toggleSettings() {
+        const panel = document.getElementById('settingsPanel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function saveSettings() {
+        const settings = {
+            periodDuration: parseInt(document.getElementById('periodDuration').value),
+            period6Duration: parseInt(document.getElementById('period6Duration').value),
+            period7Duration: parseInt(document.getElementById('period7Duration').value),
+            eighthPeriodDuration: parseInt(document.getElementById('eighthPeriodDuration').value),
+            intervalAfterPeriod: parseInt(document.getElementById('intervalAfterPeriod').value),
+            intervalDuration: parseInt(document.getElementById('intervalDuration').value),
+            f1Prayer: document.getElementById('f1Prayer').value,
+            f1FirstBell: document.getElementById('f1FirstBell').value,
+            f2Prayer: document.getElementById('f2Prayer').value,
+            f2FirstBell: document.getElementById('f2FirstBell').value
+        };
+        localStorage.setItem('school_timetable_settings_v12', JSON.stringify(settings));
+        toggleSettings();
+        generateTimetable();
+        alert('सेटिंग्स लोकल स्टोरेज में सफलतापूर्वक सेव हो गई हैं!');
+    }
+
+    function loadSettingsToForm() {
+        const settings = getSettings();
+        document.getElementById('periodDuration').value = settings.periodDuration;
+        document.getElementById('period6Duration').value = settings.period6Duration || 35;
+        document.getElementById('period7Duration').value = settings.period7Duration || 35;
+        document.getElementById('eighthPeriodDuration').value = settings.eighthPeriodDuration || 30;
+        document.getElementById('intervalAfterPeriod').value = settings.intervalAfterPeriod !== undefined ? settings.intervalAfterPeriod : 5;
+        document.getElementById('intervalDuration').value = settings.intervalDuration !== undefined ? settings.intervalDuration : 25;
+        document.getElementById('f1Prayer').value = settings.f1Prayer;
+        document.getElementById('f1FirstBell').value = settings.f1FirstBell;
+        document.getElementById('f2Prayer').value = settings.f2Prayer;
+        document.getElementById('f2FirstBell').value = settings.f2FirstBell;
+    }
+
+    function timeToMinutes(timeStr) {
+        const parts = timeStr.split(':');
+        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    }
+
+    function minutesToTime(totalMinutes) {
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        const mStr = minutes < 10 ? '0' + minutes : minutes;
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+        return `${displayHours}:${mStr} ${ampm}`;
+    }
+
+    function getHindiPeriodName(num) {
+        const names = {1:"पहली घंटी",2:"दूसरी घंटी",3:"तीसरी घंटी",4:"चौथी घंटी",5:"पाँचवीं घंटी",6:"छठी घंटी",7:"सातवीं घंटी",8:"आठवीं घंटी"};
+        return names[num] || `${num}वीं घंटी`;
+    }
+
+    function changeFormat() {
+        generateTimetable();
+    }
+
+    function generateTimetable() {
+        loadSettingsToForm();
+        const settings = getSettings();
+        const format = document.getElementById('formatSelect').value;
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        const pDuration = settings.periodDuration;
+        const p6Duration = settings.period6Duration;
+        const p7Duration = settings.period7Duration;
+        const p8Duration = settings.eighthPeriodDuration;
+        const intervalAfter = settings.intervalAfterPeriod;
+        const intDuration = settings.intervalDuration;
+
+        let currentTime = timeToMinutes(format === 'format1' ? settings.f1FirstBell : settings.f2FirstBell);
+        let prayerTime = timeToMinutes(format === 'format1' ? settings.f1Prayer : settings.f2Prayer);
+        
+        let schedule = [{ sNo: "प्रारम्भ", name: "प्रार्थना", start: prayerTime, end: currentTime, duration: currentTime - prayerTime }];
+        let periodCounter = 1;
+
+        for (let i = 1; i <= 8; i++) {
+            let duration = pDuration;
+            if (i === 6) duration = p6Duration;
+            else if (i === 7) duration = p7Duration;
+            else if (i === 8) duration = p8Duration;
+
+            let endTime = currentTime + duration;
+            schedule.push({ sNo: periodCounter++, name: getHindiPeriodName(i), start: currentTime, end: endTime, duration: duration });
+            currentTime = endTime;
+
+            if (i === intervalAfter) {
+                let intervalEnd = currentTime + intDuration;
+                schedule.push({ sNo: "-", name: "मध्यांतर (Interval)", start: currentTime, end: intervalEnd, duration: intDuration });
+                currentTime = intervalEnd;
+            }
+        }
+
+        let dispersalTime = minutesToTime(currentTime);
+
+        schedule.forEach((item) => {
+            let row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.sNo}</td>
+                <td><strong>${item.name}</strong></td>
+                <td>${minutesToTime(item.start)} - ${minutesToTime(item.end)}</td>
+                <td>${item.duration} मिनट</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        let dispersalRow = document.createElement('tr');
+        dispersalRow.style.backgroundColor = "#edf2f7";
+        dispersalRow.innerHTML = `
+            <td colspan="2"><strong>समापन (Dispersal)</strong></td>
+            <td colspan="2"><strong>${dispersalTime}</strong></td>
+        `;
+        tbody.appendChild(dispersalRow);
+    }
+
+    // Default Initialization
+    window.onload = function() {
+        addRoomBlock();
+        addRoomBlock();
+        adjustRowHeight('compact');
+        loadSavedFormat();
+    };
+</script>
+
+</body>
+</html>
