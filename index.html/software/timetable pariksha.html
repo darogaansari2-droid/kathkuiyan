@@ -238,9 +238,9 @@
             <div class="admin-controls no-print">
                 <div class="form-row">
                     <label>परीक्षा वर्ग:</label>
-                    <select id="examType">
+                    <select id="examType" onchange="updateHeader()">
                         <option value="हाई स्कूल">हाई स्कूल</option>
-                        <option value="इण्टरमीडिएट">इण्टरमीडिएट</option>
+                        <option value="इण्टर">इण्टर</option>
                     </select>
 
                     <label>वर्ष:</label>
@@ -275,7 +275,7 @@
             <!-- Sub Header -->
             <div class="sub-header">
                 <div style="width: 30%;">पाली: <input type="text" id="paliInput" class="table-input" value="प्रथम (प्रातः)" style="width: 100px; font-weight: bold; text-align: left;"></div>
-                <div style="width: 40%; text-align: center;" class="class-center-display" id="displayClassType">हाई स्कूल</div>
+                <div style="width: 40%; text-align: center; color: #002060;" class="class-center-display" id="displayClassType">हाई स्कूल</div>
                 <div style="width: 30%; text-align: right;">दिनांक: <input type="text" class="table-input" placeholder="DD/MM/YYYY" style="width: 90px; text-align: right; font-weight: bold;"></div>
             </div>
 
@@ -284,8 +284,7 @@
                 <thead>
                     <tr>
                         <th style="width: 8%;">कक्ष सं०</th>
-                        <th style="width: 13%;">दिनांक</th>
-                        <th style="width: 33%; text-align: left; padding-left: 8px;">विद्यालय का नाम</th>
+                        <th style="width: 46%; text-align: left; padding-left: 8px;">विद्यालय का नाम</th>
                         <th style="width: 13%;">रोल नं० से</th>
                         <th style="width: 13%;">रोल नं० तक</th>
                         <th style="width: 7%;">संख्या</th>
@@ -298,7 +297,7 @@
                 </tbody>
                 <tfoot>
                     <tr class="grand-total-row">
-                        <td colspan="6" style="text-align: right; font-weight: bold; padding-right: 10px; font-size: 14px;">कुल योग (Grand Total):</td>
+                        <td colspan="5" style="text-align: right; font-weight: bold; padding-right: 10px; font-size: 14px;">कुल योग (Grand Total):</td>
                         <td id="grandTotalCell" class="total-cell">0</td>
                         <td class="no-print"></td>
                     </tr>
@@ -495,8 +494,17 @@
     function updateHeader() {
         const type = document.getElementById('examType').value;
         const year = document.getElementById('examYear').value;
+        const classDisplay = document.getElementById('displayClassType');
+        
         document.getElementById('displayBoardYear').innerText = `यू० पी० बोर्ड परीक्षा वर्ष - ${year}`;
-        document.getElementById('displayClassType').innerText = type;
+        classDisplay.innerText = type;
+
+        // Dark Blue for High School, Dark Red for Intermediate
+        if (type === 'हाई स्कूल') {
+            classDisplay.style.color = '#002060';
+        } else {
+            classDisplay.style.color = '#c00000';
+        }
     }
 
     function addRoomBlock() {
@@ -506,7 +514,6 @@
         const rowHTML = `
             <tr class="data-row room-start-row" data-room="${roomCounter}">
                 <td class="room-cell"><input type="text" class="table-input room-no" value="${roomCounter}"></td>
-                <td class="date-cell"><input type="text" class="table-input" placeholder="DD/MM/YYYY"></td>
                 <td><input type="text" class="table-input v-name" oninput="handleSchoolNameChange(this)"></td>
                 <td><input type="number" class="table-input r-from" oninput="calculateAll()"></td>
                 <td><input type="number" class="table-input r-to" readonly style="background-color: #fafafa;"></td>
@@ -528,7 +535,6 @@
         return `
             <tr class="data-row" data-room="${roomId}">
                 <td class="room-cell" style="display:none;"></td>
-                <td class="date-cell" style="display:none;"></td>
                 <td><input type="text" class="table-input v-name" oninput="handleSchoolNameChange(this)"></td>
                 <td><input type="number" class="table-input r-from" oninput="calculateAll()"></td>
                 <td><input type="number" class="table-input r-to" readonly style="background-color: #fafafa;"></td>
@@ -566,19 +572,15 @@
 
         roomRows.forEach((row, index) => {
             const roomCell = row.querySelector('.room-cell');
-            const dateCell = row.querySelector('.date-cell');
             const totalCell = row.querySelector('.total-cell');
 
             if (index === 0) {
                 roomCell.style.display = '';
-                dateCell.style.display = '';
                 totalCell.style.display = '';
                 roomCell.setAttribute('rowspan', roomRows.length);
-                dateCell.setAttribute('rowspan', roomRows.length);
                 totalCell.setAttribute('rowspan', roomRows.length);
             } else {
                 roomCell.style.display = 'none';
-                dateCell.style.display = 'none';
                 totalCell.style.display = 'none';
             }
         });
@@ -851,6 +853,7 @@
         addRoomBlock();
         adjustRowHeight('compact');
         loadSavedFormat();
+        updateHeader();
     };
 </script>
 
