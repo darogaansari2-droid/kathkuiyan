@@ -113,6 +113,7 @@
         .sig-line { border-bottom: 1px dashed #000; margin-bottom: 4px; height: 25px; }
 
         /* ==================== GRID SEATING STYLES ==================== */
+        .grid-header-wrapper { margin: 0 auto; }
         .grid-header { text-align: center; }
         .grid-header-top { display: flex; align-items: center; justify-content: space-between; position: relative; }
         .grid-header-top h1 { margin: 0; font-size: 18px; flex-grow: 1; text-align: center; }
@@ -321,27 +322,30 @@
             </div>
         </div>
 
-        <!-- Page Header -->
-        <div class="grid-header">
-            <div class="grid-header-top">
-                <span style="visibility: hidden;" class="room-title">कमरा नं०- 00</span>
-                <h1 id="mainTitle">यू० पी० बोर्ड परीक्षा - 2026</h1>
-                <span class="room-title">कमरा नं०- <span id="displayRoom">01</span></span>
+        <!-- Dynamic Header Wrapper Matching Table Width -->
+        <div class="grid-header-wrapper" id="gridHeaderWrapper">
+            <!-- Page Header -->
+            <div class="grid-header">
+                <div class="grid-header-top">
+                    <span style="visibility: hidden;" class="room-title">कमरा नं०- 00</span>
+                    <h1 id="mainTitle">यू० पी० बोर्ड परीक्षा - 2026</h1>
+                    <span class="room-title">कमरा नं०- <span id="displayRoom">01</span></span>
+                </div>
+                <h2 id="displaySeatingType">सामान्य बैठक व्यवस्था</h2>
             </div>
-            <h2 id="displaySeatingType">सामान्य बैठक व्यवस्था</h2>
-        </div>
 
-        <div class="grid-school-header">
-            विद्यालय का नाम - श्री कृष्ण इ० का० सेमरा कठकुइयाँ , कुशीनगर
-        </div>
+            <div class="grid-school-header">
+                विद्यालय का नाम - श्री कृष्ण इ० का० सेमरा कठकुइयाँ , कुशीनगर
+            </div>
 
-        <div class="grid-sub-header">
-            <span> <span id="displayClass">हाई स्कूल</span></span>
-            <span>केंद्र संख्या - <span id="displayCenterCode">1234</span></span>
-            <span>पाली: <span id="displayPali">प्रथम</span></span>
-        </div>
+            <div class="grid-sub-header">
+                <span> <span id="displayClass">हाई स्कूल</span></span>
+                <span>केंद्र संख्या - <span id="displayCenterCode">1234</span></span>
+                <span>पाली: <span id="displayPali">प्रथम</span></span>
+            </div>
 
-        <hr class="divider">
+            <hr class="divider">
+        </div>
 
         <div class="grid-container">
             <table class="seating-grid" id="seatingGrid"></table>
@@ -789,6 +793,7 @@
         }
 
         var totalGridWidth = cols * widthVal;
+        document.getElementById('gridHeaderWrapper').style.width = totalGridWidth + 'px';
         document.getElementById('schoolTable').style.width = totalGridWidth + 'px';
         document.getElementById('summaryHeaderWrapper').style.width = totalGridWidth + 'px';
 
