@@ -124,15 +124,40 @@
         hr.divider { border: 0; border-top: 2px solid #000; margin: 5px 0 15px 0; }
         .grid-container { margin-bottom: 20px; width: 100%; display: flex; justify-content: center; }
         table.seating-grid { border-collapse: collapse; table-layout: fixed; margin: 0 auto; }
-        table.seating-grid td { border: 1.5px solid #000; text-align: center; vertical-align: middle; font-size: 14px; font-weight: bold; overflow: hidden; word-break: break-all; white-space: nowrap; padding: 2px; }
+        table.seating-grid td { 
+            border: 1.5px solid #000; 
+            text-align: center; 
+            vertical-align: middle; 
+            overflow: hidden; 
+            word-break: break-all; 
+            white-space: nowrap; 
+            padding: 2px; 
+        }
         table.seating-grid td.skipped-cell { background-color: #e0e0e0; }
-        table.seating-grid td input { width: 100%; height: 100%; border: none; outline: none; text-align: center; font-size: 13px; font-weight: bold; background: transparent; padding: 0; margin: 0; }
+        
+        table.seating-grid td input { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            outline: none; 
+            text-align: center; 
+            font-family: 'Consolas', 'Courier New', monospace, Arial; 
+            font-size: 16px; 
+            font-weight: 800; 
+            color: #000000;
+            letter-spacing: 0.5px;
+            background: transparent; 
+            padding: 0; 
+            margin: 0; 
+            line-height: 1.2;
+        }
+
         .grid-summary-container { display: flex; flex-direction: column; align-items: center; width: 100%; }
         .grid-summary-header-wrapper { width: 100%; display: flex; justify-content: center; }
         table.school-table { border-collapse: collapse; margin-top: 5px; table-layout: fixed; }
         table.school-table th, table.school-table td { border: 1px solid #000; padding: 4px; text-align: center; font-size: 13px; }
         table.school-table th { background-color: #f2f2f2; }
-        table.school-table input { width: 98%; margin: 0; padding: 3px; text-align: center; }
+        table.school-table input { width: 98%; margin: 0; padding: 3px; text-align: center; font-weight: bold; }
 
         /* PRINT STYLES */
         @media print {
@@ -140,7 +165,19 @@
             html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #fff !important; -webkit-print-color-adjust: exact; }
             .container { box-shadow: none !important; max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
             .no-print, .software-mode-bar, .admin-controls, .tt-controls, .tt-settings-panel, .btn, .tt-btn, .btn-add, .btn-remove { display: none !important; }
-            table.seating-grid td input, table.school-table input { border: none !important; }
+            
+            /* UPDATED: Roll Number Height & Print Visibility */
+            table.seating-grid td input { 
+                border: none !important; 
+                font-size: 17px !important; 
+                font-weight: 900 !important; 
+                color: #000 !important;
+                line-height: 1.3 !important;
+                transform: scaleY(1.15); /* वर्टिकल ऊंचाई बढ़ाने के लिए */
+                display: block;
+            }
+            
+            table.school-table input { border: none !important; font-size: 14px !important; font-weight: bold !important; color: #000 !important; }
             table.seating-grid td.skipped-cell { background-color: #f0f0f0 !important; }
             .print-header h1 { font-size: 16px !important; }
             .print-header h3 { font-size: 12px !important; }
@@ -303,6 +340,13 @@
                 
                 <label>स्तंभ (Cols):</label>
                 <input type="number" id="inputCols" value="4" min="1" style="width: 50px;">
+
+                <label style="color: #2b6cb0; font-weight: bold;">रोल नं० मोड:</label>
+                <select id="rollFillModeSelect" style="font-weight: bold; background: #e2e8f0;">
+                    <option value="auto" selected>Auto (स्वचालित भरें)</option>
+                    <option value="manual">Manual (हस्तचालित भरें)</option>
+                </select>
+                <button class="btn" onclick="saveRollFillMode()">सेटिंग सेव करें</button>
             </div>
             <div class="form-row">
                 <label>खाली बॉक्स (उदा. R2C1):</label>
@@ -726,6 +770,17 @@
     }
 
     /* 2. GRID SEATING PLAN LOGIC */
+    function saveRollFillMode() {
+        const mode = document.getElementById('rollFillModeSelect').value;
+        localStorage.setItem('grid_roll_fill_mode', mode);
+        alert('रोल नंबर मोड सेटिंग ' + (mode === 'auto' ? 'Auto' : 'Manual') + ' पर सेव कर दी गई है!');
+        processGridData();
+    }
+
+    function getRollFillMode() {
+        return localStorage.getItem('grid_roll_fill_mode') || 'auto';
+    }
+
     function updateGridHeader() {
         var year = document.getElementById('inputYear').value;
         var seatingType = document.getElementById('seatingTypeSelect').value;
@@ -804,7 +859,10 @@
         var cell = inputEl.parentNode;
         if (inputEl.value.trim().toLowerCase() === "-") cell.classList.add('skipped-cell');
         else cell.classList.remove('skipped-cell');
-        processGridData();
+        
+        if (getRollFillMode() === 'auto') {
+            processGridData();
+        }
     }
 
     function addSchoolGridRow() {
@@ -834,6 +892,7 @@
     }
 
     function processGridData() {
+        var mode = getRollFillMode();
         var tbody = document.getElementById('schoolTableBody');
         var grandTotal = 0;
         var schoolRollArrays = [];
@@ -864,6 +923,10 @@
         }
 
         document.getElementById('gridGrandTotal').innerText = grandTotal;
+
+        if (mode === 'manual') {
+            return;
+        }
 
         var finalGridRolls = [];
         var maxRollsInAnySchool = 0;
@@ -1046,6 +1109,13 @@
         addRoomBlock();
         addRoomBlock();
         adjustRowHeight('compact');
+        
+        var savedRollMode = getRollFillMode();
+        var rollSelect = document.getElementById('rollFillModeSelect');
+        if (rollSelect && savedRollMode) {
+            rollSelect.value = savedRollMode;
+        }
+
         loadSavedFormat();
     };
 </script>
