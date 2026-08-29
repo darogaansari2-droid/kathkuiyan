@@ -220,7 +220,7 @@
                 </select>
 
                 <label>वर्ष:</label>
-                <input type="text" id="examYear" value="2026" style="width: 60px;">
+                <input type="text" id="examYear" value="2027" style="width: 60px;">
 
                 <button class="btn" onclick="updateParikshaHeader()">सेटिंग सेव करें</button>
                 <button class="btn btn-print" style="margin-left: auto;" onclick="window.print()">🖨️ प्रिंट निकालें (A4 Page)</button>
@@ -242,14 +242,17 @@
 
         <div class="print-header">
             <h1>बैठक व्यवस्था</h1>
-            <h3 id="displayBoardYear">यू० पी० बोर्ड परीक्षा वर्ष - 2026</h3>
+            <h3 id="displayBoardYear">यू० पी० बोर्ड परीक्षा वर्ष - 2027</h3>
         </div>
 
-        <div class="sub-header">
-            <div style="width: 30%;">पाली: <input type="text" id="paliInput" class="table-input" value="प्रथम (प्रातः)" style="width: 100px; font-weight: bold; text-align: left;"></div>
-            <div style="width: 40%; text-align: center; color: #002060;" class="class-center-display" id="displayClassType">हाई स्कूल</div>
-            <div style="width: 30%; text-align: right;">दिनांक: <input type="text" class="table-input" placeholder="DD/MM/YYYY" style="width: 90px; text-align: right; font-weight: bold;"></div>
-        </div>
+      <div class="sub-header">
+    <div style="width: 30%;">पाली: <input type="text" id="paliInput" class="table-input" value="प्रथम (प्रातः)" style="width: 100px; font-weight: bold; text-align: left;"></div>
+    <div style="width: 40%; text-align: center; color: #002060;" class="class-center-display" id="displayClassType">हाई स्कूल</div>
+    <div style="width: 30%; display: flex; justify-content: flex-end; align-items: center; gap: 2px;">
+        <span style="white-space: nowrap;">केन्द्र संख्या-</span>
+        <input type="text" class="table-input" placeholder="00000" style="width: 65px; text-align: left; font-weight: bold; margin: 0;">
+    </div>
+</div>
 
         <table id="mainSeatingTable" class="exam-table">
             <thead>
@@ -310,12 +313,12 @@
             <h3 style="margin-top:0; margin-bottom:8px;">बैठक व्यवस्था सेटिंग्स (कंट्रोल पैनल)</h3>
             <div class="form-row">
                 <label>वर्ष (YYYY):</label>
-                <input type="text" id="inputYear" value="2026" style="width: 60px;" oninput="updateGridHeader()">
+                <input type="text" id="inputYear" value="2027" style="width: 60px;" oninput="updateGridHeader()">
                 
                 <label>बैठक व्यवस्था प्रकार:</label>
                 <select id="seatingTypeSelect" onchange="updateGridHeader()">
                     <option value="सामान्य बैठक व्यवस्था">सामान्य बैठक व्यवस्था</option>
-                    <option value="आंतरिक बैठक व्यवस्था">आंतरिक बैठक व्यवस्था</option>
+                    <option value="स्थानान्तरित बैठक व्यवस्था">स्थानान्तरित बैठक व्यवस्था</option>
                     <option value="प्री बोर्ड परीक्षा">प्री बोर्ड परीक्षा</option>
                 </select>
 
@@ -372,14 +375,14 @@
             <div class="grid-header">
                 <div class="grid-header-top">
                     <span style="visibility: hidden;" class="room-title">कमरा नं०- 00</span>
-                    <h1 id="mainTitle">यू० पी० बोर्ड परीक्षा - 2026</h1>
+                    <h1 id="mainTitle">यू० पी० बोर्ड परीक्षा - 2027</h1>
                     <span class="room-title">कमरा नं०- <span id="displayRoom">01</span></span>
                 </div>
                 <h2 id="displaySeatingType">सामान्य बैठक व्यवस्था</h2>
             </div>
 
             <div class="grid-school-header">
-                विद्यालय का नाम - श्री कृष्ण इ० का० सेमरा कठकुइयाँ , कुशीनगर
+               केन्द्र का नाम - श्री कृष्ण इ० का० सेमरा कठकुइयाँ , कुशीनगर
             </div>
 
             <div class="grid-sub-header">
