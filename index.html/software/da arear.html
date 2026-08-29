@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DA Arrear, Bonus, NPS & Remuneration Master Sheet System</title>
+    <title>DA Arrear, Bonus, NPS, Remuneration & Retirement Master System</title>
     <style>
         :root {
             --primary-color: #1a365d;
@@ -410,12 +410,13 @@
                         <option value="BONUS">Bonus Setting (Portrait Print)</option>
                         <option value="NPS_FORMAT">NPS Schedule (Landscape Print)</option>
                         <option value="PARISHRAMIK">Parishramik / Remuneration Bill (Landscape Print)</option>
+                        <option value="RETIREMENT">Retirement Calculation Sheet (Landscape Print)</option>
                     </select>
                 </div>
             </div>
         </div>
 
-        <div class="panel" style="background-color: #ebf8ff;">
+        <div class="panel school-header-panel" style="background-color: #ebf8ff;">
             <div class="section-title" style="color: #2b6cb0;">1. विद्यालय/संस्था एवं सत्र विवरण</div>
             <div class="grid-3-col">
                 <div class="form-group" style="grid-column: span 2;">
@@ -469,7 +470,7 @@
         </div>
 
         <div class="panel">
-            <div class="section-title">2. कर्मचारी विवरण एवं बैंक खाता जानकारी</div>
+            <div class="section-title">2. कर्मचारी विवरण एवं सेवा जानकारी</div>
             <div class="grid-3-col">
                 <input type="hidden" id="empId">
                 
@@ -483,9 +484,33 @@
                     <input type="text" id="pranNo" placeholder="PRAN Number दर्ज करें" style="text-transform: uppercase;">
                 </div>
 
+                <!-- Designation Field: Select Dropdown for Retirement, Text Input for Others -->
                 <div class="form-group da-bonus-field">
                     <label for="designation">पदनाम (Designation)</label>
                     <input type="text" id="designation" placeholder="पदनाम दर्ज करें" onblur="autoCapitalize(this)">
+                </div>
+                <div class="form-group retirement-only-field" style="display: none;">
+                    <label for="retDesignation">पदनाम (Designation)</label>
+                    <select id="retDesignation">
+                        <option value="">-- चुनें --</option>
+                        <option value="प्रधानाचार्य">प्रधानाचार्य</option>
+                        <option value="प्रवक्ता">प्रवक्ता</option>
+                        <option value="सहायक अध्यापक">सहायक अध्यापक</option>
+                        <option value="प्र० लि०">प्र० लि०</option>
+                        <option value="स० लि०">स० लि०</option>
+                        <option value="दफ्तरी">दफ्तरी</option>
+                        <option value="परिचारक">परिचारक</option>
+                    </select>
+                </div>
+
+                <div class="form-group retirement-only-field" style="display: none;">
+                    <label for="dob">जन्मतिथि (DOB)</label>
+                    <input type="date" id="dob">
+                </div>
+
+                <div class="form-group retirement-only-field" style="display: none;">
+                    <label for="doj">नियुक्ति तिथि (DOJ)</label>
+                    <input type="date" id="doj">
                 </div>
 
                 <div class="form-group bank-info-field" style="display: none;">
@@ -744,6 +769,7 @@
 <script>
     const allMonths = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
     const monthDaysList = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const teachingStaff = ["प्रधानाचार्य", "प्रवक्ता", "सहायक अध्यापक"];
     let savedEmployeeList = [];
     let currentMode = 'DA';
 
@@ -789,6 +815,16 @@
         }
     });
 
+    function triggerNotificationBox(msg, isSuccess) {
+        let mBox = document.getElementById('messageBox');
+        mBox.innerText = msg;
+        mBox.className = 'msg-box ' + (isSuccess ? 'msg-success' : 'msg-error');
+        mBox.style.visibility = 'visible';
+        setTimeout(() => {
+            mBox.style.visibility = 'hidden';
+        }, 3000);
+    }
+
     function saveLastUsedBankInfo() {
         let bank = document.getElementById('bankName').value;
         let ifsc = document.getElementById('ifscCode').value;
@@ -815,11 +851,14 @@
         const parishramikFields = document.querySelectorAll('.parishramik-only-field');
         const npsFields = document.querySelectorAll('.nps-only-field');
         const excelBtnFields = document.querySelectorAll('.excel-btn-field');
+        const retirementFields = document.querySelectorAll('.retirement-only-field');
+        const schoolHeaderPanel = document.querySelector('.school-header-panel');
 
         if (currentMode === 'BONUS') {
             document.getElementById('mainTitleHeader').innerText = "बोनस भुगतान रजिस्टर मास्टर (Bonus Master System)";
             document.getElementById('btnPrintLabel').innerText = "Print Bonus Sheet (Portrait)";
             document.getElementById('previewTitle').innerText = "सहेजे गए कर्मचारियों का बोनस विवरण (Bonus List)";
+            if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
             
             daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bonusFields.forEach(el => el.style.display = 'flex');
@@ -830,6 +869,7 @@
             parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             excelBtnFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            retirementFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
 
             let cashOpt = document.querySelector('#anm option[value="CASH"]');
             if(cashOpt) cashOpt.style.display = 'none';
@@ -838,18 +878,19 @@
             document.getElementById('mainTitleHeader').innerText = "NPS Schedule Master System (Landscape Print)";
             document.getElementById('btnPrintLabel').innerText = "Print NPS Schedule (Landscape)";
             document.getElementById('previewTitle').innerText = "सहेजे गए NPS कर्मचारियों का विवरण (NPS Schedule List)";
+            if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
 
             daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             daBonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bankFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
-            
+            retirementFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+
             daBonusNpsFields.forEach(el => el.style.display = 'flex');
             daNpsFields.forEach(el => el.style.display = 'flex');
             npsFields.forEach(el => el.style.display = 'flex');
 
-            // Excel buttons setup for NPS
             excelBtnFields.forEach(el => el.style.display = 'inline-block');
             document.getElementById('btnCopyExcel').innerText = "Copy NPS for Excel";
 
@@ -857,6 +898,7 @@
             document.getElementById('mainTitleHeader').innerText = "परिश्रमिक बिल रजिस्टर (Remuneration Master System)";
             document.getElementById('btnPrintLabel').innerText = "Print Remuneration Sheet (Landscape)";
             document.getElementById('previewTitle').innerText = "सहेजे गए कर्मचारियों का परिश्रमिक विवरण (Remuneration List)";
+            if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
 
             daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
@@ -864,18 +906,37 @@
             daBonusNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             daNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            retirementFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bankFields.forEach(el => el.style.display = 'flex');
             parishramikFields.forEach(el => el.style.display = 'block');
 
-            // Excel buttons setup for Parishramik
             excelBtnFields.forEach(el => el.style.display = 'inline-block');
             document.getElementById('btnCopyExcel').innerText = "Copy Parishramik for Excel";
+
+        } else if (currentMode === 'RETIREMENT') {
+            document.getElementById('mainTitleHeader').innerText = "कर्मचारी सेवानिवृत्ति एवं सेवा अवधि प्रबंधन प्रणाली";
+            document.getElementById('btnPrintLabel').innerText = "A4 Landscape प्रिंट करें";
+            document.getElementById('previewTitle').innerText = "कर्मचारी सेवानिवृत्ति विवरण सूची";
+            if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'none';
+
+            daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bankFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            excelBtnFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            
+            retirementFields.forEach(el => el.style.display = 'flex');
 
         } else {
             document.getElementById('mainTitleHeader').innerText = "अवशेष महंगाई भत्ता (DA Arrear Master Sheet System)";
             document.getElementById('btnPrintLabel').innerText = "Print Landscape Sheet";
             document.getElementById('previewTitle').innerText = "सहेजे गए सभी कर्मचारियों की एरियर सूची (Preview)";
-            
+            if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
+
             daFields.forEach(el => el.style.display = 'flex');
             bonusFields.forEach(el => el.style.display = 'none');
             bankFields.forEach(el => el.style.display = 'none');
@@ -885,6 +946,7 @@
             parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             excelBtnFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            retirementFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
 
             let cashOpt = document.querySelector('#anm option[value="CASH"]');
             if(cashOpt) cashOpt.style.display = 'block';
@@ -905,6 +967,105 @@
         inputElem.value = inputElem.value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
     }
 
+    function formatDate(date) {
+        const d = new Date(date);
+        let day = ("0" + d.getDate()).slice(-2);
+        let month = ("0" + (d.getMonth() + 1)).slice(-2);
+        let year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    function calculateDateDifference(startDate, endDate) {
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+
+        if (end < start) {
+            return { years: 0, months: 0, days: 0 };
+        }
+
+        let years = end.getFullYear() - start.getFullYear();
+        let months = end.getMonth() - start.getMonth();
+        let days = end.getDate() - start.getDate();
+
+        if (days < 0) {
+            months--;
+            let prevMonthLastDay = new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+            days += prevMonthLastDay;
+        }
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+
+        return { years, months, days };
+    }
+
+    function calculateRetirement(dobStr, designation, dojStr) {
+        const dob = new Date(dobStr);
+        const doj = new Date(dojStr);
+        const day = dob.getDate();
+        const month = dob.getMonth() + 1;
+        const year = dob.getFullYear();
+
+        let retDate;
+        let benefitYears = 0, benefitMonths = 0, benefitDays = 0;
+
+        if (teachingStaff.includes(designation)) {
+            let baseRetYear = year + 62;
+            const lastDayOfDobMonth = new Date(baseRetYear, month, 0).getDate();
+            let normalRetDate = new Date(baseRetYear, month - 1, lastDayOfDobMonth);
+
+            if (month < 4 || (month === 4 && day === 1)) {
+                retDate = new Date(baseRetYear, 2, 31);
+            } else {
+                retDate = new Date(baseRetYear + 1, 2, 31);
+            }
+
+            if (retDate > normalRetDate) {
+                let diff = calculateDateDifference(normalRetDate, retDate);
+                benefitYears = diff.years;
+                benefitMonths = diff.months;
+                benefitDays = diff.days;
+            }
+        } else {
+            let baseRetYear = year + 60;
+
+            if (day === 1) {
+                retDate = new Date(baseRetYear, month - 1, 0);
+            } else {
+                let lastDay = new Date(baseRetYear, month, 0).getDate();
+                retDate = new Date(baseRetYear, month - 1, lastDay);
+
+                let normalRetDate = new Date(baseRetYear, month - 1, day - 1);
+                
+                if (retDate > normalRetDate) {
+                    let diff = calculateDateDifference(normalRetDate, retDate);
+                    benefitYears = diff.years;
+                    benefitMonths = diff.months;
+                    benefitDays = diff.days;
+                }
+            }
+        }
+
+        let totalService = calculateDateDifference(doj, retDate);
+
+        let today = new Date();
+        let remainingService = { years: 0, months: 0, days: 0 };
+        if (retDate > today) {
+            remainingService = calculateDateDifference(today, retDate);
+        }
+
+        return {
+            retDate: formatDate(retDate),
+            rawRetDate: retDate,
+            years: benefitYears,
+            months: benefitMonths,
+            days: benefitDays,
+            totalService: `${totalService.years} वर्ष, ${totalService.months} माह, ${totalService.days} दिन`,
+            remainingService: `${remainingService.years} वर्ष, ${remainingService.months} माह, ${remainingService.days} दिन`
+        };
+    }
+
     function runMasterCalculations() {
         if (currentMode === 'BONUS') {
             calculateBonusLogic();
@@ -923,6 +1084,8 @@
             document.getElementById('parishramikTotal').value = calcTotal;
             return;
         }
+
+        if (currentMode === 'RETIREMENT') return;
 
         let prevRate = parseFloat(document.getElementById('prevDaRate').value) || 0;
         let newRate = parseFloat(document.getElementById('newDaRate').value) || 0;
@@ -992,7 +1155,7 @@
     }
 
     function generateMonthInputs() {
-        if(currentMode === 'BONUS' || currentMode === 'PARISHRAMIK' || currentMode === 'NPS_FORMAT') return;
+        if(currentMode === 'BONUS' || currentMode === 'PARISHRAMIK' || currentMode === 'NPS_FORMAT' || currentMode === 'RETIREMENT') return;
 
         let startIdx = parseInt(document.getElementById('startMonth').value);
         let count = parseInt(document.getElementById('monthCount').value);
@@ -1090,7 +1253,7 @@
             return;
         }
 
-        if(currentMode === 'NPS_FORMAT') return;
+        if(currentMode === 'NPS_FORMAT' || currentMode === 'RETIREMENT') return;
 
         let selection = document.getElementById('anm').value;
         let gpfSection = document.getElementById('gpfSplitSection');
@@ -1217,7 +1380,36 @@
 
         let empObject = {};
 
-        if (currentMode === 'NPS_FORMAT') {
+        if (currentMode === 'RETIREMENT') {
+            let desig = document.getElementById('retDesignation').value;
+            let dob = document.getElementById('dob').value;
+            let doj = document.getElementById('doj').value;
+
+            if (!desig || !dob || !doj) {
+                triggerNotificationBox('कृपया पदनाम, जन्मतिथि और नियुक्ति तिथि सभी भरें।', false);
+                return;
+            }
+
+            let retCalc = calculateRetirement(dob, desig, doj);
+
+            empObject = {
+                id: String(empId),
+                mode: 'RETIREMENT',
+                name: toTitleCase(empName),
+                designation: desig,
+                dob: formatDate(dob),
+                doj: formatDate(doj),
+                rawDob: dob,
+                rawDoj: doj,
+                retDate: retCalc.retDate,
+                totalService: retCalc.totalService,
+                years: retCalc.years,
+                months: retCalc.months,
+                days: retCalc.days,
+                remainingService: retCalc.remainingService
+            };
+
+        } else if (currentMode === 'NPS_FORMAT') {
             let pran = (document.getElementById('pranNo').value || '-').toUpperCase();
 
             empObject = {
@@ -1329,6 +1521,7 @@
         if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
         if (currentMode === 'NPS_FORMAT') storageKey = 'nps_format_saved_list';
         if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
+        if (currentMode === 'RETIREMENT') storageKey = 'employees';
         localStorage.setItem(storageKey, JSON.stringify(savedEmployeeList));
     }
 
@@ -1337,6 +1530,7 @@
         if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
         if (currentMode === 'NPS_FORMAT') storageKey = 'nps_format_saved_list';
         if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
+        if (currentMode === 'RETIREMENT') storageKey = 'employees';
         
         let stored = localStorage.getItem(storageKey);
         if (stored) {
@@ -1352,12 +1546,14 @@
         if (currentMode === 'BONUS') modeText = 'बोनस';
         if (currentMode === 'NPS_FORMAT') modeText = 'NPS Schedule';
         if (currentMode === 'PARISHRAMIK') modeText = 'परिश्रमिक';
+        if (currentMode === 'RETIREMENT') modeText = 'सेवानिवृत्ति';
 
         if (confirm(`क्या आप सहेजी गई पूरी ${modeText} सूची हटाना चाहते हैं?`)) {
             let storageKey = 'arrear_saved_list';
             if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
             if (currentMode === 'NPS_FORMAT') storageKey = 'nps_format_saved_list';
             if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
+            if (currentMode === 'RETIREMENT') storageKey = 'employees';
             
             localStorage.removeItem(storageKey);
             savedEmployeeList = [];
@@ -1374,12 +1570,78 @@
             renderNpsTable();
         } else if (currentMode === 'PARISHRAMIK') {
             renderParishramikTable();
+        } else if (currentMode === 'RETIREMENT') {
+            renderRetirementTable();
         } else {
             renderDaTable();
         }
     }
 
-    /* MODIFIED NPS TABLE RENDER FUNCTION */
+    function renderRetirementTable() {
+        if (savedEmployeeList.length === 0) {
+            let emptyHTML = '<tr><td colspan="12">कोई सेवानिवृत्ति रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('previewThead').innerHTML = '';
+            document.getElementById('previewTbody').innerHTML = emptyHTML;
+            document.getElementById('previewTfoot').innerHTML = '';
+
+            document.getElementById('pThead').innerHTML = '';
+            document.getElementById('pTbody').innerHTML = emptyHTML;
+            document.getElementById('pTfoot').innerHTML = '';
+
+            document.getElementById('uiVerifyBox').innerHTML = '<b>कोई डाटा नहीं है।</b>';
+            document.getElementById('pSummaryBox').innerHTML = '';
+            return;
+        }
+
+        let headerHTML = `<tr>
+            <th>क्र.सं.</th>
+            <th style="text-align:left;">कर्मचारी नाम</th>
+            <th>पदनाम</th>
+            <th>जन्मतिथि</th>
+            <th>नियुक्ति तिथि</th>
+            <th>सेवानिवृत्ति तिथि</th>
+            <th>कुल सेवा (वर्ष-माह-दिन)</th>
+            <th>लाभ (वर्ष)</th>
+            <th>लाभ (माह)</th>
+            <th>लाभ (दिन)</th>
+            <th>शेष बची सेवा</th>`;
+
+        let headerHTMLPreview = headerHTML + `<th class="no-print-col">कार्रवाई</th></tr>`;
+        let headerHTMLPrint = headerHTML + `</tr>`;
+
+        document.getElementById('previewThead').innerHTML = headerHTMLPreview;
+        document.getElementById('pThead').innerHTML = headerHTMLPrint;
+
+        let previewBodyHTML = '';
+        let printBodyHTML = '';
+
+        savedEmployeeList.forEach((emp, idx) => {
+            let rowCells = `
+                <td>${idx + 1}</td>
+                <td style="text-align:left;" class="print-emp-name"><b>${toTitleCase(emp.name)}</b></td>
+                <td class="print-emp-desig">${emp.designation}</td>
+                <td>${emp.dob}</td>
+                <td>${emp.doj}</td>
+                <td><b>${emp.retDate}</b></td>
+                <td>${emp.totalService}</td>
+                <td>${emp.years}</td>
+                <td>${emp.months}</td>
+                <td>${emp.days}</td>
+                <td><b>${emp.remainingService}</b></td>`;
+
+            printBodyHTML += `<tr>${rowCells}</tr>`;
+            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+        });
+
+        document.getElementById('previewTbody').innerHTML = previewBodyHTML;
+        document.getElementById('pTbody').innerHTML = printBodyHTML;
+        document.getElementById('previewTfoot').innerHTML = '';
+        document.getElementById('pTfoot').innerHTML = '';
+
+        document.getElementById('uiVerifyBox').innerHTML = `<b>कुल दर्ज कर्मचारी:</b> ${savedEmployeeList.length}`;
+        document.getElementById('pSummaryBox').innerHTML = `<b>कुल दर्ज कर्मचारी:</b> ${savedEmployeeList.length}`;
+    }
+
     function renderNpsTable() {
         if (savedEmployeeList.length === 0) {
             let emptyHTML = '<tr><td colspan="13">कोई NPS रिकॉर्ड नहीं है।</td></tr>';
@@ -1493,7 +1755,6 @@
         document.getElementById('pSummaryBox').innerHTML = printSummaryHTML;
     }
 
-    /* EXCEL COPY FUNCTION FOR NPS & PARISHRAMIK */
     function copyTableToClipboard() {
         if (currentMode !== 'NPS_FORMAT' && currentMode !== 'PARISHRAMIK') {
             triggerNotificationBox('यह मोड Excel Copy सपोर्ट नहीं करता है!', false);
@@ -1526,7 +1787,6 @@
         window.getSelection().removeAllRanges();
     }
 
-    /* EXCEL (.CSV) DOWNLOAD FUNCTION FOR NPS & PARISHRAMIK */
     function exportToCsv() {
         if (currentMode !== 'NPS_FORMAT' && currentMode !== 'PARISHRAMIK') {
             triggerNotificationBox('यह मोड CSV Export सपोर्ट नहीं करता है!', false);
@@ -1939,6 +2199,122 @@
         document.getElementById('pSummaryBox').innerHTML = printSummaryHTML;
     }
 
+    function deleteSpecificEmpById(id) {
+        if (confirm("क्या आप इस कर्मचारी का डेटा हटाना चाहते हैं?")) {
+            savedEmployeeList = savedEmployeeList.filter(e => String(e.id) !== String(id));
+            saveToLocalStorageByMode();
+            renderMasterTable();
+            triggerNotificationBox("कर्मचारी रिकॉर्ड हटा दिया गया है!", true);
+        }
+    }
+
+    function searchEmployeeData() {
+        let nameSearch = document.getElementById('empName').value.trim().toLowerCase();
+        if (!nameSearch) {
+            triggerNotificationBox("खोजने के लिए कृपया नाम दर्ज करें!", false);
+            return;
+        }
+
+        let found = savedEmployeeList.find(e => e.name.toLowerCase().includes(nameSearch));
+        if (found) {
+            document.getElementById('empId').value = found.id;
+            document.getElementById('empName').value = found.name;
+
+            if (currentMode === 'RETIREMENT') {
+                document.getElementById('retDesignation').value = found.designation || '';
+                document.getElementById('dob').value = found.rawDob || '';
+                document.getElementById('doj').value = found.rawDoj || '';
+            } else if (currentMode === 'NPS_FORMAT') {
+                document.getElementById('pranNo').value = found.pranNo || '';
+                document.getElementById('basicPay').value = found.basicPay || '';
+                document.getElementById('npsDaRate').value = found.daRate || 60;
+                document.getElementById('daAmount').value = found.daAmount || '';
+                document.getElementById('subsContry').value = found.subsContry || '';
+                document.getElementById('govContry').value = found.govContry || '';
+                document.getElementById('arearRemark').value = found.arearRemark || '';
+                document.getElementById('npsRemark').value = found.remark || '';
+            } else if (currentMode === 'PARISHRAMIK') {
+                document.getElementById('bankName').value = found.bankName || '';
+                document.getElementById('accountNo').value = found.accountNo || '';
+                document.getElementById('ifscCode').value = found.ifscCode || '';
+                document.getElementById('noOfDays').value = found.noOfDays || 0;
+                document.getElementById('ratePerDay').value = found.ratePerDay || 0;
+                document.getElementById('parishramikTotal').value = found.total || 0;
+                document.getElementById('otherRemark').value = found.other || '';
+            } else if (currentMode === 'BONUS') {
+                document.getElementById('designation').value = found.designation || '';
+                document.getElementById('bankName').value = found.bankName || '';
+                document.getElementById('accountNo').value = found.accountNo || '';
+                document.getElementById('basicPay').value = found.basicPay || '';
+                document.getElementById('bonusAmountInput').value = found.bonus || 6908;
+                document.getElementById('anm').value = found.accountType || 'GPF';
+                calculateBonusLogic();
+            } else {
+                document.getElementById('designation').value = found.designation || '';
+                document.getElementById('joiningDate').value = found.joiningDate || '';
+                document.getElementById('deathDate').value = found.deathDate || '';
+                document.getElementById('basicPay').value = found.basicPay || '';
+                document.getElementById('anm').value = found.accountType || 'GPF';
+                runMasterCalculations();
+            }
+
+            triggerNotificationBox("कर्मचारी रिकॉर्ड मिल गया है!", true);
+        } else {
+            triggerNotificationBox("इस नाम का कोई कर्मचारी नहीं मिला!", false);
+        }
+    }
+
+    function deleteEmployeeData() {
+        let empId = document.getElementById('empId').value;
+        if (!empId) {
+            triggerNotificationBox("हटाने के लिए कोई रिकॉर्ड चुना नहीं गया है!", false);
+            return;
+        }
+        deleteSpecificEmpById(empId);
+        resetFormFields();
+    }
+
+    function resetFormFields() {
+        document.getElementById('empId').value = savedEmployeeList.length + 1;
+        document.getElementById('empName').value = '';
+
+        if (currentMode === 'RETIREMENT') {
+            document.getElementById('retDesignation').value = '';
+            document.getElementById('dob').value = '';
+            document.getElementById('doj').value = '';
+        } else if (currentMode === 'NPS_FORMAT') {
+            document.getElementById('pranNo').value = '';
+            document.getElementById('basicPay').value = '';
+            document.getElementById('npsDaRate').value = '60';
+            document.getElementById('daAmount').value = '';
+            document.getElementById('subsContry').value = '';
+            document.getElementById('govContry').value = '';
+            document.getElementById('arearRemark').value = '';
+            document.getElementById('npsRemark').value = '';
+        } else if (currentMode === 'PARISHRAMIK') {
+            document.getElementById('accountNo').value = '';
+            document.getElementById('noOfDays').value = '0';
+            document.getElementById('ratePerDay').value = '0';
+            document.getElementById('parishramikTotal').value = '0';
+            document.getElementById('otherRemark').value = '';
+            loadLastUsedBankInfo();
+        } else if (currentMode === 'BONUS') {
+            document.getElementById('designation').value = '';
+            document.getElementById('accountNo').value = '';
+            document.getElementById('basicPay').value = '';
+            document.getElementById('bonusAmountInput').value = '6908';
+            document.getElementById('bonusGpfDeductionInput').value = '5181';
+            loadLastUsedBankInfo();
+            calculateBonusLogic();
+        } else {
+            document.getElementById('designation').value = '';
+            document.getElementById('joiningDate').value = '';
+            document.getElementById('deathDate').value = '';
+            document.getElementById('basicPay').value = '';
+            runMasterCalculations();
+        }
+    }
+
     function printLandscapeSheet() {
         if (savedEmployeeList.length === 0) {
             alert('प्रिंट करने के लिए कम से कम एक कर्मचारी का डेटा सेव करें!');
@@ -1968,6 +2344,11 @@
             styleTag.innerHTML = `@page { size: A4 landscape; margin: 8mm; }`;
             document.getElementById('pSheetTitle').innerText = "परिश्रमिक भुगतान देयक (Remuneration Payment Sheet)";
             document.getElementById('pSubHeaderDetails').innerHTML = `<b>वित्तीय वर्ष:</b> ${document.getElementById('arrearYear').value}`;
+        } else if (currentMode === 'RETIREMENT') {
+            styleTag.innerHTML = `@page { size: A4 landscape; margin: 8mm; }`;
+            document.getElementById('pSchoolName').innerText = "कर्मचारी सेवानिवृत्ति एवं सेवा अवधि प्रबंधन प्रणाली";
+            document.getElementById('pSheetTitle').innerText = "सेवानिवृत्ति एवं सेवा अवधि विवरण पत्रक";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>रिपोर्ट तिथि:</b> ${new Date().toLocaleDateString('hi-IN')}`;
         } else {
             styleTag.innerHTML = `@page { size: A4 landscape; margin: 8mm; }`;
             let startIdx = parseInt(document.getElementById('startMonth').value);
@@ -1983,121 +2364,7 @@
             document.getElementById('pSubHeaderDetails').innerHTML = `<b>अवधि:</b> ${startMonthName} से ${endMonthName} (${year}) | <b>DA अंतर:</b> ${prevRate}% से ${newRate}%`;
         }
 
-        renderMasterTable();
         window.print();
-    }
-
-    function triggerNotificationBox(msgText, isSuccessMode) {
-        const msgBox = document.getElementById('messageBox');
-        msgBox.innerText = msgText;
-        msgBox.className = 'msg-box ' + (isSuccessMode ? 'msg-success' : 'msg-error');
-        msgBox.style.visibility = 'visible';
-        setTimeout(() => { msgBox.style.visibility = 'hidden'; }, 4000);
-    }
-
-    function resetFormFields() {
-        document.getElementById('empName').value = '';
-        document.getElementById('pranNo').value = '';
-        document.getElementById('designation').value = '';
-        document.getElementById('basicPay').value = '';
-        document.getElementById('daAmount').value = '';
-        document.getElementById('joiningDate').value = '';
-        document.getElementById('deathDate').value = '';
-        document.getElementById('accountNo').value = '';
-        document.getElementById('subsContry').value = '';
-        document.getElementById('govContry').value = '';
-        document.getElementById('arearRemark').value = '';
-        document.getElementById('npsRemark').value = '';
-        document.getElementById('noOfDays').value = '0';
-        document.getElementById('ratePerDay').value = '0';
-        document.getElementById('parishramikTotal').value = '0';
-        document.getElementById('otherRemark').value = '';
-        
-        loadLastUsedBankInfo();
-
-        if (currentMode === 'DA') {
-            generateMonthInputs();
-        }
-        runMasterCalculations();
-        updateNextAutoId();
-    }
-
-    function searchEmployeeData() {
-        let empId = prompt('खोजने के लिए ID दर्ज करें:');
-        if (!empId) { triggerNotificationBox('ID दर्ज करें।', false); return; }
-
-        let localMatch = savedEmployeeList.find(e => String(e.id) === String(empId));
-        if (localMatch) {
-            document.getElementById('empId').value = localMatch.id;
-            document.getElementById('empName').value = toTitleCase(localMatch.name);
-
-            if (currentMode === 'NPS_FORMAT') {
-                document.getElementById('ddoRegNo').value = localMatch.ddoRegNo || '';
-                document.getElementById('pranNo').value = localMatch.pranNo || '';
-                document.getElementById('basicPay').value = localMatch.basicPay || 0;
-                document.getElementById('npsDaRate').value = localMatch.daRate || 60;
-                document.getElementById('daAmount').value = localMatch.daAmount || 0;
-                document.getElementById('subsContry').value = localMatch.subsContry || 0;
-                document.getElementById('govContry').value = localMatch.govContry || 0;
-                document.getElementById('payMonth').value = localMatch.payMonth || 'January';
-                document.getElementById('payYear').value = localMatch.payYear || '2026';
-                document.getElementById('contType').value = localMatch.contType || 'Regular';
-                document.getElementById('arearRemark').value = localMatch.arearRemark || '';
-                document.getElementById('npsRemark').value = localMatch.remark || '';
-            } else if (currentMode === 'PARISHRAMIK') {
-                document.getElementById('bankName').value = localMatch.bankName || '';
-                document.getElementById('accountNo').value = localMatch.accountNo || '';
-                document.getElementById('ifscCode').value = localMatch.ifscCode || '';
-                document.getElementById('noOfDays').value = localMatch.noOfDays || 0;
-                document.getElementById('ratePerDay').value = localMatch.ratePerDay || 0;
-                document.getElementById('parishramikTotal').value = localMatch.total || 0;
-                document.getElementById('otherRemark').value = localMatch.other || '';
-            } else if (currentMode === 'BONUS') {
-                document.getElementById('designation').value = toTitleCase(localMatch.designation);
-                document.getElementById('basicPay').value = localMatch.basicPay;
-                document.getElementById('bankName').value = localMatch.bankName || '';
-                document.getElementById('accountNo').value = localMatch.accountNo || '';
-                document.getElementById('anm').value = localMatch.accountType || 'GPF';
-            } else {
-                document.getElementById('designation').value = toTitleCase(localMatch.designation);
-                document.getElementById('basicPay').value = localMatch.basicPay;
-                document.getElementById('joiningDate').value = localMatch.joiningDate || '';
-                document.getElementById('deathDate').value = localMatch.deathDate || '';
-                document.getElementById('anm').value = localMatch.accountType || 'GPF';
-            }
-
-            runMasterCalculations();
-            triggerNotificationBox('कर्मचारी रिकॉर्ड मिल गया!', true);
-        } else {
-            triggerNotificationBox('इस ID का रिकॉर्ड नहीं मिला।', false);
-        }
-    }
-
-    function deleteEmployeeData() {
-        let empId = document.getElementById('empId').value;
-        if (!empId) {
-            empId = prompt('हटाने के लिए कर्मचारी ID दर्ज करें:');
-        }
-
-        if (!empId) return;
-
-        deleteSpecificEmpById(empId);
-    }
-
-    function deleteSpecificEmpById(empId) {
-        let index = savedEmployeeList.findIndex(e => String(e.id) === String(empId));
-        if (index >= 0) {
-            let empName = savedEmployeeList[index].name;
-            if (confirm(`क्या आप कर्मचारी "${empName}" (ID: ${empId}) का रिकॉर्ड हटाना चाहते हैं?`)) {
-                savedEmployeeList.splice(index, 1);
-                saveToLocalStorageByMode();
-                renderMasterTable();
-                resetFormFields();
-                triggerNotificationBox('कर्मचारी का रिकॉर्ड सफलतापूर्वक हटा दिया गया है!', true);
-            }
-        } else {
-            triggerNotificationBox('इस ID का कोई रिकॉर्ड नहीं मिला!', false);
-        }
     }
 </script>
 
