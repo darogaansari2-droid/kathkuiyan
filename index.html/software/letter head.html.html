@@ -47,6 +47,10 @@
         .btn-table {
             background-color: #ff9900; color: #000; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;
         }
+        .btn-print {
+            background-color: #008CBA; color: #fff; border: none; padding: 5px 10px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;
+        }
+        .btn-print:hover { background-color: #006688; }
         .btn-delete-action {
             background-color: #cc0000; color: #fff; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px;
         }
@@ -77,7 +81,7 @@
         /* 🖨️ प्रिंट... */
         @media print {
             body { background-color: #ffffff; }
-            .size-selector-box, .drag-handle { display: none !important; }
+            .size-selector-box, .drag-handle, .resize-handle-left, .resize-handle-right { display: none !important; }
             .letterhead { 
                 border: none !important; 
                 box-shadow: none !important; 
@@ -85,9 +89,8 @@
                 overflow: visible !important; 
             }
             .editable-text:focus, .content-fixed:focus { outline: none !important; background-color: transparent !important; }
-            .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; }
-            .resize-handle-left, .resize-handle-right { display: none !important; }
-            .table-resizable-wrapper table { border-collapse: collapse !important; }
+            .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; }
+            .table-resizable-wrapper table { border-collapse: collapse !important; height: 100% !important; }
             .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #000 !important; }
         }
 
@@ -162,11 +165,14 @@
             top: 300px;  
             width: 694px; 
             min-width: 100px;
+            min-height: 50px;
             border: 1px dashed #aaa;  
             padding: 25px 12px 12px 12px; 
             box-sizing: border-box;
             background: #fff;
             z-index: 10; 
+            resize: both;
+            overflow: auto;
         }
 
         /* ✥ टेबल हैंडल */
@@ -191,6 +197,7 @@
         /* 📊 टेबल स्टाइल */
         .table-resizable-wrapper table {
             width: 100%;             
+            height: 100%;
             border-collapse: collapse;
             font-size: 14px;
             text-align: left;
@@ -254,6 +261,7 @@
     </div>
 
     <button class="btn-table" onclick="insertDynamicTable()">➕ टेबल जोड़ें</button>
+    <button class="btn-print" onclick="window.print()">🖨️ प्रिंट करें</button>
 
     <div class="selector-group" style="margin-left: auto; gap: 5px;">
         <button class="btn-delete-action" onclick="deleteCurrentRow()">❌ रो हटाएँ</button>
@@ -350,12 +358,12 @@
                           '<div class="resize-handle-left" onmousedown="initResize(event, \''+wrapperId+'\', \'left\')"></div>' +
                           '<table contenteditable="true"><thead><tr>';
         
-        for (var c = 0; c < cols; c++) { htmlContent += "<th>हेडिंग " + (c + 1) + "</th>"; }
+        for (var c = 0; c < cols; c++) { htmlContent += "<th></th>"; }
         htmlContent += "</tr></thead><tbody>";
 
         for (var r = 0; r < rows; r++) {
             htmlContent += "<tr>";
-            for (var c = 0; c < cols; c++) { htmlContent += "<td>डेटा</td>"; }
+            for (var c = 0; c < cols; c++) { htmlContent += "<td></td>"; }
             htmlContent += "</tr>";
         }
         htmlContent += '</tbody></table>' +
