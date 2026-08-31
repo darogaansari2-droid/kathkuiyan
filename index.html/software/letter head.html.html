@@ -10,7 +10,6 @@
             padding: 0;
             color: #333;
             background-color: #f5f5f5; 
-            user-select: none; 
         }
 
         /* 🛠️ टूल्स बॉक्स स्टाइल */
@@ -25,16 +24,17 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            gap: 12px; 
+            gap: 10px; 
             font-family: Arial, sans-serif;
             font-size: 13px;
+            flex-wrap: wrap;
         }
         .selector-group {
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        .size-selector-box select {
+        .size-selector-box select, .size-selector-box input[type="number"] {
             padding: 4px 6px;
             font-size: 13px;
             border-radius: 4px;
@@ -42,8 +42,20 @@
             cursor: pointer;
             font-weight: bold;
         }
+        .margin-input {
+            width: 50px;
+            text-align: center;
+        }
         
         /* 📊 बटन्स स्टाइल */
+        .btn-action {
+            background-color: #ffffff; color: #003366; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;
+        }
+        .btn-action:hover { background-color: #e0e0e0; }
+        .btn-apply {
+            background-color: #4CAF50; color: #fff; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;
+        }
+        .btn-apply:hover { background-color: #45a049; }
         .btn-table {
             background-color: #ff9900; color: #000; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;
         }
@@ -72,10 +84,11 @@
 
         /* 🔒 हेडर ज़ोन */
         .fixed-header-container {
-            padding-left: 50px;
-            padding-right: 50px;
+            padding-left: 24px;
+            padding-right: 24px;
             width: 100%;
             box-sizing: border-box;
+            transition: padding 0.2s ease;
         }
 
         /* 🖨️ प्रिंट... */
@@ -100,60 +113,61 @@
         /* 📏 विद्यालय के नीचे पूरे पेज में फैलने वाली सीधी सुंदर बॉर्डर लाइन */
         .full-width-line {
             border-bottom: 5px double #003366;
-            margin: 0 -50px 28px -50px; 
+            margin: 0 -24px 28px -24px; 
             display: block;
+            transition: margin 0.2s ease;
         }
 
         .logo { width: 95px; height: 95px; object-fit: contain; }
         .school-details { text-align: center; flex-grow: 1; }
         .school-name { font-size: 36px; font-weight: bold; color: #003366; margin: 0; text-transform: uppercase; line-height: 1.2; }
-        .school-info { font-size: 18px; margin: 8px 0 0 0; color: #003366; font-weight: bold; } /* 🌟 गाढ़ा नीला रंग */
+        .school-info { font-size: 18px; margin: 8px 0 0 0; color: #003366; font-weight: bold; }
         
-        /* 📅 पत्रांक और दिनांक का मुख्य डिब्बा - गहरा गाढ़ा नीला रंग */
+        /* 📅 पत्रांक और दिनांक का मुख्य डिब्बा */
         .meta-info { 
             display: flex; 
             justify-content: space-between; 
             align-items: center;
             margin-bottom: 18px; 
             font-weight: bold; 
-            color: #003366; /* 🌟 स्कूल नेम वाला सेम गाढ़ा नीला रंग */
+            color: #003366;
             width: 100%;
         }
         .meta-info .date-right {
             text-align: right; 
         }
 
-        /* 👔 प्रबन्धक / प्रधानाचार्य - गहरा गाढ़ा नीला रंग */
+        /* 👔 प्रबन्धक / प्रधानाचार्य */
         .authority { 
             font-weight: bold; 
             font-size: 16px; 
             margin-bottom: 10px; 
             margin-left: 10px; 
-            color: #003366; /* 🌟 स्कूल नेम वाला सेम गाढ़ा नीला रंग */
+            color: #003366;
         }
          
-        /* ✍️ सामान्य पत्र लिखने की मुख्य जगह */
+        /* ✍️ MS Word की तरह सामान्य पत्र टाइपिंग एरिया */
         .content-fixed {
-            padding-left: 50px;   
-            padding-right: 50px;  
-            min-height: 400px; 
+            padding-left: 24px;   
+            padding-right: 24px; 
             font-size: 15px; 
             line-height: 1.5;
             color: #222;
-            text-align: justify;
-            padding-bottom: 10px;
             cursor: text;
             user-select: text; 
             box-sizing: border-box;
+            white-space: pre-wrap;
+            outline: none;
+            transition: padding 0.2s ease;
         }
-        .content-fixed:focus, .editable-text:focus { outline: 1px dashed #003366 !important; background-color: #fafafa; padding: 2px; }
+        .editable-text:focus { outline: 1px dashed #003366 !important; background-color: #fafafa; padding: 2px; }
         
         /* भरने वाली जगह का रंग */
         .editable-text { 
-            display: inline-block; 
+            display: inline;
             min-width: 120px; 
             font-weight: normal; 
-            color: #003366; /* 🌟 भरने वाले अक्षरों का रंग भी मैचिंग रहेगा */
+            color: #003366; 
             cursor: text; 
             user-select: text; 
         }
@@ -161,9 +175,9 @@
         /* ↔️ टेबल कंटेनर बॉक्स */
         .table-resizable-wrapper {
             position: absolute;
-            left: 50px; 
+            left: 24px; 
             top: 300px;  
-            width: 694px; 
+            width: 746px; 
             min-width: 100px;
             min-height: 50px;
             border: 1px dashed #aaa;  
@@ -216,6 +230,17 @@
 <body>
 
 <div class="size-selector-box">
+    <!-- 📄 कस्टम बायाँ व दायाँ मार्जिन सेटिंग्स (इंच में) -->
+    <div class="selector-group">
+        <span>⬅️ Left (inch):</span>
+        <input type="number" id="leftMarginInput" class="margin-input" value="0.25" step="0.05" min="0" max="3">
+    </div>
+    <div class="selector-group">
+        <span>➡️ Right (inch):</span>
+        <input type="number" id="rightMarginInput" class="margin-input" value="0.25" step="0.05" min="0" max="3">
+        <button class="btn-apply" onclick="applyCustomMargins()">लागू करें</button>
+    </div>
+
     <div class="selector-group">
         <span>🔍 साइज़:</span>
         <select id="fontSizeSelector" onchange="changeSelectionFontSize(this.value)">
@@ -240,6 +265,15 @@
         </select>
     </div>
 
+    <!-- ≡ पैराग्राफ अलाइनमेंट के विकल्प -->
+    <div class="selector-group">
+        <span>≡ अलाइन:</span>
+        <button class="btn-action" onclick="setTextAlignment('justifyLeft')" title="Left Align">⬅️ Left</button>
+        <button class="btn-action" onclick="setTextAlignment('justifyCenter')" title="Center Align">↔️ Center</button>
+        <button class="btn-action" onclick="setTextAlignment('justifyRight')" title="Right Align">➡️ Right</button>
+        <button class="btn-action" onclick="setTextAlignment('justifyFull')" title="Justify">☰ Justify</button>
+    </div>
+
     <div class="selector-group">
         <span>↕️ रो ऊँचाई:</span>
         <select id="tableHeightSelector" onchange="changeTableRowHeight(this.value)">
@@ -248,15 +282,6 @@
             <option value="8px">सामान्य</option>
             <option value="18px">ज्यादा</option>
             <option value="30px">बहुत ज्यादा</option>
-        </select>
-    </div>
-
-    <div class="selector-group">
-        <span>📄 केवल टेबल मार्जिन:</span>
-        <select id="pageMarginSelector" onchange="changeTableZoneMargin(this.value)">
-            <option value="normal" selected>सामान्य टेबल (Normal)</option>
-            <option value="narrow">चौड़ी टेबल (Narrow)</option>
-            <option value="left1inch">लेफ्ट 1" फिक्स टेबल (Left 1" Fixed)</option>
         </select>
     </div>
 
@@ -272,7 +297,7 @@
 
 <div class="letterhead" id="main-letterhead">
     
-    <div class="fixed-header-container">
+    <div class="fixed-header-container" id="header-container">
         <div class="header">
             <img class="logo" src="logo.png" alt="Logo"> 
             <div class="school-details">
@@ -281,7 +306,7 @@
             </div>
         </div>
 
-        <div class="full-width-line"></div>
+        <div class="full-width-line" id="header-line"></div>
 
         <div class="meta-info">
             <div>पत्रांक / (Ref No): <span class="editable-text" contenteditable="true">...................</span></div>
@@ -291,7 +316,8 @@
         <div class="authority">प्रबन्धक / प्रधानाचार्य</div>
     </div>
    
-    <div class="content-fixed" id="letter-body" contenteditable="true">यहाँ अपना पत्र या मुख्य सूचना टाइप करें...</div>
+    <!-- पूरे पेज का मुख्य टाइपिंग एरिया -->
+    <div class="content-fixed" id="letter-body" contenteditable="true"><br></div>
 
 </div>
 
@@ -299,23 +325,68 @@
     window.onload = function() {
         var bodyArea = document.getElementById('letter-body');
         bodyArea.focus();
-        bodyArea.onfocus = function() { if(this.innerText.trim() === "यहाँ अपना पत्र या मुख्य सूचना टाइप करें...") { this.innerText = ""; } };
     };
 
-    function changeTableZoneMargin(marginType) {
+    /* 📄 कस्टम (इंच आधारित) बायाँ व दायाँ मार्जिन लागू करने का फ़ंक्शन */
+    function applyCustomMargins() {
+        var leftInch = parseFloat(document.getElementById('leftMarginInput').value) || 0;
+        var rightInch = parseFloat(document.getElementById('rightMarginInput').value) || 0;
+
+        // 1 inch ≈ 96 pixels
+        var leftPx = Math.round(leftInch * 96);
+        var rightPx = Math.round(rightInch * 96);
+
+        // 1. हेडर का बायाँ और दायाँ मार्जिन बदलें
+        var headerContainer = document.getElementById('header-container');
+        headerContainer.style.paddingLeft = leftPx + 'px';
+        headerContainer.style.paddingRight = rightPx + 'px';
+
+        // 2. हेडर की बॉर्डर लाइन को मार्जिन अनुसार एडजस्ट करें
+        var headerLine = document.getElementById('header-line');
+        headerLine.style.marginLeft = '-' + leftPx + 'px';
+        headerLine.style.marginRight = '-' + rightPx + 'px';
+
+        // 3. मुख्य टाइपिंग एरिया का बायाँ और दायाँ मार्जिन बदलें
+        var letterBody = document.getElementById('letter-body');
+        letterBody.style.paddingLeft = leftPx + 'px';
+        letterBody.style.paddingRight = rightPx + 'px';
+
+        // 4. अगर कोई टेबल बनी हुई है तो उसे भी नए मार्जिन के हिसाब से चौड़ा करें
         var wrappers = document.querySelectorAll('.table-resizable-wrapper');
+        var newWidth = (794 - leftPx - rightPx);
         wrappers.forEach(function(wrapper) {
-            if (marginType === 'left1inch') {
-                wrapper.style.left = '96px';  
-                wrapper.style.width = '678px'; 
-            } else if (marginType === 'narrow') {
-                wrapper.style.left = '15px';
-                wrapper.style.width = '764px';
-            } else {
-                wrapper.style.left = '50px';
-                wrapper.style.width = '694px';
-            }
+            wrapper.style.left = leftPx + 'px';
+            wrapper.style.width = (newWidth > 100 ? newWidth : 100) + 'px';
         });
+    }
+
+    /* Tab दबाने पर 4 स्पेस आगे बढ़ने का लॉजिक */
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab') {
+            var selection = window.getSelection();
+            if (selection.rangeCount > 0) {
+                var focusNode = selection.focusNode;
+                var isEditable = false;
+                
+                while (focusNode && focusNode !== document.body) {
+                    if (focusNode.isContentEditable) {
+                        isEditable = true;
+                        break;
+                    }
+                    focusNode = focusNode.parentNode;
+                }
+
+                if (isEditable) {
+                    e.preventDefault();
+                    document.execCommand('insertHTML', false, '&#160;&#160;&#160;&#160;');
+                }
+            }
+        }
+    });
+
+    /* ≡ टेक्स्ट अलाइनमेंट फ़ंक्शन */
+    function setTextAlignment(command) {
+        document.execCommand(command, false, null);
     }
 
     function changeSelectionFontSize(sizeValue) { if (sizeValue) { document.execCommand('fontSize', false, sizeValue); document.getElementById('fontSizeSelector').value = ""; } }
@@ -353,6 +424,16 @@
         var wrapper = document.createElement('div');
         wrapper.id = wrapperId;
         wrapper.className = 'table-resizable-wrapper';
+
+        // वर्तमान इनपुट किए गए मार्जिन के हिसाब से टेबल रखें
+        var leftInch = parseFloat(document.getElementById('leftMarginInput').value) || 0;
+        var rightInch = parseFloat(document.getElementById('rightMarginInput').value) || 0;
+        var leftPx = Math.round(leftInch * 96);
+        var rightPx = Math.round(rightInch * 96);
+
+        wrapper.style.left = leftPx + 'px';
+        var tableWidth = 794 - leftPx - rightPx;
+        wrapper.style.width = (tableWidth > 100 ? tableWidth : 100) + 'px';
         
         var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ)</div>' +
                           '<div class="resize-handle-left" onmousedown="initResize(event, \''+wrapperId+'\', \'left\')"></div>' +
@@ -372,9 +453,6 @@
         wrapper.innerHTML = htmlContent;
         
         document.getElementById('main-letterhead').appendChild(wrapper);
-
-        var currentMargin = document.getElementById('pageMarginSelector').value;
-        changeTableZoneMargin(currentMargin);
     }
 
     var dragObj = null;
@@ -419,7 +497,7 @@
         resizeDirection = direction;
         startX = e.clientX;
         startWidth = parseInt(document.defaultView.getComputedStyle(currentWrapper).width, 10);
-        startLeft = parseInt(currentWrapper.style.left, 10) || 50;
+        startLeft = parseInt(currentWrapper.style.left, 10) || 24;
         
         document.documentElement.addEventListener('mousemove', doResize, false);
         document.documentElement.addEventListener('mouseup', stopResize, false);
