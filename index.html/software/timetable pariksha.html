@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>एकीकृत विद्यालय सॉफ्टवेयर (Time Table, Exam Summary, Grid Seating & Copy Stock)</title>
+    <title>एकीकृत विद्यालय सॉफ्टवेयर (Time Table, Exam Summary, Grid Seating, Copy Stock & विद्यालय-वार)</title>
     <style>
         :root {
             --primary-color: #1a365d;
@@ -164,7 +164,7 @@
         .class-btn.active { background: #1e3c72; color: white; }
 
         .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .card { background: #eef2f5; padding: 10px; border-radius: 6px; text-align: center; border-left: 4px solid #1e3c72; }
+        .card { background: #eef2f5; padding: 10px; border-radius: 6px; text-align: center; border-left: 4px solid #1e3c72; margin-bottom: 15px; }
         .card.stock { border-left-color: #27ae60; background: #e8f8f5; }
         .card.torn { border-left-color: #d35400; background: #fdf2e9; }
         .card.b-copy { border-left-color: #8e44ad; background: #f4ecf7; }
@@ -175,7 +175,7 @@
 
         .main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .section-copy { background: #fafafa; padding: 15px; border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 15px; }
-        .section-copy h2 { margin-top: 0; font-size: 15px; color: #2c3e50; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .section-copy h2, .card h2 { margin-top: 0; font-size: 15px; color: #2c3e50; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
         
         .form-grid-copy { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 8px; }
         .form-group-copy { display: flex; flex-direction: column; }
@@ -204,12 +204,29 @@
         .date-title { font-size: 14px; margin-top: 15px; margin-bottom: 5px; color: #000; font-weight: bold; }
         .calc-box { background: #eef7fe; border: 1px solid #3498db; padding: 12px; border-radius: 6px; margin-top: 10px; }
 
+        /* ==================== VIDYALAYVAR STYLES ==================== */
+        .v-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .v-tab-btn { flex: 1; padding: 10px; font-size: 15px; font-weight: bold; border: none; background: #e0e0e0; cursor: pointer; border-radius: 4px; transition: 0.3s; }
+        .v-tab-btn.active { background: #2a5298; color: white; }
+        .v-tab-content { display: none; }
+        .v-tab-content.active { display: block; }
+        .v-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .v-form-grid input, .v-form-grid select, .v-form-grid button { padding: 8px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+        .stream-summary-box { display: flex; gap: 15px; margin-bottom: 15px; }
+        .stream-card { flex: 1; padding: 12px; background: #f8f9fa; border-left: 4px solid #2a5298; border-radius: 4px; }
+        .stream-card h3 { font-size: 13px; color: #555; margin:0 0 5px 0; }
+        .stream-card p { font-size: 20px; font-weight: bold; color: #1e3c72; margin: 0; }
+        .exam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .exam-item { background: #f8f9fa; padding: 8px; border: 1px solid #ddd; border-radius: 4px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+        .exam-item input[type="checkbox"] { width: auto; }
+        .result-box { background: #d4edda; color: #155724; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; text-align: center; border: 1px solid #c3e6cb; }
+
         /* PRINT STYLES */
         @media print {
             @page { size: A4 portrait; margin: 5mm 6mm 5mm 6mm; }
             html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #fff !important; -webkit-print-color-adjust: exact; }
             .container { box-shadow: none !important; max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
-            .no-print, .software-mode-bar, .admin-controls, .tt-controls, .tt-settings-panel, .btn, .tt-btn, .btn-add, .btn-remove { display: none !important; }
+            .no-print, .software-mode-bar, .admin-controls, .tt-controls, .tt-settings-panel, .btn, .tt-btn, .btn-add, .btn-remove, .v-tabs { display: none !important; }
             
             table.seating-grid td input { 
                 border: none !important; 
@@ -253,6 +270,7 @@
                 <option value="gridseating" selected>कमरा-वार बैठक व्यवस्था (Seating Grid Plan)</option>
                 <option value="timetable">समय सारिणी (School Time Table)</option>
                 <option value="copyrecords">उत्तर पुस्तिका स्टॉक रजिस्टर (Copy Records)</option>
+                <option value="vidyalayvar">विद्यालय-वार विवरण एवं प्रबंधन (Vidyalayvar Management)</option>
             </select>
             <button class="btn" style="background-color: #27ae60; margin-left: 10px;" onclick="saveSelectedFormat()">सेटिंग सेव करें (Save Choice)</button>
         </div>
@@ -791,6 +809,147 @@
             <button class="action-btn reset-btn" onclick="resetCurrentClassData()">वर्तमान कक्षा का संपूर्ण डेटा रीसेट करें</button>
         </div>
     </div>
+
+    <!-- ========================================================================= -->
+    <!-- 5. VIDYALAYVAR MANAGEMENT SECTION (विद्यालय-वार प्रबंधन)                  -->
+    <!-- ========================================================================= -->
+    <div id="vidyalayvarSection" style="display: none;">
+        <div class="print-header">
+            <h1>श्री कृष्ण इ० का० सेमरा कठकुइयाँ, कुशीनगर</h1>
+            <h3>यूपी बोर्ड परीक्षा केंद्र प्रबंधन प्रणाली (High School & Intermediate)</h3>
+        </div>
+
+        <!-- Vidyalayvar Tabs -->
+        <div class="v-tabs no-print">
+            <button class="v-tab-btn active" onclick="switchVidyalayTab('hs')">हाई स्कूल (Class 10)</button>
+            <button class="v-tab-btn" onclick="switchVidyalayTab('inter')">इंटरमीडिएट (Class 12)</button>
+        </div>
+
+        <!-- HIGH SCHOOL SUB-SECTION -->
+        <div id="v-hs" class="v-tab-content active">
+            <div class="card">
+                <h2>1. विद्यालयवार नामांकित परीक्षार्थी विवरण (High School)</h2>
+                <div class="v-form-grid no-print">
+                    <input type="text" id="hs-school-name" placeholder="विद्यालय का नाम">
+                    <input type="number" id="hs-school-count" placeholder="छात्र संख्या">
+                    <button class="btn-add" onclick="addSchool('hs')">विद्यालय जोड़ें</button>
+                </div>
+                <table class="exam-table">
+                    <thead>
+                        <tr><th>क्र० सं०</th><th>विद्यालय का नाम</th><th>कुल परीक्षार्थी</th><th class="no-print">कार्रवाई</th></tr>
+                    </thead>
+                    <tbody id="hs-school-list"></tbody>
+                    <tfoot>
+                        <tr class="grand-total-row">
+                            <td colspan="2" style="text-align: right; font-weight: bold;">केंद्र के कुल आवंटित छात्र (Center Capacity):</td>
+                            <td id="hs-school-total" class="total-cell">0</td>
+                            <td class="no-print">-</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>2. विषयवार पंजीकृत छात्र संख्या (High School)</h2>
+                <div class="v-form-grid no-print">
+                    <input type="text" id="hs-subject-name" placeholder="विषय (जैसे: हिंदी, गणित)">
+                    <input type="number" id="hs-subject-count" placeholder="पंजीकृत छात्र संख्या">
+                    <button class="btn-add" onclick="addSubject('hs')">विषय जोड़ें</button>
+                </div>
+                <table class="exam-table">
+                    <thead>
+                        <tr><th>क्र० सं०</th><th>विषय का नाम</th><th>पंजीकृत छात्र संख्या</th><th class="no-print">कार्रवाई</th></tr>
+                    </thead>
+                    <tbody id="hs-subject-list"></tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>3. आज की परीक्षा का ऑटो-कैल्कुलेटर (Daily Exam Attendance Calculator)</h2>
+                <p style="margin-bottom: 10px; font-size: 13px; color: #666;" class="no-print">आज की पाली में आयोजित होने वाले विषय चुनें:</p>
+                <div id="hs-exam-selector" class="exam-grid no-print"></div>
+                <div class="result-box">
+                    आज इस पाली में उपस्थित होने वाले संभावित छात्र: <span id="hs-daily-total">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- INTERMEDIATE SUB-SECTION -->
+        <div id="v-inter" class="v-tab-content">
+            <div class="card">
+                <h2>1. केंद्र की कुल क्षमता एवं वर्गवार (Science / Arts) आवंटन</h2>
+                <div class="v-form-grid no-print">
+                    <input type="number" id="inter-sc-count" placeholder="Science कुल छात्र" onchange="updateInterCapacity()">
+                    <input type="number" id="inter-art-count" placeholder="Arts कुल छात्र" onchange="updateInterCapacity()">
+                </div>
+                <div class="stream-summary-box">
+                    <div class="stream-card">
+                        <h3>विज्ञान वर्ग (Science Stream)</h3>
+                        <p id="disp-sc-total">0</p>
+                    </div>
+                    <div class="stream-card">
+                        <h3>कला वर्ग (Arts Stream)</h3>
+                        <p id="disp-art-total">0</p>
+                    </div>
+                    <div class="stream-card" style="border-left-color: #28a745;">
+                        <h3>केंद्र का कुल योग (Total Center Capacity)</h3>
+                        <p id="disp-grand-total">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>2. विद्यालयवार नामांकित परीक्षार्थी विवरण (Intermediate)</h2>
+                <div class="v-form-grid no-print">
+                    <input type="text" id="inter-school-name" placeholder="विद्यालय का नाम">
+                    <input type="number" id="inter-school-count" placeholder="छात्र संख्या">
+                    <button class="btn-add" onclick="addSchool('inter')">विद्यालय जोड़ें</button>
+                </div>
+                <table class="exam-table">
+                    <thead>
+                        <tr><th>क्र० सं०</th><th>विद्यालय का नाम</th><th>कुल छात्र संख्या</th><th class="no-print">कार्रवाई</th></tr>
+                    </thead>
+                    <tbody id="inter-school-list"></tbody>
+                    <tfoot>
+                        <tr class="grand-total-row">
+                            <td colspan="2" style="text-align: right; font-weight: bold;">विद्यालयवार दर्ज छात्र संख्या का योग:</td>
+                            <td id="inter-school-total" class="total-cell">0</td>
+                            <td class="no-print">-</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>3. विषयवार पंजीकृत छात्र संख्या (Intermediate)</h2>
+                <div class="v-form-grid no-print">
+                    <input type="text" id="inter-subject-name" placeholder="विषय का नाम (जैसे: भौतिक विज्ञान)">
+                    <select id="inter-subject-stream">
+                        <option value="Common">अनिवार्य/Common (जैसे: हिंदी, अंग्रेजी)</option>
+                        <option value="Science">Science (विज्ञान वर्ग)</option>
+                        <option value="Arts">Arts (कला वर्ग)</option>
+                    </select>
+                    <input type="number" id="inter-subject-count" placeholder="पंजीकृत छात्र संख्या">
+                    <button class="btn-add" onclick="addSubject('inter')">विषय जोड़ें</button>
+                </div>
+                <table class="exam-table">
+                    <thead>
+                        <tr><th>क्र० सं०</th><th>विषय का नाम</th><th>वर्ग (Stream)</th><th>पंजीकृत छात्र</th><th class="no-print">कार्रवाई</th></tr>
+                    </thead>
+                    <tbody id="inter-subject-list"></tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>4. आज की परीक्षा का ऑटो-कैल्कुलेटर (Daily Exam Attendance Calculator)</h2>
+                <p style="margin-bottom: 10px; font-size: 13px; color: #666;" class="no-print">आज आयोजित होने वाले विषय चुनें (समान पाली के विषय ही चुनें):</p>
+                <div id="inter-exam-selector" class="exam-grid no-print"></div>
+                <div class="result-box">
+                    आज इस पाली में परीक्षा देने वाले कुल छात्र: <span id="inter-daily-total">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -801,6 +960,7 @@
         document.getElementById('gridSeatingSection').style.display = 'none';
         document.getElementById('timetableSection').style.display = 'none';
         document.getElementById('copyRecordsSection').style.display = 'none';
+        document.getElementById('vidyalayvarSection').style.display = 'none';
 
         if (selected === 'pariksha') {
             document.getElementById('parikshaSection').style.display = 'block';
@@ -814,6 +974,9 @@
             document.getElementById('copyRecordsSection').style.display = 'block';
             setTodayDates();
             switchClass(currentClass || '10th');
+        } else if (selected === 'vidyalayvar') {
+            document.getElementById('vidyalayvarSection').style.display = 'block';
+            renderVidyalayAll();
         }
     }
 
@@ -1729,6 +1892,232 @@
             document.getElementById('calc-drawing').value = 0;
             updateUI();
         }
+    }
+
+    /* 5. VIDYALAYVAR MANAGEMENT LOGIC */
+    let vidyalayData = {
+        hs: { schools: [], subjects: [] },
+        inter: { scCount: 0, artCount: 0, schools: [], subjects: [] }
+    };
+
+    function loadVidyalayData() {
+        let saved = localStorage.getItem('skic_exam_data_v3');
+        if (saved) {
+            vidyalayData = JSON.parse(saved);
+        }
+        const scEl = document.getElementById('inter-sc-count');
+        const artEl = document.getElementById('inter-art-count');
+        if (scEl) scEl.value = vidyalayData.inter.scCount || '';
+        if (artEl) artEl.value = vidyalayData.inter.artCount || '';
+    }
+
+    function saveVidyalayData() {
+        localStorage.setItem('skic_exam_data_v3', JSON.stringify(vidyalayData));
+        renderVidyalayAll();
+    }
+
+    function switchVidyalayTab(tab) {
+        document.querySelectorAll('.v-tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.v-tab-content').forEach(c => c.classList.remove('active'));
+        
+        if(tab === 'hs') {
+            document.querySelectorAll('.v-tab-btn')[0].classList.add('active');
+            document.getElementById('v-hs').classList.add('active');
+        } else {
+            document.querySelectorAll('.v-tab-btn')[1].classList.add('active');
+            document.getElementById('v-inter').classList.add('active');
+        }
+    }
+
+    function updateInterCapacity() {
+        vidyalayData.inter.scCount = parseInt(document.getElementById('inter-sc-count').value) || 0;
+        vidyalayData.inter.artCount = parseInt(document.getElementById('inter-art-count').value) || 0;
+        saveVidyalayData();
+    }
+
+    function addSchool(type) {
+        let name = document.getElementById(`${type}-school-name`).value.trim();
+        let count = parseInt(document.getElementById(`${type}-school-count`).value);
+
+        if (!name || isNaN(count)) return alert('कृपया सही विद्यालय का नाम और संख्या भरें!');
+
+        vidyalayData[type].schools.push({ name, count });
+        document.getElementById(`${type}-school-name`).value = '';
+        document.getElementById(`${type}-school-count`).value = '';
+        saveVidyalayData();
+    }
+
+    function editSchool(type, index) {
+        let s = vidyalayData[type].schools[index];
+        let newName = prompt('विद्यालय का नाम बदलें:', s.name);
+        if (newName === null) return;
+        newName = newName.trim();
+        if (!newName) return alert('विद्यालय का नाम खाली नहीं हो सकता!');
+
+        let newCountStr = prompt('छात्र संख्या बदलें:', s.count);
+        if (newCountStr === null) return;
+        let newCount = parseInt(newCountStr);
+        if (isNaN(newCount)) return alert('कृपया सही छात्र संख्या भरें!');
+
+        vidyalayData[type].schools[index] = { name: newName, count: newCount };
+        saveVidyalayData();
+    }
+
+    function deleteSchool(type, index) {
+        if (confirm('क्या आप इसे हटाना चाहते हैं?')) {
+            vidyalayData[type].schools.splice(index, 1);
+            saveVidyalayData();
+        }
+    }
+
+    function addSubject(type) {
+        let name = document.getElementById(`${type}-subject-name`).value.trim();
+        let count = parseInt(document.getElementById(`${type}-subject-count`).value);
+        let stream = type === 'inter' ? document.getElementById('inter-subject-stream').value : 'General';
+
+        if (!name || isNaN(count)) return alert('कृपया सही विषय और संख्या भरें!');
+
+        vidyalayData[type].subjects.push({ name, count, stream });
+        document.getElementById(`${type}-subject-name`).value = '';
+        document.getElementById(`${type}-subject-count`).value = '';
+        saveVidyalayData();
+    }
+
+    function editSubject(type, index) {
+        let sub = vidyalayData[type].subjects[index];
+        let newName = prompt('विषय का नाम बदलें:', sub.name);
+        if (newName === null) return;
+        newName = newName.trim();
+        if (!newName) return alert('विषय का नाम खाली नहीं हो सकता!');
+
+        let newStream = sub.stream;
+        if (type === 'inter') {
+            let streamChoice = prompt('वर्ग (Stream) बदलें:\n1: Common (अनिवार्य)\n2: Science (विज्ञान)\n3: Arts (कला)', 
+                sub.stream === 'Common' ? '1' : (sub.stream === 'Science' ? '2' : '3'));
+            if (streamChoice === null) return;
+            if (streamChoice === '1') newStream = 'Common';
+            else if (streamChoice === '2') newStream = 'Science';
+            else if (streamChoice === '3') newStream = 'Arts';
+            else return alert('गलत वर्ग विकल्प चुना गया!');
+        }
+
+        let newCountStr = prompt('पंजीकृत छात्र संख्या बदलें:', sub.count);
+        if (newCountStr === null) return;
+        let newCount = parseInt(newCountStr);
+        if (isNaN(newCount)) return alert('कृपया सही छात्र संख्या भरें!');
+
+        vidyalayData[type].subjects[index] = { name: newName, count: newCount, stream: newStream };
+        saveVidyalayData();
+    }
+
+    function deleteSubject(type, index) {
+        if (confirm('क्या आप इसे हटाना चाहते हैं?')) {
+            vidyalayData[type].subjects.splice(index, 1);
+            saveVidyalayData();
+        }
+    }
+
+    function renderVidyalayAll() {
+        loadVidyalayData();
+        
+        // High School Data
+        let hsSList = document.getElementById('hs-school-list');
+        hsSList.innerHTML = '';
+        let hsSTotal = 0;
+        vidyalayData.hs.schools.forEach((s, i) => {
+            hsSTotal += s.count;
+            hsSList.innerHTML += `<tr>
+                <td>${i+1}</td>
+                <td style="text-align:left;">${s.name}</td>
+                <td>${s.count}</td>
+                <td class="no-print">
+                    <button class="btn-edit" onclick="editSchool('hs', ${i})">संशोधन (Edit)</button>
+                    <button class="btn-danger" onclick="deleteSchool('hs', ${i})">हटाएं</button>
+                </td>
+            </tr>`;
+        });
+        document.getElementById('hs-school-total').innerText = hsSTotal;
+
+        let hsSubList = document.getElementById('hs-subject-list');
+        hsSubList.innerHTML = '';
+        vidyalayData.hs.subjects.forEach((sub, i) => {
+            hsSubList.innerHTML += `<tr>
+                <td>${i+1}</td>
+                <td style="text-align:left;">${sub.name}</td>
+                <td>${sub.count}</td>
+                <td class="no-print">
+                    <button class="btn-edit" onclick="editSubject('hs', ${i})">संशोधन (Edit)</button>
+                    <button class="btn-danger" onclick="deleteSubject('hs', ${i})">हटाएं</button>
+                </td>
+            </tr>`;
+        });
+
+        // Intermediate Data
+        document.getElementById('disp-sc-total').innerText = vidyalayData.inter.scCount || 0;
+        document.getElementById('disp-art-total').innerText = vidyalayData.inter.artCount || 0;
+        document.getElementById('disp-grand-total').innerText = (vidyalayData.inter.scCount || 0) + (vidyalayData.inter.artCount || 0);
+
+        let interSList = document.getElementById('inter-school-list');
+        interSList.innerHTML = '';
+        let interSTotal = 0;
+        vidyalayData.inter.schools.forEach((s, i) => {
+            interSTotal += s.count;
+            interSList.innerHTML += `<tr>
+                <td>${i+1}</td>
+                <td style="text-align:left;">${s.name}</td>
+                <td>${s.count}</td>
+                <td class="no-print">
+                    <button class="btn-edit" onclick="editSchool('inter', ${i})">संशोधन (Edit)</button>
+                    <button class="btn-danger" onclick="deleteSchool('inter', ${i})">हटाएं</button>
+                </td>
+            </tr>`;
+        });
+        document.getElementById('inter-school-total').innerText = interSTotal;
+
+        let interSubList = document.getElementById('inter-subject-list');
+        interSubList.innerHTML = '';
+        vidyalayData.inter.subjects.forEach((sub, i) => {
+            let streamLabel = sub.stream === 'Common' ? 'सामान्य (सभी)' : sub.stream;
+            interSubList.innerHTML += `<tr>
+                <td>${i+1}</td>
+                <td style="text-align:left;">${sub.name}</td>
+                <td>${streamLabel}</td>
+                <td>${sub.count}</td>
+                <td class="no-print">
+                    <button class="btn-edit" onclick="editSubject('inter', ${i})">संशोधन (Edit)</button>
+                    <button class="btn-danger" onclick="deleteSubject('inter', ${i})">हटाएं</button>
+                </td>
+            </tr>`;
+        });
+
+        // Daily Checkboxes
+        ['hs', 'inter'].forEach(type => {
+            let selector = document.getElementById(`${type}-exam-selector`);
+            if (selector) {
+                selector.innerHTML = '';
+                vidyalayData[type].subjects.forEach((sub, i) => {
+                    let streamTag = (type==='inter' && sub.stream !== 'General') ? ` [${sub.stream}]` : '';
+                    selector.innerHTML += `
+                        <div class="exam-item">
+                            <input type="checkbox" id="${type}-chk-${i}" value="${sub.count}" onchange="calculateDailyTotal('${type}')">
+                            <label for="${type}-chk-${i}">${sub.name}${streamTag}</label>
+                        </div>
+                    `;
+                });
+                calculateDailyTotal(type);
+            }
+        });
+    }
+
+    function calculateDailyTotal(type) {
+        let total = 0;
+        vidyalayData[type].subjects.forEach((sub, i) => {
+            let chk = document.getElementById(`${type}-chk-${i}`);
+            if (chk && chk.checked) {
+                total += sub.count;
+            }
+        });
+        document.getElementById(`${type}-daily-total`).innerText = total;
     }
 
     // Default Initialization
