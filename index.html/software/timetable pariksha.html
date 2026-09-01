@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>एकीकृत विद्यालय सॉफ्टवेयर (Time Table, Exam Summary & Grid Seating)</title>
+    <title>एकीकृत विद्यालय सॉफ्टवेयर (Time Table, Exam Summary, Grid Seating & Copy Stock)</title>
     <style>
         :root {
             --primary-color: #1a365d;
@@ -15,10 +15,9 @@
             --input-font-size: 13px;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 10px;
             background-color: var(--bg-color);
@@ -26,10 +25,10 @@
         }
 
         .container {
-            max-width: 1100px;
+            max-width: 1300px;
             margin: 0 auto;
             background: #ffffff;
-            padding: 12px 15px;
+            padding: 15px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 6px;
         }
@@ -134,7 +133,6 @@
             padding: 2px; 
         }
         table.seating-grid td.skipped-cell { background-color: #ffffff; }
-        
         table.seating-grid td input { 
             width: 100%; 
             height: 100%; 
@@ -159,6 +157,53 @@
         table.school-table th { background-color: #f2f2f2; }
         table.school-table input { width: 98%; margin: 0; padding: 3px; text-align: center; font-weight: bold; }
 
+        /* ==================== COPY RECORDS STYLES ==================== */
+        .header-bar-copy { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3c72; padding-bottom: 10px; margin-bottom: 15px; }
+        .header-bar-copy h1 { margin: 0; color: #1e3c72; font-size: 22px; }
+        .class-btn { padding: 8px 18px; font-size: 14px; font-weight: bold; border: 2px solid #1e3c72; background: white; color: #1e3c72; border-radius: 5px; cursor: pointer; }
+        .class-btn.active { background: #1e3c72; color: white; }
+
+        .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .card { background: #eef2f5; padding: 10px; border-radius: 6px; text-align: center; border-left: 4px solid #1e3c72; }
+        .card.stock { border-left-color: #27ae60; background: #e8f8f5; }
+        .card.torn { border-left-color: #d35400; background: #fdf2e9; }
+        .card.b-copy { border-left-color: #8e44ad; background: #f4ecf7; }
+        .card.used-card { border-left-color: #d35400; background: #fef5e7; }
+        .card.absent-card { border-left-color: #c0392b; background: #fadbd8; }
+        .card h3 { margin: 0 0 5px 0; font-size: 11px; color: #555; text-transform: uppercase; }
+        .card p { margin: 0; font-size: 18px; font-weight: bold; color: #2c3e50; }
+
+        .main-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .section-copy { background: #fafafa; padding: 15px; border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 15px; }
+        .section-copy h2 { margin-top: 0; font-size: 15px; color: #2c3e50; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        
+        .form-grid-copy { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 8px; }
+        .form-group-copy { display: flex; flex-direction: column; }
+        .form-group-copy label { font-size: 11px; font-weight: bold; margin-bottom: 3px; color: #555; }
+        .form-group-copy input, .form-group-copy select { padding: 7px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
+        
+        .btn-group { display: flex; gap: 8px; margin-top: 5px; flex-wrap: wrap; }
+        button.action-btn { background: #27ae60; color: white; border: none; padding: 8px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        button.action-btn:hover { background: #219150; }
+        button.edit-btn { background: #f39c12; }
+        button.edit-btn:hover { background: #d68910; }
+        button.reset-btn { background: #e74c3c; }
+
+        .tag-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .tag { color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; display: flex; align-items: center; gap: 5px; }
+        .tag.missing-a-tag { background: #16a085; }
+        .tag.missing-b-tag { background: #8e44ad; }
+        .tag.torn-a-tag { background: #e67e22; }
+        .tag.torn-b-tag { background: #c0392b; }
+        .tag span.btn-del { cursor: pointer; font-weight: bold; font-size: 13px; margin-left: 3px; }
+        .tag span.btn-edit { cursor: pointer; font-size: 11px; margin-left: 4px; background: rgba(0,0,0,0.2); padding: 1px 4px; border-radius: 3px; }
+
+        table.report-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        table.report-table th, table.report-table td { border: 1px solid #000; padding: 6px; text-align: center; }
+        table.report-table th { background-color: #1e3c72; color: white; font-weight: bold; }
+        .date-title { font-size: 14px; margin-top: 15px; margin-bottom: 5px; color: #000; font-weight: bold; }
+        .calc-box { background: #eef7fe; border: 1px solid #3498db; padding: 12px; border-radius: 6px; margin-top: 10px; }
+
         /* PRINT STYLES */
         @media print {
             @page { size: A4 portrait; margin: 5mm 6mm 5mm 6mm; }
@@ -166,14 +211,13 @@
             .container { box-shadow: none !important; max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
             .no-print, .software-mode-bar, .admin-controls, .tt-controls, .tt-settings-panel, .btn, .tt-btn, .btn-add, .btn-remove { display: none !important; }
             
-            /* UPDATED: Roll Number Height & Print Visibility */
             table.seating-grid td input { 
                 border: none !important; 
                 font-size: 13px !important; 
                 font-weight: 900 !important; 
                 color: #000 !important;
                 line-height: 1.3 !important;
-                transform: scaleY(1.15); /* वर्टिकल ऊंचाई बढ़ाने के लिए */
+                transform: scaleY(1.15);
                 display: block;
             }
             
@@ -188,6 +232,12 @@
             .table-input.v-name { text-align: left !important; padding-left: 4px !important; }
             .total-cell { font-size: 16px !important; font-weight: bold !important; }
             .signature-block { margin-top: auto !important; height: 0.8inch !important; padding-bottom: 2px; }
+            
+            /* Print for Copy Records */
+            .section-copy { border: 1px solid #000; margin-bottom: 10px; color: #000 !important; }
+            table.report-table { border: 2px solid #000 !important; }
+            table.report-table th { background-color: #f0f0f0 !important; color: #000 !important; font-weight: bold !important; border: 1.5px solid #000 !important; }
+            table.report-table td { color: #000 !important; font-weight: bold !important; border: 1px solid #000 !important; }
         }
     </style>
 </head>
@@ -202,6 +252,7 @@
                 <option value="pariksha">परीक्षा विवरण (U.P. Board Room Summary)</option>
                 <option value="gridseating" selected>कमरा-वार बैठक व्यवस्था (Seating Grid Plan)</option>
                 <option value="timetable">समय सारिणी (School Time Table)</option>
+                <option value="copyrecords">उत्तर पुस्तिका स्टॉक रजिस्टर (Copy Records)</option>
             </select>
             <button class="btn" style="background-color: #27ae60; margin-left: 10px;" onclick="saveSelectedFormat()">सेटिंग सेव करें (Save Choice)</button>
         </div>
@@ -245,14 +296,14 @@
             <h3 id="displayBoardYear">यू० पी० बोर्ड परीक्षा वर्ष - 2027</h3>
         </div>
 
-      <div class="sub-header">
-    <div style="width: 30%;">पाली: <input type="text" id="paliInput" class="table-input" value="प्रथम (प्रातः)" style="width: 100px; font-weight: bold; text-align: left;"></div>
-    <div style="width: 40%; text-align: center; color: #002060;" class="class-center-display" id="displayClassType">हाई स्कूल</div>
-    <div style="width: 30%; display: flex; justify-content: flex-end; align-items: center; gap: 2px;">
-        <span style="white-space: nowrap;">केन्द्र संख्या-</span>
-        <input type="text" class="table-input" placeholder="00000" style="width: 65px; text-align: left; font-weight: bold; margin: 0;">
-    </div>
-</div>
+        <div class="sub-header">
+            <div style="width: 30%;">पाली: <input type="text" id="paliInput" class="table-input" value="प्रथम (प्रातः)" style="width: 100px; font-weight: bold; text-align: left;"></div>
+            <div style="width: 40%; text-align: center; color: #002060;" class="class-center-display" id="displayClassType">हाई स्कूल</div>
+            <div style="width: 30%; display: flex; justify-content: flex-end; align-items: center; gap: 2px;">
+                <span style="white-space: nowrap;">केन्द्र संख्या-</span>
+                <input type="text" class="table-input" placeholder="00000" style="width: 65px; text-align: left; font-weight: bold; margin: 0;">
+            </div>
+        </div>
 
         <table id="mainSeatingTable" class="exam-table">
             <thead>
@@ -369,9 +420,7 @@
             </div>
         </div>
 
-        <!-- Dynamic Header Wrapper Matching Table Width -->
         <div class="grid-header-wrapper" id="gridHeaderWrapper">
-            <!-- Page Header -->
             <div class="grid-header">
                 <div class="grid-header-top">
                     <span style="visibility: hidden;" class="room-title">कमरा नं०- 00</span>
@@ -527,6 +576,221 @@
             </table>
         </div>
     </div>
+
+    <!-- ========================================================================= -->
+    <!-- 4. COPY RECORDS SECTION (उत्तर पुस्तिका स्टॉक रजिस्टर)                    -->
+    <!-- ========================================================================= -->
+    <div id="copyRecordsSection" style="display: none;">
+        <div class="header-bar-copy">
+            <h1>UP Board परीक्षा - उत्तर पुस्तिका स्टॉक रजिस्टर</h1>
+            <div class="controls-top no-print">
+                <button class="class-btn active" id="btn-10th" onclick="switchClass('10th')">High School (10th)</button>
+                <button class="class-btn" id="btn-12th" onclick="switchClass('12th')">Inter (12th)</button>
+                <button class="action-btn print-btn" onclick="window.print()">🖨️ Print / Save PDF</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Metrics -->
+        <div class="dashboard">
+            <div class="card">
+                <h3>कुल प्राप्त 'A' कॉपी</h3>
+                <p id="disp-total-a">0</p>
+            </div>
+            <div class="card b-copy">
+                <h3>कुल प्राप्त 'B' कॉपी</h3>
+                <p id="disp-total-b">0</p>
+            </div>
+            <div class="card">
+                <h3>गायब (A / B)</h3>
+                <p><span id="disp-missing-a">0</span> / <span id="disp-missing-b">0</span></p>
+            </div>
+            <div class="card torn">
+                <h3>फटी हुई (A / B)</h3>
+                <p><span id="disp-torn-a">0</span> / <span id="disp-torn-b">0</span></p>
+            </div>
+            <div class="card">
+                <h3>भेजी गई (A / B)</h3>
+                <p><span id="disp-dist-a">0</span> / <span id="disp-dist-b">0</span></p>
+            </div>
+            <div class="card">
+                <h3>वापस प्राप्त (A / B)</h3>
+                <p><span id="disp-ret-a">0</span> / <span id="disp-ret-b">0</span></p>
+            </div>
+            <div class="card used-card">
+                <h3>कुल प्रयुक्त (A / B)</h3>
+                <p><span id="disp-used-a">0</span> / <span id="disp-used-b">0</span></p>
+            </div>
+            <div class="card absent-card">
+                <h3>कुल अनुपस्थित छात्र</h3>
+                <p id="disp-total-absent">0</p>
+            </div>
+            <div class="card stock">
+                <h3>उपलब्ध शेष 'A' कॉपी</h3>
+                <p id="disp-avail-a">0</p>
+            </div>
+            <div class="card stock b-copy">
+                <h3>उपलब्ध शेष 'B' कॉपी</h3>
+                <p id="disp-avail-b">0</p>
+            </div>
+        </div>
+
+        <!-- Forms Section -->
+        <div class="main-grid no-print">
+            <!-- 1. नई कॉपी -->
+            <div class="section-copy">
+                <h2>1. नई कॉपी दर्ज करें (Serial Range)</h2>
+                <div class="form-grid-copy">
+                    <div class="form-group-copy">
+                        <label>कॉपी प्रकार</label>
+                        <select id="type-select">
+                            <option value="A">'A' उत्तर पुस्तिका</option>
+                            <option value="B">'B' उत्तर पुस्तिका</option>
+                        </select>
+                    </div>
+                    <div class="form-group-copy">
+                        <label>S.No. (From)</label>
+                        <input type="number" id="sr-from" placeholder="100001">
+                    </div>
+                    <div class="form-group-copy">
+                        <label>S.No. (To)</label>
+                        <input type="number" id="sr-to" placeholder="100500">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="action-btn" onclick="addSerialRange()">स्टॉक में जोड़ें</button>
+                </div>
+            </div>
+
+            <!-- 2. मिसिंग व फटी हुई -->
+            <div class="section-copy">
+                <h2>2. मिसिंग व फटी हुई कॉपी दर्ज करें</h2>
+                <div class="form-grid-copy">
+                    <div class="form-group-copy">
+                        <label>प्रकार</label>
+                        <select id="defect-type">
+                            <option value="A">'A' कॉपी</option>
+                            <option value="B">'B' कॉपी</option>
+                        </select>
+                    </div>
+                    <div class="form-group-copy">
+                        <label>स्थिति</label>
+                        <select id="defect-status">
+                            <option value="missing">मिसिंग (Missing)</option>
+                            <option value="torn">फटी हुई (Torn)</option>
+                        </select>
+                    </div>
+                    <div class="form-group-copy">
+                        <label>S.No.</label>
+                        <input type="number" id="defect-sr" placeholder="100025">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="action-btn" style="background:#d35400" onclick="addDefectCopy()">दर्ज करें</button>
+                </div>
+                <div class="tag-container" id="defect-tags"></div>
+            </div>
+
+            <!-- 3. दैनिक वितरण व अनुपस्थिति -->
+            <div class="section-copy">
+                <h2>3. कमरों में वितरण, वापसी व अनुपस्थिति</h2>
+                <div class="form-grid-copy">
+                    <div class="form-group-copy">
+                        <label>परीक्षा दिनांक</label>
+                        <input type="date" id="entry-date">
+                    </div>
+                    <div class="form-group-copy">
+                        <label>भेजी 'A' कॉपी</label>
+                        <input type="number" id="dist-a" placeholder="120">
+                    </div>
+                    <div class="form-group-copy">
+                        <label>भेजी 'B' कॉपी</label>
+                        <input type="number" id="dist-b" placeholder="10">
+                    </div>
+                    <div class="form-group-copy">
+                        <label>वापस 'A'</label>
+                        <input type="number" id="ret-a" placeholder="15" oninput="autoFillAbsent()">
+                    </div>
+                    <div class="form-group-copy">
+                        <label>वापस 'B'</label>
+                        <input type="number" id="ret-b" placeholder="2">
+                    </div>
+                    <div class="form-group-copy">
+                        <label>अनुपस्थित छात्र</label>
+                        <input type="number" id="absent-count" placeholder="5">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button class="action-btn" onclick="saveDailyEntry()">दिनांक का डेटा दर्ज करें</button>
+                </div>
+            </div>
+            
+            <!-- 4. पूर्वाग्रह कैलकुलेटर -->
+            <div class="section-copy" style="grid-column: span 1 / -1;">
+                <h2>4. शेष परीक्षाओं हेतु उत्तर पुस्तिका आवश्यकता पूर्वाग्रह (Requirement Estimation)</h2>
+                <div class="form-grid-copy">
+                    <div class="form-group-copy">
+                        <label>कुल पंजीकृत छात्र (Registered)</label>
+                        <input type="number" id="calc-registered" placeholder="उदा. 500" oninput="calculateRequirement()">
+                    </div>
+                    <div class="form-group-copy">
+                        <label>चित्रकला परीक्षार्थी (Drawing Students)</label>
+                        <input type="number" id="calc-drawing" value="0" placeholder="उदा. 20" oninput="calculateRequirement()">
+                    </div>
+                    <div class="form-group-copy">
+                        <label>कुल परीक्षा विषय</label>
+                        <input type="number" id="calc-subjects" value="5" placeholder="उदा. 5" oninput="calculateRequirement()">
+                    </div>
+                </div>
+                <div class="calc-box" id="requirement-result">
+                    कैलकुलेशन परिणाम के लिए पंजीकृत परीक्षार्थियों की संख्या दर्ज करें...
+                </div>
+            </div>
+        </div>
+
+        <!-- प्रिंट रिपोर्ट -->
+        <div class="section-copy">
+            <h2>दैनिक एवं परीक्षावार स्टॉक रिपोर्ट (<span id="class-title">High School (10th)</span>) - दिनांक: <span id="current-date"></span></h2>
+            <p style="font-size: 13px; line-height: 1.7;">
+                • कुल प्राप्त उत्तर पुस्तिकाएं: <strong>'A' = <span id="rep-total-a">0</span>, 'B' = <span id="rep-total-b">0</span></strong><br>
+                • मिसिंग उत्तर पुस्तिकाएं: <strong>'A' = [<span id="rep-missing-a">कोई नहीं</span>], 'B' = [<span id="rep-missing-b">कोई नहीं</span>]</strong><br>
+                • फटी हुई उत्तर पुस्तिकाएं: <strong>'A' = [<span id="rep-torn-a">कोई नहीं</span>], 'B' = [<span id="rep-torn-b">कोई नहीं</span>]</strong><br>
+                • कुल वितरित कॉपी: <strong>'A' = <span id="rep-dist-a">0</span>, 'B' = <span id="rep-dist-b">0</span></strong> | कुल वापस प्राप्त कॉपी: <strong>'A' = <span id="rep-ret-a">0</span>, 'B' = <span id="rep-ret-b">0</span></strong><br>
+                • <strong>अब तक कुल प्रयुक्त (Net Used) उत्तर पुस्तिकाएं: 'A' = <span id="rep-used-a">0</span> | 'B' = <span id="rep-used-b">0</span></strong><br>
+                • <strong>केंद्र में वर्तमान कुल उपलब्ध शेष उत्तर पुस्तिकाएं: 'A' = <span id="rep-avail-a">0</span> | 'B' = <span id="rep-avail-b">0</span></strong>
+            </p>
+
+            <h3 class="date-title">📅 तिथि अनुसार विवरण (Date-wise Details):</h3>
+            <table class="report-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Sr No.</th>
+                        <th rowspan="2">Date</th>
+                        <th colspan="2">कमरों में भेजी गई</th>
+                        <th colspan="2">वापस प्राप्त</th>
+                        <th colspan="2">उपयोग हुई (Net Used)</th>
+                        <th rowspan="2">अनुपस्थित (Absent)</th>
+                        <th rowspan="2" class="no-print">कार्रवाई (Action)</th>
+                    </tr>
+                    <tr>
+                        <th>A Copy</th>
+                        <th>B Copy</th>
+                        <th>A Copy</th>
+                        <th>B Copy</th>
+                        <th>A Copy</th>
+                        <th>B Copy</th>
+                    </tr>
+                </thead>
+                <tbody id="date-wise-tbody">
+                </tbody>
+            </table>
+
+            <div id="print-requirement-box" style="margin-top:15px; font-size:13px;"></div>
+        </div>
+
+        <div class="no-print" style="margin-top: 15px; text-align: right;">
+            <button class="action-btn reset-btn" onclick="resetCurrentClassData()">वर्तमान कक्षा का संपूर्ण डेटा रीसेट करें</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -536,15 +800,20 @@
         document.getElementById('parikshaSection').style.display = 'none';
         document.getElementById('gridSeatingSection').style.display = 'none';
         document.getElementById('timetableSection').style.display = 'none';
+        document.getElementById('copyRecordsSection').style.display = 'none';
 
         if (selected === 'pariksha') {
             document.getElementById('parikshaSection').style.display = 'block';
         } else if (selected === 'gridseating') {
             document.getElementById('gridSeatingSection').style.display = 'block';
             generateGrid();
-        } else {
+        } else if (selected === 'timetable') {
             document.getElementById('timetableSection').style.display = 'block';
             generateTimetable();
+        } else if (selected === 'copyrecords') {
+            document.getElementById('copyRecordsSection').style.display = 'block';
+            setTodayDates();
+            switchClass(currentClass || '10th');
         }
     }
 
@@ -1105,6 +1374,361 @@
             <td colspan="2"><strong>${dispersalTime}</strong></td>
         `;
         tbody.appendChild(dispersalRow);
+    }
+
+    /* 4. COPY RECORDS LOGIC */
+    let currentClass = '10th';
+
+    function getData(cls) {
+        const raw = localStorage.getItem('upboard_v5.1_' + cls);
+        let data = raw ? JSON.parse(raw) : null;
+        
+        if (!data) {
+            data = {
+                totalReceivedA: 0,
+                totalReceivedB: 0,
+                missingA: [],
+                missingB: [],
+                tornA: [],
+                tornB: [],
+                dateWiseData: {},
+                calc: { registered: '', drawing: 0, subjects: cls === '10th' ? 6 : 5 }
+            };
+        }
+        if (!data.calc) {
+            data.calc = { registered: '', drawing: 0, subjects: cls === '10th' ? 6 : 5 };
+        }
+        return data;
+    }
+
+    function saveData(cls, data) {
+        localStorage.setItem('upboard_v5.1_' + cls, JSON.stringify(data));
+        updateUI();
+    }
+
+    function setTodayDates() {
+        const todayInput = document.getElementById('entry-date');
+        if (todayInput) {
+            const today = new Date().toISOString().split('T')[0];
+            todayInput.value = today;
+        }
+    }
+
+    function switchClass(cls) {
+        currentClass = cls;
+        document.getElementById('btn-10th').classList.toggle('active', cls === '10th');
+        document.getElementById('btn-12th').classList.toggle('active', cls === '12th');
+        document.getElementById('class-title').innerText = cls === '10th' ? 'High School (10th)' : 'Inter (12th)';
+        
+        const data = getData(cls);
+        document.getElementById('calc-registered').value = data.calc.registered;
+        document.getElementById('calc-drawing').value = data.calc.drawing;
+        document.getElementById('calc-subjects').value = data.calc.subjects;
+
+        updateUI();
+    }
+
+    function updateUI() {
+        const data = getData(currentClass);
+
+        let totalDistA = 0, totalDistB = 0;
+        let totalRetA = 0, totalRetB = 0;
+        let totalUsedA = 0, totalUsedB = 0;
+        let totalAbsent = 0;
+
+        const tbody = document.getElementById('date-wise-tbody');
+        tbody.innerHTML = '';
+
+        const sortedDates = Object.keys(data.dateWiseData).sort();
+        let srNo = 1;
+
+        if (sortedDates.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; font-weight:bold;">कोई तारीखवार रिकॉर्ड उपलब्ध नहीं है।</td></tr>`;
+        } else {
+            sortedDates.forEach(date => {
+                const dA = Number(data.dateWiseData[date].distA) || 0;
+                const dB = Number(data.dateWiseData[date].distB) || 0;
+                const rA = Number(data.dateWiseData[date].retA) || 0;
+                const rB = Number(data.dateWiseData[date].retB) || 0;
+                const abs = Number(data.dateWiseData[date].absent) || 0;
+                
+                const netA = dA - rA < 0 ? 0 : dA - rA;
+                const netB = dB - rB < 0 ? 0 : dB - rB;
+
+                totalDistA += dA; totalDistB += dB;
+                totalRetA += rA; totalRetB += rB;
+                totalUsedA += netA; totalUsedB += netB;
+                totalAbsent += abs;
+
+                const formattedDate = date.split('-').reverse().join('-');
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${srNo++}</strong></td>
+                        <td><strong>${formattedDate}</strong></td>
+                        <td><strong>${dA}</strong></td>
+                        <td><strong>${dB}</strong></td>
+                        <td><strong>${rA}</strong></td>
+                        <td><strong>${rB}</strong></td>
+                        <td><strong>${netA}</strong></td>
+                        <td><strong>${netB}</strong></td>
+                        <td style="color:#c0392b;"><strong>${abs}</strong></td>
+                        <td class="no-print">
+                            <button class="action-btn edit-btn" style="padding: 3px 8px; font-size: 11px;" onclick="editDateData('${date}')">✏️ एडिट</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        const availA = data.totalReceivedA - data.missingA.length - data.tornA.length - totalDistA + totalRetA;
+        const availB = data.totalReceivedB - data.missingB.length - data.tornB.length - totalDistB + totalRetB;
+
+        document.getElementById('disp-total-a').innerText = data.totalReceivedA;
+        document.getElementById('disp-total-b').innerText = data.totalReceivedB;
+        document.getElementById('disp-missing-a').innerText = data.missingA.length;
+        document.getElementById('disp-missing-b').innerText = data.missingB.length;
+        document.getElementById('disp-torn-a').innerText = data.tornA.length;
+        document.getElementById('disp-torn-b').innerText = data.tornB.length;
+        document.getElementById('disp-dist-a').innerText = totalDistA;
+        document.getElementById('disp-dist-b').innerText = totalDistB;
+        document.getElementById('disp-ret-a').innerText = totalRetA;
+        document.getElementById('disp-ret-b').innerText = totalRetB;
+        document.getElementById('disp-used-a').innerText = totalUsedA;
+        document.getElementById('disp-used-b').innerText = totalUsedB;
+        document.getElementById('disp-total-absent').innerText = totalAbsent;
+        document.getElementById('disp-avail-a').innerText = availA < 0 ? 0 : availA;
+        document.getElementById('disp-avail-b').innerText = availB < 0 ? 0 : availB;
+
+        document.getElementById('rep-total-a').innerText = data.totalReceivedA;
+        document.getElementById('rep-total-b').innerText = data.totalReceivedB;
+        document.getElementById('rep-dist-a').innerText = totalDistA;
+        document.getElementById('rep-dist-b').innerText = totalDistB;
+        document.getElementById('rep-ret-a').innerText = totalRetA;
+        document.getElementById('rep-ret-b').innerText = totalRetB;
+        document.getElementById('rep-used-a').innerText = totalUsedA;
+        document.getElementById('rep-used-b').innerText = totalUsedB;
+        document.getElementById('rep-avail-a').innerText = availA < 0 ? 0 : availA;
+        document.getElementById('rep-avail-b').innerText = availB < 0 ? 0 : availB;
+
+        document.getElementById('rep-missing-a').innerText = data.missingA.length > 0 ? data.missingA.join(', ') : 'कोई नहीं';
+        document.getElementById('rep-missing-b').innerText = data.missingB.length > 0 ? data.missingB.join(', ') : 'कोई नहीं';
+        document.getElementById('rep-torn-a').innerText = data.tornA.length > 0 ? data.tornA.join(', ') : 'कोई नहीं';
+        document.getElementById('rep-torn-b').innerText = data.tornB.length > 0 ? data.tornB.join(', ') : 'कोई नहीं';
+
+        const tagBox = document.getElementById('defect-tags');
+        tagBox.innerHTML = '';
+        data.missingA.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag missing-a-tag">Missing A: ${sr} <span class="btn-edit" onclick="editDefectItem('missingA', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('missingA', ${idx})">&times;</span></div>`);
+        data.missingB.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag missing-b-tag">Missing B: ${sr} <span class="btn-edit" onclick="editDefectItem('missingB', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('missingB', ${idx})">&times;</span></div>`);
+        data.tornA.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag torn-a-tag">Torn A: ${sr} <span class="btn-edit" onclick="editDefectItem('tornA', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('tornA', ${idx})">&times;</span></div>`);
+        data.tornB.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag torn-b-tag">Torn B: ${sr} <span class="btn-edit" onclick="editDefectItem('tornB', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('tornB', ${idx})">&times;</span></div>`);
+
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('hi-IN');
+        calculateRequirement();
+    }
+
+    function addSerialRange() {
+        const type = document.getElementById('type-select').value;
+        const from = parseInt(document.getElementById('sr-from').value);
+        const to = parseInt(document.getElementById('sr-to').value);
+
+        if (isNaN(from) || isNaN(to) || to < from) {
+            alert('कृपया सही सीरियल नंबर दर्ज करें!');
+            return;
+        }
+
+        const count = (to - from) + 1;
+        const data = getData(currentClass);
+        if (type === 'A') data.totalReceivedA += count;
+        else data.totalReceivedB += count;
+        
+        saveData(currentClass, data);
+        document.getElementById('sr-from').value = '';
+        document.getElementById('sr-to').value = '';
+    }
+
+    function addDefectCopy() {
+        const type = document.getElementById('defect-type').value;
+        const status = document.getElementById('defect-status').value;
+        const sr = parseInt(document.getElementById('defect-sr').value);
+
+        if (isNaN(sr)) {
+            alert('कृपया सही सीरियल नंबर डालें!');
+            return;
+        }
+
+        const data = getData(currentClass);
+        const listKey = status + type;
+
+        if (!data[listKey].includes(sr)) {
+            data[listKey].push(sr);
+            saveData(currentClass, data);
+            document.getElementById('defect-sr').value = '';
+        } else {
+            alert('यह सीरियल नंबर पहले से दर्ज है!');
+        }
+    }
+
+    function editDefectItem(listKey, idx) {
+        const data = getData(currentClass);
+        const oldSr = data[listKey][idx];
+        const newSr = prompt("संशोधित सही सीरियल नंबर दर्ज करें:", oldSr);
+        
+        if (newSr !== null && !isNaN(newSr) && newSr.trim() !== '') {
+            data[listKey][idx] = parseInt(newSr);
+            saveData(currentClass, data);
+        }
+    }
+
+    function removeDefectItem(listKey, idx) {
+        const data = getData(currentClass);
+        data[listKey].splice(idx, 1);
+        saveData(currentClass, data);
+    }
+
+    function autoFillAbsent() {
+        const retA = document.getElementById('ret-a').value;
+        document.getElementById('absent-count').value = retA;
+    }
+
+    function saveDailyEntry() {
+        const date = document.getElementById('entry-date').value;
+        const distA = parseInt(document.getElementById('dist-a').value) || 0;
+        const distB = parseInt(document.getElementById('dist-b').value) || 0;
+        const retA = parseInt(document.getElementById('ret-a').value) || 0;
+        const retB = parseInt(document.getElementById('ret-b').value) || 0;
+        const absent = parseInt(document.getElementById('absent-count').value) || 0;
+
+        if (!date) {
+            alert('कृपया दिनांक चुनें!');
+            return;
+        }
+
+        const data = getData(currentClass);
+        data.dateWiseData[date] = { distA, distB, retA, retB, absent };
+
+        saveData(currentClass, data);
+        document.getElementById('dist-a').value = '';
+        document.getElementById('dist-b').value = '';
+        document.getElementById('ret-a').value = '';
+        document.getElementById('ret-b').value = '';
+        document.getElementById('absent-count').value = '';
+    }
+
+    function editDateData(date) {
+        const data = getData(currentClass);
+        const cur = data.dateWiseData[date] || { distA: 0, distB: 0, retA: 0, retB: 0, absent: 0 };
+        const formattedDate = date.split('-').reverse().join('-');
+
+        const dA = prompt(`[${formattedDate}] भेजी गई 'A' कॉपी:`, cur.distA);
+        if (dA === null) return;
+        const dB = prompt(`[${formattedDate}] भेजी गई 'B' कॉपी:`, cur.distB);
+        if (dB === null) return;
+        const rA = prompt(`[${formattedDate}] वापस 'A' कॉपी:`, cur.retA);
+        if (rA === null) return;
+        const rB = prompt(`[${formattedDate}] वापस 'B' कॉपी:`, cur.retB);
+        if (rB === null) return;
+        const abs = prompt(`[${formattedDate}] अनुपस्थित छात्र संख्या:`, cur.absent || 0);
+        if (abs === null) return;
+
+        data.dateWiseData[date] = {
+            distA: parseInt(dA) || 0,
+            distB: parseInt(dB) || 0,
+            retA: parseInt(rA) || 0,
+            retB: parseInt(rB) || 0,
+            absent: parseInt(abs) || 0
+        };
+
+        saveData(currentClass, data);
+    }
+
+    function calculateRequirement() {
+        const registeredVal = document.getElementById('calc-registered').value;
+        const drawingVal = document.getElementById('calc-drawing').value;
+        const subjectsVal = document.getElementById('calc-subjects').value;
+
+        const registered = parseInt(registeredVal) || 0;
+        const drawingStudents = parseInt(drawingVal) || 0;
+        const totalSubjects = parseInt(subjectsVal) || (currentClass === '10th' ? 6 : 5);
+
+        const data = getData(currentClass);
+        data.calc = {
+            registered: registeredVal,
+            drawing: drawingVal,
+            subjects: subjectsVal
+        };
+        localStorage.setItem('upboard_v5.1_' + currentClass, JSON.stringify(data));
+
+        if (registered === 0) {
+            document.getElementById('requirement-result').innerHTML = "<i>आवश्यकता का सही कैलकुलेशन देखने के लिए पंजीकृत परीक्षार्थियों की संख्या दर्ज करें...</i>";
+            document.getElementById('print-requirement-box').innerHTML = "";
+            return;
+        }
+
+        const sortedDates = Object.keys(data.dateWiseData).sort();
+        const completedSubjects = sortedDates.length;
+        const remainingSubjects = totalSubjects - completedSubjects;
+
+        let firstDayAbsent = 0;
+        if (sortedDates.length > 0) {
+            firstDayAbsent = Number(data.dateWiseData[sortedDates[0]].absent) || 0;
+        }
+
+        const standardWritingStudents = registered - firstDayAbsent;
+        const drawingWritingStudents = (registered - drawingStudents) - firstDayAbsent;
+        const actualDrawingStudents = drawingWritingStudents < 0 ? 0 : drawingWritingStudents;
+        
+        const remSub = remainingSubjects < 0 ? 0 : remainingSubjects;
+        
+        let futureNeedA = 0;
+        for (let i = 0; i < remSub; i++) {
+            if (drawingStudents > 0 && i === 0) { 
+                futureNeedA += actualDrawingStudents;
+            } else {
+                futureNeedA += (standardWritingStudents < 0 ? 0 : standardWritingStudents);
+            }
+        }
+
+        let totalDistA = 0, totalRetA = 0;
+        Object.keys(data.dateWiseData).forEach(d => {
+            totalDistA += Number(data.dateWiseData[d].distA) || 0;
+            totalRetA += Number(data.dateWiseData[d].retA) || 0;
+        });
+        const currentAvailA = data.totalReceivedA - data.missingA.length - data.tornA.length - totalDistA + totalRetA;
+
+        const diff = currentAvailA - futureNeedA;
+        let statusText = "";
+        
+        if (remainingSubjects <= 0) {
+            statusText = `<strong style="color:blue;">✔ सभी ${totalSubjects} विषयों की परीक्षाएं संपन्न हो चुकी हैं।</strong>`;
+        } else if (diff >= 0) {
+            statusText = `<strong style="color:green;">✔ शेष ${remSub} विषयों की परीक्षा हेतु स्टॉक में ${diff} 'A' कॉपियां अतिरिक्त (Surplus) हैं। कॉपियां पर्याप्त हैं।</strong>`;
+        } else {
+            statusText = `<strong style="color:red;">⚠️ सावधान: शेष ${remSub} विषयों की परीक्षा हेतु ${Math.abs(diff)} अतिरिक्त 'A' उत्तर पुस्तिकाओं की आवश्यकता पड़ेगी!</strong>`;
+        }
+
+        const htmlContent = `
+            <strong>📊 उत्तर पुस्तिका आवश्यकता विश्लेषण (${currentClass === '10th' ? 'High School' : 'Inter'}):</strong><br>
+            • कुल पंजीकृत छात्र: <strong>${registered}</strong> | चित्रकला छात्र: <strong>${drawingStudents}</strong> | कुल विषय: <strong>${totalSubjects}</strong><br>
+            • <strong>परीक्षा स्थिति:</strong> <u>${completedSubjects} विषय समाप्त</u> | <strong><u>${remSub} विषय शेष</u></strong><br>
+            • सामान्य विषयों में परीक्षा देने वाले छात्र: <strong>${standardWritingStudents < 0 ? 0 : standardWritingStudents}</strong><br>
+            • चित्रकला रहित विषय में परीक्षा देने वाले छात्र: <strong>${actualDrawingStudents}</strong><br>
+            • शेष <strong>${remSub}</strong> विषयों के लिए कुल आवश्यक 'A' कॉपियां: <strong>${futureNeedA}</strong><br>
+            • केंद्र पर वर्तमान उपलब्ध शेष 'A' कॉपियां: <strong>${currentAvailA}</strong><br>
+            • <strong>पूर्वाग्रह स्थिति:</strong> ${statusText}
+        `;
+
+        document.getElementById('requirement-result').innerHTML = htmlContent;
+        document.getElementById('print-requirement-box').innerHTML = "<hr>" + htmlContent;
+    }
+
+    function resetCurrentClassData() {
+        if (confirm(`क्या आप ${currentClass === '10th' ? 'High School (10th)' : 'Inter (12th)'} का संपूर्ण डेटा रीसेट करना चाहते हैं?`)) {
+            localStorage.removeItem('upboard_v5.1_' + currentClass);
+            document.getElementById('calc-registered').value = '';
+            document.getElementById('calc-drawing').value = 0;
+            updateUI();
+        }
     }
 
     // Default Initialization
