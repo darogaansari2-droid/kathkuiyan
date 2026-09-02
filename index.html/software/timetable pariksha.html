@@ -71,7 +71,7 @@
         .btn-danger { background-color: #e53e3e; padding: 2px 5px; font-size: 10px; }
         .btn-edit { background-color: #f39c12; color: white; border: none; padding: 2px 6px; cursor: pointer; font-size: 10px; border-radius: 3px; font-weight: bold; }
         .btn-add { background-color: #28a745; color: white; border: none; padding: 6px 12px; cursor: pointer; font-weight: bold; border-radius: 4px; }
-        .btn-remove { background-color: #dc3545; color: white; border: none; padding: 3px 8px; cursor: pointer; border-radius: 4px; }
+        .btn-remove { background-color: #dc3545; color: white; border: none; padding: 3px 8px; cursor: border-radius: 4px; }
 
         /* ==================== TIME TABLE STYLES ==================== */
         .tt-header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 25px; }
@@ -220,7 +220,15 @@
         .exam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px; }
         .exam-item { background: #f8f9fa; padding: 8px; border: 1px solid #ddd; border-radius: 4px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
         .exam-item input[type="checkbox"] { width: auto; }
-        .result-box { background: #d4edda; color: #155724; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; text-align: center; border: 1px solid #c3e6cb; }
+        
+        .result-box-container { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .result-box { background: #d4edda; color: #155724; padding: 12px; border-radius: 6px; font-size: 15px; font-weight: bold; text-align: center; border: 1px solid #c3e6cb; }
+        .result-box.present { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .result-box.absent { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+
+        .date-print-header { display: flex; justify-content: space-between; align-items: center; background: #eef2f5; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px; border: 1px solid #cbd5e0; }
+        .date-print-header label { font-weight: bold; font-size: 13px; color: #1a365d; }
+        .date-print-header input[type="date"] { padding: 4px 8px; font-size: 13px; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; }
 
         /* PRINT STYLES - FIXED TO PORTRAIT STRICTLY */
         @media print {
@@ -259,6 +267,9 @@
             table.report-table, table.exam-table { border: 2px solid #000 !important; }
             table.report-table th, table.exam-table th { background-color: #f0f0f0 !important; color: #000 !important; font-weight: bold !important; border: 1.5px solid #000 !important; }
             table.report-table td, table.exam-table td { color: #000 !important; font-weight: bold !important; border: 1px solid #000 !important; }
+            
+            .date-print-header { background: transparent !important; border: none !important; padding: 0 !important; margin-bottom: 8px !important; }
+            .date-print-header input[type="date"] { border: none !important; font-size: 14px !important; background: transparent !important; }
         }
     </style>
 </head>
@@ -270,11 +281,11 @@
         <label for="masterFormatSelect">📋 सॉफ्टवेयर मोड / फॉर्मेट सेट करें:</label>
         <div>
             <select id="masterFormatSelect" onchange="switchFormat()">
-                <option value="pariksha" selected>परीक्षा विवरण (U.P. Board Room Summary)</option>
+                <option value="pariksha">परीक्षा विवरण (U.P. Board Room Summary)</option>
                 <option value="gridseating">कमरा-वार बैठक व्यवस्था (Seating Grid Plan)</option>
                 <option value="timetable">समय सारिणी (School Time Table)</option>
                 <option value="copyrecords">उत्तर पुस्तिका स्टॉक रजिस्टर (Copy Records)</option>
-                <option value="vidyalayvar">विद्यालय-वार विवरण एवं प्रबंधन (Vidyalayvar Management)</option>
+                <option value="vidyalayvar" selected>विद्यालय-वार विवरण एवं प्रबंधन (Vidyalayvar Management)</option>
             </select>
             <button class="btn" style="background-color: #27ae60; margin-left: 10px;" onclick="saveSelectedFormat()">सेटिंग सेव करें (Save Choice)</button>
         </div>
@@ -283,7 +294,7 @@
     <!-- ========================================================================= -->
     <!-- 1. PARIKSHA SUMMARY SECTION                                               -->
     <!-- ========================================================================= -->
-    <div id="parikshaSection">
+    <div id="parikshaSection" style="display: none;">
         <div class="admin-controls no-print">
             <div class="form-row">
                 <label>परीक्षा वर्ग:</label>
@@ -798,8 +809,6 @@
                         <th>B Copy</th>
                         <th>A Copy</th>
                         <th>B Copy</th>
-                        <th>A Copy</th>
-                        <th>B Copy</th>
                     </tr>
                 </thead>
                 <tbody id="date-wise-tbody">
@@ -817,10 +826,10 @@
     <!-- ========================================================================= -->
     <!-- 5. VIDYALAYVAR MANAGEMENT SECTION (विद्यालय-वार प्रबंधन)                  -->
     <!-- ========================================================================= -->
-    <div id="vidyalayvarSection" style="display: none;">
+    <div id="vidyalayvarSection">
         <div class="print-header">
             <h1>श्री कृष्ण इ० का० सेमरा कठकुइयाँ, कुशीनगर</h1>
-            <h3 id="vidyalay-header-title">यूपी बोर्ड परीक्षा वर्ष 2027</h3>
+            <h3 id="vidyalay-header-title">यूपी बोर्ड परीक्षा (High School) - वर्ष 2027</h3>
         </div>
 
         <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -899,11 +908,34 @@
             </div>
 
             <div class="card">
-                <h2>3. आज की परीक्षा का ऑटो-कैल्कुलेटर (Daily Exam Attendance Calculator)</h2>
+                <h2>3. आज की परीक्षा का ऑटो-कैल्कुलेटर एवं उपस्थिति प्रबंधन (Daily Exam Calculator)</h2>
+                
+                <!-- Added Date Input for Print & Tracking -->
+                <div class="date-print-header">
+                    <label for="hs-exam-date">📅 परीक्षा दिनांक (Exam Date): </label>
+                    <input type="date" id="hs-exam-date">
+                </div>
+
                 <p style="margin-bottom: 10px; font-size: 13px; color: #666;" class="no-print">आज की पाली में आयोजित होने वाले विषय चुनें:</p>
                 <div id="hs-exam-selector" class="exam-grid no-print"></div>
-                <div class="result-box">
-                    आज इस पाली में उपस्थित होने वाले संभावित छात्र: <span id="hs-daily-total">0</span> (बालक: <span id="hs-daily-boys">0</span> | बालिका: <span id="hs-daily-girls">0</span>)
+                
+                <div class="result-box-container">
+                    <div class="result-box">
+                        आज इस पाली में संभावित छात्र (Registered): <span id="hs-daily-total">0</span> (बालक: <span id="hs-daily-boys">0</span> | बालिका: <span id="hs-daily-girls">0</span>)
+                    </div>
+                    
+                    <div class="v-form-grid no-print" style="margin-top: 10px;">
+                        <input type="number" id="hs-absent-boys-input" placeholder="अनुपस्थित बालक" oninput="calculateAttendance('hs')">
+                        <input type="number" id="hs-absent-girls-input" placeholder="अनुपस्थित बालिका" oninput="calculateAttendance('hs')">
+                    </div>
+
+                    <div class="result-box present">
+                        आज इस पाली में उपस्थित छात्र: <span id="hs-present-total">0</span> (बालक: <span id="hs-present-boys">0</span> | बालिका: <span id="hs-present-girls">0</span>)
+                    </div>
+
+                    <div class="result-box absent">
+                        आज इस पाली में अनुपस्थित छात्र: <span id="hs-absent-total">0</span> (बालक: <span id="hs-absent-boys">0</span> | बालिका: <span id="hs-absent-girls">0</span>)
+                    </div>
                 </div>
             </div>
         </div>
@@ -996,11 +1028,34 @@
             </div>
 
             <div class="card">
-                <h2>4. आज की परीक्षा का ऑटो-कैल्कुलेटर (Daily Exam Attendance Calculator)</h2>
+                <h2>4. आज की परीक्षा का ऑटो-कैल्कुलेटर एवं उपस्थिति प्रबंधन (Daily Exam Calculator)</h2>
+                
+                <!-- Added Date Input for Print & Tracking -->
+                <div class="date-print-header">
+                    <label for="inter-exam-date">📅 परीक्षा दिनांक (Exam Date): </label>
+                    <input type="date" id="inter-exam-date">
+                </div>
+
                 <p style="margin-bottom: 10px; font-size: 13px; color: #666;" class="no-print">आज आयोजित होने वाले विषय चुनें (समान पाली के विषय ही चुनें):</p>
                 <div id="inter-exam-selector" class="exam-grid no-print"></div>
-                <div class="result-box">
-                    आज इस पाली में परीक्षा देने वाले कुल छात्र: <span id="inter-daily-total">0</span> (बालक: <span id="inter-daily-boys">0</span> | बालिका: <span id="inter-daily-girls">0</span>)
+                
+                <div class="result-box-container">
+                    <div class="result-box">
+                        आज इस पाली में परीक्षा देने वाले सम्भावित छात्र (Registered): <span id="inter-daily-total">0</span> (बालक: <span id="inter-daily-boys">0</span> | बालिका: <span id="inter-daily-girls">0</span>)
+                    </div>
+
+                    <div class="v-form-grid no-print" style="margin-top: 10px;">
+                        <input type="number" id="inter-absent-boys-input" placeholder="अनुपस्थित बालक" oninput="calculateAttendance('inter')">
+                        <input type="number" id="inter-absent-girls-input" placeholder="अनुपस्थित बालिका" oninput="calculateAttendance('inter')">
+                    </div>
+
+                    <div class="result-box present">
+                        आज इस पाली में उपस्थित छात्र: <span id="inter-present-total">0</span> (बालक: <span id="inter-present-boys">0</span> | बालिका: <span id="inter-present-girls">0</span>)
+                    </div>
+
+                    <div class="result-box absent">
+                        आज इस पाली में अनुपस्थित छात्र: <span id="inter-absent-total">0</span> (बालक: <span id="inter-absent-boys">0</span> | बालिका: <span id="inter-absent-girls">0</span>)
+                    </div>
                 </div>
             </div>
         </div>
@@ -1016,12 +1071,22 @@ let currentVidyalayTab = 'hs';
 window.onload = function() {
     addRoomBlock();
     updateParikshaHeader();
+    loadVidyalayData();
     const savedFormat = localStorage.getItem('selectedMasterFormat');
     if (savedFormat) {
         document.getElementById('masterFormatSelect').value = savedFormat;
     }
+    setVidyalayTodayDates();
     switchFormat();
 };
+
+function setVidyalayTodayDates() {
+    const today = new Date().toISOString().split('T')[0];
+    const hsDateInput = document.getElementById('hs-exam-date');
+    const interDateInput = document.getElementById('inter-exam-date');
+    if (hsDateInput && !hsDateInput.value) hsDateInput.value = today;
+    if (interDateInput && !interDateInput.value) interDateInput.value = today;
+}
 
 function saveSelectedFormat() {
     const selected = document.getElementById('masterFormatSelect').value;
@@ -2064,11 +2129,14 @@ function addSubject(type) {
     let count = parseInt(document.getElementById(`${type}-subject-total-input`).value) || 0;
     let boys = parseInt(document.getElementById(`${type}-subject-boys`).value) || 0;
     let girls = parseInt(document.getElementById(`${type}-subject-girls`).value) || 0;
-    let stream = type === 'inter' ? document.getElementById('inter-subject-stream').value : 'General';
+    let stream = (type === 'inter') ? document.getElementById('inter-subject-stream').value : null;
 
-    if (!name || count <= 0) return alert('कृपया सही विषय और पंजीकृत छात्र संख्या भरें!');
+    if (!name || count <= 0) return alert('कृपया सही विषय का नाम और संख्या भरें!');
 
-    vidyalayData[type].subjects.push({ name, count, boys, girls, stream });
+    let item = { name, count, boys, girls };
+    if (stream) item.stream = stream;
+
+    vidyalayData[type].subjects.push(item);
     document.getElementById(`${type}-subject-name`).value = '';
     document.getElementById(`${type}-subject-total-input`).value = '';
     document.getElementById(`${type}-subject-boys`).value = '';
@@ -2083,17 +2151,6 @@ function editSubject(type, index) {
     newName = newName.trim();
     if (!newName) return alert('विषय का नाम खाली नहीं हो सकता!');
 
-    let newStream = sub.stream;
-    if (type === 'inter') {
-        let streamChoice = prompt('वर्ग (Stream) बदलें:\n1: Common (अनिवार्य)\n2: Science (विज्ञान)\n3: Arts (कला)', 
-            sub.stream === 'Common' ? '1' : (sub.stream === 'Science' ? '2' : '3'));
-        if (streamChoice === null) return;
-        if (streamChoice === '1') newStream = 'Common';
-        else if (streamChoice === '2') newStream = 'Science';
-        else if (streamChoice === '3') newStream = 'Arts';
-        else return alert('गलत वर्ग विकल्प चुना गया!');
-    }
-
     let newCountStr = prompt('कुल पंजीकृत छात्र संख्या बदलें:', sub.count);
     if (newCountStr === null) return;
     let newCount = parseInt(newCountStr) || 0;
@@ -2105,152 +2162,128 @@ function editSubject(type, index) {
     if (newBoys > newCount) newBoys = newCount;
     let newGirls = newCount - newBoys;
 
-    vidyalayData[type].subjects[index] = { name: newName, count: newCount, boys: newBoys, girls: newGirls, stream: newStream };
+    let item = { name: newName, count: newCount, boys: newBoys, girls: newGirls };
+    if (type === 'inter') item.stream = sub.stream || 'Common';
+
+    vidyalayData[type].subjects[index] = item;
     saveVidyalayData();
 }
 
 function deleteSubject(type, index) {
-    if (confirm('क्या आप इसे हटाना चाहते हैं?')) {
+    if (confirm('क्या आप इस विषय को हटाना चाहते हैं?')) {
         vidyalayData[type].subjects.splice(index, 1);
         saveVidyalayData();
     }
 }
 
-function calculateDailyAttendance(type) {
-    let total = 0, boys = 0, girls = 0;
-    let checkboxes = document.querySelectorAll(`.${type}-exam-checkbox:checked`);
+function calculateAttendance(type) {
+    let checkboxes = document.querySelectorAll(`input[name="${type}-daily-sub"]:checked`);
+    let dailyBoys = 0, dailyGirls = 0;
+
     checkboxes.forEach(cb => {
-        let idx = parseInt(cb.getAttribute('data-index'));
+        let idx = parseInt(cb.value);
         let sub = vidyalayData[type].subjects[idx];
         if (sub) {
-            total += sub.count;
-            boys += (sub.boys || 0);
-            girls += (sub.girls || (sub.count - (sub.boys || 0)));
+            dailyBoys += sub.boys || 0;
+            dailyGirls += sub.girls || 0;
         }
     });
 
-    document.getElementById(`${type}-daily-total`).innerText = total;
-    document.getElementById(`${type}-daily-boys`).innerText = boys;
-    document.getElementById(`${type}-daily-girls`).innerText = girls;
+    let dailyTotal = dailyBoys + dailyGirls;
+
+    document.getElementById(`${type}-daily-total`).innerText = dailyTotal;
+    document.getElementById(`${type}-daily-boys`).innerText = dailyBoys;
+    document.getElementById(`${type}-daily-girls`).innerText = dailyGirls;
+
+    let absBoys = parseInt(document.getElementById(`${type}-absent-boys-input`).value) || 0;
+    let absGirls = parseInt(document.getElementById(`${type}-absent-girls-input`).value) || 0;
+
+    if (absBoys > dailyBoys) absBoys = dailyBoys;
+    if (absGirls > dailyGirls) absGirls = dailyGirls;
+
+    let absTotal = absBoys + absGirls;
+    let presBoys = dailyBoys - absBoys;
+    let presGirls = dailyGirls - absGirls;
+    let presTotal = dailyTotal - absTotal;
+
+    document.getElementById(`${type}-present-total`).innerText = presTotal >= 0 ? presTotal : 0;
+    document.getElementById(`${type}-present-boys`).innerText = presBoys >= 0 ? presBoys : 0;
+    document.getElementById(`${type}-present-girls`).innerText = presGirls >= 0 ? presGirls : 0;
+
+    document.getElementById(`${type}-absent-total`).innerText = absTotal;
+    document.getElementById(`${type}-absent-boys`).innerText = absBoys;
+    document.getElementById(`${type}-absent-girls`).innerText = absGirls;
 }
 
 function renderVidyalayAll() {
-    loadVidyalayData();
-    
-    // High School Data Render
-    let hsSList = document.getElementById('hs-school-list');
-    hsSList.innerHTML = '';
-    let hsSTotal = 0, hsBoysTotal = 0, hsGirlsTotal = 0;
-    vidyalayData.hs.schools.forEach((s, i) => {
-        let b = s.boys || 0;
-        let g = s.girls || (s.count - b);
-        hsSTotal += s.count;
-        hsBoysTotal += b;
-        hsGirlsTotal += g;
-        hsSList.innerHTML += `<tr>
-            <td>${i+1}</td>
-            <td style="text-align:left;">${s.name}</td>
-            <td>${b}</td>
-            <td>${g}</td>
-            <td class="total-cell">${s.count}</td>
-            <td class="no-print">
-                <button class="btn-edit" onclick="editSchool('hs', ${i})">संशोधन</button>
-                <button class="btn-danger" onclick="deleteSchool('hs', ${i})">हटाएं</button>
-            </td>
-        </tr>`;
+    ['hs', 'inter'].forEach(type => {
+        let sList = document.getElementById(`${type}-school-list`);
+        sList.innerHTML = '';
+        let totSchoolBoys = 0, totSchoolGirls = 0, totSchoolCount = 0;
+
+        vidyalayData[type].schools.forEach((s, idx) => {
+            totSchoolBoys += s.boys || 0;
+            totSchoolGirls += s.girls || 0;
+            totSchoolCount += s.count || 0;
+            sList.innerHTML += `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td style="text-align: left; padding-left: 8px;">${s.name}</td>
+                    <td>${s.boys || 0}</td>
+                    <td>${s.girls || 0}</td>
+                    <td><strong>${s.count}</strong></td>
+                    <td class="no-print">
+                        <button class="btn-edit" onclick="editSchool('${type}', ${idx})">✏️ एडिट</button>
+                        <button class="btn-danger" onclick="deleteSchool('${type}', ${idx})">हटाएं</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        document.getElementById(`${type}-school-boys-total`).innerText = totSchoolBoys;
+        document.getElementById(`${type}-school-girls-total`).innerText = totSchoolGirls;
+        document.getElementById(`${type}-school-total`).innerText = totSchoolCount;
+
+        let subList = document.getElementById(`${type}-subject-list`);
+        subList.innerHTML = '';
+        let selector = document.getElementById(`${type}-exam-selector`);
+        selector.innerHTML = '';
+
+        vidyalayData[type].subjects.forEach((sub, idx) => {
+            let streamTd = (type === 'inter') ? `<td><span class="tag" style="background:#555;">${sub.stream || 'Common'}</span></td>` : '';
+            subList.innerHTML += `
+                <tr>
+                    <td>${idx + 1}</td>
+                    <td style="text-align: left; padding-left: 8px;">${sub.name}</td>
+                    ${streamTd}
+                    <td>${sub.boys || 0}</td>
+                    <td>${sub.girls || 0}</td>
+                    <td><strong>${sub.count}</strong></td>
+                    <td class="no-print">
+                        <button class="btn-edit" onclick="editSubject('${type}', ${idx})">✏️ एडिट</button>
+                        <button class="btn-danger" onclick="deleteSubject('${type}', ${idx})">हटाएं</button>
+                    </td>
+                </tr>
+            `;
+
+            selector.innerHTML += `
+                <div class="exam-item">
+                    <input type="checkbox" name="${type}-daily-sub" value="${idx}" id="${type}-sub-cb-${idx}" onchange="calculateAttendance('${type}')">
+                    <label for="${type}-sub-cb-${idx}"><strong>${sub.name}</strong> (${sub.count})</label>
+                </div>
+            `;
+        });
+
+        calculateAttendance(type);
     });
-    document.getElementById('hs-school-total').innerText = hsSTotal;
-    document.getElementById('hs-school-boys-total').innerText = hsBoysTotal;
-    document.getElementById('hs-school-girls-total').innerText = hsGirlsTotal;
 
-    let hsSubList = document.getElementById('hs-subject-list');
-    hsSubList.innerHTML = '';
-    let hsSelector = document.getElementById('hs-exam-selector');
-    hsSelector.innerHTML = '';
-
-    vidyalayData.hs.subjects.forEach((sub, i) => {
-        let b = sub.boys || 0;
-        let g = sub.girls || (sub.count - b);
-        hsSubList.innerHTML += `<tr>
-            <td>${i+1}</td>
-            <td style="text-align:left;">${sub.name}</td>
-            <td>${b}</td>
-            <td>${g}</td>
-            <td class="total-cell">${sub.count}</td>
-            <td class="no-print">
-                <button class="btn-edit" onclick="editSubject('hs', ${i})">संशोधन</button>
-                <button class="btn-danger" onclick="deleteSubject('hs', ${i})">हटाएं</button>
-            </td>
-        </tr>`;
-
-        hsSelector.innerHTML += `<div class="exam-item">
-            <input type="checkbox" class="hs-exam-checkbox" data-index="${i}" onchange="calculateDailyAttendance('hs')">
-            <span>${sub.name} (${sub.count})</span>
-        </div>`;
-    });
-
-    // Intermediate Data Render
     let sc = vidyalayData.inter.scCount || 0;
     let art = vidyalayData.inter.artCount || 0;
     document.getElementById('disp-sc-total').innerText = sc;
     document.getElementById('disp-art-total').innerText = art;
     document.getElementById('disp-grand-total').innerText = sc + art;
-
-    let interSList = document.getElementById('inter-school-list');
-    interSList.innerHTML = '';
-    let interSTotal = 0, interBoysTotal = 0, interGirlsTotal = 0;
-    vidyalayData.inter.schools.forEach((s, i) => {
-        let b = s.boys || 0;
-        let g = s.girls || (s.count - b);
-        interSTotal += s.count;
-        interBoysTotal += b;
-        interGirlsTotal += g;
-        interSList.innerHTML += `<tr>
-            <td>${i+1}</td>
-            <td style="text-align:left;">${s.name}</td>
-            <td>${b}</td>
-            <td>${g}</td>
-            <td class="total-cell">${s.count}</td>
-            <td class="no-print">
-                <button class="btn-edit" onclick="editSchool('inter', ${i})">संशोधन</button>
-                <button class="btn-danger" onclick="deleteSchool('inter', ${i})">हटाएं</button>
-            </td>
-        </tr>`;
-    });
-    document.getElementById('inter-school-total').innerText = interSTotal;
-    document.getElementById('inter-school-boys-total').innerText = interBoysTotal;
-    document.getElementById('inter-school-girls-total').innerText = interGirlsTotal;
-
-    let interSubList = document.getElementById('inter-subject-list');
-    interSubList.innerHTML = '';
-    let interSelector = document.getElementById('inter-exam-selector');
-    interSelector.innerHTML = '';
-
-    vidyalayData.inter.subjects.forEach((sub, i) => {
-        let b = sub.boys || 0;
-        let g = sub.girls || (sub.count - b);
-        interSubList.innerHTML += `<tr>
-            <td>${i+1}</td>
-            <td style="text-align:left;">${sub.name}</td>
-            <td>${sub.stream || 'Common'}</td>
-            <td>${b}</td>
-            <td>${g}</td>
-            <td class="total-cell">${sub.count}</td>
-            <td class="no-print">
-                <button class="btn-edit" onclick="editSubject('inter', ${i})">संशोधन</button>
-                <button class="btn-danger" onclick="deleteSubject('inter', ${i})">हटाएं</button>
-            </td>
-        </tr>`;
-
-        interSelector.innerHTML += `<div class="exam-item">
-            <input type="checkbox" class="inter-exam-checkbox" data-index="${i}" onchange="calculateDailyAttendance('inter')">
-            <span>${sub.name} [${sub.stream || 'Common'}] (${sub.count})</span>
-        </div>`;
-    });
-
-    calculateDailyAttendance('hs');
-    calculateDailyAttendance('inter');
 }
 </script>
+
 </body>
 </html>
