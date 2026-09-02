@@ -69,6 +69,7 @@
         .btn-print { background-color: #2f855a; }
         .btn-print:hover { background-color: #276749; }
         .btn-danger { background-color: #e53e3e; padding: 2px 5px; font-size: 10px; }
+        .btn-edit { background-color: #f39c12; color: white; border: none; padding: 2px 6px; cursor: pointer; font-size: 10px; border-radius: 3px; font-weight: bold; }
         .btn-add { background-color: #28a745; color: white; border: none; padding: 6px 12px; cursor: pointer; font-weight: bold; border-radius: 4px; }
         .btn-remove { background-color: #dc3545; color: white; border: none; padding: 3px 8px; cursor: pointer; border-radius: 4px; }
 
@@ -210,7 +211,7 @@
         .v-tab-btn.active { background: #2a5298; color: white; }
         .v-tab-content { display: none; }
         .v-tab-content.active { display: block; }
-        .v-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 15px; }
+        .v-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px; }
         .v-form-grid input, .v-form-grid select, .v-form-grid button { padding: 8px; font-size: 13px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
         .stream-summary-box { display: flex; gap: 15px; margin-bottom: 15px; }
         .stream-card { flex: 1; padding: 12px; background: #f8f9fa; border-left: 4px solid #2a5298; border-radius: 4px; }
@@ -221,9 +222,12 @@
         .exam-item input[type="checkbox"] { width: auto; }
         .result-box { background: #d4edda; color: #155724; padding: 12px; border-radius: 6px; font-size: 16px; font-weight: bold; text-align: center; border: 1px solid #c3e6cb; }
 
-        /* PRINT STYLES */
+        /* PRINT STYLES - FIXED TO PORTRAIT STRICTLY */
         @media print {
-            @page { size: A4 portrait; margin: 5mm 6mm 5mm 6mm; }
+            @page { 
+                size: A4 portrait !important; 
+                margin: 5mm 6mm 5mm 6mm; 
+            }
             html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #fff !important; -webkit-print-color-adjust: exact; }
             .container { box-shadow: none !important; max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
             .no-print, .software-mode-bar, .admin-controls, .tt-controls, .tt-settings-panel, .btn, .tt-btn, .btn-add, .btn-remove, .v-tabs { display: none !important; }
@@ -250,11 +254,11 @@
             .total-cell { font-size: 16px !important; font-weight: bold !important; }
             .signature-block { margin-top: auto !important; height: 0.8inch !important; padding-bottom: 2px; }
             
-            /* Print for Copy Records */
-            .section-copy { border: 1px solid #000; margin-bottom: 10px; color: #000 !important; }
-            table.report-table { border: 2px solid #000 !important; }
-            table.report-table th { background-color: #f0f0f0 !important; color: #000 !important; font-weight: bold !important; border: 1.5px solid #000 !important; }
-            table.report-table td { color: #000 !important; font-weight: bold !important; border: 1px solid #000 !important; }
+            /* Print for Copy Records & Vidyalayvar */
+            .section-copy, .card { border: 1px solid #000 !important; margin-bottom: 10px !important; color: #000 !important; box-shadow: none !important; }
+            table.report-table, table.exam-table { border: 2px solid #000 !important; }
+            table.report-table th, table.exam-table th { background-color: #f0f0f0 !important; color: #000 !important; font-weight: bold !important; border: 1.5px solid #000 !important; }
+            table.report-table td, table.exam-table td { color: #000 !important; font-weight: bold !important; border: 1px solid #000 !important; }
         }
     </style>
 </head>
@@ -266,8 +270,8 @@
         <label for="masterFormatSelect">📋 सॉफ्टवेयर मोड / फॉर्मेट सेट करें:</label>
         <div>
             <select id="masterFormatSelect" onchange="switchFormat()">
-                <option value="pariksha">परीक्षा विवरण (U.P. Board Room Summary)</option>
-                <option value="gridseating" selected>कमरा-वार बैठक व्यवस्था (Seating Grid Plan)</option>
+                <option value="pariksha" selected>परीक्षा विवरण (U.P. Board Room Summary)</option>
+                <option value="gridseating">कमरा-वार बैठक व्यवस्था (Seating Grid Plan)</option>
                 <option value="timetable">समय सारिणी (School Time Table)</option>
                 <option value="copyrecords">उत्तर पुस्तिका स्टॉक रजिस्टर (Copy Records)</option>
                 <option value="vidyalayvar">विद्यालय-वार विवरण एवं प्रबंधन (Vidyalayvar Management)</option>
@@ -279,7 +283,7 @@
     <!-- ========================================================================= -->
     <!-- 1. PARIKSHA SUMMARY SECTION                                               -->
     <!-- ========================================================================= -->
-    <div id="parikshaSection" style="display: none;">
+    <div id="parikshaSection">
         <div class="admin-controls no-print">
             <div class="form-row">
                 <label>परीक्षा वर्ग:</label>
@@ -292,7 +296,7 @@
                 <input type="text" id="examYear" value="2027" style="width: 60px;">
 
                 <button class="btn" onclick="updateParikshaHeader()">सेटिंग सेव करें</button>
-                <button class="btn btn-print" style="margin-left: auto;" onclick="window.print()">🖨️ प्रिंट निकालें (A4 Page)</button>
+                <button class="btn btn-print" style="margin-left: auto;" onclick="window.print()">🖨️ प्रिंट निकालें (A4 Portrait)</button>
             </div>
 
             <div class="form-row" style="background: #e2e8f0; padding: 6px 10px; border-radius: 4px; border: 1px solid #cbd5e0; margin-top: 5px;">
@@ -377,7 +381,7 @@
     <!-- ========================================================================= -->
     <!-- 2. GRID SEATING PLAN SECTION (बैठक व्यवस्था)                             -->
     <!-- ========================================================================= -->
-    <div id="gridSeatingSection">
+    <div id="gridSeatingSection" style="display: none;">
         <div class="admin-controls no-print">
             <h3 style="margin-top:0; margin-bottom:8px;">बैठक व्यवस्था सेटिंग्स (कंट्रोल पैनल)</h3>
             <div class="form-row">
@@ -816,32 +820,53 @@
     <div id="vidyalayvarSection" style="display: none;">
         <div class="print-header">
             <h1>श्री कृष्ण इ० का० सेमरा कठकुइयाँ, कुशीनगर</h1>
-            <h3>यूपी बोर्ड परीक्षा केंद्र प्रबंधन प्रणाली (High School & Intermediate)</h3>
+            <h3 id="vidyalay-header-title">यूपी बोर्ड परीक्षा वर्ष 2027</h3>
+        </div>
+
+        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="font-weight: bold;">
+                <label for="exam-year-input">परीक्षा वर्ष (YYYY): </label>
+                <input type="number" id="exam-year-input" value="2027" placeholder="YYYY" style="width: 100px; padding: 5px; font-size: 14px;" oninput="updateHeaderTitle()">
+            </div>
+            <div>
+                <button class="btn btn-print" onclick="window.print()">🖨️ प्रिंट निकालें (A4 Portrait)</button>
+            </div>
         </div>
 
         <!-- Vidyalayvar Tabs -->
         <div class="v-tabs no-print">
-            <button class="v-tab-btn active" onclick="switchVidyalayTab('hs')">हाई स्कूल (Class 10)</button>
-            <button class="v-tab-btn" onclick="switchVidyalayTab('inter')">इंटरमीडिएट (Class 12)</button>
+            <button id="tab-btn-hs" class="v-tab-btn active" onclick="switchVidyalayTab('hs')">हाई स्कूल (Class 10)</button>
+            <button id="tab-btn-inter" class="v-tab-btn" onclick="switchVidyalayTab('inter')">इंटरमीडिएट (Class 12)</button>
         </div>
 
         <!-- HIGH SCHOOL SUB-SECTION -->
         <div id="v-hs" class="v-tab-content active">
             <div class="card">
-                <h2>1. विद्यालयवार नामांकित परीक्षार्थी विवरण (High School)</h2>
+                <h2>1. विद्यालयवार नामांकित परीक्षार्थी विवरण ( हाई स्कूल )</h2>
                 <div class="v-form-grid no-print">
                     <input type="text" id="hs-school-name" placeholder="विद्यालय का नाम">
-                    <input type="number" id="hs-school-count" placeholder="छात्र संख्या">
-                    <button class="btn-add" onclick="addSchool('hs')">विद्यालय जोड़ें</button>
+                    <input type="number" id="hs-school-total-input" placeholder="कुल छात्र संख्या" oninput="autoFillBoysGirls('hs', 'school')">
+                    <input type="number" id="hs-school-boys" placeholder="पंजीकृत बालक" oninput="autoFillBoysGirls('hs', 'school')">
+                    <input type="number" id="hs-school-girls" placeholder="पंजीकृत बालिका (Auto)" readonly style="background:#eef2f5;">
+                    <button class="btn-add" onclick="addSchool('hs')">विद्यालय जोड़ें</button>
                 </div>
                 <table class="exam-table">
                     <thead>
-                        <tr><th>क्र० सं०</th><th>विद्यालय का नाम</th><th>कुल परीक्षार्थी</th><th class="no-print">कार्रवाई</th></tr>
+                        <tr>
+                            <th>क्र० सं०</th>
+                            <th>विद्यालय का नाम</th>
+                            <th>पंजीकृत बालक</th>
+                            <th>पंजीकृत बालिका</th>
+                            <th>कुल परीक्षार्थी</th>
+                            <th class="no-print">कार्रवाई</th>
+                        </tr>
                     </thead>
                     <tbody id="hs-school-list"></tbody>
                     <tfoot>
                         <tr class="grand-total-row">
                             <td colspan="2" style="text-align: right; font-weight: bold;">केंद्र के कुल आवंटित छात्र (Center Capacity):</td>
+                            <td id="hs-school-boys-total" class="total-cell">0</td>
+                            <td id="hs-school-girls-total" class="total-cell">0</td>
                             <td id="hs-school-total" class="total-cell">0</td>
                             <td class="no-print">-</td>
                         </tr>
@@ -850,15 +875,24 @@
             </div>
 
             <div class="card">
-                <h2>2. विषयवार पंजीकृत छात्र संख्या (High School)</h2>
+                <h2>2. विषयवार पंजीकृत छात्र संख्या ( हाई स्कूल )</h2>
                 <div class="v-form-grid no-print">
                     <input type="text" id="hs-subject-name" placeholder="विषय (जैसे: हिंदी, गणित)">
-                    <input type="number" id="hs-subject-count" placeholder="पंजीकृत छात्र संख्या">
-                    <button class="btn-add" onclick="addSubject('hs')">विषय जोड़ें</button>
+                    <input type="number" id="hs-subject-total-input" placeholder="कुल पंजीकृत छात्र" oninput="autoFillBoysGirls('hs', 'subject')">
+                    <input type="number" id="hs-subject-boys" placeholder="पंजीकृत बालक" oninput="autoFillBoysGirls('hs', 'subject')">
+                    <input type="number" id="hs-subject-girls" placeholder="पंजीकृत बालिका (Auto)" readonly style="background:#eef2f5;">
+                    <button class="btn-add" onclick="addSubject('hs')">विषय जोड़ें</button>
                 </div>
                 <table class="exam-table">
                     <thead>
-                        <tr><th>क्र० सं०</th><th>विषय का नाम</th><th>पंजीकृत छात्र संख्या</th><th class="no-print">कार्रवाई</th></tr>
+                        <tr>
+                            <th>क्र० सं०</th>
+                            <th>विषय का नाम</th>
+                            <th>पंजीकृत बालक</th>
+                            <th>पंजीकृत बालिका</th>
+                            <th>कुल पंजीकृत छात्र</th>
+                            <th class="no-print">कार्रवाई</th>
+                        </tr>
                     </thead>
                     <tbody id="hs-subject-list"></tbody>
                 </table>
@@ -869,7 +903,7 @@
                 <p style="margin-bottom: 10px; font-size: 13px; color: #666;" class="no-print">आज की पाली में आयोजित होने वाले विषय चुनें:</p>
                 <div id="hs-exam-selector" class="exam-grid no-print"></div>
                 <div class="result-box">
-                    आज इस पाली में उपस्थित होने वाले संभावित छात्र: <span id="hs-daily-total">0</span>
+                    आज इस पाली में उपस्थित होने वाले संभावित छात्र: <span id="hs-daily-total">0</span> (बालक: <span id="hs-daily-boys">0</span> | बालिका: <span id="hs-daily-girls">0</span>)
                 </div>
             </div>
         </div>
@@ -877,7 +911,7 @@
         <!-- INTERMEDIATE SUB-SECTION -->
         <div id="v-inter" class="v-tab-content">
             <div class="card">
-                <h2>1. केंद्र की कुल क्षमता एवं वर्गवार (Science / Arts) आवंटन</h2>
+                <h2>1. विद्यालयवार नामांकित परीक्षार्थी विवरण ( इण्टर )  (Science / Arts) </h2>
                 <div class="v-form-grid no-print">
                     <input type="number" id="inter-sc-count" placeholder="Science कुल छात्र" onchange="updateInterCapacity()">
                     <input type="number" id="inter-art-count" placeholder="Arts कुल छात्र" onchange="updateInterCapacity()">
@@ -899,20 +933,31 @@
             </div>
 
             <div class="card">
-                <h2>2. विद्यालयवार नामांकित परीक्षार्थी विवरण (Intermediate)</h2>
+                <h2>2. विद्यालयवार नामांकित परीक्षार्थी विवरण ( इण्टर )</h2>
                 <div class="v-form-grid no-print">
                     <input type="text" id="inter-school-name" placeholder="विद्यालय का नाम">
-                    <input type="number" id="inter-school-count" placeholder="छात्र संख्या">
-                    <button class="btn-add" onclick="addSchool('inter')">विद्यालय जोड़ें</button>
+                    <input type="number" id="inter-school-total-input" placeholder="कुल छात्र संख्या" oninput="autoFillBoysGirls('inter', 'school')">
+                    <input type="number" id="inter-school-boys" placeholder="पंजीकृत बालक" oninput="autoFillBoysGirls('inter', 'school')">
+                    <input type="number" id="inter-school-girls" placeholder="पंजीकृत बालिका (Auto)" readonly style="background:#eef2f5;">
+                    <button class="btn-add" onclick="addSchool('inter')">विद्यालय जोड़ें</button>
                 </div>
                 <table class="exam-table">
                     <thead>
-                        <tr><th>क्र० सं०</th><th>विद्यालय का नाम</th><th>कुल छात्र संख्या</th><th class="no-print">कार्रवाई</th></tr>
+                        <tr>
+                            <th>क्र० सं०</th>
+                            <th>विद्यालय का नाम</th>
+                            <th>पंजीकृत बालक</th>
+                            <th>पंजीकृत बालिका</th>
+                            <th>कुल छात्र संख्या</th>
+                            <th class="no-print">कार्रवाई</th>
+                        </tr>
                     </thead>
                     <tbody id="inter-school-list"></tbody>
                     <tfoot>
                         <tr class="grand-total-row">
                             <td colspan="2" style="text-align: right; font-weight: bold;">विद्यालयवार दर्ज छात्र संख्या का योग:</td>
+                            <td id="inter-school-boys-total" class="total-cell">0</td>
+                            <td id="inter-school-girls-total" class="total-cell">0</td>
                             <td id="inter-school-total" class="total-cell">0</td>
                             <td class="no-print">-</td>
                         </tr>
@@ -921,20 +966,30 @@
             </div>
 
             <div class="card">
-                <h2>3. विषयवार पंजीकृत छात्र संख्या (Intermediate)</h2>
+                <h2>3. विषयवार पंजीकृत छात्र संख्या ( इण्टर )</h2>
                 <div class="v-form-grid no-print">
-                    <input type="text" id="inter-subject-name" placeholder="विषय का नाम (जैसे: भौतिक विज्ञान)">
+                    <input type="text" id="inter-subject-name" placeholder="विषय (जैसे: भौतिक विज्ञान)">
                     <select id="inter-subject-stream">
-                        <option value="Common">अनिवार्य/Common (जैसे: हिंदी, अंग्रेजी)</option>
+                        <option value="Common">अनिवार्य/Common (जैसे: हिंदी)</option>
                         <option value="Science">Science (विज्ञान वर्ग)</option>
                         <option value="Arts">Arts (कला वर्ग)</option>
                     </select>
-                    <input type="number" id="inter-subject-count" placeholder="पंजीकृत छात्र संख्या">
-                    <button class="btn-add" onclick="addSubject('inter')">विषय जोड़ें</button>
+                    <input type="number" id="inter-subject-total-input" placeholder="कुल पंजीकृत छात्र" oninput="autoFillBoysGirls('inter', 'subject')">
+                    <input type="number" id="inter-subject-boys" placeholder="पंजीकृत बालक" oninput="autoFillBoysGirls('inter', 'subject')">
+                    <input type="number" id="inter-subject-girls" placeholder="पंजीकृत बालिका (Auto)" readonly style="background:#eef2f5;">
+                    <button class="btn-add" onclick="addSubject('inter')">विषय जोड़ें</button>
                 </div>
                 <table class="exam-table">
                     <thead>
-                        <tr><th>क्र० सं०</th><th>विषय का नाम</th><th>वर्ग (Stream)</th><th>पंजीकृत छात्र</th><th class="no-print">कार्रवाई</th></tr>
+                        <tr>
+                            <th>क्र० सं०</th>
+                            <th>विषय का नाम</th>
+                            <th>वर्ग (Stream)</th>
+                            <th>पंजीकृत बालक</th>
+                            <th>पंजीकृत बालिका</th>
+                            <th>कुल पंजीकृत छात्र</th>
+                            <th class="no-print">कार्रवाई</th>
+                        </tr>
                     </thead>
                     <tbody id="inter-subject-list"></tbody>
                 </table>
@@ -945,7 +1000,7 @@
                 <p style="margin-bottom: 10px; font-size: 13px; color: #666;" class="no-print">आज आयोजित होने वाले विषय चुनें (समान पाली के विषय ही चुनें):</p>
                 <div id="inter-exam-selector" class="exam-grid no-print"></div>
                 <div class="result-box">
-                    आज इस पाली में परीक्षा देने वाले कुल छात्र: <span id="inter-daily-total">0</span>
+                    आज इस पाली में परीक्षा देने वाले कुल छात्र: <span id="inter-daily-total">0</span> (बालक: <span id="inter-daily-boys">0</span> | बालिका: <span id="inter-daily-girls">0</span>)
                 </div>
             </div>
         </div>
@@ -953,1188 +1008,1249 @@
 </div>
 
 <script>
-    /* MASTER SWITCH LOGIC */
-    function switchFormat() {
-        const selected = document.getElementById('masterFormatSelect').value;
-        document.getElementById('parikshaSection').style.display = 'none';
-        document.getElementById('gridSeatingSection').style.display = 'none';
-        document.getElementById('timetableSection').style.display = 'none';
-        document.getElementById('copyRecordsSection').style.display = 'none';
-        document.getElementById('vidyalayvarSection').style.display = 'none';
+let roomCounter = 0;
+const schoolColors = ['#002060', '#c00000', '#006600', '#000000', '#581845'];
+let currentClass = '10th';
+let currentVidyalayTab = 'hs';
 
-        if (selected === 'pariksha') {
-            document.getElementById('parikshaSection').style.display = 'block';
-        } else if (selected === 'gridseating') {
-            document.getElementById('gridSeatingSection').style.display = 'block';
-            generateGrid();
-        } else if (selected === 'timetable') {
-            document.getElementById('timetableSection').style.display = 'block';
-            generateTimetable();
-        } else if (selected === 'copyrecords') {
-            document.getElementById('copyRecordsSection').style.display = 'block';
-            setTodayDates();
-            switchClass(currentClass || '10th');
-        } else if (selected === 'vidyalayvar') {
-            document.getElementById('vidyalayvarSection').style.display = 'block';
-            renderVidyalayAll();
-        }
+window.onload = function() {
+    addRoomBlock();
+    updateParikshaHeader();
+    const savedFormat = localStorage.getItem('selectedMasterFormat');
+    if (savedFormat) {
+        document.getElementById('masterFormatSelect').value = savedFormat;
     }
+    switchFormat();
+};
 
-    function saveSelectedFormat() {
-        const selected = document.getElementById('masterFormatSelect').value;
-        localStorage.setItem('preferred_school_format', selected);
-        alert('आपकी पसंद सफलतापूर्वक सेव हो गई है!');
-    }
+function saveSelectedFormat() {
+    const selected = document.getElementById('masterFormatSelect').value;
+    localStorage.setItem('selectedMasterFormat', selected);
+    alert('फॉर्मेट मोड की पसंद सेव हो गई है!');
+}
 
-    function loadSavedFormat() {
-        const savedFormat = localStorage.getItem('preferred_school_format');
-        if (savedFormat) {
-            document.getElementById('masterFormatSelect').value = savedFormat;
-        }
-        switchFormat();
-    }
+function switchFormat() {
+    const selected = document.getElementById('masterFormatSelect').value;
+    document.getElementById('parikshaSection').style.display = 'none';
+    document.getElementById('gridSeatingSection').style.display = 'none';
+    document.getElementById('timetableSection').style.display = 'none';
+    document.getElementById('copyRecordsSection').style.display = 'none';
+    document.getElementById('vidyalayvarSection').style.display = 'none';
 
-    /* 1. PARIKSHA SUMMARY LOGIC */
-    let roomCounter = 0;
-    const schoolColors = ['#002060', '#c00000', '#006600', '#000000', '#581845'];
-
-    function adjustRowHeight(level) {
-        const root = document.documentElement;
-        if (level === 'normal') {
-            root.style.setProperty('--row-padding', '5px');
-            root.style.setProperty('--font-size', '12px');
-            root.style.setProperty('--input-font-size', '14px');
-        } else if (level === 'compact') {
-            root.style.setProperty('--row-padding', '2px');
-            root.style.setProperty('--font-size', '11px');
-            root.style.setProperty('--input-font-size', '13px');
-        } else if (level === 'ultra') {
-            root.style.setProperty('--row-padding', '0px');
-            root.style.setProperty('--font-size', '9.5px');
-            root.style.setProperty('--input-font-size', '11.5px');
-        }
-    }
-
-    function updateParikshaHeader() {
-        const type = document.getElementById('examType').value;
-        const year = document.getElementById('examYear').value;
-        const classDisplay = document.getElementById('displayClassType');
-        
-        document.getElementById('displayBoardYear').innerText = `यू० पी० बोर्ड परीक्षा वर्ष - ${year}`;
-        classDisplay.innerText = type;
-        classDisplay.style.color = (type === 'हाई स्कूल') ? '#002060' : '#c00000';
-    }
-
-    function addRoomBlock() {
-        roomCounter++;
-        const tbody = document.getElementById('masterTbody');
-        const rowHTML = `
-            <tr class="data-row room-start-row" data-room="${roomCounter}">
-                <td class="room-cell"><input type="text" class="table-input room-no" value="${roomCounter}"></td>
-                <td><input type="text" class="table-input v-name" oninput="handleSchoolNameChange(this)"></td>
-                <td><input type="number" class="table-input r-from" oninput="calculateAll()"></td>
-                <td><input type="number" class="table-input r-to" readonly style="background-color: #fafafa;"></td>
-                <td><input type="number" class="table-input count" oninput="calculateAll()"></td>
-                <td class="total-cell">0</td>
-                <td class="no-print" style="white-space: nowrap;">
-                    <button class="btn" onclick="addRow(${roomCounter})" style="padding: 1px 4px; font-size: 10px;">+ स्कूल</button>
-                    <button class="btn btn-danger" onclick="removeRoom(${roomCounter})">हटाएं</button>
-                </td>
-            </tr>
-        `;
-        tbody.insertAdjacentHTML('beforeend', rowHTML);
-        updateRowSpans(roomCounter);
-        calculateAll();
-    }
-
-    function createSubRowHTML(roomId) {
-        return `
-            <tr class="data-row" data-room="${roomId}">
-                <td class="room-cell" style="display:none;"></td>
-                <td><input type="text" class="table-input v-name" oninput="handleSchoolNameChange(this)"></td>
-                <td><input type="number" class="table-input r-from" oninput="calculateAll()"></td>
-                <td><input type="number" class="table-input r-to" readonly style="background-color: #fafafa;"></td>
-                <td><input type="number" class="table-input count" oninput="calculateAll()"></td>
-                <td class="total-cell" style="display:none;"></td>
-                <td class="no-print"><button class="btn btn-danger" onclick="removeRow(this)">X</button></td>
-            </tr>
-        `;
-    }
-
-    function addRow(roomId) {
-        const roomRows = document.querySelectorAll(`tr[data-room="${roomId}"]`);
-        const lastRow = roomRows[roomRows.length - 1];
-        lastRow.insertAdjacentHTML('afterend', createSubRowHTML(roomId));
-        updateRowSpans(roomId);
-    }
-
-    function removeRow(btn) {
-        const row = btn.closest('tr');
-        const roomId = row.getAttribute('data-room');
-        row.remove();
-        updateRowSpans(roomId);
-        calculateAll();
-    }
-
-    function removeRoom(roomId) {
-        const roomRows = document.querySelectorAll(`tr[data-room="${roomId}"]`);
-        roomRows.forEach(r => r.remove());
-        calculateAll();
-    }
-
-    function updateRowSpans(roomId) {
-        const roomRows = document.querySelectorAll(`tr[data-room="${roomId}"]`);
-        if (roomRows.length === 0) return;
-
-        roomRows.forEach((row, index) => {
-            const roomCell = row.querySelector('.room-cell');
-            const totalCell = row.querySelector('.total-cell');
-            if (index === 0) {
-                roomCell.style.display = ''; totalCell.style.display = '';
-                roomCell.setAttribute('rowspan', roomRows.length);
-                totalCell.setAttribute('rowspan', roomRows.length);
-            } else {
-                roomCell.style.display = 'none'; totalCell.style.display = 'none';
-            }
-        });
-    }
-
-    function handleSchoolNameChange(input) {
-        const currentName = input.value.trim().toLowerCase();
-        if (!currentName) { calculateAll(); return; }
-
-        const allRows = Array.from(document.querySelectorAll('.data-row'));
-        const currentIndex = allRows.indexOf(input.closest('tr'));
-        let lastRollTo = null;
-
-        for (let i = 0; i < currentIndex; i++) {
-            const row = allRows[i];
-            const name = row.querySelector('.v-name').value.trim().toLowerCase();
-            const rTo = parseInt(row.querySelector('.r-to').value);
-            if (name === currentName && !isNaN(rTo)) { lastRollTo = rTo; }
-        }
-
-        if (lastRollTo !== null) {
-            allRows[currentIndex].querySelector('.r-from').value = lastRollTo + 1;
-        }
-        calculateAll();
-    }
-
-    function calculateAll() {
-        const schoolSummary = {};
-        const schoolColorMap = {};
-        let schoolColorIndex = 0;
-        const roomTotals = {};
-        let grandTotal = 0;
-
-        const rows = document.querySelectorAll('.data-row');
-        rows.forEach(row => {
-            const schoolName = row.querySelector('.v-name').value.trim();
-            if (schoolName && !schoolColorMap[schoolName]) {
-                schoolColorMap[schoolName] = schoolColors[schoolColorIndex % schoolColors.length];
-                schoolColorIndex++;
-            }
-        });
-
-        rows.forEach(row => {
-            const roomId = row.getAttribute('data-room');
-            const schoolName = row.querySelector('.v-name').value.trim();
-            const rFromInput = row.querySelector('.r-from');
-            const rToInput = row.querySelector('.r-to');
-            const countInput = row.querySelector('.count');
-            const vNameInput = row.querySelector('.v-name');
-
-            let rFrom = parseInt(rFromInput.value);
-            let count = parseInt(countInput.value);
-
-            let rTo = "";
-            if (!isNaN(rFrom) && !isNaN(count) && count > 0) {
-                rTo = rFrom + count - 1;
-                rToInput.value = rTo;
-            } else {
-                rToInput.value = ""; count = 0;
-            }
-
-            const assignedColor = schoolName ? (schoolColorMap[schoolName] || '#000000') : '#000000';
-            vNameInput.style.color = assignedColor; rFromInput.style.color = assignedColor;
-            rToInput.style.color = assignedColor; countInput.style.color = assignedColor;
-
-            if (!roomTotals[roomId]) roomTotals[roomId] = 0;
-            roomTotals[roomId] += count; grandTotal += count;
-
-            if (schoolName && !isNaN(rFrom) && rTo !== "") {
-                if (!schoolSummary[schoolName]) {
-                    schoolSummary[schoolName] = { startRoll: rFrom, endRoll: rTo, totalCount: count, color: assignedColor };
-                } else {
-                    schoolSummary[schoolName].startRoll = Math.min(schoolSummary[schoolName].startRoll, rFrom);
-                    schoolSummary[schoolName].endRoll = Math.max(schoolSummary[schoolName].endRoll, rTo);
-                    schoolSummary[schoolName].totalCount += count;
-                }
-            }
-        });
-
-        for (let roomId in roomTotals) {
-            const firstRow = document.querySelector(`tr[data-room="${roomId}"]`);
-            if (firstRow) {
-                const totalCell = firstRow.querySelector('.total-cell');
-                if (totalCell) totalCell.innerText = roomTotals[roomId];
-            }
-        }
-
-        document.getElementById('grandTotalCell').innerText = grandTotal;
-
-        const summaryTbody = document.getElementById('summaryTableBody');
-        summaryTbody.innerHTML = '';
-        let srNo = 1; let summaryGrandTotal = 0;
-
-        for (let school in schoolSummary) {
-            const data = schoolSummary[school];
-            summaryGrandTotal += data.totalCount;
-            summaryTbody.innerHTML += `
-                <tr style="color: ${data.color}; font-weight: bold;">
-                    <td style="color: #000;">${srNo++}</td>
-                    <td style="text-align: left; padding-left: 8px; color: ${data.color};">${school}</td>
-                    <td style="color: ${data.color};">${data.startRoll}</td>
-                    <td style="color: ${data.color};">${data.endRoll}</td>
-                    <td style="color: ${data.color};">${data.totalCount}</td>
-                    <td class="total-cell" style="color: ${data.color};">${data.totalCount}</td>
-                </tr>
-            `;
-        }
-        document.getElementById('summaryGrandTotalCell').innerText = summaryGrandTotal;
-    }
-
-    /* 2. GRID SEATING PLAN LOGIC */
-    function saveRollFillMode() {
-        const mode = document.getElementById('rollFillModeSelect').value;
-        localStorage.setItem('grid_roll_fill_mode', mode);
-        alert('रोल नंबर मोड सेटिंग ' + (mode === 'auto' ? 'Auto' : 'Manual') + ' पर सेव कर दी गई है!');
-        processGridData();
-    }
-
-    function getRollFillMode() {
-        return localStorage.getItem('grid_roll_fill_mode') || 'auto';
-    }
-
-    function updateGridHeader() {
-        var year = document.getElementById('inputYear').value;
-        var seatingType = document.getElementById('seatingTypeSelect').value;
-        var cls = document.getElementById('classSelect').value;
-        var centerCode = document.getElementById('inputCenterCode').value;
-        var room = document.getElementById('inputRoom').value;
-        var pali = document.getElementById('inputPali').value;
-
-        document.getElementById('mainTitle').innerText = (seatingType === 'प्री बोर्ड परीक्षा') ? 'वर्ष - ' + year : 'यू० पी० बोर्ड परीक्षा - ' + year;
-        document.getElementById('displaySeatingType').innerText = seatingType;
-        document.getElementById('displayClass').innerText = cls;
-        document.getElementById('displayCenterCode').innerText = centerCode;
-        document.getElementById('displayRoom').innerText = room;
-        document.getElementById('displayPali').innerText = pali;
-    }
-
-    function getSkippedCellsFromInput() {
-        var input = document.getElementById('inputSkipCells').value.trim().toUpperCase();
-        if (!input) return [];
-        var cells = [];
-        input.split(',').forEach(part => {
-            var match = part.trim().match(/^R(\d+)C(\d+)$/);
-            if (match) {
-                var r = parseInt(match[1]) - 1, c = parseInt(match[2]) - 1;
-                if (r >= 0 && c >= 0) cells.push(`${r}_${c}`);
-            }
-        });
-        return cells;
-    }
-
-    function getExcludedRollsFromInput() {
-        var input = document.getElementById('inputExcludedRolls').value.trim();
-        if (!input) return [];
-        return input.split(',').map(item => item.trim()).filter(item => item.length > 0);
-    }
-
-    function generateGrid() {
-        var rows = parseInt(document.getElementById('inputRows').value);
-        var cols = parseInt(document.getElementById('inputCols').value);
-        var height = document.getElementById('inputHeight').value + 'px';
-        var widthVal = parseInt(document.getElementById('inputWidth').value);
-        var width = widthVal + 'px';
-        var skippedCells = getSkippedCellsFromInput();
-
-        var gridTable = document.getElementById('seatingGrid');
-        gridTable.innerHTML = '';
-
-        for (var i = 0; i < rows; i++) {
-            var tr = document.createElement('tr');
-            for (var j = 0; j < cols; j++) {
-                var td = document.createElement('td');
-                td.style.height = height; td.style.width = width;
-                var input = document.createElement('input');
-                input.type = 'text'; input.maxLength = 12;
-                input.addEventListener('input', function() { handleCellInputChange(this); });
-
-                if (skippedCells.includes(`${i}_${j}`)) {
-                    td.classList.add('skipped-cell');
-                    input.value = "-";
-                }
-                td.appendChild(input);
-                tr.appendChild(td);
-            }
-            gridTable.appendChild(tr);
-        }
-
-        var totalGridWidth = cols * widthVal;
-        document.getElementById('gridHeaderWrapper').style.width = totalGridWidth + 'px';
-        document.getElementById('schoolTable').style.width = totalGridWidth + 'px';
-        document.getElementById('summaryHeaderWrapper').style.width = totalGridWidth + 'px';
-
-        processGridData();
-    }
-
-    function handleCellInputChange(inputEl) {
-        var cell = inputEl.parentNode;
-        if (inputEl.value.trim().toLowerCase() === "-") cell.classList.add('skipped-cell');
-        else cell.classList.remove('skipped-cell');
-        
-        if (getRollFillMode() === 'auto') {
-            processGridData();
-        }
-    }
-
-    function addSchoolGridRow() {
-        var tbody = document.getElementById('schoolTableBody');
-        var tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${tbody.rows.length + 1}</td>
-            <td><input type="text" style="text-align: left;"></td>
-            <td><input type="text" class="from-roll" oninput="processGridData()" maxLength="12"></td>
-            <td><input type="text" class="to-roll" readonly style="background:#f9f9f9;"></td>
-            <td><input type="number" class="student-count" oninput="processGridData()" min="0"></td>
-            <td class="no-print"><button class="btn-remove" onclick="removeGridRow(this)">हटाएं</button></td>
-        `;
-        tbody.appendChild(tr);
-        updateGridSerialNumbers();
-    }
-
-    function removeGridRow(btn) {
-        btn.parentNode.parentNode.remove();
-        updateGridSerialNumbers();
-        processGridData();
-    }
-
-    function updateGridSerialNumbers() {
-        var tbody = document.getElementById('schoolTableBody');
-        for (var i = 0; i < tbody.rows.length; i++) tbody.rows[i].cells[0].innerText = i + 1;
-    }
-
-    function processGridData() {
-        var mode = getRollFillMode();
-        var tbody = document.getElementById('schoolTableBody');
-        var grandTotal = 0;
-        var schoolRollArrays = [];
-        var excludedRollsList = getExcludedRollsFromInput();
-
-        for (var i = 0; i < tbody.rows.length; i++) {
-            var row = tbody.rows[i];
-            var fromRollStr = row.querySelector('.from-roll').value.trim();
-            var count = parseInt(row.querySelector('.student-count').value) || 0;
-            var toRollInput = row.querySelector('.to-roll');
-
-            if (fromRollStr !== "" && count > 0) {
-                try {
-                    var startRoll = BigInt(fromRollStr);
-                    var singleSchoolRolls = [];
-                    var currentRoll = startRoll;
-
-                    while (singleSchoolRolls.length < count) {
-                        var rollStr = currentRoll.toString();
-                        if (!excludedRollsList.includes(rollStr)) singleSchoolRolls.push(rollStr);
-                        currentRoll++;
-                    }
-                    toRollInput.value = singleSchoolRolls[singleSchoolRolls.length - 1];
-                    grandTotal += count;
-                    schoolRollArrays.push(singleSchoolRolls);
-                } catch (e) { toRollInput.value = ""; }
-            } else { toRollInput.value = ""; }
-        }
-
-        document.getElementById('gridGrandTotal').innerText = grandTotal;
-
-        if (mode === 'manual') {
-            return;
-        }
-
-        var finalGridRolls = [];
-        var maxRollsInAnySchool = 0;
-        for (var s = 0; s < schoolRollArrays.length; s++) {
-            if (schoolRollArrays[s].length > maxRollsInAnySchool) maxRollsInAnySchool = schoolRollArrays[s].length;
-        }
-
-        for (var idx = 0; idx < maxRollsInAnySchool; idx++) {
-            for (var s = 0; s < schoolRollArrays.length; s++) {
-                if (idx < schoolRollArrays[s].length) finalGridRolls.push(schoolRollArrays[s][idx]);
-            }
-        }
-
-        var rows = parseInt(document.getElementById('inputRows').value);
-        var cols = parseInt(document.getElementById('inputCols').value);
-        var gridTable = document.getElementById('seatingGrid');
-
-        var manuallySkippedRollsCount = 0;
-        for (var r = 0; r < rows; r++) {
-            for (var c = 0; c < cols; c++) {
-                if (gridTable.rows[r] && gridTable.rows[r].cells[c]) {
-                    var input = gridTable.rows[r].cells[c].querySelector('input');
-                    var val = input ? input.value.trim().toLowerCase() : "";
-                    if (val === "x" || val === "-x") manuallySkippedRollsCount++;
-                    else if (val !== "-") { input.value = ""; gridTable.rows[r].cells[c].classList.remove('skipped-cell'); }
-                }
-            }
-        }
-
-        var rollIndex = 0 + manuallySkippedRollsCount;
-
-        for (var col = 0; col < cols; col++) {
-            for (var row = 0; row < rows; row++) {
-                if (gridTable.rows[row] && gridTable.rows[row].cells[col]) {
-                    var cellInput = gridTable.rows[row].cells[col].querySelector('input');
-                    var val = cellInput ? cellInput.value.trim().toLowerCase() : "";
-                    if (val === "-") { gridTable.rows[row].cells[col].classList.add('skipped-cell'); continue; }
-                    if (val === "x" || val === "-x") continue;
-
-                    if (cellInput && rollIndex < finalGridRolls.length) {
-                        cellInput.value = finalGridRolls[rollIndex];
-                        rollIndex++;
-                    }
-                }
-            }
-        }
-    }
-
-    /* 3. TIMETABLE LOGIC */
-    function getSettings() {
-        const saved = localStorage.getItem('school_timetable_settings_v12');
-        if (saved) return JSON.parse(saved);
-        return {
-            periodDuration: 40, period6Duration: 35, period7Duration: 35, eighthPeriodDuration: 30,
-            intervalAfterPeriod: 5, intervalDuration: 25, f1Prayer: "07:50", f1FirstBell: "08:00",
-            f2Prayer: "10:00", f2FirstBell: "10:10"
-        };
-    }
-
-    function toggleSettings() {
-        const panel = document.getElementById('settingsPanel');
-        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function saveSettings() {
-        const settings = {
-            periodDuration: parseInt(document.getElementById('periodDuration').value),
-            period6Duration: parseInt(document.getElementById('period6Duration').value),
-            period7Duration: parseInt(document.getElementById('period7Duration').value),
-            eighthPeriodDuration: parseInt(document.getElementById('eighthPeriodDuration').value),
-            intervalAfterPeriod: parseInt(document.getElementById('intervalAfterPeriod').value),
-            intervalDuration: parseInt(document.getElementById('intervalDuration').value),
-            f1Prayer: document.getElementById('f1Prayer').value,
-            f1FirstBell: document.getElementById('f1FirstBell').value,
-            f2Prayer: document.getElementById('f2Prayer').value,
-            f2FirstBell: document.getElementById('f2FirstBell').value
-        };
-        localStorage.setItem('school_timetable_settings_v12', JSON.stringify(settings));
-        toggleSettings();
+    if (selected === 'pariksha') {
+        document.getElementById('parikshaSection').style.display = 'block';
+    } else if (selected === 'gridseating') {
+        document.getElementById('gridSeatingSection').style.display = 'block';
+        generateGrid();
+    } else if (selected === 'timetable') {
+        document.getElementById('timetableSection').style.display = 'block';
         generateTimetable();
-        alert('सेटिंग्स सफलतापूर्वक सेव हो गई हैं!');
-    }
-
-    function loadSettingsToForm() {
-        const settings = getSettings();
-        document.getElementById('periodDuration').value = settings.periodDuration;
-        document.getElementById('period6Duration').value = settings.period6Duration || 35;
-        document.getElementById('period7Duration').value = settings.period7Duration || 35;
-        document.getElementById('eighthPeriodDuration').value = settings.eighthPeriodDuration || 30;
-        document.getElementById('intervalAfterPeriod').value = settings.intervalAfterPeriod !== undefined ? settings.intervalAfterPeriod : 5;
-        document.getElementById('intervalDuration').value = settings.intervalDuration !== undefined ? settings.intervalDuration : 25;
-        document.getElementById('f1Prayer').value = settings.f1Prayer;
-        document.getElementById('f1FirstBell').value = settings.f1FirstBell;
-        document.getElementById('f2Prayer').value = settings.f2Prayer;
-        document.getElementById('f2FirstBell').value = settings.f2FirstBell;
-    }
-
-    function timeToMinutes(timeStr) {
-        const parts = timeStr.split(':');
-        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
-    }
-
-    function minutesToTime(totalMinutes) {
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
-        const mStr = minutes < 10 ? '0' + minutes : minutes;
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        const displayHours = hours % 12 === 0 ? 12 : hours % 12;
-        return `${displayHours}:${mStr} ${ampm}`;
-    }
-
-    function getHindiPeriodName(num) {
-        const names = {1:"पहली घंटी",2:"दूसरी घंटी",3:"तीसरी घंटी",4:"चौथी घंटी",5:"पाँचवीं घंटी",6:"छठी घंटी",7:"सातवीं घंटी",8:"आठवीं घंटी"};
-        return names[num] || `${num}वीं घंटी`;
-    }
-
-    function changeFormat() { generateTimetable(); }
-
-    function generateTimetable() {
-        loadSettingsToForm();
-        const settings = getSettings();
-        const format = document.getElementById('formatSelect').value;
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-
-        const pDuration = settings.periodDuration;
-        const p6Duration = settings.period6Duration;
-        const p7Duration = settings.period7Duration;
-        const p8Duration = settings.eighthPeriodDuration;
-        const intervalAfter = settings.intervalAfterPeriod;
-        const intDuration = settings.intervalDuration;
-
-        let currentTime = timeToMinutes(format === 'format1' ? settings.f1FirstBell : settings.f2FirstBell);
-        let prayerTime = timeToMinutes(format === 'format1' ? settings.f1Prayer : settings.f2Prayer);
-        
-        let schedule = [{ sNo: "प्रारम्भ", name: "प्रार्थना", start: prayerTime, end: currentTime, duration: currentTime - prayerTime }];
-        let periodCounter = 1;
-
-        for (let i = 1; i <= 8; i++) {
-            let duration = pDuration;
-            if (i === 6) duration = p6Duration;
-            else if (i === 7) duration = p7Duration;
-            else if (i === 8) duration = p8Duration;
-
-            let endTime = currentTime + duration;
-            schedule.push({ sNo: periodCounter++, name: getHindiPeriodName(i), start: currentTime, end: endTime, duration: duration });
-            currentTime = endTime;
-
-            if (i === intervalAfter) {
-                let intervalEnd = currentTime + intDuration;
-                schedule.push({ sNo: "-", name: "मध्यांतर (Interval)", start: currentTime, end: intervalEnd, duration: intDuration });
-                currentTime = intervalEnd;
-            }
-        }
-
-        let dispersalTime = minutesToTime(currentTime);
-
-        schedule.forEach((item) => {
-            let row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.sNo}</td>
-                <td><strong>${item.name}</strong></td>
-                <td>${minutesToTime(item.start)} - ${minutesToTime(item.end)}</td>
-                <td>${item.duration} मिनट</td>
-            `;
-            tbody.appendChild(row);
-        });
-
-        let dispersalRow = document.createElement('tr');
-        dispersalRow.style.backgroundColor = "#edf2f7";
-        dispersalRow.innerHTML = `
-            <td colspan="2"><strong>समापन (Dispersal)</strong></td>
-            <td colspan="2"><strong>${dispersalTime}</strong></td>
-        `;
-        tbody.appendChild(dispersalRow);
-    }
-
-    /* 4. COPY RECORDS LOGIC */
-    let currentClass = '10th';
-
-    function getData(cls) {
-        const raw = localStorage.getItem('upboard_v5.1_' + cls);
-        let data = raw ? JSON.parse(raw) : null;
-        
-        if (!data) {
-            data = {
-                totalReceivedA: 0,
-                totalReceivedB: 0,
-                missingA: [],
-                missingB: [],
-                tornA: [],
-                tornB: [],
-                dateWiseData: {},
-                calc: { registered: '', drawing: 0, subjects: cls === '10th' ? 6 : 5 }
-            };
-        }
-        if (!data.calc) {
-            data.calc = { registered: '', drawing: 0, subjects: cls === '10th' ? 6 : 5 };
-        }
-        return data;
-    }
-
-    function saveData(cls, data) {
-        localStorage.setItem('upboard_v5.1_' + cls, JSON.stringify(data));
-        updateUI();
-    }
-
-    function setTodayDates() {
-        const todayInput = document.getElementById('entry-date');
-        if (todayInput) {
-            const today = new Date().toISOString().split('T')[0];
-            todayInput.value = today;
-        }
-    }
-
-    function switchClass(cls) {
-        currentClass = cls;
-        document.getElementById('btn-10th').classList.toggle('active', cls === '10th');
-        document.getElementById('btn-12th').classList.toggle('active', cls === '12th');
-        document.getElementById('class-title').innerText = cls === '10th' ? 'High School (10th)' : 'Inter (12th)';
-        
-        const data = getData(cls);
-        document.getElementById('calc-registered').value = data.calc.registered;
-        document.getElementById('calc-drawing').value = data.calc.drawing;
-        document.getElementById('calc-subjects').value = data.calc.subjects;
-
-        updateUI();
-    }
-
-    function updateUI() {
-        const data = getData(currentClass);
-
-        let totalDistA = 0, totalDistB = 0;
-        let totalRetA = 0, totalRetB = 0;
-        let totalUsedA = 0, totalUsedB = 0;
-        let totalAbsent = 0;
-
-        const tbody = document.getElementById('date-wise-tbody');
-        tbody.innerHTML = '';
-
-        const sortedDates = Object.keys(data.dateWiseData).sort();
-        let srNo = 1;
-
-        if (sortedDates.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; font-weight:bold;">कोई तारीखवार रिकॉर्ड उपलब्ध नहीं है।</td></tr>`;
-        } else {
-            sortedDates.forEach(date => {
-                const dA = Number(data.dateWiseData[date].distA) || 0;
-                const dB = Number(data.dateWiseData[date].distB) || 0;
-                const rA = Number(data.dateWiseData[date].retA) || 0;
-                const rB = Number(data.dateWiseData[date].retB) || 0;
-                const abs = Number(data.dateWiseData[date].absent) || 0;
-                
-                const netA = dA - rA < 0 ? 0 : dA - rA;
-                const netB = dB - rB < 0 ? 0 : dB - rB;
-
-                totalDistA += dA; totalDistB += dB;
-                totalRetA += rA; totalRetB += rB;
-                totalUsedA += netA; totalUsedB += netB;
-                totalAbsent += abs;
-
-                const formattedDate = date.split('-').reverse().join('-');
-
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${srNo++}</strong></td>
-                        <td><strong>${formattedDate}</strong></td>
-                        <td><strong>${dA}</strong></td>
-                        <td><strong>${dB}</strong></td>
-                        <td><strong>${rA}</strong></td>
-                        <td><strong>${rB}</strong></td>
-                        <td><strong>${netA}</strong></td>
-                        <td><strong>${netB}</strong></td>
-                        <td style="color:#c0392b;"><strong>${abs}</strong></td>
-                        <td class="no-print">
-                            <button class="action-btn edit-btn" style="padding: 3px 8px; font-size: 11px;" onclick="editDateData('${date}')">✏️ एडिट</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        const availA = data.totalReceivedA - data.missingA.length - data.tornA.length - totalDistA + totalRetA;
-        const availB = data.totalReceivedB - data.missingB.length - data.tornB.length - totalDistB + totalRetB;
-
-        document.getElementById('disp-total-a').innerText = data.totalReceivedA;
-        document.getElementById('disp-total-b').innerText = data.totalReceivedB;
-        document.getElementById('disp-missing-a').innerText = data.missingA.length;
-        document.getElementById('disp-missing-b').innerText = data.missingB.length;
-        document.getElementById('disp-torn-a').innerText = data.tornA.length;
-        document.getElementById('disp-torn-b').innerText = data.tornB.length;
-        document.getElementById('disp-dist-a').innerText = totalDistA;
-        document.getElementById('disp-dist-b').innerText = totalDistB;
-        document.getElementById('disp-ret-a').innerText = totalRetA;
-        document.getElementById('disp-ret-b').innerText = totalRetB;
-        document.getElementById('disp-used-a').innerText = totalUsedA;
-        document.getElementById('disp-used-b').innerText = totalUsedB;
-        document.getElementById('disp-total-absent').innerText = totalAbsent;
-        document.getElementById('disp-avail-a').innerText = availA < 0 ? 0 : availA;
-        document.getElementById('disp-avail-b').innerText = availB < 0 ? 0 : availB;
-
-        document.getElementById('rep-total-a').innerText = data.totalReceivedA;
-        document.getElementById('rep-total-b').innerText = data.totalReceivedB;
-        document.getElementById('rep-dist-a').innerText = totalDistA;
-        document.getElementById('rep-dist-b').innerText = totalDistB;
-        document.getElementById('rep-ret-a').innerText = totalRetA;
-        document.getElementById('rep-ret-b').innerText = totalRetB;
-        document.getElementById('rep-used-a').innerText = totalUsedA;
-        document.getElementById('rep-used-b').innerText = totalUsedB;
-        document.getElementById('rep-avail-a').innerText = availA < 0 ? 0 : availA;
-        document.getElementById('rep-avail-b').innerText = availB < 0 ? 0 : availB;
-
-        document.getElementById('rep-missing-a').innerText = data.missingA.length > 0 ? data.missingA.join(', ') : 'कोई नहीं';
-        document.getElementById('rep-missing-b').innerText = data.missingB.length > 0 ? data.missingB.join(', ') : 'कोई नहीं';
-        document.getElementById('rep-torn-a').innerText = data.tornA.length > 0 ? data.tornA.join(', ') : 'कोई नहीं';
-        document.getElementById('rep-torn-b').innerText = data.tornB.length > 0 ? data.tornB.join(', ') : 'कोई नहीं';
-
-        const tagBox = document.getElementById('defect-tags');
-        tagBox.innerHTML = '';
-        data.missingA.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag missing-a-tag">Missing A: ${sr} <span class="btn-edit" onclick="editDefectItem('missingA', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('missingA', ${idx})">&times;</span></div>`);
-        data.missingB.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag missing-b-tag">Missing B: ${sr} <span class="btn-edit" onclick="editDefectItem('missingB', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('missingB', ${idx})">&times;</span></div>`);
-        data.tornA.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag torn-a-tag">Torn A: ${sr} <span class="btn-edit" onclick="editDefectItem('tornA', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('tornA', ${idx})">&times;</span></div>`);
-        data.tornB.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag torn-b-tag">Torn B: ${sr} <span class="btn-edit" onclick="editDefectItem('tornB', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('tornB', ${idx})">&times;</span></div>`);
-
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString('hi-IN');
-        calculateRequirement();
-    }
-
-    function addSerialRange() {
-        const type = document.getElementById('type-select').value;
-        const from = parseInt(document.getElementById('sr-from').value);
-        const to = parseInt(document.getElementById('sr-to').value);
-
-        if (isNaN(from) || isNaN(to) || to < from) {
-            alert('कृपया सही सीरियल नंबर दर्ज करें!');
-            return;
-        }
-
-        const count = (to - from) + 1;
-        const data = getData(currentClass);
-        if (type === 'A') data.totalReceivedA += count;
-        else data.totalReceivedB += count;
-        
-        saveData(currentClass, data);
-        document.getElementById('sr-from').value = '';
-        document.getElementById('sr-to').value = '';
-    }
-
-    function addDefectCopy() {
-        const type = document.getElementById('defect-type').value;
-        const status = document.getElementById('defect-status').value;
-        const sr = parseInt(document.getElementById('defect-sr').value);
-
-        if (isNaN(sr)) {
-            alert('कृपया सही सीरियल नंबर डालें!');
-            return;
-        }
-
-        const data = getData(currentClass);
-        const listKey = status + type;
-
-        if (!data[listKey].includes(sr)) {
-            data[listKey].push(sr);
-            saveData(currentClass, data);
-            document.getElementById('defect-sr').value = '';
-        } else {
-            alert('यह सीरियल नंबर पहले से दर्ज है!');
-        }
-    }
-
-    function editDefectItem(listKey, idx) {
-        const data = getData(currentClass);
-        const oldSr = data[listKey][idx];
-        const newSr = prompt("संशोधित सही सीरियल नंबर दर्ज करें:", oldSr);
-        
-        if (newSr !== null && !isNaN(newSr) && newSr.trim() !== '') {
-            data[listKey][idx] = parseInt(newSr);
-            saveData(currentClass, data);
-        }
-    }
-
-    function removeDefectItem(listKey, idx) {
-        const data = getData(currentClass);
-        data[listKey].splice(idx, 1);
-        saveData(currentClass, data);
-    }
-
-    function autoFillAbsent() {
-        const retA = document.getElementById('ret-a').value;
-        document.getElementById('absent-count').value = retA;
-    }
-
-    function saveDailyEntry() {
-        const date = document.getElementById('entry-date').value;
-        const distA = parseInt(document.getElementById('dist-a').value) || 0;
-        const distB = parseInt(document.getElementById('dist-b').value) || 0;
-        const retA = parseInt(document.getElementById('ret-a').value) || 0;
-        const retB = parseInt(document.getElementById('ret-b').value) || 0;
-        const absent = parseInt(document.getElementById('absent-count').value) || 0;
-
-        if (!date) {
-            alert('कृपया दिनांक चुनें!');
-            return;
-        }
-
-        const data = getData(currentClass);
-        data.dateWiseData[date] = { distA, distB, retA, retB, absent };
-
-        saveData(currentClass, data);
-        document.getElementById('dist-a').value = '';
-        document.getElementById('dist-b').value = '';
-        document.getElementById('ret-a').value = '';
-        document.getElementById('ret-b').value = '';
-        document.getElementById('absent-count').value = '';
-    }
-
-    function editDateData(date) {
-        const data = getData(currentClass);
-        const cur = data.dateWiseData[date] || { distA: 0, distB: 0, retA: 0, retB: 0, absent: 0 };
-        const formattedDate = date.split('-').reverse().join('-');
-
-        const dA = prompt(`[${formattedDate}] भेजी गई 'A' कॉपी:`, cur.distA);
-        if (dA === null) return;
-        const dB = prompt(`[${formattedDate}] भेजी गई 'B' कॉपी:`, cur.distB);
-        if (dB === null) return;
-        const rA = prompt(`[${formattedDate}] वापस 'A' कॉपी:`, cur.retA);
-        if (rA === null) return;
-        const rB = prompt(`[${formattedDate}] वापस 'B' कॉपी:`, cur.retB);
-        if (rB === null) return;
-        const abs = prompt(`[${formattedDate}] अनुपस्थित छात्र संख्या:`, cur.absent || 0);
-        if (abs === null) return;
-
-        data.dateWiseData[date] = {
-            distA: parseInt(dA) || 0,
-            distB: parseInt(dB) || 0,
-            retA: parseInt(rA) || 0,
-            retB: parseInt(rB) || 0,
-            absent: parseInt(abs) || 0
-        };
-
-        saveData(currentClass, data);
-    }
-
-    function calculateRequirement() {
-        const registeredVal = document.getElementById('calc-registered').value;
-        const drawingVal = document.getElementById('calc-drawing').value;
-        const subjectsVal = document.getElementById('calc-subjects').value;
-
-        const registered = parseInt(registeredVal) || 0;
-        const drawingStudents = parseInt(drawingVal) || 0;
-        const totalSubjects = parseInt(subjectsVal) || (currentClass === '10th' ? 6 : 5);
-
-        const data = getData(currentClass);
-        data.calc = {
-            registered: registeredVal,
-            drawing: drawingVal,
-            subjects: subjectsVal
-        };
-        localStorage.setItem('upboard_v5.1_' + currentClass, JSON.stringify(data));
-
-        if (registered === 0) {
-            document.getElementById('requirement-result').innerHTML = "<i>आवश्यकता का सही कैलकुलेशन देखने के लिए पंजीकृत परीक्षार्थियों की संख्या दर्ज करें...</i>";
-            document.getElementById('print-requirement-box').innerHTML = "";
-            return;
-        }
-
-        const sortedDates = Object.keys(data.dateWiseData).sort();
-        const completedSubjects = sortedDates.length;
-        const remainingSubjects = totalSubjects - completedSubjects;
-
-        let firstDayAbsent = 0;
-        if (sortedDates.length > 0) {
-            firstDayAbsent = Number(data.dateWiseData[sortedDates[0]].absent) || 0;
-        }
-
-        const standardWritingStudents = registered - firstDayAbsent;
-        const drawingWritingStudents = (registered - drawingStudents) - firstDayAbsent;
-        const actualDrawingStudents = drawingWritingStudents < 0 ? 0 : drawingWritingStudents;
-        
-        const remSub = remainingSubjects < 0 ? 0 : remainingSubjects;
-        
-        let futureNeedA = 0;
-        for (let i = 0; i < remSub; i++) {
-            if (drawingStudents > 0 && i === 0) { 
-                futureNeedA += actualDrawingStudents;
-            } else {
-                futureNeedA += (standardWritingStudents < 0 ? 0 : standardWritingStudents);
-            }
-        }
-
-        let totalDistA = 0, totalRetA = 0;
-        Object.keys(data.dateWiseData).forEach(d => {
-            totalDistA += Number(data.dateWiseData[d].distA) || 0;
-            totalRetA += Number(data.dateWiseData[d].retA) || 0;
-        });
-        const currentAvailA = data.totalReceivedA - data.missingA.length - data.tornA.length - totalDistA + totalRetA;
-
-        const diff = currentAvailA - futureNeedA;
-        let statusText = "";
-        
-        if (remainingSubjects <= 0) {
-            statusText = `<strong style="color:blue;">✔ सभी ${totalSubjects} विषयों की परीक्षाएं संपन्न हो चुकी हैं।</strong>`;
-        } else if (diff >= 0) {
-            statusText = `<strong style="color:green;">✔ शेष ${remSub} विषयों की परीक्षा हेतु स्टॉक में ${diff} 'A' कॉपियां अतिरिक्त (Surplus) हैं। कॉपियां पर्याप्त हैं।</strong>`;
-        } else {
-            statusText = `<strong style="color:red;">⚠️ सावधान: शेष ${remSub} विषयों की परीक्षा हेतु ${Math.abs(diff)} अतिरिक्त 'A' उत्तर पुस्तिकाओं की आवश्यकता पड़ेगी!</strong>`;
-        }
-
-        const htmlContent = `
-            <strong>📊 उत्तर पुस्तिका आवश्यकता विश्लेषण (${currentClass === '10th' ? 'High School' : 'Inter'}):</strong><br>
-            • कुल पंजीकृत छात्र: <strong>${registered}</strong> | चित्रकला छात्र: <strong>${drawingStudents}</strong> | कुल विषय: <strong>${totalSubjects}</strong><br>
-            • <strong>परीक्षा स्थिति:</strong> <u>${completedSubjects} विषय समाप्त</u> | <strong><u>${remSub} विषय शेष</u></strong><br>
-            • सामान्य विषयों में परीक्षा देने वाले छात्र: <strong>${standardWritingStudents < 0 ? 0 : standardWritingStudents}</strong><br>
-            • चित्रकला रहित विषय में परीक्षा देने वाले छात्र: <strong>${actualDrawingStudents}</strong><br>
-            • शेष <strong>${remSub}</strong> विषयों के लिए कुल आवश्यक 'A' कॉपियां: <strong>${futureNeedA}</strong><br>
-            • केंद्र पर वर्तमान उपलब्ध शेष 'A' कॉपियां: <strong>${currentAvailA}</strong><br>
-            • <strong>पूर्वाग्रह स्थिति:</strong> ${statusText}
-        `;
-
-        document.getElementById('requirement-result').innerHTML = htmlContent;
-        document.getElementById('print-requirement-box').innerHTML = "<hr>" + htmlContent;
-    }
-
-    function resetCurrentClassData() {
-        if (confirm(`क्या आप ${currentClass === '10th' ? 'High School (10th)' : 'Inter (12th)'} का संपूर्ण डेटा रीसेट करना चाहते हैं?`)) {
-            localStorage.removeItem('upboard_v5.1_' + currentClass);
-            document.getElementById('calc-registered').value = '';
-            document.getElementById('calc-drawing').value = 0;
-            updateUI();
-        }
-    }
-
-    /* 5. VIDYALAYVAR MANAGEMENT LOGIC */
-    let vidyalayData = {
-        hs: { schools: [], subjects: [] },
-        inter: { scCount: 0, artCount: 0, schools: [], subjects: [] }
-    };
-
-    function loadVidyalayData() {
-        let saved = localStorage.getItem('skic_exam_data_v3');
-        if (saved) {
-            vidyalayData = JSON.parse(saved);
-        }
-        const scEl = document.getElementById('inter-sc-count');
-        const artEl = document.getElementById('inter-art-count');
-        if (scEl) scEl.value = vidyalayData.inter.scCount || '';
-        if (artEl) artEl.value = vidyalayData.inter.artCount || '';
-    }
-
-    function saveVidyalayData() {
-        localStorage.setItem('skic_exam_data_v3', JSON.stringify(vidyalayData));
+    } else if (selected === 'copyrecords') {
+        document.getElementById('copyRecordsSection').style.display = 'block';
+        setTodayDates();
+        switchClass(currentClass || '10th');
+    } else if (selected === 'vidyalayvar') {
+        document.getElementById('vidyalayvarSection').style.display = 'block';
+        updateHeaderTitle();
         renderVidyalayAll();
     }
+}
 
-    function switchVidyalayTab(tab) {
-        document.querySelectorAll('.v-tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.v-tab-content').forEach(c => c.classList.remove('active'));
-        
-        if(tab === 'hs') {
-            document.querySelectorAll('.v-tab-btn')[0].classList.add('active');
-            document.getElementById('v-hs').classList.add('active');
+/* 1. PARIKSHA SUMMARY LOGIC */
+function updateParikshaHeader() {
+    const type = document.getElementById('examType').value;
+    const year = document.getElementById('examYear').value;
+    const classDisplay = document.getElementById('displayClassType');
+    
+    document.getElementById('displayBoardYear').innerText = `यू० पी० बोर्ड परीक्षा वर्ष - ${year}`;
+    classDisplay.innerText = type;
+    classDisplay.style.color = (type === 'हाई स्कूल') ? '#002060' : '#c00000';
+}
+
+function adjustRowHeight(val) {
+    const root = document.documentElement;
+    if(val === 'normal') {
+        root.style.setProperty('--row-padding', '6px');
+        root.style.setProperty('--font-size', '12px');
+    } else if(val === 'compact') {
+        root.style.setProperty('--row-padding', '2px');
+        root.style.setProperty('--font-size', '11px');
+    } else if(val === 'ultra') {
+        root.style.setProperty('--row-padding', '0px');
+        root.style.setProperty('--font-size', '10px');
+    }
+}
+
+function addRoomBlock() {
+    roomCounter++;
+    const tbody = document.getElementById('masterTbody');
+    const rowHTML = `
+        <tr class="data-row room-start-row" data-room="${roomCounter}">
+            <td class="room-cell"><input type="text" class="table-input room-no" value="${roomCounter}"></td>
+            <td><input type="text" class="table-input v-name" oninput="handleSchoolNameChange(this)"></td>
+            <td><input type="number" class="table-input r-from" oninput="calculateAll()"></td>
+            <td><input type="number" class="table-input r-to" readonly style="background-color: #fafafa;"></td>
+            <td><input type="number" class="table-input count" oninput="calculateAll()"></td>
+            <td class="total-cell">0</td>
+            <td class="no-print" style="white-space: nowrap;">
+                <button class="btn" onclick="addRow(${roomCounter})" style="padding: 1px 4px; font-size: 10px;">+ स्कूल</button>
+                <button class="btn btn-danger" onclick="removeRoom(${roomCounter})">हटाएं</button>
+            </td>
+        </tr>
+    `;
+    tbody.insertAdjacentHTML('beforeend', rowHTML);
+    updateRowSpans(roomCounter);
+    calculateAll();
+}
+
+function createSubRowHTML(roomId) {
+    return `
+        <tr class="data-row" data-room="${roomId}">
+            <td class="room-cell" style="display:none;"></td>
+            <td><input type="text" class="table-input v-name" oninput="handleSchoolNameChange(this)"></td>
+            <td><input type="number" class="table-input r-from" oninput="calculateAll()"></td>
+            <td><input type="number" class="table-input r-to" readonly style="background-color: #fafafa;"></td>
+            <td><input type="number" class="table-input count" oninput="calculateAll()"></td>
+            <td class="total-cell" style="display:none;"></td>
+            <td class="no-print"><button class="btn btn-danger" onclick="removeRow(this)">X</button></td>
+        </tr>
+    `;
+}
+
+function addRow(roomId) {
+    const roomRows = document.querySelectorAll(`tr[data-room="${roomId}"]`);
+    const lastRow = roomRows[roomRows.length - 1];
+    lastRow.insertAdjacentHTML('afterend', createSubRowHTML(roomId));
+    updateRowSpans(roomId);
+}
+
+function removeRow(btn) {
+    const row = btn.closest('tr');
+    const roomId = row.getAttribute('data-room');
+    row.remove();
+    updateRowSpans(roomId);
+    calculateAll();
+}
+
+function removeRoom(roomId) {
+    const roomRows = document.querySelectorAll(`tr[data-room="${roomId}"]`);
+    roomRows.forEach(r => r.remove());
+    calculateAll();
+}
+
+function updateRowSpans(roomId) {
+    const roomRows = document.querySelectorAll(`tr[data-room="${roomId}"]`);
+    if (roomRows.length === 0) return;
+
+    roomRows.forEach((row, index) => {
+        const roomCell = row.querySelector('.room-cell');
+        const totalCell = row.querySelector('.total-cell');
+        if (index === 0) {
+            roomCell.style.display = ''; totalCell.style.display = '';
+            roomCell.setAttribute('rowspan', roomRows.length);
+            totalCell.setAttribute('rowspan', roomRows.length);
         } else {
-            document.querySelectorAll('.v-tab-btn')[1].classList.add('active');
-            document.getElementById('v-inter').classList.add('active');
+            roomCell.style.display = 'none'; totalCell.style.display = 'none';
         }
+    });
+}
+
+function handleSchoolNameChange(input) {
+    const currentName = input.value.trim().toLowerCase();
+    if (!currentName) { calculateAll(); return; }
+
+    const allRows = Array.from(document.querySelectorAll('.data-row'));
+    const currentIndex = allRows.indexOf(input.closest('tr'));
+    let lastRollTo = null;
+
+    for (let i = 0; i < currentIndex; i++) {
+        const row = allRows[i];
+        const name = row.querySelector('.v-name').value.trim().toLowerCase();
+        const rTo = parseInt(row.querySelector('.r-to').value);
+        if (name === currentName && !isNaN(rTo)) { lastRollTo = rTo; }
     }
 
-    function updateInterCapacity() {
-        vidyalayData.inter.scCount = parseInt(document.getElementById('inter-sc-count').value) || 0;
-        vidyalayData.inter.artCount = parseInt(document.getElementById('inter-art-count').value) || 0;
-        saveVidyalayData();
+    if (lastRollTo !== null) {
+        allRows[currentIndex].querySelector('.r-from').value = lastRollTo + 1;
     }
+    calculateAll();
+}
 
-    function addSchool(type) {
-        let name = document.getElementById(`${type}-school-name`).value.trim();
-        let count = parseInt(document.getElementById(`${type}-school-count`).value);
+function calculateAll() {
+    const schoolSummary = {};
+    const schoolColorMap = {};
+    let schoolColorIndex = 0;
+    const roomTotals = {};
+    let grandTotal = 0;
 
-        if (!name || isNaN(count)) return alert('कृपया सही विद्यालय का नाम और संख्या भरें!');
-
-        vidyalayData[type].schools.push({ name, count });
-        document.getElementById(`${type}-school-name`).value = '';
-        document.getElementById(`${type}-school-count`).value = '';
-        saveVidyalayData();
-    }
-
-    function editSchool(type, index) {
-        let s = vidyalayData[type].schools[index];
-        let newName = prompt('विद्यालय का नाम बदलें:', s.name);
-        if (newName === null) return;
-        newName = newName.trim();
-        if (!newName) return alert('विद्यालय का नाम खाली नहीं हो सकता!');
-
-        let newCountStr = prompt('छात्र संख्या बदलें:', s.count);
-        if (newCountStr === null) return;
-        let newCount = parseInt(newCountStr);
-        if (isNaN(newCount)) return alert('कृपया सही छात्र संख्या भरें!');
-
-        vidyalayData[type].schools[index] = { name: newName, count: newCount };
-        saveVidyalayData();
-    }
-
-    function deleteSchool(type, index) {
-        if (confirm('क्या आप इसे हटाना चाहते हैं?')) {
-            vidyalayData[type].schools.splice(index, 1);
-            saveVidyalayData();
+    const rows = document.querySelectorAll('.data-row');
+    rows.forEach(row => {
+        const schoolName = row.querySelector('.v-name').value.trim();
+        if (schoolName && !schoolColorMap[schoolName]) {
+            schoolColorMap[schoolName] = schoolColors[schoolColorIndex % schoolColors.length];
+            schoolColorIndex++;
         }
-    }
+    });
 
-    function addSubject(type) {
-        let name = document.getElementById(`${type}-subject-name`).value.trim();
-        let count = parseInt(document.getElementById(`${type}-subject-count`).value);
-        let stream = type === 'inter' ? document.getElementById('inter-subject-stream').value : 'General';
+    rows.forEach(row => {
+        const roomId = row.getAttribute('data-room');
+        const schoolName = row.querySelector('.v-name').value.trim();
+        const rFromInput = row.querySelector('.r-from');
+        const rToInput = row.querySelector('.r-to');
+        const countInput = row.querySelector('.count');
+        const vNameInput = row.querySelector('.v-name');
 
-        if (!name || isNaN(count)) return alert('कृपया सही विषय और संख्या भरें!');
+        let rFrom = parseInt(rFromInput.value);
+        let count = parseInt(countInput.value);
 
-        vidyalayData[type].subjects.push({ name, count, stream });
-        document.getElementById(`${type}-subject-name`).value = '';
-        document.getElementById(`${type}-subject-count`).value = '';
-        saveVidyalayData();
-    }
-
-    function editSubject(type, index) {
-        let sub = vidyalayData[type].subjects[index];
-        let newName = prompt('विषय का नाम बदलें:', sub.name);
-        if (newName === null) return;
-        newName = newName.trim();
-        if (!newName) return alert('विषय का नाम खाली नहीं हो सकता!');
-
-        let newStream = sub.stream;
-        if (type === 'inter') {
-            let streamChoice = prompt('वर्ग (Stream) बदलें:\n1: Common (अनिवार्य)\n2: Science (विज्ञान)\n3: Arts (कला)', 
-                sub.stream === 'Common' ? '1' : (sub.stream === 'Science' ? '2' : '3'));
-            if (streamChoice === null) return;
-            if (streamChoice === '1') newStream = 'Common';
-            else if (streamChoice === '2') newStream = 'Science';
-            else if (streamChoice === '3') newStream = 'Arts';
-            else return alert('गलत वर्ग विकल्प चुना गया!');
+        let rTo = "";
+        if (!isNaN(rFrom) && !isNaN(count) && count > 0) {
+            rTo = rFrom + count - 1;
+            rToInput.value = rTo;
+        } else {
+            rToInput.value = ""; count = 0;
         }
 
-        let newCountStr = prompt('पंजीकृत छात्र संख्या बदलें:', sub.count);
-        if (newCountStr === null) return;
-        let newCount = parseInt(newCountStr);
-        if (isNaN(newCount)) return alert('कृपया सही छात्र संख्या भरें!');
+        const assignedColor = schoolName ? (schoolColorMap[schoolName] || '#000000') : '#000000';
+        vNameInput.style.color = assignedColor; rFromInput.style.color = assignedColor;
+        rToInput.style.color = assignedColor; countInput.style.color = assignedColor;
 
-        vidyalayData[type].subjects[index] = { name: newName, count: newCount, stream: newStream };
-        saveVidyalayData();
-    }
+        if (!roomTotals[roomId]) roomTotals[roomId] = 0;
+        roomTotals[roomId] += count; grandTotal += count;
 
-    function deleteSubject(type, index) {
-        if (confirm('क्या आप इसे हटाना चाहते हैं?')) {
-            vidyalayData[type].subjects.splice(index, 1);
-            saveVidyalayData();
-        }
-    }
-
-    function renderVidyalayAll() {
-        loadVidyalayData();
-        
-        // High School Data
-        let hsSList = document.getElementById('hs-school-list');
-        hsSList.innerHTML = '';
-        let hsSTotal = 0;
-        vidyalayData.hs.schools.forEach((s, i) => {
-            hsSTotal += s.count;
-            hsSList.innerHTML += `<tr>
-                <td>${i+1}</td>
-                <td style="text-align:left;">${s.name}</td>
-                <td>${s.count}</td>
-                <td class="no-print">
-                    <button class="btn-edit" onclick="editSchool('hs', ${i})">संशोधन (Edit)</button>
-                    <button class="btn-danger" onclick="deleteSchool('hs', ${i})">हटाएं</button>
-                </td>
-            </tr>`;
-        });
-        document.getElementById('hs-school-total').innerText = hsSTotal;
-
-        let hsSubList = document.getElementById('hs-subject-list');
-        hsSubList.innerHTML = '';
-        vidyalayData.hs.subjects.forEach((sub, i) => {
-            hsSubList.innerHTML += `<tr>
-                <td>${i+1}</td>
-                <td style="text-align:left;">${sub.name}</td>
-                <td>${sub.count}</td>
-                <td class="no-print">
-                    <button class="btn-edit" onclick="editSubject('hs', ${i})">संशोधन (Edit)</button>
-                    <button class="btn-danger" onclick="deleteSubject('hs', ${i})">हटाएं</button>
-                </td>
-            </tr>`;
-        });
-
-        // Intermediate Data
-        document.getElementById('disp-sc-total').innerText = vidyalayData.inter.scCount || 0;
-        document.getElementById('disp-art-total').innerText = vidyalayData.inter.artCount || 0;
-        document.getElementById('disp-grand-total').innerText = (vidyalayData.inter.scCount || 0) + (vidyalayData.inter.artCount || 0);
-
-        let interSList = document.getElementById('inter-school-list');
-        interSList.innerHTML = '';
-        let interSTotal = 0;
-        vidyalayData.inter.schools.forEach((s, i) => {
-            interSTotal += s.count;
-            interSList.innerHTML += `<tr>
-                <td>${i+1}</td>
-                <td style="text-align:left;">${s.name}</td>
-                <td>${s.count}</td>
-                <td class="no-print">
-                    <button class="btn-edit" onclick="editSchool('inter', ${i})">संशोधन (Edit)</button>
-                    <button class="btn-danger" onclick="deleteSchool('inter', ${i})">हटाएं</button>
-                </td>
-            </tr>`;
-        });
-        document.getElementById('inter-school-total').innerText = interSTotal;
-
-        let interSubList = document.getElementById('inter-subject-list');
-        interSubList.innerHTML = '';
-        vidyalayData.inter.subjects.forEach((sub, i) => {
-            let streamLabel = sub.stream === 'Common' ? 'सामान्य (सभी)' : sub.stream;
-            interSubList.innerHTML += `<tr>
-                <td>${i+1}</td>
-                <td style="text-align:left;">${sub.name}</td>
-                <td>${streamLabel}</td>
-                <td>${sub.count}</td>
-                <td class="no-print">
-                    <button class="btn-edit" onclick="editSubject('inter', ${i})">संशोधन (Edit)</button>
-                    <button class="btn-danger" onclick="deleteSubject('inter', ${i})">हटाएं</button>
-                </td>
-            </tr>`;
-        });
-
-        // Daily Checkboxes
-        ['hs', 'inter'].forEach(type => {
-            let selector = document.getElementById(`${type}-exam-selector`);
-            if (selector) {
-                selector.innerHTML = '';
-                vidyalayData[type].subjects.forEach((sub, i) => {
-                    let streamTag = (type==='inter' && sub.stream !== 'General') ? ` [${sub.stream}]` : '';
-                    selector.innerHTML += `
-                        <div class="exam-item">
-                            <input type="checkbox" id="${type}-chk-${i}" value="${sub.count}" onchange="calculateDailyTotal('${type}')">
-                            <label for="${type}-chk-${i}">${sub.name}${streamTag}</label>
-                        </div>
-                    `;
-                });
-                calculateDailyTotal(type);
+        if (schoolName && !isNaN(rFrom) && rTo !== "") {
+            if (!schoolSummary[schoolName]) {
+                schoolSummary[schoolName] = { startRoll: rFrom, endRoll: rTo, totalCount: count, color: assignedColor };
+            } else {
+                schoolSummary[schoolName].startRoll = Math.min(schoolSummary[schoolName].startRoll, rFrom);
+                schoolSummary[schoolName].endRoll = Math.max(schoolSummary[schoolName].endRoll, rTo);
+                schoolSummary[schoolName].totalCount += count;
             }
-        });
-    }
-
-    function calculateDailyTotal(type) {
-        let total = 0;
-        vidyalayData[type].subjects.forEach((sub, i) => {
-            let chk = document.getElementById(`${type}-chk-${i}`);
-            if (chk && chk.checked) {
-                total += sub.count;
-            }
-        });
-        document.getElementById(`${type}-daily-total`).innerText = total;
-    }
-
-    // Default Initialization
-    window.onload = function() {
-        addRoomBlock();
-        addRoomBlock();
-        adjustRowHeight('compact');
-        
-        var savedRollMode = getRollFillMode();
-        var rollSelect = document.getElementById('rollFillModeSelect');
-        if (rollSelect && savedRollMode) {
-            rollSelect.value = savedRollMode;
         }
+    });
 
-        loadSavedFormat();
+    for (let roomId in roomTotals) {
+        const firstRow = document.querySelector(`tr[data-room="${roomId}"]`);
+        if (firstRow) {
+            const totalCell = firstRow.querySelector('.total-cell');
+            if (totalCell) totalCell.innerText = roomTotals[roomId];
+        }
+    }
+
+    document.getElementById('grandTotalCell').innerText = grandTotal;
+
+    const summaryTbody = document.getElementById('summaryTableBody');
+    summaryTbody.innerHTML = '';
+    let srNo = 1; let summaryGrandTotal = 0;
+
+    for (let school in schoolSummary) {
+        const data = schoolSummary[school];
+        summaryGrandTotal += data.totalCount;
+        summaryTbody.innerHTML += `
+            <tr style="color: ${data.color}; font-weight: bold;">
+                <td style="color: #000;">${srNo++}</td>
+                <td style="text-align: left; padding-left: 8px; color: ${data.color};">${school}</td>
+                <td style="color: ${data.color};">${data.startRoll}</td>
+                <td style="color: ${data.color};">${data.endRoll}</td>
+                <td style="color: ${data.color};">${data.totalCount}</td>
+                <td class="total-cell" style="color: ${data.color};">${data.totalCount}</td>
+            </tr>
+        `;
+    }
+    document.getElementById('summaryGrandTotalCell').innerText = summaryGrandTotal;
+}
+
+/* 2. GRID SEATING PLAN LOGIC */
+function saveRollFillMode() {
+    const mode = document.getElementById('rollFillModeSelect').value;
+    localStorage.setItem('grid_roll_fill_mode', mode);
+    alert('रोल नंबर मोड सेटिंग ' + (mode === 'auto' ? 'Auto' : 'Manual') + ' पर सेव कर दी गई है!');
+    processGridData();
+}
+
+function getRollFillMode() {
+    return localStorage.getItem('grid_roll_fill_mode') || 'auto';
+}
+
+function updateGridHeader() {
+    var year = document.getElementById('inputYear').value;
+    var seatingType = document.getElementById('seatingTypeSelect').value;
+    var cls = document.getElementById('classSelect').value;
+    var centerCode = document.getElementById('inputCenterCode').value;
+    var room = document.getElementById('inputRoom').value;
+    var pali = document.getElementById('inputPali').value;
+
+    document.getElementById('mainTitle').innerText = (seatingType === 'प्री बोर्ड परीक्षा') ? 'वर्ष - ' + year : 'यू० पी० बोर्ड परीक्षा - ' + year;
+    document.getElementById('displaySeatingType').innerText = seatingType;
+    document.getElementById('displayClass').innerText = cls;
+    document.getElementById('displayCenterCode').innerText = centerCode;
+    document.getElementById('displayRoom').innerText = room;
+    document.getElementById('displayPali').innerText = pali;
+}
+
+function getSkippedCellsFromInput() {
+    var input = document.getElementById('inputSkipCells').value.trim().toUpperCase();
+    if (!input) return [];
+    var cells = [];
+    input.split(',').forEach(part => {
+        var match = part.trim().match(/^R(\d+)C(\d+)$/);
+        if (match) {
+            var r = parseInt(match[1]) - 1, c = parseInt(match[2]) - 1;
+            if (r >= 0 && c >= 0) cells.push(`${r}_${c}`);
+        }
+    });
+    return cells;
+}
+
+function getExcludedRollsFromInput() {
+    var input = document.getElementById('inputExcludedRolls').value.trim();
+    if (!input) return [];
+    return input.split(',').map(item => item.trim()).filter(item => item.length > 0);
+}
+
+function generateGrid() {
+    var rows = parseInt(document.getElementById('inputRows').value);
+    var cols = parseInt(document.getElementById('inputCols').value);
+    var height = document.getElementById('inputHeight').value + 'px';
+    var widthVal = parseInt(document.getElementById('inputWidth').value);
+    var width = widthVal + 'px';
+    var skippedCells = getSkippedCellsFromInput();
+
+    var gridTable = document.getElementById('seatingGrid');
+    gridTable.innerHTML = '';
+
+    for (var i = 0; i < rows; i++) {
+        var tr = document.createElement('tr');
+        for (var j = 0; j < cols; j++) {
+            var td = document.createElement('td');
+            td.style.height = height; td.style.width = width;
+            var input = document.createElement('input');
+            input.type = 'text'; input.maxLength = 12;
+            input.addEventListener('input', function() { handleCellInputChange(this); });
+
+            if (skippedCells.includes(`${i}_${j}`)) {
+                td.classList.add('skipped-cell');
+                input.value = "-";
+            }
+            td.appendChild(input);
+            tr.appendChild(td);
+        }
+        gridTable.appendChild(tr);
+    }
+
+    var totalGridWidth = cols * widthVal;
+    document.getElementById('gridHeaderWrapper').style.width = totalGridWidth + 'px';
+    document.getElementById('schoolTable').style.width = totalGridWidth + 'px';
+    document.getElementById('summaryHeaderWrapper').style.width = totalGridWidth + 'px';
+
+    processGridData();
+}
+
+function handleCellInputChange(inputEl) {
+    var cell = inputEl.parentNode;
+    if (inputEl.value.trim().toLowerCase() === "-") cell.classList.add('skipped-cell');
+    else cell.classList.remove('skipped-cell');
+    
+    if (getRollFillMode() === 'auto') {
+        processGridData();
+    }
+}
+
+function addSchoolGridRow() {
+    var tbody = document.getElementById('schoolTableBody');
+    var tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>${tbody.rows.length + 1}</td>
+        <td><input type="text" style="text-align: left;"></td>
+        <td><input type="text" class="from-roll" oninput="processGridData()" maxLength="12"></td>
+        <td><input type="text" class="to-roll" readonly style="background:#f9f9f9;"></td>
+        <td><input type="number" class="student-count" oninput="processGridData()" min="0"></td>
+        <td class="no-print"><button class="btn-remove" onclick="removeGridRow(this)">हटाएं</button></td>
+    `;
+    tbody.appendChild(tr);
+    updateGridSerialNumbers();
+}
+
+function removeGridRow(btn) {
+    btn.parentNode.parentNode.remove();
+    updateGridSerialNumbers();
+    processGridData();
+}
+
+function updateGridSerialNumbers() {
+    var tbody = document.getElementById('schoolTableBody');
+    for (var i = 0; i < tbody.rows.length; i++) tbody.rows[i].cells[0].innerText = i + 1;
+}
+
+function processGridData() {
+    var mode = getRollFillMode();
+    var tbody = document.getElementById('schoolTableBody');
+    var grandTotal = 0;
+    var schoolRollArrays = [];
+    var excludedRollsList = getExcludedRollsFromInput();
+
+    for (var i = 0; i < tbody.rows.length; i++) {
+        var row = tbody.rows[i];
+        var fromRollStr = row.querySelector('.from-roll').value.trim();
+        var count = parseInt(row.querySelector('.student-count').value) || 0;
+        var toRollInput = row.querySelector('.to-roll');
+
+        if (fromRollStr !== "" && count > 0) {
+            try {
+                var startRoll = BigInt(fromRollStr);
+                var singleSchoolRolls = [];
+                var currentRoll = startRoll;
+
+                while (singleSchoolRolls.length < count) {
+                    var rollStr = currentRoll.toString();
+                    if (!excludedRollsList.includes(rollStr)) singleSchoolRolls.push(rollStr);
+                    currentRoll++;
+                }
+                toRollInput.value = singleSchoolRolls[singleSchoolRolls.length - 1];
+                grandTotal += count;
+                schoolRollArrays.push(singleSchoolRolls);
+            } catch (e) { toRollInput.value = ""; }
+        } else { toRollInput.value = ""; }
+    }
+
+    document.getElementById('gridGrandTotal').innerText = grandTotal;
+
+    if (mode === 'manual') return;
+
+    var finalGridRolls = [];
+    var maxRollsInAnySchool = 0;
+    for (var s = 0; s < schoolRollArrays.length; s++) {
+        if (schoolRollArrays[s].length > maxRollsInAnySchool) maxRollsInAnySchool = schoolRollArrays[s].length;
+    }
+
+    for (var idx = 0; idx < maxRollsInAnySchool; idx++) {
+        for (var s = 0; s < schoolRollArrays.length; s++) {
+            if (idx < schoolRollArrays[s].length) finalGridRolls.push(schoolRollArrays[s][idx]);
+        }
+    }
+
+    var rows = parseInt(document.getElementById('inputRows').value);
+    var cols = parseInt(document.getElementById('inputCols').value);
+    var gridTable = document.getElementById('seatingGrid');
+
+    var manuallySkippedRollsCount = 0;
+    for (var r = 0; r < rows; r++) {
+        for (var c = 0; c < cols; c++) {
+            if (gridTable.rows[r] && gridTable.rows[r].cells[c]) {
+                var input = gridTable.rows[r].cells[c].querySelector('input');
+                var val = input ? input.value.trim().toLowerCase() : "";
+                if (val === "x" || val === "-x") manuallySkippedRollsCount++;
+                else if (val !== "-") { input.value = ""; gridTable.rows[r].cells[c].classList.remove('skipped-cell'); }
+            }
+        }
+    }
+
+    var rollIndex = 0 + manuallySkippedRollsCount;
+
+    for (var col = 0; col < cols; col++) {
+        for (var row = 0; row < rows; row++) {
+            if (gridTable.rows[row] && gridTable.rows[row].cells[col]) {
+                var cellInput = gridTable.rows[row].cells[col].querySelector('input');
+                var val = cellInput ? cellInput.value.trim().toLowerCase() : "";
+                if (val === "-") { gridTable.rows[row].cells[col].classList.add('skipped-cell'); continue; }
+                if (val === "x" || val === "-x") continue;
+
+                if (cellInput && rollIndex < finalGridRolls.length) {
+                    cellInput.value = finalGridRolls[rollIndex];
+                    rollIndex++;
+                }
+            }
+        }
+    }
+}
+
+/* 3. TIMETABLE LOGIC */
+function getSettings() {
+    const saved = localStorage.getItem('school_timetable_settings_v12');
+    if (saved) return JSON.parse(saved);
+    return {
+        periodDuration: 40, period6Duration: 35, period7Duration: 35, eighthPeriodDuration: 30,
+        intervalAfterPeriod: 5, intervalDuration: 25, f1Prayer: "07:50", f1FirstBell: "08:00",
+        f2Prayer: "10:00", f2FirstBell: "10:10"
     };
-</script>
+}
 
+function toggleSettings() {
+    const panel = document.getElementById('settingsPanel');
+    panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+}
+
+function saveSettings() {
+    const settings = {
+        periodDuration: parseInt(document.getElementById('periodDuration').value),
+        period6Duration: parseInt(document.getElementById('period6Duration').value),
+        period7Duration: parseInt(document.getElementById('period7Duration').value),
+        eighthPeriodDuration: parseInt(document.getElementById('eighthPeriodDuration').value),
+        intervalAfterPeriod: parseInt(document.getElementById('intervalAfterPeriod').value),
+        intervalDuration: parseInt(document.getElementById('intervalDuration').value),
+        f1Prayer: document.getElementById('f1Prayer').value,
+        f1FirstBell: document.getElementById('f1FirstBell').value,
+        f2Prayer: document.getElementById('f2Prayer').value,
+        f2FirstBell: document.getElementById('f2FirstBell').value
+    };
+    localStorage.setItem('school_timetable_settings_v12', JSON.stringify(settings));
+    toggleSettings();
+    generateTimetable();
+    alert('सेटिंग्स सफलतापूर्वक सेव हो गई हैं!');
+}
+
+function loadSettingsToForm() {
+    const settings = getSettings();
+    document.getElementById('periodDuration').value = settings.periodDuration;
+    document.getElementById('period6Duration').value = settings.period6Duration || 35;
+    document.getElementById('period7Duration').value = settings.period7Duration || 35;
+    document.getElementById('eighthPeriodDuration').value = settings.eighthPeriodDuration || 30;
+    document.getElementById('intervalAfterPeriod').value = settings.intervalAfterPeriod !== undefined ? settings.intervalAfterPeriod : 5;
+    document.getElementById('intervalDuration').value = settings.intervalDuration !== undefined ? settings.intervalDuration : 25;
+    document.getElementById('f1Prayer').value = settings.f1Prayer;
+    document.getElementById('f1FirstBell').value = settings.f1FirstBell;
+    document.getElementById('f2Prayer').value = settings.f2Prayer;
+    document.getElementById('f2FirstBell').value = settings.f2FirstBell;
+}
+
+function timeToMinutes(timeStr) {
+    const parts = timeStr.split(':');
+    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+}
+
+function minutesToTime(totalMinutes) {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    const mStr = minutes < 10 ? '0' + minutes : minutes;
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+    return `${displayHours}:${mStr} ${ampm}`;
+}
+
+function getHindiPeriodName(num) {
+    const names = {1:"पहली घंटी",2:"दूसरी घंटी",3:"तीसरी घंटी",4:"चौथी घंटी",5:"पाँचवीं घंटी",6:"छठी घंटी",7:"सातवीं घंटी",8:"आठवीं घंटी"};
+    return names[num] || `${num}वीं घंटी`;
+}
+
+function changeFormat() { generateTimetable(); }
+
+function generateTimetable() {
+    loadSettingsToForm();
+    const settings = getSettings();
+    const format = document.getElementById('formatSelect').value;
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+
+    const pDuration = settings.periodDuration;
+    const p6Duration = settings.period6Duration;
+    const p7Duration = settings.period7Duration;
+    const p8Duration = settings.eighthPeriodDuration;
+    const intervalAfter = settings.intervalAfterPeriod;
+    const intDuration = settings.intervalDuration;
+
+    let currentTime = timeToMinutes(format === 'format1' ? settings.f1FirstBell : settings.f2FirstBell);
+    let prayerTime = timeToMinutes(format === 'format1' ? settings.f1Prayer : settings.f2Prayer);
+    
+    let schedule = [{ sNo: "प्रारम्भ", name: "प्रार्थना", start: prayerTime, end: currentTime, duration: currentTime - prayerTime }];
+    let periodCounter = 1;
+
+    for (let i = 1; i <= 8; i++) {
+        let duration = pDuration;
+        if (i === 6) duration = p6Duration;
+        else if (i === 7) duration = p7Duration;
+        else if (i === 8) duration = p8Duration;
+
+        let endTime = currentTime + duration;
+        schedule.push({ sNo: periodCounter++, name: getHindiPeriodName(i), start: currentTime, end: endTime, duration: duration });
+        currentTime = endTime;
+
+        if (i === intervalAfter) {
+            let intervalEnd = currentTime + intDuration;
+            schedule.push({ sNo: "-", name: "मध्यांतर (Interval)", start: currentTime, end: intervalEnd, duration: intDuration });
+            currentTime = intervalEnd;
+        }
+    }
+
+    let dispersalTime = minutesToTime(currentTime);
+
+    schedule.forEach((item) => {
+        let row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${item.sNo}</td>
+            <td><strong>${item.name}</strong></td>
+            <td>${minutesToTime(item.start)} - ${minutesToTime(item.end)}</td>
+            <td>${item.duration} मिनट</td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    let dispersalRow = document.createElement('tr');
+    dispersalRow.style.backgroundColor = "#edf2f7";
+    dispersalRow.innerHTML = `
+        <td colspan="2"><strong>समापन (Dispersal)</strong></td>
+        <td colspan="2"><strong>${dispersalTime}</strong></td>
+    `;
+    tbody.appendChild(dispersalRow);
+}
+
+/* 4. COPY RECORDS LOGIC */
+function getData(cls) {
+    const raw = localStorage.getItem('upboard_v5.1_' + cls);
+    let data = raw ? JSON.parse(raw) : null;
+    
+    if (!data) {
+        data = {
+            totalReceivedA: 0,
+            totalReceivedB: 0,
+            missingA: [],
+            missingB: [],
+            tornA: [],
+            tornB: [],
+            dateWiseData: {},
+            calc: { registered: '', drawing: 0, subjects: cls === '10th' ? 6 : 5 }
+        };
+    }
+    if (!data.calc) {
+        data.calc = { registered: '', drawing: 0, subjects: cls === '10th' ? 6 : 5 };
+    }
+    return data;
+}
+
+function saveData(cls, data) {
+    localStorage.setItem('upboard_v5.1_' + cls, JSON.stringify(data));
+    updateUI();
+}
+
+function setTodayDates() {
+    const todayInput = document.getElementById('entry-date');
+    if (todayInput) {
+        const today = new Date().toISOString().split('T')[0];
+        todayInput.value = today;
+    }
+}
+
+function switchClass(cls) {
+    currentClass = cls;
+    document.getElementById('btn-10th').classList.toggle('active', cls === '10th');
+    document.getElementById('btn-12th').classList.toggle('active', cls === '12th');
+    document.getElementById('class-title').innerText = cls === '10th' ? 'High School (10th)' : 'Inter (12th)';
+    
+    const data = getData(cls);
+    document.getElementById('calc-registered').value = data.calc.registered;
+    document.getElementById('calc-drawing').value = data.calc.drawing;
+    document.getElementById('calc-subjects').value = data.calc.subjects;
+
+    updateUI();
+}
+
+function updateUI() {
+    const data = getData(currentClass);
+
+    let totalDistA = 0, totalDistB = 0;
+    let totalRetA = 0, totalRetB = 0;
+    let totalUsedA = 0, totalUsedB = 0;
+    let totalAbsent = 0;
+
+    const tbody = document.getElementById('date-wise-tbody');
+    tbody.innerHTML = '';
+
+    const sortedDates = Object.keys(data.dateWiseData).sort();
+    let srNo = 1;
+
+    if (sortedDates.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; font-weight:bold;">कोई तारीखवार रिकॉर्ड उपलब्ध नहीं है।</td></tr>`;
+    } else {
+        sortedDates.forEach(date => {
+            const dA = Number(data.dateWiseData[date].distA) || 0;
+            const dB = Number(data.dateWiseData[date].distB) || 0;
+            const rA = Number(data.dateWiseData[date].retA) || 0;
+            const rB = Number(data.dateWiseData[date].retB) || 0;
+            const abs = Number(data.dateWiseData[date].absent) || 0;
+            
+            const netA = dA - rA < 0 ? 0 : dA - rA;
+            const netB = dB - rB < 0 ? 0 : dB - rB;
+
+            totalDistA += dA; totalDistB += dB;
+            totalRetA += rA; totalRetB += rB;
+            totalUsedA += netA; totalUsedB += netB;
+            totalAbsent += abs;
+
+            const formattedDate = date.split('-').reverse().join('-');
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${srNo++}</strong></td>
+                    <td><strong>${formattedDate}</strong></td>
+                    <td><strong>${dA}</strong></td>
+                    <td><strong>${dB}</strong></td>
+                    <td><strong>${rA}</strong></td>
+                    <td><strong>${rB}</strong></td>
+                    <td><strong>${netA}</strong></td>
+                    <td><strong>${netB}</strong></td>
+                    <td style="color:#c0392b;"><strong>${abs}</strong></td>
+                    <td class="no-print">
+                        <button class="action-btn edit-btn" style="padding: 3px 8px; font-size: 11px;" onclick="editDateData('${date}')">✏️ एडिट</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    const availA = data.totalReceivedA - data.missingA.length - data.tornA.length - totalDistA + totalRetA;
+    const availB = data.totalReceivedB - data.missingB.length - data.tornB.length - totalDistB + totalRetB;
+
+    document.getElementById('disp-total-a').innerText = data.totalReceivedA;
+    document.getElementById('disp-total-b').innerText = data.totalReceivedB;
+    document.getElementById('disp-missing-a').innerText = data.missingA.length;
+    document.getElementById('disp-missing-b').innerText = data.missingB.length;
+    document.getElementById('disp-torn-a').innerText = data.tornA.length;
+    document.getElementById('disp-torn-b').innerText = data.tornB.length;
+    document.getElementById('disp-dist-a').innerText = totalDistA;
+    document.getElementById('disp-dist-b').innerText = totalDistB;
+    document.getElementById('disp-ret-a').innerText = totalRetA;
+    document.getElementById('disp-ret-b').innerText = totalRetB;
+    document.getElementById('disp-used-a').innerText = totalUsedA;
+    document.getElementById('disp-used-b').innerText = totalUsedB;
+    document.getElementById('disp-total-absent').innerText = totalAbsent;
+    document.getElementById('disp-avail-a').innerText = availA < 0 ? 0 : availA;
+    document.getElementById('disp-avail-b').innerText = availB < 0 ? 0 : availB;
+
+    document.getElementById('rep-total-a').innerText = data.totalReceivedA;
+    document.getElementById('rep-total-b').innerText = data.totalReceivedB;
+    document.getElementById('rep-dist-a').innerText = totalDistA;
+    document.getElementById('rep-dist-b').innerText = totalDistB;
+    document.getElementById('rep-ret-a').innerText = totalRetA;
+    document.getElementById('rep-ret-b').innerText = totalRetB;
+    document.getElementById('rep-used-a').innerText = totalUsedA;
+    document.getElementById('rep-used-b').innerText = totalUsedB;
+    document.getElementById('rep-avail-a').innerText = availA < 0 ? 0 : availA;
+    document.getElementById('rep-avail-b').innerText = availB < 0 ? 0 : availB;
+
+    document.getElementById('rep-missing-a').innerText = data.missingA.length > 0 ? data.missingA.join(', ') : 'कोई नहीं';
+    document.getElementById('rep-missing-b').innerText = data.missingB.length > 0 ? data.missingB.join(', ') : 'कोई नहीं';
+    document.getElementById('rep-torn-a').innerText = data.tornA.length > 0 ? data.tornA.join(', ') : 'कोई नहीं';
+    document.getElementById('rep-torn-b').innerText = data.tornB.length > 0 ? data.tornB.join(', ') : 'कोई नहीं';
+
+    const tagBox = document.getElementById('defect-tags');
+    tagBox.innerHTML = '';
+    data.missingA.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag missing-a-tag">Missing A: ${sr} <span class="btn-edit" onclick="editDefectItem('missingA', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('missingA', ${idx})">&times;</span></div>`);
+    data.missingB.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag missing-b-tag">Missing B: ${sr} <span class="btn-edit" onclick="editDefectItem('missingB', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('missingB', ${idx})">&times;</span></div>`);
+    data.tornA.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag torn-a-tag">Torn A: ${sr} <span class="btn-edit" onclick="editDefectItem('tornA', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('tornA', ${idx})">&times;</span></div>`);
+    data.tornB.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag torn-b-tag">Torn B: ${sr} <span class="btn-edit" onclick="editDefectItem('tornB', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('tornB', ${idx})">&times;</span></div>`);
+
+    document.getElementById('current-date').innerText = new Date().toLocaleDateString('hi-IN');
+    calculateRequirement();
+}
+
+function addSerialRange() {
+    const type = document.getElementById('type-select').value;
+    const from = parseInt(document.getElementById('sr-from').value);
+    const to = parseInt(document.getElementById('sr-to').value);
+
+    if (isNaN(from) || isNaN(to) || to < from) {
+        alert('कृपया सही सीरियल नंबर दर्ज करें!');
+        return;
+    }
+
+    const count = (to - from) + 1;
+    const data = getData(currentClass);
+    if (type === 'A') data.totalReceivedA += count;
+    else data.totalReceivedB += count;
+    
+    saveData(currentClass, data);
+    document.getElementById('sr-from').value = '';
+    document.getElementById('sr-to').value = '';
+}
+
+function addDefectCopy() {
+    const type = document.getElementById('defect-type').value;
+    const status = document.getElementById('defect-status').value;
+    const sr = parseInt(document.getElementById('defect-sr').value);
+
+    if (isNaN(sr)) {
+        alert('कृपया सही सीरियल नंबर डालें!');
+        return;
+    }
+
+    const data = getData(currentClass);
+    const listKey = status + type;
+
+    if (!data[listKey].includes(sr)) {
+        data[listKey].push(sr);
+        saveData(currentClass, data);
+        document.getElementById('defect-sr').value = '';
+    } else {
+        alert('यह सीरियल नंबर पहले से दर्ज है!');
+    }
+}
+
+function editDefectItem(listKey, idx) {
+    const data = getData(currentClass);
+    const oldSr = data[listKey][idx];
+    const newSr = prompt("संशोधित सही सीरियल नंबर दर्ज करें:", oldSr);
+    
+    if (newSr !== null && !isNaN(newSr) && newSr.trim() !== '') {
+        data[listKey][idx] = parseInt(newSr);
+        saveData(currentClass, data);
+    }
+}
+
+function removeDefectItem(listKey, idx) {
+    const data = getData(currentClass);
+    data[listKey].splice(idx, 1);
+    saveData(currentClass, data);
+}
+
+function autoFillAbsent() {
+    const retA = document.getElementById('ret-a').value;
+    document.getElementById('absent-count').value = retA;
+}
+
+function saveDailyEntry() {
+    const date = document.getElementById('entry-date').value;
+    const distA = parseInt(document.getElementById('dist-a').value) || 0;
+    const distB = parseInt(document.getElementById('dist-b').value) || 0;
+    const retA = parseInt(document.getElementById('ret-a').value) || 0;
+    const retB = parseInt(document.getElementById('ret-b').value) || 0;
+    const absent = parseInt(document.getElementById('absent-count').value) || 0;
+
+    if (!date) {
+        alert('कृपया दिनांक चुनें!');
+        return;
+    }
+
+    const data = getData(currentClass);
+    data.dateWiseData[date] = { distA, distB, retA, retB, absent };
+
+    saveData(currentClass, data);
+    document.getElementById('dist-a').value = '';
+    document.getElementById('dist-b').value = '';
+    document.getElementById('ret-a').value = '';
+    document.getElementById('ret-b').value = '';
+    document.getElementById('absent-count').value = '';
+}
+
+function editDateData(date) {
+    const data = getData(currentClass);
+    const cur = data.dateWiseData[date] || { distA: 0, distB: 0, retA: 0, retB: 0, absent: 0 };
+    const formattedDate = date.split('-').reverse().join('-');
+
+    const dA = prompt(`[${formattedDate}] भेजी गई 'A' कॉपी:`, cur.distA);
+    if (dA === null) return;
+    const dB = prompt(`[${formattedDate}] भेजी गई 'B' कॉपी:`, cur.distB);
+    if (dB === null) return;
+    const rA = prompt(`[${formattedDate}] वापस 'A' कॉपी:`, cur.retA);
+    if (rA === null) return;
+    const rB = prompt(`[${formattedDate}] वापस 'B' कॉपी:`, cur.retB);
+    if (rB === null) return;
+    const abs = prompt(`[${formattedDate}] अनुपस्थित छात्र संख्या:`, cur.absent || 0);
+    if (abs === null) return;
+
+    data.dateWiseData[date] = {
+        distA: parseInt(dA) || 0,
+        distB: parseInt(dB) || 0,
+        retA: parseInt(rA) || 0,
+        retB: parseInt(rB) || 0,
+        absent: parseInt(abs) || 0
+    };
+
+    saveData(currentClass, data);
+}
+
+function calculateRequirement() {
+    const registeredVal = document.getElementById('calc-registered').value;
+    const drawingVal = document.getElementById('calc-drawing').value;
+    const subjectsVal = document.getElementById('calc-subjects').value;
+
+    const registered = parseInt(registeredVal) || 0;
+    const drawingStudents = parseInt(drawingVal) || 0;
+    const totalSubjects = parseInt(subjectsVal) || (currentClass === '10th' ? 6 : 5);
+
+    const data = getData(currentClass);
+    data.calc = { registered: registeredVal, drawing: drawingVal, subjects: subjectsVal };
+    localStorage.setItem('upboard_v5.1_' + currentClass, JSON.stringify(data));
+
+    if (registered === 0) {
+        document.getElementById('requirement-result').innerHTML = "<i>आवश्यकता का सही कैलकुलेशन देखने के लिए पंजीकृत परीक्षार्थियों की संख्या दर्ज करें...</i>";
+        document.getElementById('print-requirement-box').innerHTML = "";
+        return;
+    }
+
+    const sortedDates = Object.keys(data.dateWiseData).sort();
+    const completedSubjects = sortedDates.length;
+    const remainingSubjects = totalSubjects - completedSubjects;
+
+    let firstDayAbsent = 0;
+    if (sortedDates.length > 0) {
+        firstDayAbsent = Number(data.dateWiseData[sortedDates[0]].absent) || 0;
+    }
+
+    const standardWritingStudents = registered - firstDayAbsent;
+    const drawingWritingStudents = (registered - drawingStudents) - firstDayAbsent;
+    const actualDrawingStudents = drawingWritingStudents < 0 ? 0 : drawingWritingStudents;
+    
+    const remSub = remainingSubjects < 0 ? 0 : remainingSubjects;
+    
+    let futureNeedA = 0;
+    for (let i = 0; i < remSub; i++) {
+        if (drawingStudents > 0 && i === 0) { 
+            futureNeedA += actualDrawingStudents;
+        } else {
+            futureNeedA += (standardWritingStudents < 0 ? 0 : standardWritingStudents);
+        }
+    }
+
+    let totalDistA = 0, totalRetA = 0;
+    Object.keys(data.dateWiseData).forEach(d => {
+        totalDistA += Number(data.dateWiseData[d].distA) || 0;
+        totalRetA += Number(data.dateWiseData[d].retA) || 0;
+    });
+    const currentAvailA = data.totalReceivedA - data.missingA.length - data.tornA.length - totalDistA + totalRetA;
+
+    const diff = currentAvailA - futureNeedA;
+    let statusText = "";
+    
+    if (remainingSubjects <= 0) {
+        statusText = `<strong style="color:blue;">✔ सभी ${totalSubjects} विषयों की परीक्षाएं संपन्न हो चुकी हैं।</strong>`;
+    } else if (diff >= 0) {
+        statusText = `<strong style="color:green;">✔ शेष ${remSub} विषयों की परीक्षा हेतु स्टॉक में ${diff} 'A' कॉपियां अतिरिक्त (Surplus) हैं। कॉपियां पर्याप्त हैं।</strong>`;
+    } else {
+        statusText = `<strong style="color:red;">⚠️ सावधान: शेष ${remSub} विषयों की परीक्षा हेतु ${Math.abs(diff)} अतिरिक्त 'A' उत्तर पुस्तिकाओं की आवश्यकता पड़ेगी!</strong>`;
+    }
+
+    const htmlContent = `
+        <strong>📊 उत्तर पुस्तिका आवश्यकता विश्लेषण (${currentClass === '10th' ? 'High School' : 'Inter'}):</strong><br>
+        • कुल पंजीकृत छात्र: <strong>${registered}</strong> | चित्रकला छात्र: <strong>${drawingStudents}</strong> | कुल विषय: <strong>${totalSubjects}</strong><br>
+        • <strong>परीक्षा स्थिति:</strong> <u>${completedSubjects} विषय समाप्त</u> | <strong><u>${remSub} विषय शेष</u></strong><br>
+        • सामान्य विषयों में परीक्षा देने वाले छात्र: <strong>${standardWritingStudents < 0 ? 0 : standardWritingStudents}</strong><br>
+        • चित्रकला रहित विषय में परीक्षा देने वाले छात्र: <strong>${actualDrawingStudents}</strong><br>
+        • शेष <strong>${remSub}</strong> विषयों के लिए कुल आवश्यक 'A' कॉपियां: <strong>${futureNeedA}</strong><br>
+        • केंद्र पर वर्तमान उपलब्ध शेष 'A' कॉपियां: <strong>${currentAvailA}</strong><br>
+        • <strong>पूर्वाग्रह स्थिति:</strong> ${statusText}
+    `;
+
+    document.getElementById('requirement-result').innerHTML = htmlContent;
+    document.getElementById('print-requirement-box').innerHTML = "<hr>" + htmlContent;
+}
+
+function resetCurrentClassData() {
+    if (confirm(`क्या आप ${currentClass === '10th' ? 'High School (10th)' : 'Inter (12th)'} का संपूर्ण डेटा रीसेट करना चाहते हैं?`)) {
+        localStorage.removeItem('upboard_v5.1_' + currentClass);
+        document.getElementById('calc-registered').value = '';
+        document.getElementById('calc-drawing').value = 0;
+        updateUI();
+    }
+}
+
+/* 5. VIDYALAYVAR MANAGEMENT LOGIC */
+let vidyalayData = {
+    hs: { schools: [], subjects: [] },
+    inter: { scCount: 0, artCount: 0, schools: [], subjects: [] }
+};
+
+function loadVidyalayData() {
+    let saved = localStorage.getItem('skic_exam_data_v4');
+    if (saved) {
+        vidyalayData = JSON.parse(saved);
+    }
+    const scEl = document.getElementById('inter-sc-count');
+    const artEl = document.getElementById('inter-art-count');
+    if (scEl) scEl.value = vidyalayData.inter.scCount || '';
+    if (artEl) artEl.value = vidyalayData.inter.artCount || '';
+}
+
+function saveVidyalayData() {
+    localStorage.setItem('skic_exam_data_v4', JSON.stringify(vidyalayData));
+    renderVidyalayAll();
+}
+
+function switchVidyalayTab(tab) {
+    currentVidyalayTab = tab;
+    document.querySelectorAll('.v-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.v-tab-content').forEach(c => c.classList.remove('active'));
+    
+    if(tab === 'hs') {
+        document.getElementById('tab-btn-hs').classList.add('active');
+        document.getElementById('v-hs').classList.add('active');
+    } else {
+        document.getElementById('tab-btn-inter').classList.add('active');
+        document.getElementById('v-inter').classList.add('active');
+    }
+    updateHeaderTitle();
+}
+
+function updateHeaderTitle() {
+    const yearInput = document.getElementById('exam-year-input');
+    const year = yearInput && yearInput.value ? yearInput.value : '2027';
+    const headerTitle = document.getElementById('vidyalay-header-title');
+
+    if (currentVidyalayTab === 'hs') {
+        headerTitle.innerText = `यूपी बोर्ड परीक्षा (High School) - वर्ष ${year}`;
+    } else {
+        headerTitle.innerText = `यूपी बोर्ड परीक्षा (Intermediate) - वर्ष ${year}`;
+    }
+}
+
+function autoFillBoysGirls(type, mode) {
+    let totalEl = document.getElementById(`${type}-${mode}-total-input`);
+    let boysEl = document.getElementById(`${type}-${mode}-boys`);
+    let girlsEl = document.getElementById(`${type}-${mode}-girls`);
+
+    let total = parseInt(totalEl.value) || 0;
+    let boys = parseInt(boysEl.value) || 0;
+
+    if (boys > total) {
+        boys = total;
+        boysEl.value = boys;
+    }
+
+    let girls = total - boys;
+    girlsEl.value = girls >= 0 ? girls : 0;
+}
+
+function updateInterCapacity() {
+    vidyalayData.inter.scCount = parseInt(document.getElementById('inter-sc-count').value) || 0;
+    vidyalayData.inter.artCount = parseInt(document.getElementById('inter-art-count').value) || 0;
+    saveVidyalayData();
+}
+
+function addSchool(type) {
+    let name = document.getElementById(`${type}-school-name`).value.trim();
+    let count = parseInt(document.getElementById(`${type}-school-total-input`).value) || 0;
+    let boys = parseInt(document.getElementById(`${type}-school-boys`).value) || 0;
+    let girls = parseInt(document.getElementById(`${type}-school-girls`).value) || 0;
+
+    if (!name || count <= 0) return alert('कृपया सही विद्यालय का नाम और संख्या भरें!');
+
+    vidyalayData[type].schools.push({ name, count, boys, girls });
+    document.getElementById(`${type}-school-name`).value = '';
+    document.getElementById(`${type}-school-total-input`).value = '';
+    document.getElementById(`${type}-school-boys`).value = '';
+    document.getElementById(`${type}-school-girls`).value = '';
+    saveVidyalayData();
+}
+
+function editSchool(type, index) {
+    let s = vidyalayData[type].schools[index];
+    let newName = prompt('विद्यालय का नाम बदलें:', s.name);
+    if (newName === null) return;
+    newName = newName.trim();
+    if (!newName) return alert('विद्यालय का नाम खाली नहीं हो सकता!');
+
+    let newCountStr = prompt('कुल परीक्षार्थी संख्या बदलें:', s.count);
+    if (newCountStr === null) return;
+    let newCount = parseInt(newCountStr) || 0;
+
+    let newBoysStr = prompt('पंजीकृत बालक संख्या दर्ज करें:', s.boys || 0);
+    if (newBoysStr === null) return;
+    let newBoys = parseInt(newBoysStr) || 0;
+
+    if (newBoys > newCount) newBoys = newCount;
+    let newGirls = newCount - newBoys;
+
+    vidyalayData[type].schools[index] = { name: newName, count: newCount, boys: newBoys, girls: newGirls };
+    saveVidyalayData();
+}
+
+function deleteSchool(type, index) {
+    if (confirm('क्या आप इसे हटाना चाहते हैं?')) {
+        vidyalayData[type].schools.splice(index, 1);
+        saveVidyalayData();
+    }
+}
+
+function addSubject(type) {
+    let name = document.getElementById(`${type}-subject-name`).value.trim();
+    let count = parseInt(document.getElementById(`${type}-subject-total-input`).value) || 0;
+    let boys = parseInt(document.getElementById(`${type}-subject-boys`).value) || 0;
+    let girls = parseInt(document.getElementById(`${type}-subject-girls`).value) || 0;
+    let stream = type === 'inter' ? document.getElementById('inter-subject-stream').value : 'General';
+
+    if (!name || count <= 0) return alert('कृपया सही विषय और पंजीकृत छात्र संख्या भरें!');
+
+    vidyalayData[type].subjects.push({ name, count, boys, girls, stream });
+    document.getElementById(`${type}-subject-name`).value = '';
+    document.getElementById(`${type}-subject-total-input`).value = '';
+    document.getElementById(`${type}-subject-boys`).value = '';
+    document.getElementById(`${type}-subject-girls`).value = '';
+    saveVidyalayData();
+}
+
+function editSubject(type, index) {
+    let sub = vidyalayData[type].subjects[index];
+    let newName = prompt('विषय का नाम बदलें:', sub.name);
+    if (newName === null) return;
+    newName = newName.trim();
+    if (!newName) return alert('विषय का नाम खाली नहीं हो सकता!');
+
+    let newStream = sub.stream;
+    if (type === 'inter') {
+        let streamChoice = prompt('वर्ग (Stream) बदलें:\n1: Common (अनिवार्य)\n2: Science (विज्ञान)\n3: Arts (कला)', 
+            sub.stream === 'Common' ? '1' : (sub.stream === 'Science' ? '2' : '3'));
+        if (streamChoice === null) return;
+        if (streamChoice === '1') newStream = 'Common';
+        else if (streamChoice === '2') newStream = 'Science';
+        else if (streamChoice === '3') newStream = 'Arts';
+        else return alert('गलत वर्ग विकल्प चुना गया!');
+    }
+
+    let newCountStr = prompt('कुल पंजीकृत छात्र संख्या बदलें:', sub.count);
+    if (newCountStr === null) return;
+    let newCount = parseInt(newCountStr) || 0;
+
+    let newBoysStr = prompt('पंजीकृत बालक संख्या दर्ज करें:', sub.boys || 0);
+    if (newBoysStr === null) return;
+    let newBoys = parseInt(newBoysStr) || 0;
+
+    if (newBoys > newCount) newBoys = newCount;
+    let newGirls = newCount - newBoys;
+
+    vidyalayData[type].subjects[index] = { name: newName, count: newCount, boys: newBoys, girls: newGirls, stream: newStream };
+    saveVidyalayData();
+}
+
+function deleteSubject(type, index) {
+    if (confirm('क्या आप इसे हटाना चाहते हैं?')) {
+        vidyalayData[type].subjects.splice(index, 1);
+        saveVidyalayData();
+    }
+}
+
+function calculateDailyAttendance(type) {
+    let total = 0, boys = 0, girls = 0;
+    let checkboxes = document.querySelectorAll(`.${type}-exam-checkbox:checked`);
+    checkboxes.forEach(cb => {
+        let idx = parseInt(cb.getAttribute('data-index'));
+        let sub = vidyalayData[type].subjects[idx];
+        if (sub) {
+            total += sub.count;
+            boys += (sub.boys || 0);
+            girls += (sub.girls || (sub.count - (sub.boys || 0)));
+        }
+    });
+
+    document.getElementById(`${type}-daily-total`).innerText = total;
+    document.getElementById(`${type}-daily-boys`).innerText = boys;
+    document.getElementById(`${type}-daily-girls`).innerText = girls;
+}
+
+function renderVidyalayAll() {
+    loadVidyalayData();
+    
+    // High School Data Render
+    let hsSList = document.getElementById('hs-school-list');
+    hsSList.innerHTML = '';
+    let hsSTotal = 0, hsBoysTotal = 0, hsGirlsTotal = 0;
+    vidyalayData.hs.schools.forEach((s, i) => {
+        let b = s.boys || 0;
+        let g = s.girls || (s.count - b);
+        hsSTotal += s.count;
+        hsBoysTotal += b;
+        hsGirlsTotal += g;
+        hsSList.innerHTML += `<tr>
+            <td>${i+1}</td>
+            <td style="text-align:left;">${s.name}</td>
+            <td>${b}</td>
+            <td>${g}</td>
+            <td class="total-cell">${s.count}</td>
+            <td class="no-print">
+                <button class="btn-edit" onclick="editSchool('hs', ${i})">संशोधन</button>
+                <button class="btn-danger" onclick="deleteSchool('hs', ${i})">हटाएं</button>
+            </td>
+        </tr>`;
+    });
+    document.getElementById('hs-school-total').innerText = hsSTotal;
+    document.getElementById('hs-school-boys-total').innerText = hsBoysTotal;
+    document.getElementById('hs-school-girls-total').innerText = hsGirlsTotal;
+
+    let hsSubList = document.getElementById('hs-subject-list');
+    hsSubList.innerHTML = '';
+    let hsSelector = document.getElementById('hs-exam-selector');
+    hsSelector.innerHTML = '';
+
+    vidyalayData.hs.subjects.forEach((sub, i) => {
+        let b = sub.boys || 0;
+        let g = sub.girls || (sub.count - b);
+        hsSubList.innerHTML += `<tr>
+            <td>${i+1}</td>
+            <td style="text-align:left;">${sub.name}</td>
+            <td>${b}</td>
+            <td>${g}</td>
+            <td class="total-cell">${sub.count}</td>
+            <td class="no-print">
+                <button class="btn-edit" onclick="editSubject('hs', ${i})">संशोधन</button>
+                <button class="btn-danger" onclick="deleteSubject('hs', ${i})">हटाएं</button>
+            </td>
+        </tr>`;
+
+        hsSelector.innerHTML += `<div class="exam-item">
+            <input type="checkbox" class="hs-exam-checkbox" data-index="${i}" onchange="calculateDailyAttendance('hs')">
+            <span>${sub.name} (${sub.count})</span>
+        </div>`;
+    });
+
+    // Intermediate Data Render
+    let sc = vidyalayData.inter.scCount || 0;
+    let art = vidyalayData.inter.artCount || 0;
+    document.getElementById('disp-sc-total').innerText = sc;
+    document.getElementById('disp-art-total').innerText = art;
+    document.getElementById('disp-grand-total').innerText = sc + art;
+
+    let interSList = document.getElementById('inter-school-list');
+    interSList.innerHTML = '';
+    let interSTotal = 0, interBoysTotal = 0, interGirlsTotal = 0;
+    vidyalayData.inter.schools.forEach((s, i) => {
+        let b = s.boys || 0;
+        let g = s.girls || (s.count - b);
+        interSTotal += s.count;
+        interBoysTotal += b;
+        interGirlsTotal += g;
+        interSList.innerHTML += `<tr>
+            <td>${i+1}</td>
+            <td style="text-align:left;">${s.name}</td>
+            <td>${b}</td>
+            <td>${g}</td>
+            <td class="total-cell">${s.count}</td>
+            <td class="no-print">
+                <button class="btn-edit" onclick="editSchool('inter', ${i})">संशोधन</button>
+                <button class="btn-danger" onclick="deleteSchool('inter', ${i})">हटाएं</button>
+            </td>
+        </tr>`;
+    });
+    document.getElementById('inter-school-total').innerText = interSTotal;
+    document.getElementById('inter-school-boys-total').innerText = interBoysTotal;
+    document.getElementById('inter-school-girls-total').innerText = interGirlsTotal;
+
+    let interSubList = document.getElementById('inter-subject-list');
+    interSubList.innerHTML = '';
+    let interSelector = document.getElementById('inter-exam-selector');
+    interSelector.innerHTML = '';
+
+    vidyalayData.inter.subjects.forEach((sub, i) => {
+        let b = sub.boys || 0;
+        let g = sub.girls || (sub.count - b);
+        interSubList.innerHTML += `<tr>
+            <td>${i+1}</td>
+            <td style="text-align:left;">${sub.name}</td>
+            <td>${sub.stream || 'Common'}</td>
+            <td>${b}</td>
+            <td>${g}</td>
+            <td class="total-cell">${sub.count}</td>
+            <td class="no-print">
+                <button class="btn-edit" onclick="editSubject('inter', ${i})">संशोधन</button>
+                <button class="btn-danger" onclick="deleteSubject('inter', ${i})">हटाएं</button>
+            </td>
+        </tr>`;
+
+        interSelector.innerHTML += `<div class="exam-item">
+            <input type="checkbox" class="inter-exam-checkbox" data-index="${i}" onchange="calculateDailyAttendance('inter')">
+            <span>${sub.name} [${sub.stream || 'Common'}] (${sub.count})</span>
+        </div>`;
+    });
+
+    calculateDailyAttendance('hs');
+    calculateDailyAttendance('inter');
+}
+</script>
 </body>
 </html>
