@@ -71,7 +71,7 @@
         .btn-danger { background-color: #e53e3e; padding: 2px 5px; font-size: 10px; }
         .btn-edit { background-color: #f39c12; color: white; border: none; padding: 2px 6px; cursor: pointer; font-size: 10px; border-radius: 3px; font-weight: bold; }
         .btn-add { background-color: #28a745; color: white; border: none; padding: 6px 12px; cursor: pointer; font-weight: bold; border-radius: 4px; }
-        .btn-remove { background-color: #dc3545; color: white; border: none; padding: 3px 8px; cursor: border-radius: 4px; }
+        .btn-remove { background-color: #dc3545; color: white; border: none; padding: 3px 8px; cursor: pointer; border-radius: 4px; }
 
         /* ==================== TIME TABLE STYLES ==================== */
         .tt-header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 25px; }
@@ -1081,7 +1081,12 @@ window.onload = function() {
 };
 
 function setVidyalayTodayDates() {
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const today = `${year}-${month}-${day}`;
+
     const hsDateInput = document.getElementById('hs-exam-date');
     const interDateInput = document.getElementById('inter-exam-date');
     if (hsDateInput && !hsDateInput.value) hsDateInput.value = today;
@@ -1689,8 +1694,11 @@ function saveData(cls, data) {
 function setTodayDates() {
     const todayInput = document.getElementById('entry-date');
     if (todayInput) {
-        const today = new Date().toISOString().split('T')[0];
-        todayInput.value = today;
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        todayInput.value = `${year}-${month}-${day}`;
     }
 }
 
@@ -1740,7 +1748,7 @@ function updateUI() {
             totalUsedA += netA; totalUsedB += netB;
             totalAbsent += abs;
 
-            // Date format changed to DD/MM/YYYY here
+            // Date format DD/MM/YYYY here
             const formattedDate = date.split('-').reverse().join('/');
 
             tbody.innerHTML += `
@@ -1892,7 +1900,7 @@ function saveDailyEntry() {
 function editDateData(date) {
     const data = getData(currentClass);
     const cur = data.dateWiseData[date] || { distA: 0, distB: 0, retA: 0, retB: 0, absent: 0 };
-    // Date format changed to DD/MM/YYYY here
+    // Date format DD/MM/YYYY here
     const formattedDate = date.split('-').reverse().join('/');
 
     const dA = prompt(`[${formattedDate}] भेजी गई 'A' कॉपी:`, cur.distA);
@@ -2104,7 +2112,7 @@ function addSubject(type) {
     let boys = parseInt(document.getElementById(`${type}-subject-boys`).value) || 0;
     let girls = parseInt(document.getElementById(`${type}-subject-girls`).value) || 0;
     let stream = type === 'inter' ? document.getElementById('inter-subject-stream').value : 'Common';
-
+    
     if (!name || total <= 0) {
         alert('कृपया विषय का नाम और वैध छात्र संख्या दर्ज करें!');
         return;
@@ -2125,13 +2133,16 @@ function deleteSubject(type, index) {
 
 function renderVidyalayAll() {
     ['hs', 'inter'].forEach(type => {
-        let schoolList = document.getElementById(`${type}-school-list`);
-        schoolList.innerHTML = '';
-        let sBoys = 0, sGirls = 0, sTotal = 0;
+        let schoolTbody = document.getElementById(`${type}-school-list`);
+        let subjectTbody = document.getElementById(`${type}-subject-list`);
+        if(!schoolTbody || !subjectTbody) return;
+
+        schoolTbody.innerHTML = '';
+        let sTotal = 0, sBoys = 0, sGirls = 0;
 
         vidyalayData[type].schools.forEach((s, idx) => {
-            sBoys += s.boys; sGirls += s.girls; sTotal += s.total;
-            schoolList.innerHTML += `
+            sTotal += s.total; sBoys += s.boys; sGirls += s.girls;
+            schoolTbody.innerHTML += `
                 <tr>
                     <td>${idx + 1}</td>
                     <td style="text-align: left; padding-left: 8px;">${s.name}</td>
@@ -2147,14 +2158,20 @@ function renderVidyalayAll() {
         document.getElementById(`${type}-school-girls-total`).innerText = sGirls;
         document.getElementById(`${type}-school-total`).innerText = sTotal;
 
-        let subjectList = document.getElementById(`${type}-subject-list`);
-        subjectList.innerHTML = '';
+        if(type === 'inter') {
+            document.getElementById('disp-sc-total').innerText = vidyalayData.inter.scCount;
+            document.getElementById('disp-art-total').innerText = vidyalayData.inter.artCount;
+            document.getElementById('disp-grand-total').innerText = vidyalayData.inter.scCount + vidyalayData.inter.artCount;
+        }
+
+        subjectTbody.innerHTML = '';
         vidyalayData[type].subjects.forEach((sub, idx) => {
-            subjectList.innerHTML += `
+            let streamTD = type === 'inter' ? `<td>${sub.stream}</td>` : '';
+            subjectTbody.innerHTML += `
                 <tr>
                     <td>${idx + 1}</td>
                     <td style="text-align: left; padding-left: 8px;">${sub.name}</td>
-                    ${type === 'inter' ? `<td>${sub.stream}</td>` : ''}
+                    ${streamTD}
                     <td>${sub.boys}</td>
                     <td>${sub.girls}</td>
                     <td><strong>${sub.total}</strong></td>
@@ -2163,62 +2180,57 @@ function renderVidyalayAll() {
             `;
         });
 
-        let examSelector = document.getElementById(`${type}-exam-selector`);
-        examSelector.innerHTML = '';
-        vidyalayData[type].subjects.forEach((sub, idx) => {
-            examSelector.innerHTML += `
-                <div class="exam-item">
-                    <input type="checkbox" id="${type}-exam-${idx}" value="${idx}" onchange="calculateAttendance('${type}')">
-                    <label for="${type}-exam-${idx}">${sub.name} (${sub.total})</label>
-                </div>
-            `;
-        });
-
-        if (type === 'inter') {
-            document.getElementById('disp-sc-total').innerText = vidyalayData.inter.scCount;
-            document.getElementById('disp-art-total').innerText = vidyalayData.inter.artCount;
-            document.getElementById('disp-grand-total').innerText = vidyalayData.inter.scCount + vidyalayData.inter.artCount;
-        }
-
-        calculateAttendance(type);
+        renderExamSelector(type);
     });
 }
 
-function calculateAttendance(type) {
-    let checkboxes = document.querySelectorAll(`#${type}-exam-selector input[type="checkbox"]:checked`);
-    let regTotal = 0, regBoys = 0, regGirls = 0;
+function renderExamSelector(type) {
+    let container = document.getElementById(`${type}-exam-selector`);
+    if(!container) return;
+    container.innerHTML = '';
 
-    checkboxes.forEach(cb => {
-        let sub = vidyalayData[type].subjects[cb.value];
-        if (sub) {
-            regTotal += sub.total;
-            regBoys += sub.boys;
-            regGirls += sub.girls;
+    vidyalayData[type].subjects.forEach((sub, idx) => {
+        container.innerHTML += `
+            <div class="exam-item">
+                <input type="checkbox" id="${type}-sub-${idx}" value="${idx}" onchange="calculateAttendance('${type}')">
+                <label for="${type}-sub-${idx}"><strong>${sub.name}</strong> (${sub.total} छात्र)</label>
+            </div>
+        `;
+    });
+    calculateAttendance(type);
+}
+
+function calculateAttendance(type) {
+    let totalReg = 0, totalBoys = 0, totalGirls = 0;
+    vidyalayData[type].subjects.forEach((sub, idx) => {
+        let chk = document.getElementById(`${type}-sub-${idx}`);
+        if(chk && chk.checked) {
+            totalReg += sub.total;
+            totalBoys += sub.boys;
+            totalGirls += sub.girls;
         }
     });
 
-    document.getElementById(`${type}-daily-total`).innerText = regTotal;
-    document.getElementById(`${type}-daily-boys`).innerText = regBoys;
-    document.getElementById(`${type}-daily-girls`).innerText = regGirls;
+    document.getElementById(`${type}-daily-total`).innerText = totalReg;
+    document.getElementById(`${type}-daily-boys`).innerText = totalBoys;
+    document.getElementById(`${type}-daily-girls`).innerText = totalGirls;
 
-    let absentBoys = parseInt(document.getElementById(`${type}-absent-boys-input`).value) || 0;
-    let absentGirls = parseInt(document.getElementById(`${type}-absent-girls-input`).value) || 0;
+    let absBoys = parseInt(document.getElementById(`${type}-absent-boys-input`).value) || 0;
+    let absGirls = parseInt(document.getElementById(`${type}-absent-girls-input`).value) || 0;
 
-    if (absentBoys > regBoys) absentBoys = regBoys;
-    if (absentGirls > regGirls) absentGirls = regGirls;
+    if(absBoys > totalBoys) absBoys = totalBoys;
+    if(absGirls > totalGirls) absGirls = totalGirls;
 
-    let presentBoys = regBoys - absentBoys;
-    let presentGirls = regGirls - absentGirls;
-    let presentTotal = presentBoys + presentGirls;
-    let absentTotal = absentBoys + absentGirls;
+    let totalAbs = absBoys + absGirls;
+    let totalPres = totalReg - totalAbs;
+    let presBoys = totalBoys - absBoys;
+    let presGirls = totalGirls - absGirls;
 
-    let container = document.getElementById(type === 'hs' ? 'v-hs' : 'v-inter');
-    
-    container.querySelector('.present span').innerText = `${presentTotal}`;
-    container.querySelector('.present').innerHTML = `आज इस पाली में उपस्थित छात्र: <span>${presentTotal}</span> (बालक: <span>${presentBoys}</span> | बालिका: <span>${presentGirls}</span>)`;
-
-    container.querySelector('.absent span').innerText = `${absentTotal}`;
-    container.querySelector('.absent').innerHTML = `आज इस पाली में अनुपस्थित छात्र: <span>${absentTotal}</span> (बालक: <span>${absentBoys}</span> | बालिका: <span>${absentGirls}</span>)`;
+    let resContainer = document.querySelectorAll(`#v-${type} .result-box`);
+    if(resContainer.length >= 3) {
+        resContainer[1].innerHTML = `आज इस पाली में उपस्थित छात्र: <span>${totalPres}</span> (बालक: <span>${presBoys}</span> | बालिका: <span>${presGirls}</span>)`;
+        resContainer[2].innerHTML = `आज इस पाली में अनुपस्थित छात्र: <span>${totalAbs}</span> (बालक: <span>${absBoys}</span> | बालिका: <span>${absGirls}</span>)`;
+    }
 }
 </script>
 
