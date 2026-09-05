@@ -1740,7 +1740,8 @@ function updateUI() {
             totalUsedA += netA; totalUsedB += netB;
             totalAbsent += abs;
 
-            const formattedDate = date.split('-').reverse().join('-');
+            // Date format changed to DD/MM/YYYY here
+            const formattedDate = date.split('-').reverse().join('/');
 
             tbody.innerHTML += `
                 <tr>
@@ -1795,13 +1796,6 @@ function updateUI() {
     document.getElementById('rep-missing-b').innerText = data.missingB.length > 0 ? data.missingB.join(', ') : 'कोई नहीं';
     document.getElementById('rep-torn-a').innerText = data.tornA.length > 0 ? data.tornA.join(', ') : 'कोई नहीं';
     document.getElementById('rep-torn-b').innerText = data.tornB.length > 0 ? data.tornB.join(', ') : 'कोई नहीं';
-
-    const tagBox = document.getElementById('defect-tags');
-    tagBox.innerHTML = '';
-    data.missingA.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag missing-a-tag">Missing A: ${sr} <span class="btn-edit" onclick="editDefectItem('missingA', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('missingA', ${idx})">&times;</span></div>`);
-    data.missingB.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag missing-b-tag">Missing B: ${sr} <span class="btn-edit" onclick="editDefectItem('missingB', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('missingB', ${idx})">&times;</span></div>`);
-    data.tornA.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag torn-a-tag">Torn A: ${sr} <span class="btn-edit" onclick="editDefectItem('tornA', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('tornA', ${idx})">&times;</span></div>`);
-    data.tornB.forEach((sr, idx) => tagBox.innerHTML += `<div class="tag torn-b-tag">Torn B: ${sr} <span class="btn-edit" onclick="editDefectItem('tornB', ${idx})">✏️</span> <span class="btn-del" onclick="removeDefectItem('tornB', ${idx})">&times;</span></div>`);
 
     document.getElementById('current-date').innerText = new Date().toLocaleDateString('hi-IN');
     calculateRequirement();
@@ -1898,7 +1892,8 @@ function saveDailyEntry() {
 function editDateData(date) {
     const data = getData(currentClass);
     const cur = data.dateWiseData[date] || { distA: 0, distB: 0, retA: 0, retB: 0, absent: 0 };
-    const formattedDate = date.split('-').reverse().join('-');
+    // Date format changed to DD/MM/YYYY here
+    const formattedDate = date.split('-').reverse().join('/');
 
     const dA = prompt(`[${formattedDate}] भेजी गई 'A' कॉपी:`, cur.distA);
     if (dA === null) return;
@@ -2081,13 +2076,16 @@ function updateInterCapacity() {
 
 function addSchool(type) {
     let name = document.getElementById(`${type}-school-name`).value.trim();
-    let count = parseInt(document.getElementById(`${type}-school-total-input`).value) || 0;
+    let total = parseInt(document.getElementById(`${type}-school-total-input`).value) || 0;
     let boys = parseInt(document.getElementById(`${type}-school-boys`).value) || 0;
     let girls = parseInt(document.getElementById(`${type}-school-girls`).value) || 0;
 
-    if (!name || count <= 0) return alert('कृपया सही विद्यालय का नाम और संख्या भरें!');
+    if (!name || total <= 0) {
+        alert('कृपया विद्यालय का नाम और वैध छात्र संख्या दर्ज करें!');
+        return;
+    }
 
-    vidyalayData[type].schools.push({ name, count, boys, girls });
+    vidyalayData[type].schools.push({ name, total, boys, girls });
     document.getElementById(`${type}-school-name`).value = '';
     document.getElementById(`${type}-school-total-input`).value = '';
     document.getElementById(`${type}-school-boys`).value = '';
@@ -2095,48 +2093,24 @@ function addSchool(type) {
     saveVidyalayData();
 }
 
-function editSchool(type, index) {
-    let s = vidyalayData[type].schools[index];
-    let newName = prompt('विद्यालय का नाम बदलें:', s.name);
-    if (newName === null) return;
-    newName = newName.trim();
-    if (!newName) return alert('विद्यालय का नाम खाली नहीं हो सकता!');
-
-    let newCountStr = prompt('कुल परीक्षार्थी संख्या बदलें:', s.count);
-    if (newCountStr === null) return;
-    let newCount = parseInt(newCountStr) || 0;
-
-    let newBoysStr = prompt('पंजीकृत बालक संख्या दर्ज करें:', s.boys || 0);
-    if (newBoysStr === null) return;
-    let newBoys = parseInt(newBoysStr) || 0;
-
-    if (newBoys > newCount) newBoys = newCount;
-    let newGirls = newCount - newBoys;
-
-    vidyalayData[type].schools[index] = { name: newName, count: newCount, boys: newBoys, girls: newGirls };
-    saveVidyalayData();
-}
-
 function deleteSchool(type, index) {
-    if (confirm('क्या आप इसे हटाना चाहते हैं?')) {
-        vidyalayData[type].schools.splice(index, 1);
-        saveVidyalayData();
-    }
+    vidyalayData[type].schools.splice(index, 1);
+    saveVidyalayData();
 }
 
 function addSubject(type) {
     let name = document.getElementById(`${type}-subject-name`).value.trim();
-    let count = parseInt(document.getElementById(`${type}-subject-total-input`).value) || 0;
+    let total = parseInt(document.getElementById(`${type}-subject-total-input`).value) || 0;
     let boys = parseInt(document.getElementById(`${type}-subject-boys`).value) || 0;
     let girls = parseInt(document.getElementById(`${type}-subject-girls`).value) || 0;
-    let stream = (type === 'inter') ? document.getElementById('inter-subject-stream').value : null;
+    let stream = type === 'inter' ? document.getElementById('inter-subject-stream').value : 'Common';
 
-    if (!name || count <= 0) return alert('कृपया सही विषय का नाम और संख्या भरें!');
+    if (!name || total <= 0) {
+        alert('कृपया विषय का नाम और वैध छात्र संख्या दर्ज करें!');
+        return;
+    }
 
-    let item = { name, count, boys, girls };
-    if (stream) item.stream = stream;
-
-    vidyalayData[type].subjects.push(item);
+    vidyalayData[type].subjects.push({ name, total, boys, girls, stream });
     document.getElementById(`${type}-subject-name`).value = '';
     document.getElementById(`${type}-subject-total-input`).value = '';
     document.getElementById(`${type}-subject-boys`).value = '';
@@ -2144,144 +2118,107 @@ function addSubject(type) {
     saveVidyalayData();
 }
 
-function editSubject(type, index) {
-    let sub = vidyalayData[type].subjects[index];
-    let newName = prompt('विषय का नाम बदलें:', sub.name);
-    if (newName === null) return;
-    newName = newName.trim();
-    if (!newName) return alert('विषय का नाम खाली नहीं हो सकता!');
-
-    let newCountStr = prompt('कुल पंजीकृत छात्र संख्या बदलें:', sub.count);
-    if (newCountStr === null) return;
-    let newCount = parseInt(newCountStr) || 0;
-
-    let newBoysStr = prompt('पंजीकृत बालक संख्या दर्ज करें:', sub.boys || 0);
-    if (newBoysStr === null) return;
-    let newBoys = parseInt(newBoysStr) || 0;
-
-    if (newBoys > newCount) newBoys = newCount;
-    let newGirls = newCount - newBoys;
-
-    let item = { name: newName, count: newCount, boys: newBoys, girls: newGirls };
-    if (type === 'inter') item.stream = sub.stream || 'Common';
-
-    vidyalayData[type].subjects[index] = item;
-    saveVidyalayData();
-}
-
 function deleteSubject(type, index) {
-    if (confirm('क्या आप इस विषय को हटाना चाहते हैं?')) {
-        vidyalayData[type].subjects.splice(index, 1);
-        saveVidyalayData();
-    }
-}
-
-function calculateAttendance(type) {
-    let checkboxes = document.querySelectorAll(`input[name="${type}-daily-sub"]:checked`);
-    let dailyBoys = 0, dailyGirls = 0;
-
-    checkboxes.forEach(cb => {
-        let idx = parseInt(cb.value);
-        let sub = vidyalayData[type].subjects[idx];
-        if (sub) {
-            dailyBoys += sub.boys || 0;
-            dailyGirls += sub.girls || 0;
-        }
-    });
-
-    let dailyTotal = dailyBoys + dailyGirls;
-
-    document.getElementById(`${type}-daily-total`).innerText = dailyTotal;
-    document.getElementById(`${type}-daily-boys`).innerText = dailyBoys;
-    document.getElementById(`${type}-daily-girls`).innerText = dailyGirls;
-
-    let absBoys = parseInt(document.getElementById(`${type}-absent-boys-input`).value) || 0;
-    let absGirls = parseInt(document.getElementById(`${type}-absent-girls-input`).value) || 0;
-
-    if (absBoys > dailyBoys) absBoys = dailyBoys;
-    if (absGirls > dailyGirls) absGirls = dailyGirls;
-
-    let absTotal = absBoys + absGirls;
-    let presBoys = dailyBoys - absBoys;
-    let presGirls = dailyGirls - absGirls;
-    let presTotal = dailyTotal - absTotal;
-
-    document.getElementById(`${type}-present-total`).innerText = presTotal >= 0 ? presTotal : 0;
-    document.getElementById(`${type}-present-boys`).innerText = presBoys >= 0 ? presBoys : 0;
-    document.getElementById(`${type}-present-girls`).innerText = presGirls >= 0 ? presGirls : 0;
-
-    document.getElementById(`${type}-absent-total`).innerText = absTotal;
-    document.getElementById(`${type}-absent-boys`).innerText = absBoys;
-    document.getElementById(`${type}-absent-girls`).innerText = absGirls;
+    vidyalayData[type].subjects.splice(index, 1);
+    saveVidyalayData();
 }
 
 function renderVidyalayAll() {
     ['hs', 'inter'].forEach(type => {
-        let sList = document.getElementById(`${type}-school-list`);
-        sList.innerHTML = '';
-        let totSchoolBoys = 0, totSchoolGirls = 0, totSchoolCount = 0;
+        let schoolList = document.getElementById(`${type}-school-list`);
+        schoolList.innerHTML = '';
+        let sBoys = 0, sGirls = 0, sTotal = 0;
 
         vidyalayData[type].schools.forEach((s, idx) => {
-            totSchoolBoys += s.boys || 0;
-            totSchoolGirls += s.girls || 0;
-            totSchoolCount += s.count || 0;
-            sList.innerHTML += `
+            sBoys += s.boys; sGirls += s.girls; sTotal += s.total;
+            schoolList.innerHTML += `
                 <tr>
                     <td>${idx + 1}</td>
                     <td style="text-align: left; padding-left: 8px;">${s.name}</td>
-                    <td>${s.boys || 0}</td>
-                    <td>${s.girls || 0}</td>
-                    <td><strong>${s.count}</strong></td>
-                    <td class="no-print">
-                        <button class="btn-edit" onclick="editSchool('${type}', ${idx})">✏️ एडिट</button>
-                        <button class="btn-danger" onclick="deleteSchool('${type}', ${idx})">हटाएं</button>
-                    </td>
+                    <td>${s.boys}</td>
+                    <td>${s.girls}</td>
+                    <td><strong>${s.total}</strong></td>
+                    <td class="no-print"><button class="btn-remove" onclick="deleteSchool('${type}', ${idx})">हटाएं</button></td>
                 </tr>
             `;
         });
 
-        document.getElementById(`${type}-school-boys-total`).innerText = totSchoolBoys;
-        document.getElementById(`${type}-school-girls-total`).innerText = totSchoolGirls;
-        document.getElementById(`${type}-school-total`).innerText = totSchoolCount;
+        document.getElementById(`${type}-school-boys-total`).innerText = sBoys;
+        document.getElementById(`${type}-school-girls-total`).innerText = sGirls;
+        document.getElementById(`${type}-school-total`).innerText = sTotal;
 
-        let subList = document.getElementById(`${type}-subject-list`);
-        subList.innerHTML = '';
-        let selector = document.getElementById(`${type}-exam-selector`);
-        selector.innerHTML = '';
-
+        let subjectList = document.getElementById(`${type}-subject-list`);
+        subjectList.innerHTML = '';
         vidyalayData[type].subjects.forEach((sub, idx) => {
-            let streamTd = (type === 'inter') ? `<td><span class="tag" style="background:#555;">${sub.stream || 'Common'}</span></td>` : '';
-            subList.innerHTML += `
+            subjectList.innerHTML += `
                 <tr>
                     <td>${idx + 1}</td>
                     <td style="text-align: left; padding-left: 8px;">${sub.name}</td>
-                    ${streamTd}
-                    <td>${sub.boys || 0}</td>
-                    <td>${sub.girls || 0}</td>
-                    <td><strong>${sub.count}</strong></td>
-                    <td class="no-print">
-                        <button class="btn-edit" onclick="editSubject('${type}', ${idx})">✏️ एडिट</button>
-                        <button class="btn-danger" onclick="deleteSubject('${type}', ${idx})">हटाएं</button>
-                    </td>
+                    ${type === 'inter' ? `<td>${sub.stream}</td>` : ''}
+                    <td>${sub.boys}</td>
+                    <td>${sub.girls}</td>
+                    <td><strong>${sub.total}</strong></td>
+                    <td class="no-print"><button class="btn-remove" onclick="deleteSubject('${type}', ${idx})">हटाएं</button></td>
                 </tr>
             `;
+        });
 
-            selector.innerHTML += `
+        let examSelector = document.getElementById(`${type}-exam-selector`);
+        examSelector.innerHTML = '';
+        vidyalayData[type].subjects.forEach((sub, idx) => {
+            examSelector.innerHTML += `
                 <div class="exam-item">
-                    <input type="checkbox" name="${type}-daily-sub" value="${idx}" id="${type}-sub-cb-${idx}" onchange="calculateAttendance('${type}')">
-                    <label for="${type}-sub-cb-${idx}"><strong>${sub.name}</strong> (${sub.count})</label>
+                    <input type="checkbox" id="${type}-exam-${idx}" value="${idx}" onchange="calculateAttendance('${type}')">
+                    <label for="${type}-exam-${idx}">${sub.name} (${sub.total})</label>
                 </div>
             `;
         });
 
+        if (type === 'inter') {
+            document.getElementById('disp-sc-total').innerText = vidyalayData.inter.scCount;
+            document.getElementById('disp-art-total').innerText = vidyalayData.inter.artCount;
+            document.getElementById('disp-grand-total').innerText = vidyalayData.inter.scCount + vidyalayData.inter.artCount;
+        }
+
         calculateAttendance(type);
     });
+}
 
-    let sc = vidyalayData.inter.scCount || 0;
-    let art = vidyalayData.inter.artCount || 0;
-    document.getElementById('disp-sc-total').innerText = sc;
-    document.getElementById('disp-art-total').innerText = art;
-    document.getElementById('disp-grand-total').innerText = sc + art;
+function calculateAttendance(type) {
+    let checkboxes = document.querySelectorAll(`#${type}-exam-selector input[type="checkbox"]:checked`);
+    let regTotal = 0, regBoys = 0, regGirls = 0;
+
+    checkboxes.forEach(cb => {
+        let sub = vidyalayData[type].subjects[cb.value];
+        if (sub) {
+            regTotal += sub.total;
+            regBoys += sub.boys;
+            regGirls += sub.girls;
+        }
+    });
+
+    document.getElementById(`${type}-daily-total`).innerText = regTotal;
+    document.getElementById(`${type}-daily-boys`).innerText = regBoys;
+    document.getElementById(`${type}-daily-girls`).innerText = regGirls;
+
+    let absentBoys = parseInt(document.getElementById(`${type}-absent-boys-input`).value) || 0;
+    let absentGirls = parseInt(document.getElementById(`${type}-absent-girls-input`).value) || 0;
+
+    if (absentBoys > regBoys) absentBoys = regBoys;
+    if (absentGirls > regGirls) absentGirls = regGirls;
+
+    let presentBoys = regBoys - absentBoys;
+    let presentGirls = regGirls - absentGirls;
+    let presentTotal = presentBoys + presentGirls;
+    let absentTotal = absentBoys + absentGirls;
+
+    let container = document.getElementById(type === 'hs' ? 'v-hs' : 'v-inter');
+    
+    container.querySelector('.present span').innerText = `${presentTotal}`;
+    container.querySelector('.present').innerHTML = `आज इस पाली में उपस्थित छात्र: <span>${presentTotal}</span> (बालक: <span>${presentBoys}</span> | बालिका: <span>${presentGirls}</span>)`;
+
+    container.querySelector('.absent span').innerText = `${absentTotal}`;
+    container.querySelector('.absent').innerHTML = `आज इस पाली में अनुपस्थित छात्र: <span>${absentTotal}</span> (बालक: <span>${absentBoys}</span> | बालिका: <span>${absentGirls}</span>)`;
 }
 </script>
 
