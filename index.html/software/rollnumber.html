@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>परीक्षा उत्तर-पुस्तिका मिलान चार्ट - श्री कृष्ण इ० का० सेमरा कठकुइयां</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f5f9;
+            margin: 4px;
+            color: #000000;
+        }
+        .main-header {
+            text-align: center;
+            color: #000000;
+            margin-bottom: 4px;
+        }
+        .main-header h1 { margin: 0; font-size: 15px; font-weight: 900; }
+        .main-header h2 { margin: 2px 0; font-size: 11px; font-weight: bold; color: #000000; }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 6px;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            box-sizing: border-box;
+        }
+        .filter-section {
+            background-color: #dbeafe;
+            border: 1.5px solid #2563eb;
+            padding: 6px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+
+        .form-group { margin-bottom: 2px; }
+        label { font-weight: bold; display: block; margin-bottom: 1px; font-size: 10px; color: #000; }
+        input, select {
+            width: 100%; padding: 3px; border: 1px solid #000000;
+            border-radius: 4px; box-sizing: border-box; font-size: 10px; font-weight: bold; color: #000;
+        }
+        
+        button.add-btn {
+            background-color: #2563eb; color: white; border: none;
+            padding: 5px; font-size: 11px; border-radius: 4px;
+            cursor: pointer; width: 100%; font-weight: bold; margin-top: 4px;
+        }
+        button.search-btn {
+            background-color: #0d9488; color: white; border: none;
+            padding: 4px 8px; font-size: 10px; border-radius: 4px;
+            cursor: pointer; font-weight: bold; width: 100%;
+        }
+        button.print-btn {
+            background-color: #059669; color: white; border: none;
+            padding: 4px 10px; font-size: 11px; border-radius: 4px;
+            cursor: pointer; float: right; font-weight: bold;
+        }
+
+        /* कॉम्पैक्ट और कम ऊँचाई वाले रूम चार्ट बॉक्स */
+        .room-chart-box {
+            border: 1.2px solid #000000;
+            border-radius: 4px;
+            background: #fff;
+            margin-bottom: 4px;
+            padding: 4px 6px;
+            box-sizing: border-box;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        .room-title-bar {
+            font-size: 11px;
+            font-weight: 900;
+            background: #e2e8f0;
+            padding: 2px 6px;
+            border: 1px solid #000;
+            margin-bottom: 3px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .series-inline-block {
+            font-size: 10px;
+        }
+        
+        .roll-list-span {
+            font-family: monospace;
+            font-weight: bold !important;
+            color: #000000 !important;
+            word-spacing: 2px;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+        .action-btn-sm { padding: 1px 4px; border-radius: 3px; border: none; color: white; cursor: pointer; font-size: 9px; margin: 1px; font-weight: bold; }
+        .edit-btn { background-color: #0284c7; }
+        .delete-btn { background-color: #64748b; }
+
+        /* कुल सेंटर समरी (आपकी मांग के अनुसार फॉर्मेट) */
+        .overall-summary {
+            display: flex; justify-content: space-around; background: #000000;
+            color: white; padding: 4px; border-radius: 4px; margin-top: 6px; font-weight: bold;
+        }
+        .summary-box { text-align: center; }
+        .summary-box h3 { margin: 0; font-size: 11px; color: #ffffff; font-weight: 900; }
+        .summary-box p { margin: 0; font-size: 9px; color: #ffffff; font-weight: bold; }
+
+        /* प्रिंट लेआउट सेटिंग - पोर्ट्रेट मोड और कम ऊँचाई */
+        @media print {
+            @page { size: A4 portrait; margin: 5mm; }
+            .no-print { display: none !important; }
+            body { background-color: #fff; margin: 0; padding: 0; color: #000000 !important; font-size: 10px; }
+            .container { box-shadow: none; width: 100%; max-width: 100%; padding: 0; }
+            .main-header h1 { font-size: 13pt; margin: 0; color: #000000 !important; }
+            .main-header h2 { font-size:9pt; margin-bottom: 2px; color: #000000 !important; }
+            
+            .room-chart-box { border: 1px solid #000000 !important; margin-bottom: 3px; padding: 3px 5px; }
+            .room-title-bar { background: #e2e8f0 !important; -webkit-print-color-adjust: exact; font-size: 10pt; padding: 1px 4px; }
+            .overall-summary { background: #fff !important; color: #000000 !important; border: 1px solid #000000; padding: 3px; }
+            .summary-box h3 { color: #000000 !important; font-size: 9pt; }
+            .summary-box p { color: #000000 !important; font-size: 8pt; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="print-btn no-print" onclick="window.print()">🖨️ प्रिंट / PDF तैयार करें</button>
+    
+    <div class="main-header">
+        <h1>श्री कृष्ण इ० का० सेमरा कठकुइयां</h1>
+        <h2>परीक्षा उत्तर-पुस्तिका मिलान चार्ट (कमरा 01 से 15)</h2>
+    </div>
+
+    <!-- 1. फ़िल्टर और सर्च सेक्शन -->
+    <div class="filter-section no-print">
+        <h3 style="margin: 0 0 3px 0; color: #000000; font-size: 11px; font-weight: bold;">🔍 दिनांक व कक्षा के अनुसार चार्ट खोजें (Search):</h3>
+        <div class="grid-4" style="align-items: end;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label>परीक्षा तिथि:</label>
+                <input type="date" id="searchDate" onchange="renderAllData()">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>कक्षा:</label>
+                <select id="searchClass" onchange="renderAllData()">
+                    <option value="10th">हाईस्कूल (10th)</option>
+                    <option value="12th">इंटरमीडिएट (12th)</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>कमरा नंबर (ऐच्छिक):</label>
+                <input type="text" id="searchRoom" placeholder="उदा. 01" oninput="renderAllData()">
+            </div>
+            <div>
+                <button class="search-btn" onclick="renderAllData()">🔍 खोजें / रिफ्रेश</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. डेटा जोड़ने या संशोधित करने का फ़ॉर्म -->
+    <div class="no-print" style="background: #f8fafc; padding: 6px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 6px;">
+        <h3 id="formTitle" style="margin: 0 0 3px 0; color: #000000; font-size: 11px; font-weight: bold;">➕ कमरे में रोल नंबर सीरीज और विषय जोड़ें:</h3>
+        <input type="hidden" id="editingRecordId" value="">
+
+        <div class="grid-4">
+            <div class="form-group">
+                <label>तिथि:</label>
+                <input type="date" id="examDate">
+            </div>
+            <div class="form-group">
+                <label>कक्षा सेटिंग:</label>
+                <select id="examClass">
+                    <option value="10th">हाईस्कूल (10th)</option>
+                    <option value="12th">इंटरमीडिएट (12th)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>कमरा नंबर (1 से 15):</label>
+                <input type="text" id="roomNo" placeholder="उदा. 1 या 01">
+            </div>
+            <div class="form-group">
+                <label>विषय:</label>
+                <input type="text" id="subjectName" placeholder="उदा. हिन्दी / गणित">
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>प्रारंभिक रोल नंबर:</label>
+                <input type="number" id="startRoll" placeholder="2261548001" oninput="autoSuggestEndRollByCount()">
+            </div>
+            <div class="form-group">
+                <label>छात्रों की संख्या / अंतिम रोल नंबर:</label>
+                <div style="display: flex; gap: 4px;">
+                    <input type="number" id="studentCount" placeholder="संख्या (उदा. 30)" style="width: 40%;" oninput="autoSuggestEndRollByCount()">
+                    <input type="number" id="endRoll" placeholder="2261548050" style="width: 60%;">
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="form-group">
+                <label>विषय न लेने वाले रोल नंबर (Commas से अलग):</label>
+                <input type="text" id="skipRolls" placeholder="उदा. 2261548004">
+            </div>
+            <div class="form-group">
+                <label>अनुपस्थित रोल नंबर (Commas से अलग):</label>
+                <input type="text" id="absentRolls" placeholder="उदा. 2261548008">
+            </div>
+        </div>
+
+        <button id="addSchoolBtn" class="add-btn" onclick="saveSchoolData()">＋ इस सीरीज को सेव करें</button>
+    </div>
+
+    <!-- हेडर स्टेटस -->
+    <div style="background-color: #e2e8f0; padding: 4px 6px; border-radius: 4px; border-left: 4px solid #000000; margin-bottom: 6px;">
+        <span style="font-size: 10px; font-weight: bold; color: #000;" id="displayTitle">डेटा लोड हो रहा है...</span>
+    </div>
+
+    <!-- कमरों का चार्ट डिस्प्ले -->
+    <div id="allRoomsContainer"></div>
+
+    <!-- कुल सेंटर समरी (आपकी मांग के अनुसार हेडिंग स्ट्रक्चर) -->
+    <div class="overall-summary">
+        <div class="summary-box">
+            <p>कुल आवंटित</p>
+            <h3 id="totalAllocatedSum">0</h3>
+        </div>
+        <div class="summary-box">
+            <p>विषय न लेने वाले</p>
+            <h3 id="totalSkippedSum">0</h3>
+        </div>
+        <div class="summary-box">
+            <p>अनुपस्थित छात्र</p>
+            <h3 id="totalAbsentSum">0</h3>
+        </div>
+        <div class="summary-box">
+            <p>प्राप्त कुल कॉपी</p>
+            <h3 id="totalActiveSum">0</h3>
+        </div>
+    </div>
+</div>
+
+<script>
+    let masterDatabase = [];
+
+    try {
+        let saved = localStorage.getItem('examDataDB_StrictCalc_v5');
+        if (saved) masterDatabase = JSON.parse(saved);
+    } catch(e) {}
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('examDate').value = today;
+    document.getElementById('searchDate').value = today;
+
+    function safeSave() {
+        try {
+            localStorage.setItem('examDataDB_StrictCalc_v5', JSON.stringify(masterDatabase));
+        } catch(e) {}
+    }
+
+    function formatDisplayDate(dateStr) {
+        if (!dateStr) return '';
+        let parts = dateStr.split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return dateStr;
+    }
+
+    function autoSuggestEndRollByCount() {
+        const start = parseInt(document.getElementById('startRoll').value);
+        const count = parseInt(document.getElementById('studentCount').value);
+        if (!isNaN(start) && !isNaN(count) && count > 0) {
+            document.getElementById('endRoll').value = start + count - 1;
+        }
+    }
+
+    function saveSchoolData() {
+        const date = document.getElementById('examDate').value;
+        const cls = document.getElementById('examClass').value;
+        const room = document.getElementById('roomNo').value.trim() || '01';
+        const subject = document.getElementById('subjectName').value.trim() || 'N/A';
+        const start = parseInt(document.getElementById('startRoll').value);
+        const end = parseInt(document.getElementById('endRoll').value);
+        
+        if (isNaN(start) || isNaN(end) || start > end) {
+            alert("कृपया सही रोल नंबर रेंज दर्ज करें!");
+            return;
+        }
+
+        const editingId = document.getElementById('editingRecordId').value;
+        const skipInput = document.getElementById('skipRolls').value;
+        const absentInput = document.getElementById('absentRolls').value;
+
+        let skipArray = skipInput.split(',').map(item => item.trim()).filter(item => item !== "");
+        let absentArray = absentInput.split(',').map(item => item.trim()).filter(item => item !== "");
+
+        let allRolls = [];
+        for (let i = start; i <= end; i++) allRolls.push(i.toString());
+
+        let validSkipArray = skipArray.filter(roll => allRolls.includes(roll));
+        let validAbsentArray = absentArray.filter(roll => allRolls.includes(roll));
+
+        let activeRolls = allRolls.filter(roll => !validSkipArray.includes(roll) && !validAbsentArray.includes(roll));
+
+        let dataObj = {
+            id: editingId ? parseInt(editingId) : Date.now(),
+            date: date,
+            cls: cls,
+            room: room,
+            subject: subject,
+            start: start,
+            end: end,
+            skipArray: validSkipArray,
+            absentArray: validAbsentArray,
+            allRolls: allRolls,
+            activeRolls: activeRolls,
+            allocated: allRolls.length,
+            skipped: validSkipArray.length,
+            absent: validAbsentArray.length,
+            active: activeRolls.length
+        };
+
+        if (!editingId) {
+            masterDatabase.push(dataObj);
+        } else {
+            let index = masterDatabase.findIndex(item => item.id === parseInt(editingId));
+            if (index !== -1) {
+                masterDatabase[index] = dataObj;
+            } else {
+                masterDatabase.push(dataObj);
+            }
+        }
+
+        safeSave();
+        document.getElementById('searchDate').value = date;
+        document.getElementById('searchClass').value = cls;
+
+        renderAllData();
+        resetForm();
+    }
+
+    function renderAllData() {
+        const sDate = document.getElementById('searchDate').value;
+        const sClass = document.getElementById('searchClass').value;
+        const sRoom = document.getElementById('searchRoom').value.trim();
+
+        const classNameDisplay = (sClass === '10th') ? 'हाईस्कूल (10th)' : 'इंटरमीडिएट (12th)';
+        const formattedSearchDate = formatDisplayDate(sDate);
+        
+        document.getElementById('displayTitle').innerText = `दिनांक: ${formattedSearchDate} | कक्षा: ${classNameDisplay} ${sRoom !== '' ? '| कमरा: '+sRoom : '| कमरे 01 से 15 तक'}`;
+
+        let filteredList = masterDatabase.filter(item => item.date === sDate && item.cls === sClass);
+        if (sRoom !== "") {
+            filteredList = filteredList.filter(item => item.room.toLowerCase() === sRoom.toLowerCase());
+        }
+
+        filteredList.sort((a, b) => {
+            let numA = parseInt(a.room.replace(/\D/g, '')) || 0;
+            let numB = parseInt(b.room.replace(/\D/g, '')) || 0;
+            return numA - numB;
+        });
+
+        const container = document.getElementById('allRoomsContainer');
+        container.innerHTML = '';
+
+        if (filteredList.length === 0) {
+            container.innerHTML = `<p style="text-align:center; padding: 10px; color:#000; font-weight:bold; background:#fff; border:1px dashed #000; font-size:10px;">इस दिनांक/कक्षा का कोई डेटा दर्ज नहीं है। कृपया फ़ॉर्म से कमरे की सीरीज जोड़ें।</p>`;
+            updateSummary(0, 0, 0, 0);
+            return;
+        }
+
+        let sumAllocated = 0, sumSkipped = 0, sumAbsent = 0, sumActive = 0;
+
+        let roomsMap = {};
+        filteredList.forEach(data => {
+            let rKey = data.room;
+            if (!roomsMap[rKey]) roomsMap[rKey] = [];
+            roomsMap[rKey].push(data);
+        });
+
+        for (let roomName in roomsMap) {
+            let roomItems = roomsMap[roomName];
+            
+            let rangesTextArr = [];
+            let combinedActiveRolls = [];
+            let combinedAbsentRolls = [];
+            let roomTotalSkipped = 0;
+            let roomTotalAbsent = 0;
+            let roomTotalActive = 0;
+            let roomTotalAllocated = 0;
+
+            roomItems.forEach(data => {
+                rangesTextArr.push(`${data.subject} | ${data.start} से ${data.end}`);
+                
+                // पहला और अंतिम रोल नंबर पूरा तथा बीच के रोल नंबर 4 अंकों में दिखाना
+                let formattedActive = data.activeRolls.map((roll, idx, arr) => {
+                    if (idx === 0 || idx === arr.length - 1) {
+                        return roll;
+                    } else {
+                        return roll.slice(-4);
+                    }
+                });
+
+                combinedActiveRolls = combinedActiveRolls.concat(formattedActive);
+                combinedAbsentRolls = combinedAbsentRolls.concat(data.absentArray);
+                roomTotalSkipped += data.skipped;
+                roomTotalAbsent += data.absent;
+                roomTotalActive += data.active;
+                roomTotalAllocated += data.allocated;
+            });
+
+            sumAllocated += roomTotalAllocated;
+            sumSkipped += roomTotalSkipped;
+            sumAbsent += roomTotalAbsent;
+            sumActive += roomTotalActive;
+
+            let roomBox = document.createElement('div');
+            roomBox.className = 'room-chart-box';
+            roomBox.innerHTML = `
+                <div class="room-title-bar">
+                    <span>🏠 कमरा नंबर: ${roomName}</span>
+                    <span style="font-size: 10px; font-weight: bold;">कक्षा: ${classNameDisplay}</span>
+                </div>
+                <div class="series-inline-block">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <span style="font-size: 11px; font-weight: 900;">रेंज: ${rangesTextArr.join(', ')} (कुल: ${roomTotalAllocated})</span>
+                        <div class="no-print">
+                            <button class="action-btn-sm edit-btn" onclick="editRoomData('${roomName}', '${sDate}', '${sClass}')">✏️ संशोधन</button>
+                            <button class="action-btn-sm delete-btn" onclick="deleteRoomData('${roomName}', '${sDate}', '${sClass}')">🗑️ हटाएं</button>
+                        </div>
+                    </div>
+                    <div style="font-size: 10px; margin-bottom: 2px; font-weight: bold;">
+                        विषय न लेने वाले: <span style="color:#b91c1c;"><b>${roomTotalSkipped}</b></span> | 
+                        अनुपस्थित: <span style="color:#b91c1c;"><b>${roomTotalAbsent}</b> ${combinedAbsentRolls.length > 0 ? '('+combinedAbsentRolls.join(', ')+')' : ''}</span> | 
+                        प्राप्त कॉपी: <span style="color: #047857;"><b>${roomTotalActive}</b></span>
+                    </div>
+                    <div style="font-size: 10px; background: #f8fafc; padding: 2px 4px; border-radius: 3px; border: 1px solid #cbd5e1;">
+                        <b>📌 सक्रिय रोल नंबर:</b> <span class="roll-list-span">${combinedActiveRolls.join(', ')}</span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(roomBox);
+        }
+
+        updateSummary(sumAllocated, sumSkipped, sumAbsent, sumActive);
+    }
+
+    function editRoomData(roomName, date, cls) {
+        let items = masterDatabase.filter(item => item.date === date && item.cls === cls && item.room === roomName);
+        if (items.length > 0) {
+            let data = items[0];
+            document.getElementById('editingRecordId').value = data.id;
+            document.getElementById('examDate').value = data.date;
+            document.getElementById('examClass').value = data.cls;
+            document.getElementById('roomNo').value = data.room;
+            document.getElementById('subjectName').value = data.subject;
+            document.getElementById('startRoll').value = data.start;
+            document.getElementById('endRoll').value = data.end;
+            document.getElementById('studentCount').value = (data.end - data.start + 1);
+            document.getElementById('skipRolls').value = data.skipArray.join(', ');
+            document.getElementById('absentRolls').value = data.absentArray.join(', ');
+
+            document.getElementById('formTitle').innerText = `✏️ कमरा ${roomName} का डेटा संशोधित करें:`;
+            document.getElementById('addSchoolBtn').innerText = "अपडेट करें";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function deleteRoomData(roomName, date, cls) {
+        if (confirm(`क्या आप कमरा नंबर ${roomName} के इस रिकॉर्ड को हटाना चाहते हैं?`)) {
+            masterDatabase = masterDatabase.filter(item => !(item.date === date && item.cls === cls && item.room === roomName));
+            safeSave();
+            renderAllData();
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('editingRecordId').value = "";
+        document.getElementById('startRoll').value = '';
+        document.getElementById('endRoll').value = '';
+        document.getElementById('studentCount').value = '';
+        document.getElementById('skipRolls').value = '';
+        document.getElementById('absentRolls').value = '';
+        document.getElementById('formTitle').innerText = "➕ कमरे में रोल नंबर सीरीज और विषय जोड़ें:";
+        document.getElementById('addSchoolBtn').innerText = "＋ इस सीरीज को सेव करें";
+    }
+
+    function updateSummary(a, s, ab, act) {
+        document.getElementById('totalAllocatedSum').innerText = a;
+        document.getElementById('totalSkippedSum').innerText = s;
+        document.getElementById('totalAbsentSum').innerText = ab;
+        document.getElementById('totalActiveSum').innerText = act;
+    }
+
+    renderAllData();
+</script>
+
+</body>
+</html>
