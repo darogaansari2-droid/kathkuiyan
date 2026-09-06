@@ -227,10 +227,29 @@
         .result-box.present { background: #d4edda; color: #155724; border-color: #c3e6cb; }
         .result-box.absent { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
 
+        /* Room Wise Absent Section Styling */
+        .room-absent-section {
+            background: #fff5f5;
+            border: 1.5px solid #feb2b2;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        .room-absent-section h4 {
+            margin: 0 0 8px 0;
+            color: #c53030;
+            font-size: 14px;
+            border-bottom: 1px dashed #feb2b2;
+            padding-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .date-print-header { display: flex; justify-content: space-between; align-items: center; background: #eef2f5; padding: 8px 12px; border-radius: 4px; margin-bottom: 12px; border: 1px solid #cbd5e0; flex-wrap: wrap; gap: 8px; }
         .date-print-header label { font-weight: bold; font-size: 13px; color: #1a365d; }
         .date-print-header input[type="date"] { padding: 4px 8px; font-size: 13px; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; }
-        .selected-subjects-display { font-size: 13px; font-weight: bold; color: #2a5298; background: #fff; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e0; width: 100%; margin-top: 4px; }
+        .selected-subjects-display { font-size: 18px; font-weight: bold; color: #2a5298; background: #fff; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e0; width: 100%; margin-top: 4px; }
 
         /* PRINT STYLES - FIXED TO PORTRAIT STRICTLY */
         @media print {
@@ -273,6 +292,8 @@
             .date-print-header { background: transparent !important; border: none !important; padding: 0 !important; margin-bottom: 8px !important; }
             .date-print-header input[type="date"] { border: none !important; font-size: 14px !important; background: transparent !important; }
             .selected-subjects-display { border: none !important; background: transparent !important; padding: 0 !important; margin-top: 2px !important; }
+            .room-absent-section { background: transparent !important; border: 1.5px solid #000 !important; padding: 8px !important; }
+            .room-absent-section h4 { color: #000 !important; border-bottom: 1px solid #000 !important; }
         }
     </style>
 </head>
@@ -917,9 +938,15 @@
                 <div class="date-print-header">
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; width: 100%;">
                         <label for="hs-exam-date">📅 परीक्षा दिनांक (Exam Date): </label>
-                        <input type="date" id="hs-exam-date" onchange="renderVidyalayAll()">
-                        <span style="font-weight: bold; margin-left: auto; color: #1a365d;">विषय:</span>
-                    </div>
+                        <input type="date" id="hs-exam-date" onchange="renderVidyalayAll()"> 
+</div>
+        
+        <!-- Doosri Pankti: Vishay (Left Aligned) -->
+        <div>
+            <span style="font-weight: bold; color: #1a365d;">विषय:</span>
+            <!-- Yaha aapka vishay ka name ya span tag aayega -->
+         </div>
+
                     <div id="hs-selected-subjects-text" class="selected-subjects-display">कोई विषय चयनित नहीं</div>
                 </div>
 
@@ -942,6 +969,24 @@
 
                     <div class="result-box absent">
                         आज इस पाली में अनुपस्थित छात्र: <span id="hs-absent-total">0</span> (बालक: <span id="hs-absent-boys">0</span> | बालिका: <span id="hs-absent-girls">0</span>)
+                    </div>
+
+                    <!-- Room Wise Absent Roll Numbers Addition (High School) -->
+                    <div class="room-absent-section">
+                        <h4>
+                            <span>📍 कमरा-वार अनुपस्थित छात्रों के अनुक्रमांक (Room-Wise Absent Roll Numbers):</span>
+                            <button class="btn btn-add no-print" style="padding: 2px 8px; font-size: 11px;" onclick="addRoomAbsentRow('hs')">+ नया कमरा जोड़ें</button>
+                        </h4>
+                        <table class="exam-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%;">कमरा नंबर</th>
+                                    <th style="width: 70%;">अनुपस्थित छात्रों के रोल नंबर</th>
+                                    <th class="no-print" style="width: 10%;">कार्रवाई</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hs-room-absent-tbody"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -1066,6 +1111,24 @@
 
                     <div class="result-box absent">
                         आज इस पाली में अनुपस्थित छात्र: <span id="inter-absent-total">0</span> (बालक: <span id="inter-absent-boys">0</span> | बालिका: <span id="inter-absent-girls">0</span>)
+                    </div>
+
+                    <!-- Room Wise Absent Roll Numbers Addition (Intermediate) -->
+                    <div class="room-absent-section">
+                        <h4>
+                            <span>📍 कमरा-वार अनुपस्थित छात्रों के अनुक्रमांक (Room-Wise Absent Roll Numbers):</span>
+                            <button class="btn btn-add no-print" style="padding: 2px 8px; font-size: 11px;" onclick="addRoomAbsentRow('inter')">+ नया कमरा जोड़ें</button>
+                        </h4>
+                        <table class="exam-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 20%;">कमरा नंबर</th>
+                                    <th style="width: 70%;">अनुपस्थित छात्रों के रोल नंबर</th>
+                                    <th class="no-print" style="width: 10%;">कार्रवाई</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inter-room-absent-tbody"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -2037,8 +2100,8 @@ function getVidyalayData() {
     const raw = localStorage.getItem('vidyalayvar_data_v2');
     if (raw) return JSON.parse(raw);
     return {
-        hs: { schools: [], subjects: [], examDate: '', selectedExams: [], absBoys: 0, absGirls: 0 },
-        inter: { scCount: 0, artCount: 0, schools: [], subjects: [], examDate: '', selectedExams: [], absBoys: 0, absGirls: 0 }
+        hs: { schools: [], subjects: [], examDate: '', selectedExams: [], absBoys: 0, absGirls: 0, roomAbsents: [] },
+        inter: { scCount: 0, artCount: 0, schools: [], subjects: [], examDate: '', selectedExams: [], absBoys: 0, absGirls: 0, roomAbsents: [] }
     };
 }
 
@@ -2048,177 +2111,155 @@ function saveVidyalayData(data) {
 
 function loadVidyalayData() {
     const data = getVidyalayData();
-    if (document.getElementById('hs-exam-date') && data.hs.examDate) {
-        document.getElementById('hs-exam-date').value = data.hs.examDate;
-    }
-    if (document.getElementById('inter-exam-date') && data.inter.examDate) {
-        document.getElementById('inter-exam-date').value = data.inter.examDate;
-    }
-    if (document.getElementById('inter-sc-count')) {
-        document.getElementById('inter-sc-count').value = data.inter.scCount || '';
-    }
-    if (document.getElementById('inter-art-count')) {
-        document.getElementById('inter-art-count').value = data.inter.artCount || '';
+    if (data.inter) {
+        document.getElementById('inter-sc-count').value = data.inter.scCount || 0;
+        document.getElementById('inter-art-count').value = data.inter.artCount || 0;
     }
 }
 
-function autoFillBoysGirls(section, type) {
-    const totalInput = document.getElementById(`${section}-${type}-total-input`);
-    const boysInput = document.getElementById(`${section}-${type}-boys`);
-    const girlsInput = document.getElementById(`${section}-${type}-girls`);
+function autoFillBoysGirls(type, category) {
+    const totalEl = document.getElementById(`${type}-${category}-total-input`);
+    const boysEl = document.getElementById(`${type}-${category}-boys`);
+    const girlsEl = document.getElementById(`${type}-${category}-girls`);
 
-    const total = parseInt(totalInput.value) || 0;
-    const boys = parseInt(boysInput.value) || 0;
+    const total = parseInt(totalEl.value) || 0;
+    let boys = parseInt(boysEl.value);
 
-    if (boys > total) {
-        boysInput.value = total;
-        girlsInput.value = 0;
+    if (isNaN(boys)) {
+        girlsEl.value = total;
     } else {
-        girlsInput.value = total - boys >= 0 ? total - boys : 0;
+        if (boys > total) {
+            boys = total;
+            boysEl.value = total;
+        }
+        girlsEl.value = total - boys;
     }
 }
 
-function addSchool(section) {
-    const nameInput = document.getElementById(`${section}-school-name`);
-    const totalInput = document.getElementById(`${section}-school-total-input`);
-    const boysInput = document.getElementById(`${section}-school-boys`);
-    const girlsInput = document.getElementById(`${section}-school-girls`);
+function addSchool(type) {
+    const nameEl = document.getElementById(`${type}-school-name`);
+    const totalEl = document.getElementById(`${type}-school-total-input`);
+    const boysEl = document.getElementById(`${type}-school-boys`);
+    const girlsEl = document.getElementById(`${type}-school-girls`);
 
-    const name = nameInput.value.trim();
-    const total = parseInt(totalInput.value) || 0;
-    const boys = parseInt(boysInput.value) || 0;
-    const girls = parseInt(girlsInput.value) || 0;
+    const name = nameEl.value.trim();
+    const total = parseInt(totalEl.value) || 0;
+    const boys = parseInt(boysEl.value) || 0;
+    const girls = parseInt(girlsEl.value) || 0;
 
     if (!name || total <= 0) {
-        alert('कृपया विद्यालय का नाम और वैध छात्र संख्या दर्ज करें!');
+        alert('कृपया विद्यालय का सही नाम और छात्र संख्या दर्ज करें!');
         return;
     }
 
     const data = getVidyalayData();
-    data[section].schools.push({ name, boys, girls, total });
+    data[type].schools.push({ name, total, boys, girls });
     saveVidyalayData(data);
 
-    nameInput.value = '';
-    totalInput.value = '';
-    boysInput.value = '';
-    girlsInput.value = '';
-
+    nameEl.value = ''; totalEl.value = ''; boysEl.value = ''; girlsEl.value = '';
     renderVidyalayAll();
 }
 
-function removeSchool(section, index) {
-    if (confirm('क्या आप इस विद्यालय को हटाना चाहते हैं?')) {
-        const data = getVidyalayData();
-        data[section].schools.splice(index, 1);
-        saveVidyalayData(data);
-        renderVidyalayAll();
-    }
-}
-
-function editSchool(section, index) {
+function editSchool(type, index) {
     const data = getVidyalayData();
-    const school = data[section].schools[index];
+    const item = data[type].schools[index];
 
-    const newName = prompt("विद्यालय का नाम संशोधित करें:", school.name);
+    const newName = prompt("विद्यालय का नाम दर्ज करें:", item.name);
     if (newName === null) return;
-    const newTotal = prompt("कुल छात्र संख्या संशोधित करें:", school.total);
-    if (newTotal === null) return;
-    const newBoys = prompt("पंजीकृत बालक संख्या संशोधित करें:", school.boys);
-    if (newBoys === null) return;
 
-    const total = parseInt(newTotal) || 0;
-    const boys = parseInt(newBoys) || 0;
-    if (boys > total) {
-        alert("बालक संख्या कुल छात्रों से अधिक नहीं हो सकती!");
+    const newBoysStr = prompt("पंजीकृत बालक संख्या:", item.boys);
+    if (newBoysStr === null) return;
+
+    const newGirlsStr = prompt("पंजीकृत बालिका संख्या:", item.girls);
+    if (newGirlsStr === null) return;
+
+    const boys = parseInt(newBoysStr) || 0;
+    const girls = parseInt(newGirlsStr) || 0;
+    const total = boys + girls;
+
+    if (!newName.trim() || total < 0) {
+        alert("कृपया सही जानकारी दर्ज करें!");
         return;
     }
-    const girls = total - boys;
 
-    data[section].schools[index] = {
-        name: newName.trim(),
-        boys: boys,
-        girls: girls,
-        total: total
-    };
-
+    data[type].schools[index] = { name: newName.trim(), total, boys, girls };
     saveVidyalayData(data);
     renderVidyalayAll();
 }
 
-function addSubject(section) {
-    const nameInput = document.getElementById(`${section}-subject-name`);
-    const totalInput = document.getElementById(`${section}-subject-total-input`);
-    const boysInput = document.getElementById(`${section}-subject-boys`);
-    const girlsInput = document.getElementById(`${section}-subject-girls`);
-    const streamSelect = document.getElementById(`${section}-subject-stream`);
-
-    const name = nameInput.value.trim();
-    const total = parseInt(totalInput.value) || 0;
-    const boys = parseInt(boysInput.value) || 0;
-    const girls = parseInt(girlsInput.value) || 0;
-    const stream = streamSelect ? streamSelect.value : 'Common';
-
-    if (!name || total <= 0) {
-        alert('कृपया विषय का नाम और वैध छात्र संख्या दर्ज करें!');
-        return;
-    }
-
+function removeSchool(type, index) {
     const data = getVidyalayData();
-    data[section].subjects.push({ name, stream, boys, girls, total });
+    data[type].schools.splice(index, 1);
     saveVidyalayData(data);
-
-    nameInput.value = '';
-    totalInput.value = '';
-    boysInput.value = '';
-    girlsInput.value = '';
-
     renderVidyalayAll();
 }
 
-function removeSubject(section, index) {
-    if (confirm('क्या आप इस विषय को हटाना चाहते हैं?')) {
-        const data = getVidyalayData();
-        data[section].subjects.splice(index, 1);
-        saveVidyalayData(data);
-        renderVidyalayAll();
-    }
-}
-
-/* विषयवार विवरण में एडिट फंक्शन (नया जोड़ा गया) */
-function editSubject(section, index) {
-    const data = getVidyalayData();
-    const sub = data[section].subjects[index];
-
-    const newName = prompt("विषय का नाम संशोधित करें:", sub.name);
-    if (newName === null) return;
+function addSubject(type) {
+    const nameEl = document.getElementById(`${type}-subject-name`);
+    const totalEl = document.getElementById(`${type}-subject-total-input`);
+    const boysEl = document.getElementById(`${type}-subject-boys`);
+    const girlsEl = document.getElementById(`${type}-subject-girls`);
+    let stream = "Common";
     
-    let newStream = sub.stream;
-    if (section === 'inter') {
-        newStream = prompt("वर्ग (Stream) संशोधित करें (Common, Science या Arts):", sub.stream);
-        if (newStream === null) return;
+    if (type === 'inter') {
+        stream = document.getElementById('inter-subject-stream').value;
     }
 
-    const newTotal = prompt("कुल पंजीकृत छात्र संख्या संशोधित करें:", sub.total);
-    if (newTotal === null) return;
-    const newBoys = prompt("पंजीकृत बालक संख्या संशोधित करें:", sub.boys);
-    if (newBoys === null) return;
+    const name = nameEl.value.trim();
+    const total = parseInt(totalEl.value) || 0;
+    const boys = parseInt(boysEl.value) || 0;
+    const girls = parseInt(girlsEl.value) || 0;
 
-    const total = parseInt(newTotal) || 0;
-    const boys = parseInt(newBoys) || 0;
-    if (boys > total) {
-        alert("बालक संख्या कुल छात्रों से अधिक नहीं हो सकती!");
+    if (!name || total <= 0) {
+        alert('कृपया विषय का नाम और सही पंजीकृत संख्या दर्ज करें!');
         return;
     }
-    const girls = total - boys;
 
-    data[section].subjects[index] = {
-        name: newName.trim(),
-        stream: newStream ? newStream.trim() : 'Common',
-        boys: boys,
-        girls: girls,
-        total: total
-    };
+    const data = getVidyalayData();
+    data[type].subjects.push({ name, total, boys, girls, stream });
+    saveVidyalayData(data);
 
+    nameEl.value = ''; totalEl.value = ''; boysEl.value = ''; girlsEl.value = '';
+    renderVidyalayAll();
+}
+
+function editSubject(type, index) {
+    const data = getVidyalayData();
+    const item = data[type].subjects[index];
+
+    const newName = prompt("विषय का नाम दर्ज करें:", item.name);
+    if (newName === null) return;
+
+    let newStream = item.stream || "Common";
+    if (type === 'inter') {
+        const streamChoice = prompt("वर्ग लिखें (Common / Science / Arts):", newStream);
+        if (streamChoice === null) return;
+        newStream = streamChoice.trim() || "Common";
+    }
+
+    const newBoysStr = prompt("पंजीकृत बालक संख्या:", item.boys);
+    if (newBoysStr === null) return;
+
+    const newGirlsStr = prompt("पंजीकृत बालिका संख्या:", item.girls);
+    if (newGirlsStr === null) return;
+
+    const boys = parseInt(newBoysStr) || 0;
+    const girls = parseInt(newGirlsStr) || 0;
+    const total = boys + girls;
+
+    if (!newName.trim() || total < 0) {
+        alert("कृपया सही जानकारी दर्ज करें!");
+        return;
+    }
+
+    data[type].subjects[index] = { name: newName.trim(), total, boys, girls, stream: newStream };
+    saveVidyalayData(data);
+    renderVidyalayAll();
+}
+
+function removeSubject(type, index) {
+    const data = getVidyalayData();
+    data[type].subjects.splice(index, 1);
     saveVidyalayData(data);
     renderVidyalayAll();
 }
@@ -2226,162 +2267,233 @@ function editSubject(section, index) {
 function updateInterCapacity() {
     const scCount = parseInt(document.getElementById('inter-sc-count').value) || 0;
     const artCount = parseInt(document.getElementById('inter-art-count').value) || 0;
+
     const data = getVidyalayData();
     data.inter.scCount = scCount;
     data.inter.artCount = artCount;
     saveVidyalayData(data);
+
     renderVidyalayAll();
 }
 
-function toggleExamSelection(section, index) {
+function addRoomAbsentRow(type) {
     const data = getVidyalayData();
-    const sel = data[section].selectedExams;
-    const pos = sel.indexOf(index);
-    if (pos > -1) {
-        sel.splice(pos, 1);
-    } else {
-        sel.push(index);
+    if (!data[type].roomAbsents) data[type].roomAbsents = [];
+    data[type].roomAbsents.push({ roomNo: '', rolls: '' });
+    saveVidyalayData(data);
+    renderRoomAbsents(type);
+}
+
+function editRoomAbsentRow(type, index) {
+    const data = getVidyalayData();
+    const item = data[type].roomAbsents[index];
+
+    const newRoomNo = prompt("कमरा नंबर दर्ज करें:", item.roomNo);
+    if (newRoomNo === null) return;
+
+    const newRolls = prompt("अनुपस्थित छात्रों के रोल नंबर दर्ज करें:", item.rolls);
+    if (newRolls === null) return;
+
+    data[type].roomAbsents[index] = { roomNo: newRoomNo.trim(), rolls: newRolls.trim() };
+    saveVidyalayData(data);
+    renderRoomAbsents(type);
+}
+
+function removeRoomAbsentRow(type, index) {
+    const data = getVidyalayData();
+    data[type].roomAbsents.splice(index, 1);
+    saveVidyalayData(data);
+    renderRoomAbsents(type);
+}
+
+function updateRoomAbsentData(type, index, field, value) {
+    const data = getVidyalayData();
+    if (data[type].roomAbsents && data[type].roomAbsents[index]) {
+        data[type].roomAbsents[index][field] = value;
+        saveVidyalayData(data);
     }
+}
+
+function renderRoomAbsents(type) {
+    const tbody = document.getElementById(`${type}-room-absent-tbody`);
+    tbody.innerHTML = '';
+    const data = getVidyalayData();
+    const roomAbsents = data[type].roomAbsents || [];
+
+    if (roomAbsents.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#888;">कोई कमरा दर्ज नहीं है। ऊपर दिये गये '+ नया कमरा जोड़ें' बटन से जोड़ें।</td></tr>`;
+        return;
+    }
+
+    roomAbsents.forEach((item, idx) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>
+                    <input type="text" value="${item.roomNo || ''}" placeholder="उदा. 01" style="width: 100%; text-align: center; font-weight: bold;" oninput="updateRoomAbsentData('${type}', ${idx}, 'roomNo', this.value)">
+                </td>
+                <td>
+                    <input type="text" value="${item.rolls || ''}" placeholder="उदा. 2261005, 2261012" style="width: 100%; text-align: left; padding-left: 5px; font-weight: bold;" oninput="updateRoomAbsentData('${type}', ${idx}, 'rolls', this.value)">
+                </td>
+                <td class="no-print" style="white-space: nowrap;">
+                    <button class="btn-edit" onclick="editRoomAbsentRow('${type}', ${idx})">संशोधित</button>
+                    <button class="btn-remove" onclick="removeRoomAbsentRow('${type}', ${idx})">हटाएं</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function calculateAttendance(type) {
+    const absBoysInput = parseInt(document.getElementById(`${type}-absent-boys-input`).value) || 0;
+    const absGirlsInput = parseInt(document.getElementById(`${type}-absent-girls-input`).value) || 0;
+
+    const data = getVidyalayData();
+    data[type].absBoys = absBoysInput;
+    data[type].absGirls = absGirlsInput;
     saveVidyalayData(data);
+
     renderVidyalayAll();
 }
 
-function calculateAttendance(section) {
+function toggleSubjectExam(type, index) {
     const data = getVidyalayData();
-    const absBoys = parseInt(document.getElementById(`${section}-absent-boys-input`).value) || 0;
-    const absGirls = parseInt(document.getElementById(`${section}-absent-girls-input`).value) || 0;
-    data[section].absBoys = absBoys;
-    data[section].absGirls = absGirls;
-    saveVidyalayData(data);
+    if (!data[type].selectedExams) data[type].selectedExams = [];
 
+    const idxInSel = data[type].selectedExams.indexOf(index);
+    if (idxInSel > -1) {
+        data[type].selectedExams.splice(idxInSel, 1);
+    } else {
+        data[type].selectedExams.push(index);
+    }
+
+    saveVidyalayData(data);
     renderVidyalayAll();
 }
 
 function renderVidyalayAll() {
+    renderVidyalaySection('hs');
+    renderVidyalaySection('inter');
+}
+
+function renderVidyalaySection(type) {
     const data = getVidyalayData();
+    const sectionData = data[type];
 
-    ['hs', 'inter'].forEach(sec => {
-        // Render Schools
-        const schoolListTbody = document.getElementById(`${sec}-school-list`);
-        if (schoolListTbody) {
-            schoolListTbody.innerHTML = '';
-            let bTotal = 0, gTotal = 0, tTotal = 0;
-            data[sec].schools.forEach((sch, idx) => {
-                bTotal += sch.boys;
-                gTotal += sch.girls;
-                tTotal += sch.total;
-                schoolListTbody.innerHTML += `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td style="text-align: left; padding-left: 8px;">${sch.name}</td>
-                        <td>${sch.boys}</td>
-                        <td>${sch.girls}</td>
-                        <td><strong>${sch.total}</strong></td>
-                        <td class="no-print" style="white-space: nowrap;">
-                            <button class="btn-edit" onclick="editSchool('${sec}', ${idx})">✏️ एडिट</button>
-                            <button class="btn-remove" onclick="removeSchool('${sec}', ${idx})">हटाएं</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            document.getElementById(`${sec}-school-boys-total`).innerText = bTotal;
-            document.getElementById(`${sec}-school-girls-total`).innerText = gTotal;
-            document.getElementById(`${sec}-school-total`).innerText = tTotal;
-        }
+    if (type === 'inter') {
+        const sc = sectionData.scCount || 0;
+        const art = sectionData.artCount || 0;
+        document.getElementById('disp-sc-total').innerText = sc;
+        document.getElementById('disp-art-total').innerText = art;
+        document.getElementById('disp-grand-total').innerText = sc + art;
+    }
 
-        // Render Subjects (With Edit Option Added)
-        const subjectListTbody = document.getElementById(`${sec}-subject-list`);
-        if (subjectListTbody) {
-            subjectListTbody.innerHTML = '';
-            data[sec].subjects.forEach((sub, idx) => {
-                let streamColHTML = sec === 'inter' ? `<td>${sub.stream}</td>` : '';
-                subjectListTbody.innerHTML += `
-                    <tr>
-                        <td>${idx + 1}</td>
-                        <td style="text-align: left; padding-left: 8px;">${sub.name}</td>
-                        ${streamColHTML}
-                        <td>${sub.boys}</td>
-                        <td>${sub.girls}</td>
-                        <td><strong>${sub.total}</strong></td>
-                        <td class="no-print" style="white-space: nowrap;">
-                            <button class="btn-edit" onclick="editSubject('${sec}', ${idx})">✏️ एडिट</button>
-                            <button class="btn-remove" onclick="removeSubject('${sec}', ${idx})">हटाएं</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
+    const schoolTbody = document.getElementById(`${type}-school-list`);
+    schoolTbody.innerHTML = '';
+    let totBoys = 0, totGirls = 0, totTotal = 0;
 
-        // Inter Stream summary
-        if (sec === 'inter') {
-            document.getElementById('disp-sc-total').innerText = data.inter.scCount || 0;
-            document.getElementById('disp-art-total').innerText = data.inter.artCount || 0;
-            document.getElementById('disp-grand-total').innerText = (data.inter.scCount || 0) + (data.inter.artCount || 0);
-        }
+    sectionData.schools.forEach((item, idx) => {
+        totBoys += item.boys; totGirls += item.girls; totTotal += item.total;
+        schoolTbody.innerHTML += `
+            <tr>
+                <td>${idx + 1}</td>
+                <td style="text-align: left; padding-left: 8px;">${item.name}</td>
+                <td>${item.boys}</td>
+                <td>${item.girls}</td>
+                <td class="total-cell">${item.total}</td>
+                <td class="no-print" style="white-space: nowrap;">
+                    <button class="btn-edit" onclick="editSchool('${type}', ${idx})">संशोधित</button>
+                    <button class="btn-remove" onclick="removeSchool('${type}', ${idx})">हटाएं</button>
+                </td>
+            </tr>
+        `;
+    });
 
-        // Exam Selectors & Daily Calculation
-        const dateInput = document.getElementById(`${sec}-exam-date`);
-        if (dateInput) data[sec].examDate = dateInput.value;
+    document.getElementById(`${type}-school-boys-total`).innerText = totBoys;
+    document.getElementById(`${type}-school-girls-total`).innerText = totGirls;
+    document.getElementById(`${type}-school-total`).innerText = totTotal;
 
-        const selectorDiv = document.getElementById(`${sec}-exam-selector`);
-        if (selectorDiv) {
-            selectorDiv.innerHTML = '';
-            data[sec].subjects.forEach((sub, idx) => {
-                const isChecked = data[sec].selectedExams.includes(idx);
-                selectorDiv.innerHTML += `
-                    <label class="exam-item">
-                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleExamSelection('${sec}', ${idx})">
-                        <span>${sub.name} ${sec === 'inter' && sub.stream !== 'Common' ? '(' + sub.stream + ')' : ''}</span>
-                    </label>
-                `;
-            });
-        }
+    const subTbody = document.getElementById(`${type}-subject-list`);
+    subTbody.innerHTML = '';
 
-        // Selected subjects text display
-        const selTextEl = document.getElementById(`${sec}-selected-subjects-text`);
-        if (selTextEl) {
-            const selNames = data[sec].selectedExams.map(i => data[sec].subjects[i] ? data[sec].subjects[i].name : '').filter(Boolean);
-            selTextEl.innerText = selNames.length > 0 ? selNames.join(', ') : 'कोई विषय चयनित नहीं';
-        }
+    sectionData.subjects.forEach((item, idx) => {
+        let streamTd = type === 'inter' ? `<td><strong>${item.stream || 'Common'}</strong></td>` : '';
+        subTbody.innerHTML += `
+            <tr>
+                <td>${idx + 1}</td>
+                <td style="text-align: left; padding-left: 8px;">${item.name}</td>
+                ${streamTd}
+                <td>${item.boys}</td>
+                <td>${item.girls}</td>
+                <td class="total-cell">${item.total}</td>
+                <td class="no-print" style="white-space: nowrap;">
+                    <button class="btn-edit" onclick="editSubject('${type}', ${idx})">संशोधित</button>
+                    <button class="btn-remove" onclick="removeSubject('${type}', ${idx})">हटाएं</button>
+                </td>
+            </tr>
+        `;
+    });
 
-        // Calculate daily totals
-        let dailyBoys = 0, dailyGirls = 0;
-        data[sec].selectedExams.forEach(idx => {
-            const sub = data[sec].subjects[idx];
+    const selectorDiv = document.getElementById(`${type}-exam-selector`);
+    selectorDiv.innerHTML = '';
+
+    if (sectionData.subjects.length === 0) {
+        selectorDiv.innerHTML = '<span style="color:#888;">कोई विषय उपलब्ध नहीं है। ऊपर विषय जोड़ें।</span>';
+    } else {
+        sectionData.subjects.forEach((sub, idx) => {
+            const isChecked = (sectionData.selectedExams && sectionData.selectedExams.includes(idx)) ? 'checked' : '';
+            selectorDiv.innerHTML += `
+                <div class="exam-item">
+                    <input type="checkbox" id="${type}-sub-${idx}" ${isChecked} onchange="toggleSubjectExam('${type}', ${idx})">
+                    <label for="${type}-sub-${idx}"><strong>${sub.name}</strong> (${sub.total})</label>
+                </div>
+            `;
+        });
+    }
+
+    let dailyBoys = 0, dailyGirls = 0, dailyTotal = 0;
+    let selectedNames = [];
+
+    if (sectionData.selectedExams && sectionData.selectedExams.length > 0) {
+        sectionData.selectedExams.forEach(idx => {
+            const sub = sectionData.subjects[idx];
             if (sub) {
                 dailyBoys += sub.boys;
                 dailyGirls += sub.girls;
+                dailyTotal += sub.total;
+                selectedNames.push(sub.name);
             }
         });
-        const dailyTotal = dailyBoys + dailyGirls;
+    }
 
-        document.getElementById(`${sec}-daily-total`).innerText = dailyTotal;
-        document.getElementById(`${sec}-daily-boys`).innerText = dailyBoys;
-        document.getElementById(`${sec}-daily-girls`).innerText = dailyGirls;
+    const dispTextEl = document.getElementById(`${type}-selected-subjects-text`);
+    if (dispTextEl) {
+        dispTextEl.innerText = selectedNames.length > 0 ? selectedNames.join(', ') : 'कोई विषय चयनित नहीं';
+    }
 
-        const absBoysInput = document.getElementById(`${sec}-absent-boys-input`);
-        const absGirlsInput = document.getElementById(`${sec}-absent-girls-input`);
-        if (absBoysInput) absBoysInput.value = data[sec].absBoys || '';
-        if (absGirlsInput) absGirlsInput.value = data[sec].absGirls || '';
+    document.getElementById(`${type}-daily-boys`).innerText = dailyBoys;
+    document.getElementById(`${type}-daily-girls`).innerText = dailyGirls;
+    document.getElementById(`${type}-daily-total`).innerText = dailyTotal;
 
-        const absBoys = data[sec].absBoys || 0;
-        const absGirls = data[sec].absGirls || 0;
-        const absTotal = absBoys + absGirls;
+    const absBoys = sectionData.absBoys || 0;
+    const absGirls = sectionData.absGirls || 0;
+    const absTotal = absBoys + absGirls;
 
-        const presBoys = dailyBoys - absBoys >= 0 ? dailyBoys - absBoys : 0;
-        const presGirls = dailyGirls - absGirls >= 0 ? dailyGirls - absGirls : 0;
-        const presTotal = presBoys + presGirls;
+    document.getElementById(`${type}-absent-boys-input`).value = sectionData.absBoys || '';
+    document.getElementById(`${type}-absent-girls-input`).value = sectionData.absGirls || '';
 
-        document.getElementById(`${sec}-present-total`).innerText = presTotal;
-        document.getElementById(`${sec}-present-boys`).innerText = presBoys;
-        document.getElementById(`${sec}-present-girls`).innerText = presGirls;
+    const presBoys = dailyBoys - absBoys < 0 ? 0 : dailyBoys - absBoys;
+    const presGirls = dailyGirls - absGirls < 0 ? 0 : dailyGirls - absGirls;
+    const presTotal = dailyTotal - absTotal < 0 ? 0 : dailyTotal - absTotal;
 
-        document.getElementById(`${sec}-absent-total`).innerText = absTotal;
-        document.getElementById(`${sec}-absent-boys`).innerText = absBoys;
-        document.getElementById(`${sec}-absent-girls`).innerText = absGirls;
-    });
+    document.getElementById(`${type}-present-boys`).innerText = presBoys;
+    document.getElementById(`${type}-present-girls`).innerText = presGirls;
+    document.getElementById(`${type}-present-total`).innerText = presTotal;
 
-    saveVidyalayData(data);
+    document.getElementById(`${type}-absent-boys`).innerText = absBoys;
+    document.getElementById(`${type}-absent-girls`).innerText = absGirls;
+    document.getElementById(`${type}-absent-total`).innerText = absTotal;
+
+    renderRoomAbsents(type);
 }
 </script>
 </body>
