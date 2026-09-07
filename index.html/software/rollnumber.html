@@ -14,17 +14,17 @@
         .main-header {
             text-align: center;
             color: #000000;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
         .main-header h1 { margin: 0; font-size: 15px; font-weight: 900; }
         .main-header h2 { margin: 2px 0; font-size: 11px; font-weight: bold; color: #000000; }
 
         .container {
             width: 100%;
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             background: #ffffff;
-            padding: 6px;
+            padding: 12px;
             border-radius: 6px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             box-sizing: border-box;
@@ -32,34 +32,50 @@
         .filter-section {
             background-color: #dbeafe;
             border: 1.5px solid #2563eb;
-            padding: 6px;
+            padding: 10px;
             border-radius: 6px;
-            margin-bottom: 6px;
+            margin-bottom: 10px;
         }
-        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 
-        .form-group { margin-bottom: 2px; }
-        label { font-weight: bold; display: block; margin-bottom: 1px; font-size: 10px; color: #000; }
+        .form-group { margin-bottom: 6px; }
+        label { font-weight: bold; display: block; margin-bottom: 3px; font-size: 10px; color: #000; }
         input, select {
-            width: 100%; padding: 3px; border: 1px solid #000000;
-            border-radius: 4px; box-sizing: border-box; font-size: 10px; font-weight: bold; color: #000;
+            width: 100%; 
+            padding: 7px 8px; 
+            border: 1px solid #000000;
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 11px; 
+            font-weight: bold; 
+            color: #000;
         }
         
         button.add-btn {
             background-color: #2563eb; color: white; border: none;
-            padding: 5px; font-size: 11px; border-radius: 4px;
-            cursor: pointer; width: 100%; font-weight: bold; margin-top: 4px;
+            padding: 8px;
+            font-size: 11px; border-radius: 4px;
+            cursor: pointer; width: 100%; font-weight: bold; margin-top: 6px;
         }
         button.search-btn {
             background-color: #0d9488; color: white; border: none;
-            padding: 4px 8px; font-size: 10px; border-radius: 4px;
+            padding: 7px 10px;
+            font-size: 10px; border-radius: 4px;
             cursor: pointer; font-weight: bold; width: 100%;
         }
         button.print-btn {
             background-color: #059669; color: white; border: none;
-            padding: 4px 10px; font-size: 11px; border-radius: 4px;
+            padding: 6px 12px; font-size: 11px; border-radius: 4px;
             cursor: pointer; float: right; font-weight: bold;
+        }
+
+        .form-container-box {
+            background: #f8fafc; 
+            padding: 12px; 
+            border-radius: 6px; 
+            border: 1px solid #cbd5e1; 
+            margin-bottom: 10px;
         }
 
         /* कॉम्पैक्ट और कम ऊँचाई वाले रूम चार्ट बॉक्स */
@@ -85,7 +101,7 @@
             align-items: center;
         }
         .series-inline-block {
-            font-size: 10px;
+            font-size: 11px;
         }
         
         .roll-list-span {
@@ -116,11 +132,11 @@
             .no-print { display: none !important; }
             body { background-color: #fff; margin: 0; padding: 0; color: #000000 !important; font-size: 10px; }
             .container { box-shadow: none; width: 100%; max-width: 100%; padding: 0; }
-            .main-header h1 { font-size: 13pt; margin: 0; color: #000000 !important; }
+            .main-header h1 { font-size: 12pt; margin: 0; color: #000000 !important; }
             .main-header h2 { font-size:9pt; margin-bottom: 2px; color: #000000 !important; }
             
             .room-chart-box { border: 1px solid #000000 !important; margin-bottom: 3px; padding: 3px 5px; }
-            .room-title-bar { background: #e2e8f0 !important; -webkit-print-color-adjust: exact; font-size: 10pt; padding: 1px 4px; }
+            .room-title-bar { background: #e2e8f0 !important; -webkit-print-color-adjust: exact; font-size: 9pt; padding: 1px 4px; }
             .overall-summary { background: #fff !important; color: #000000 !important; border: 1px solid #000000; padding: 3px; }
             .summary-box h3 { color: #000000 !important; font-size: 9pt; }
             .summary-box p { color: #000000 !important; font-size: 8pt; }
@@ -139,7 +155,7 @@
 
     <!-- 1. फ़िल्टर और सर्च सेक्शन -->
     <div class="filter-section no-print">
-        <h3 style="margin: 0 0 3px 0; color: #000000; font-size: 11px; font-weight: bold;">🔍 दिनांक व कक्षा के अनुसार चार्ट खोजें (Search):</h3>
+        <h3 style="margin: 0 0 6px 0; color: #000000; font-size: 11px; font-weight: bold;">🔍 दिनांक व कक्षा के अनुसार चार्ट खोजें (Search):</h3>
         <div class="grid-4" style="align-items: end;">
             <div class="form-group" style="margin-bottom:0;">
                 <label>परीक्षा तिथि:</label>
@@ -163,8 +179,15 @@
     </div>
 
     <!-- 2. डेटा जोड़ने या संशोधित करने का फ़ॉर्म -->
-    <div class="no-print" style="background: #f8fafc; padding: 6px; border-radius: 6px; border: 1px solid #cbd5e1; margin-bottom: 6px;">
-        <h3 id="formTitle" style="margin: 0 0 3px 0; color: #000000; font-size: 11px; font-weight: bold;">➕ कमरे में रोल नंबर सीरीज और विषय जोड़ें:</h3>
+    <div class="no-print form-container-box">
+        <h3 id="formTitle" style="margin: 0 0 6px 0; color: #000000; font-size: 11px; font-weight: bold;">➕ कमरे में रोल नंबर सीरीज और विषय जोड़ें:</h3>
+        
+        <!-- बहु-सीरीज चयन का बॉक्स -->
+        <div id="seriesSelectorBox" style="display:none; background:#e0f2fe; padding:6px; border-radius:4px; border:1px solid #0284c7; margin-bottom:8px;">
+            <span style="font-size:10px; font-weight:bold; color:#0369a1;">संशोधित करने के लिए सीरीज चुनें:</span>
+            <div id="seriesBtnContainer" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;"></div>
+        </div>
+
         <input type="hidden" id="editingRecordId" value="">
 
         <div class="grid-4">
@@ -196,7 +219,7 @@
             </div>
             <div class="form-group">
                 <label>छात्रों की संख्या / अंतिम रोल नंबर:</label>
-                <div style="display: flex; gap: 4px;">
+                <div style="display: flex; gap: 6px;">
                     <input type="number" id="studentCount" placeholder="संख्या (उदा. 30)" style="width: 40%;" oninput="autoSuggestEndRollByCount()">
                     <input type="number" id="endRoll" placeholder="2261548050" style="width: 60%;">
                 </div>
@@ -214,12 +237,15 @@
             </div>
         </div>
 
-        <button id="addSchoolBtn" class="add-btn" onclick="saveSchoolData()">＋ इस सीरीज को सेव करें</button>
+        <div style="display: flex; gap: 8px;">
+            <button id="addSchoolBtn" class="add-btn" onclick="saveSchoolData()">＋ इस सीरीज को सेव करें</button>
+            <button id="cancelEditBtn" class="add-btn" style="background-color: #64748b; display: none;" onclick="resetForm()">रद्द करें</button>
+        </div>
     </div>
 
     <!-- हेडर स्टेटस -->
     <div style="background-color: #e2e8f0; padding: 4px 6px; border-radius: 4px; border-left: 4px solid #000000; margin-bottom: 6px;">
-        <span style="font-size: 10px; font-weight: bold; color: #000;" id="displayTitle">डेटा लोड हो रहा है...</span>
+        <span style="font-size: 12px; font-weight: bold; color: #000;" id="displayTitle">डेटा लोड हो रहा है...</span>
     </div>
 
     <!-- कमरों का चार्ट डिस्प्ले -->
@@ -455,22 +481,41 @@
     function editRoomData(roomName, date, cls) {
         let items = masterDatabase.filter(item => item.date === date && item.cls === cls && item.room === roomName);
         if (items.length > 0) {
-            let data = items[0];
-            document.getElementById('editingRecordId').value = data.id;
-            document.getElementById('examDate').value = data.date;
-            document.getElementById('examClass').value = data.cls;
-            document.getElementById('roomNo').value = data.room;
-            document.getElementById('subjectName').value = data.subject;
-            document.getElementById('startRoll').value = data.start;
-            document.getElementById('endRoll').value = data.end;
-            document.getElementById('studentCount').value = (data.end - data.start + 1);
-            document.getElementById('skipRolls').value = data.skipArray.join(', ');
-            document.getElementById('absentRolls').value = data.absentArray.join(', ');
+            let selectorBox = document.getElementById('seriesSelectorBox');
+            let btnContainer = document.getElementById('seriesBtnContainer');
+            btnContainer.innerHTML = '';
 
+            items.forEach((item, index) => {
+                let btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'action-btn-sm edit-btn';
+                btn.style.padding = '4px 8px';
+                btn.style.fontSize = '10px';
+                btn.innerText = `सीरीज ${index + 1}: ${item.subject} (${item.start} - ${item.end})`;
+                btn.onclick = function() { loadSingleSeriesToForm(item); };
+                btnContainer.appendChild(btn);
+            });
+
+            selectorBox.style.display = 'block';
+            loadSingleSeriesToForm(items[0]);
             document.getElementById('formTitle').innerText = `✏️ कमरा ${roomName} का डेटा संशोधित करें:`;
-            document.getElementById('addSchoolBtn').innerText = "अपडेट करें";
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+    }
+
+    function loadSingleSeriesToForm(data) {
+        document.getElementById('editingRecordId').value = data.id;
+        document.getElementById('examDate').value = data.date;
+        document.getElementById('examClass').value = data.cls;
+        document.getElementById('roomNo').value = data.room;
+        document.getElementById('subjectName').value = data.subject;
+        document.getElementById('startRoll').value = data.start;
+        document.getElementById('endRoll').value = data.end;
+        document.getElementById('studentCount').value = (data.end - data.start + 1);
+        document.getElementById('skipRolls').value = data.skipArray.join(', ');
+        document.getElementById('absentRolls').value = data.absentArray.join(', ');
+        document.getElementById('addSchoolBtn').innerText = "अपडेट करें";
     }
 
     function deleteRoomData(roomName, date, cls) {
@@ -488,6 +533,8 @@
         document.getElementById('studentCount').value = '';
         document.getElementById('skipRolls').value = '';
         document.getElementById('absentRolls').value = '';
+        document.getElementById('seriesSelectorBox').style.display = 'none';
+        document.getElementById('cancelEditBtn').style.display = 'none';
         document.getElementById('formTitle').innerText = "➕ कमरे में रोल नंबर सीरीज और विषय जोड़ें:";
         document.getElementById('addSchoolBtn').innerText = "＋ इस सीरीज को सेव करें";
     }
