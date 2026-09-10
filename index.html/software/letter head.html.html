@@ -2,24 +2,66 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>विद्यालय लेटर पैड</title>
+    <title>विद्यालय लेटर पैड एवं प्रस्ताव प्रबंधन</title>
     <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Mangal', 'Nirmala UI', 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             color: #333;
             background-color: #f5f5f5; 
         }
 
-        /* 🛠️ टूल्स बॉक्स स्टाइल */
+        /* 🌐 मुख्य नियंत्रण टूलबार */
+        .master-toolbar {
+            width: 100%;
+            background: #0f172a;
+            color: #fff;
+            padding: 10px 15px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+        }
+
+        .mode-selector-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #1e293b;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: 1px solid #334155;
+        }
+
+        .mode-selector-group select {
+            padding: 5px 10px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            border: none;
+            background: #38bdf8;
+            color: #0f172a;
+            cursor: pointer;
+        }
+
+        /* 📄 लेटर पैड टूलबार स्टाइल */
         .size-selector-box {
-            width: 794px;
-            margin: 10px auto 0 auto;
-            padding: 8px 15px;
+            width: 100%;
+            padding: 8px 10px;
             background: #003366;
             color: #fff;
-            border-radius: 5px 5px 0 0;
+            border-radius: 5px;
             box-sizing: border-box;
             display: flex;
             align-items: center;
@@ -46,34 +88,100 @@
             width: 50px;
             text-align: center;
         }
-        
-        /* 📊 बटन्स स्टाइल */
-        .btn-action {
-            background-color: #ffffff; color: #003366; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;
-        }
-        .btn-action:hover { background-color: #e0e0e0; }
-        .btn-apply {
-            background-color: #4CAF50; color: #fff; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;
-        }
-        .btn-apply:hover { background-color: #45a049; }
-        .btn-table {
-            background-color: #ff9900; color: #000; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;
-        }
-        .btn-print {
-            background-color: #008CBA; color: #fff; border: none; padding: 5px 10px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px;
-        }
-        .btn-print:hover { background-color: #006688; }
-        .btn-delete-action {
-            background-color: #cc0000; color: #fff; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px;
-        }
-        .btn-table:hover { background-color: #e68a00; }
-        .btn-delete-action:hover { background-color: #a30000; }
 
-        /* लेटर पैड का मुख्य कंटेनर (A4 साइज़) */
+        /* 🎛️ प्रस्ताव कंट्रोल पैनल स्टाइल */
+        .control-panel {
+            background-color: #1e293b;
+            color: #fff;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .control-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        .control-group input, .control-group select, .control-group textarea {
+            padding: 8px 10px;
+            font-size: 13px;
+            border-radius: 4px;
+            border: 1px solid #475569;
+            background-color: #0f172a;
+            color: #fff;
+            font-family: inherit;
+        }
+
+        .control-group textarea {
+            resize: vertical;
+            height: 75px;
+        }
+
+        .header-inputs-container {
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            margin-bottom: 12px;
+        }
+
+        .header-inputs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .header-inputs-header span {
+            font-size: 13px;
+            font-weight: bold;
+            color: #cbd5e1;
+        }
+
+        .line-btn-group { display: flex; gap: 8px; }
+        .btn-small { padding: 4px 10px; font-size: 12px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; color: white; }
+        .btn-add { background-color: #3b82f6; } .btn-add:hover { background-color: #2563eb; }
+        .btn-remove { background-color: #ef4444; } .btn-remove:hover { background-color: #dc2626; }
+
+        .header-line-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .header-line-row label { font-size: 12px; color: #94a3b8; min-width: 45px; }
+        .header-line-row input[type="text"] { flex-grow: 1; padding: 6px 10px; font-size: 13px; border-radius: 4px; border: 1px solid #475569; background-color: #1e293b; color: #fff; }
+        .header-line-row select, .header-line-row input[type="number"] { padding: 6px 8px; font-size: 12px; border-radius: 4px; border: 1px solid #475569; background-color: #1e293b; color: #fff; cursor: pointer; }
+        .header-line-row input[type="number"] { width: 60px; }
+
+        /* 📊 बटन स्टाइल्स */
+        .btn-action { background-color: #ffffff; color: #003366; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-action:hover { background-color: #e0e0e0; }
+        .btn-apply { background-color: #4CAF50; color: #fff; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-apply:hover { background-color: #45a049; }
+        .btn-table { background-color: #ff9900; color: #000; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-print { background-color: #10b981; color: #fff; border: none; padding: 6px 15px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .btn-print:hover { background-color: #059669; }
+        .btn-delete-action { background-color: #cc0000; color: #fff; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px; }
+
+        /* 📄 लेटर पैड का मुख्य कंटेनर */
         .letterhead {
             width: 794px; 
             min-height: 1123px; 
-            margin: 0 auto 20px auto; 
+            margin: 20px auto; 
             padding: 10px 0px 96px 0px; 
             border: 1px solid #ddd; 
             box-sizing: border-box;
@@ -82,7 +190,6 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
-        /* 🔒 हेडर ज़ोन */
         .fixed-header-container {
             padding-left: 24px;
             padding-right: 24px;
@@ -91,39 +198,18 @@
             transition: padding 0.2s ease;
         }
 
-        /* 🖨️ प्रिंट... */
-        @media print {
-            body { background-color: #ffffff; }
-            .size-selector-box, .drag-handle, .resize-handle-left, .resize-handle-right { display: none !important; }
-            .letterhead { 
-                border: none !important; 
-                box-shadow: none !important; 
-                margin: 0 !important; 
-                overflow: visible !important; 
-            }
-            .editable-text:focus, .content-fixed:focus { outline: none !important; background-color: transparent !important; }
-            .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; }
-            .table-resizable-wrapper table { border-collapse: collapse !important; height: 100% !important; }
-            .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #000 !important; }
-        }
-
-        /* हेडर स्टाइल */
         .header { padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* 📏 विद्यालय के नीचे पूरे पेज में फैलने वाली सीधी सुंदर बॉर्डर लाइन */
         .full-width-line {
             border-bottom: 5px double #003366;
             margin: 0 -24px 28px -24px; 
             display: block;
             transition: margin 0.2s ease;
         }
-
         .logo { width: 95px; height: 95px; object-fit: contain; }
         .school-details { text-align: center; flex-grow: 1; }
         .school-name { font-size: 36px; font-weight: bold; color: #003366; margin: 0; text-transform: uppercase; line-height: 1.2; }
         .school-info { font-size: 18px; margin: 8px 0 0 0; color: #003366; font-weight: bold; }
         
-        /* 📅 पत्रांक और दिनांक का मुख्य डिब्बा */
         .meta-info { 
             display: flex; 
             justify-content: space-between; 
@@ -133,234 +219,451 @@
             color: #003366;
             width: 100%;
         }
-        .meta-info .date-right {
-            text-align: right; 
-        }
-
-        /* 👔 प्रबन्धक / प्रधानाचार्य */
-        .authority { 
-            font-weight: bold; 
-            font-size: 16px; 
-            margin-bottom: 10px; 
-            margin-left: 10px; 
-            color: #003366;
-        }
+        .meta-info .date-right { text-align: right; }
+        .authority { font-weight: bold; font-size: 16px; margin-bottom: 10px; margin-left: 10px; color: #003366; }
          
-        /* ✍️ MS Word की तरह सामान्य पत्र टाइपिंग एरिया */
         .content-fixed {
             padding-left: 24px;   
             padding-right: 24px; 
-            font-size: 15px; 
-            line-height: 1.5;
+            font-size: 16px; 
+            line-height: 1.7;
             color: #222;
             cursor: text;
             user-select: text; 
             box-sizing: border-box;
-            white-space: pre-wrap;
+            white-space: normal;
             outline: none;
             transition: padding 0.2s ease;
+            font-family: 'Mangal', 'Nirmala UI', 'Arial', sans-serif;
         }
         .editable-text:focus { outline: 1px dashed #003366 !important; background-color: #fafafa; padding: 2px; }
-        
-        /* भरने वाली जगह का रंग */
-        .editable-text { 
-            display: inline;
-            min-width: 120px; 
-            font-weight: normal; 
-            color: #003366; 
-            cursor: text; 
-            user-select: text; 
-        }
+        .editable-text { display: inline; min-width: 120px; font-weight: normal; color: #003366; cursor: text; user-select: text; }
 
         /* ↔️ टेबल कंटेनर बॉक्स */
         .table-resizable-wrapper {
-            position: absolute;
-            left: 24px; 
-            top: 300px;  
-            width: 746px; 
-            min-width: 100px;
-            min-height: 50px;
-            border: 1px dashed #aaa;  
-            padding: 25px 12px 12px 12px; 
-            box-sizing: border-box;
-            background: #fff;
-            z-index: 10; 
-            resize: both;
-            overflow: auto;
+            position: absolute; left: 24px; top: 300px; width: 746px; min-width: 100px; min-height: 50px;
+            border: 1px dashed #aaa; padding: 25px 12px 12px 12px; box-sizing: border-box; background: #fff; z-index: 10; resize: both; overflow: auto;
         }
-
-        /* ✥ टेबल हैंडल */
         .drag-handle {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            right: 2px;
-            height: 20px;
-            background-color: #003366;
-            color: #fff;
-            font-size: 11px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: move; 
-            border-radius: 2px;
-            user-select: none;
+            position: absolute; top: 2px; left: 2px; right: 2px; height: 20px; background-color: #003366; color: #fff;
+            font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: move; border-radius: 2px; user-select: none;
         }
-
-        /* 📊 टेबल स्टाइल */
-        .table-resizable-wrapper table {
-            width: 100%;             
-            height: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            text-align: left;
-            table-layout: fixed; 
-        }
+        .table-resizable-wrapper table { width: 100%; height: 100%; border-collapse: collapse; font-size: 14px; text-align: left; table-layout: fixed; }
         .table-resizable-wrapper table, .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #333; }
         .table-resizable-wrapper th { background-color: #f2f2f2; padding: 8px; font-weight: bold; }
         .table-resizable-wrapper td { padding: 8px; }
-
-        /* रीसाइज़ हैंडल्स */
         .resize-handle-right { position: absolute; right: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
         .resize-handle-left { position: absolute; left: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
-        .resize-handle-right:hover, .resize-handle-left:hover { opacity: 1; }
+
+        /* 📄 पृथक प्रस्ताव पेपर */
+        .paper {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            padding-top: 50px;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            font-size: 16px;
+            line-height: 1.7;
+            font-family: 'Mangal', 'Nirmala UI', 'Arial', sans-serif;
+        }
+
+        .header-title-container {
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1.5px solid #000;
+            line-height: 1.6;
+            font-family: inherit;
+        }
+
+        .prastav-table { width: 100%; border-collapse: separate; table-layout: fixed; font-family: inherit; }
+        .prastav-table td { vertical-align: top; }
+        .left-col { width: 45%; text-align: justify; padding-right: 25px; }
+        .right-col { width: 55%; text-align: justify; padding-left: 25px; }
+        .col-header { font-weight: bold; text-align: center; margin-bottom: 12px; display: block; text-decoration: underline; }
+        .content-body p { margin: 0 0 10px 0; text-indent: 30px; }
+
+        /* 🖨️ प्रिंट सेटिंग्स */
+        @media print {
+            body { background-color: #ffffff; }
+            .master-toolbar, .control-panel, .size-selector-box, .drag-handle, .resize-handle-left, .resize-handle-right { display: none !important; }
+            .letterhead, .paper { 
+                border: none !important; 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                overflow: visible !important; 
+                width: 100% !important;
+            }
+            .editable-text:focus, .content-fixed:focus { outline: none !important; background-color: transparent !important; }
+            .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; }
+            .table-resizable-wrapper table { border-collapse: collapse !important; height: 100% !important; }
+            .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #000 !important; }
+        }
     </style>
 </head>
 <body>
 
-<div class="size-selector-box">
-    <!-- 📄 कस्टम बायाँ व दायाँ मार्जिन सेटिंग्स (इंच में) -->
-    <div class="selector-group">
-        <span>⬅️ Left (inch):</span>
-        <input type="number" id="leftMarginInput" class="margin-input" value="0.25" step="0.05" min="0" max="3">
-    </div>
-    <div class="selector-group">
-        <span>➡️ Right (inch):</span>
-        <input type="number" id="rightMarginInput" class="margin-input" value="0.25" step="0.05" min="0" max="3">
-        <button class="btn-apply" onclick="applyCustomMargins()">लागू करें</button>
-    </div>
+    <!-- 🌐 मास्टर टूलबार -->
+    <div class="master-toolbar">
+        <div class="mode-selector-group">
+            <label for="appModeSelect" style="color: #fff; font-weight: bold; font-size: 14px;">📄 दस्तावेज चुनें:</label>
+            <select id="appModeSelect" onchange="switchAppMode(this.value)">
+                <option value="letterhead">लेटर पैड (Letter Head)</option>
+                <option value="prastav">प्रस्ताव (Prastav - Standalone)</option>
+            </select>
+        </div>
 
-    <div class="selector-group">
-        <span>🔍 साइज़:</span>
-        <select id="fontSizeSelector" onchange="changeSelectionFontSize(this.value)">
-            <option value="" selected disabled>चुनें</option>
-            <option value="1">Size 8</option>
-            <option value="2">Size 9</option>
-            <option value="3">Size 10</option>
-            <option value="4">Size 11</option>
-            <option value="5">Size 12</option>
-            <option value="6">Size 14</option>
-            <option value="7">Size 16</option>
-        </select>
+        <div class="mode-selector-group" id="prastavOnLetterheadContainer">
+            <input type="checkbox" id="loadPrastavToLetterhead" onchange="togglePrastavOnLetterhead(this.checked)">
+            <label for="loadPrastavToLetterhead" style="color: #38bdf8; font-weight: bold; cursor: pointer; font-size: 13px;">
+                🔗 प्रस्ताव को इसी लेटर पैड पर लोड करें
+            </label>
+        </div>
+
+        <button class="btn-print" style="margin-left: auto;" onclick="window.print()">🖨️ प्रिंट करें</button>
     </div>
 
-    <div class="selector-group">
-        <span>🔤 फॉन्ट:</span>
-        <select id="fontFamilySelector" onchange="changeSelectionFontFamily(this.value)">
-            <option value="" selected disabled>चुनें</option>
-            <option value="Arial">Arial</option>
-            <option value="Mangal">Mangal</option>
-            <option value="Nirmala UI">Nirmala UI</option>
-        </select>
+    <!-- 📄 1. लेटर पैड टूलबार -->
+    <div id="letterheadToolbar" class="size-selector-box">
+        <div class="selector-group">
+            <span>⬅️ Left (inch):</span>
+            <input type="number" id="leftMarginInput" class="margin-input" value="0.25" step="0.05" min="0" max="3" oninput="saveSettings(); applyCustomMargins();">
+        </div>
+        <div class="selector-group">
+            <span>➡️ Right (inch):</span>
+            <input type="number" id="rightMarginInput" class="margin-input" value="0.25" step="0.05" min="0" max="3" oninput="saveSettings(); applyCustomMargins();">
+            <button class="btn-apply" onclick="applyCustomMargins()">लागू करें</button>
+        </div>
+
+        <div class="selector-group">
+            <span>🔍 साइज़:</span>
+            <select id="fontSizeSelector" onchange="changeSelectionFontSize(this.value)">
+                <option value="" selected disabled>चुनें</option>
+                <option value="1">Size 8</option>
+                <option value="2">Size 9</option>
+                <option value="3">Size 10</option>
+                <option value="4">Size 11</option>
+                <option value="5">Size 12</option>
+                <option value="6">Size 14</option>
+                <option value="7">Size 16</option>
+            </select>
+        </div>
+
+        <div class="selector-group">
+            <span>🔤 फॉन्ट:</span>
+            <select id="fontFamilySelector" onchange="changeSelectionFontFamily(this.value)">
+                <option value="" selected disabled>चुनें</option>
+                <option value="Mangal">Mangal</option>
+                <option value="Nirmala UI">Nirmala UI</option>
+                <option value="Arial">Arial</option>
+            </select>
+        </div>
+
+        <div class="selector-group">
+            <span>≡ अलाइन:</span>
+            <button class="btn-action" onclick="setTextAlignment('justifyLeft')">⬅️ Left</button>
+            <button class="btn-action" onclick="setTextAlignment('justifyCenter')">↔️ Center</button>
+            <button class="btn-action" onclick="setTextAlignment('justifyRight')">➡️ Right</button>
+            <button class="btn-action" onclick="setTextAlignment('justifyFull')">☰ Justify</button>
+        </div>
+
+        <div class="selector-group">
+            <span>↕️ रो ऊँचाई:</span>
+            <select id="tableHeightSelector" onchange="changeTableRowHeight(this.value)">
+                <option value="" selected disabled>हाइट</option>
+                <option value="2px">कम</option>
+                <option value="8px">सामान्य</option>
+                <option value="18px">ज्यादा</option>
+                <option value="30px">बहुत ज्यादा</option>
+            </select>
+        </div>
+
+        <button class="btn-table" onclick="insertDynamicTable()">➕ टेबल जोड़ें</button>
+
+        <div class="selector-group" style="margin-left: auto; gap: 5px;">
+            <button class="btn-delete-action" onclick="deleteCurrentRow()">❌ रो हटाएँ</button>
+            <button class="btn-delete-action" onclick="deleteCurrentColumn()">❌ कॉलम हटाएँ</button>
+            <button class="btn-delete-action" style="background-color: #555;" onclick="deleteCurrentTable()">🗑️ पूरी टेबल हटाएँ</button>
+        </div>
     </div>
 
-    <!-- ≡ पैराग्राफ अलाइनमेंट के विकल्प -->
-    <div class="selector-group">
-        <span>≡ अलाइन:</span>
-        <button class="btn-action" onclick="setTextAlignment('justifyLeft')" title="Left Align">⬅️ Left</button>
-        <button class="btn-action" onclick="setTextAlignment('justifyCenter')" title="Center Align">↔️ Center</button>
-        <button class="btn-action" onclick="setTextAlignment('justifyRight')" title="Right Align">➡️ Right</button>
-        <button class="btn-action" onclick="setTextAlignment('justifyFull')" title="Justify">☰ Justify</button>
-    </div>
+    <!-- 🎛️ 2. प्रस्ताव कंट्रोल पैनल -->
+    <div id="prastavControlPanel" class="control-panel" style="display: none;">
+        <div class="panel-grid">
+            <div class="control-group" id="topMarginControlGrp">
+                <label for="topMarginInput">Top Margin (Upar se Niche):</label>
+                <input type="number" id="topMarginInput" value="30" min="0" max="400" oninput="saveSettings(); updateSettings();">
+            </div>
 
-    <div class="selector-group">
-        <span>↕️ रो ऊँचाई:</span>
-        <select id="tableHeightSelector" onchange="changeTableRowHeight(this.value)">
-            <option value="" selected disabled>हाइट</option>
-            <option value="2px">कम</option>
-            <option value="8px">सामान्य</option>
-            <option value="18px">ज्यादा</option>
-            <option value="30px">बहुत ज्यादा</option>
-        </select>
-    </div>
+            <div class="control-group">
+                <label for="columnGapInput">Beech Ka Gap (Column Space):</label>
+                <input type="number" id="columnGapInput" value="25" min="5" max="80" oninput="saveSettings(); updateSettings();">
+            </div>
 
-    <button class="btn-table" onclick="insertDynamicTable()">➕ टेबल जोड़ें</button>
-    <button class="btn-print" onclick="window.print()">🖨️ प्रिंट करें</button>
+            <div class="control-group">
+                <label for="indentInput">Pahli Line Aage Karein (Indent):</label>
+                <input type="number" id="indentInput" value="30" min="0" max="100" oninput="saveSettings(); updateSettings();">
+            </div>
 
-    <div class="selector-group" style="margin-left: auto; gap: 5px;">
-        <button class="btn-delete-action" onclick="deleteCurrentRow()">❌ रो हटाएँ</button>
-        <button class="btn-delete-action" onclick="deleteCurrentColumn()">❌ कॉलम हटाएँ</button>
-        <button class="btn-delete-action" style="background-color: #555;" onclick="deleteCurrentTable()">🗑️ पूरी टेबल हटाएँ</button>
-    </div>
-</div>
+            <div class="control-group">
+                <label for="fontSelect">Font Family:</label>
+                <select id="fontSelect" onchange="saveSettings(); updateSettings();">
+                    <option value="'Mangal', 'Nirmala UI', sans-serif">Mangal</option>
+                    <option value="'Nirmala UI', sans-serif">Nirmala UI</option>
+                    <option value="'Arial', sans-serif">Arial</option>
+                </select>
+            </div>
 
-<div class="letterhead" id="main-letterhead">
-    
-    <div class="fixed-header-container" id="header-container">
-        <div class="header">
-            <img class="logo" src="logo.png" alt="Logo"> 
-            <div class="school-details">
-                <h1 class="school-name">श्री कृष्ण इण्टरमीडिएट कालेज सेमरा </h1>
-                <p class="school-info">पत्रालय - कठकुइयाँ , जनपद - कुशीनगर  - पिन कोड - 274303</p>
+            <div class="control-group">
+                <label for="fontSizeInput">Font Size (px):</label>
+                <input type="number" id="fontSizeInput" value="16" min="10" max="32" oninput="saveSettings(); updateSettings();">
+            </div>
+
+            <div class="control-group">
+                <label for="prastavNoInput">Prastav Sankhya:</label>
+                <input type="text" id="prastavNoInput" value="02" oninput="saveSettings(); updateContent();">
             </div>
         </div>
 
-        <div class="full-width-line" id="header-line"></div>
-
-        <div class="meta-info">
-            <div>पत्रांक / (Ref No): <span class="editable-text" contenteditable="true">...................</span></div>
-            <div class="date-right">दिनांक (Date): <span class="editable-text" contenteditable="true">...................</span></div>
+        <div class="header-inputs-container">
+            <div class="header-inputs-header">
+                <span>Header Text & Custom Offset Control (px):</span>
+                <div class="line-btn-group">
+                    <button class="btn-small btn-add" onclick="addHeaderLine()">+ Nayi Line Jodein</button>
+                    <button class="btn-small btn-remove" onclick="removeHeaderLine()">− Line Hatayein</button>
+                </div>
+            </div>
+            <div id="headerLinesList"></div>
         </div>
 
-        <div class="authority">प्रबन्धक / प्रधानाचार्य</div>
-    </div>
-   
-    <!-- पूरे पेज का मुख्य टाइपिंग एरिया -->
-    <div class="content-fixed" id="letter-body" contenteditable="true"><br></div>
+        <div class="panel-grid">
+            <div class="control-group">
+                <label for="prastavTextInput">Prastav Content (Left Column):</label>
+                <textarea id="prastavTextInput" oninput="saveSettings(); updateContent();">श्री मो० दरोगा अंसारी (स० लि०) एवं श्री नन्द किशोर पाण्डेय (परि०) के दिनांक 01-09-2026 को 26 वर्ष सेवा पूर्ण होने पर तृतीय ए० सी० पी० देने पर विचार</textarea>
+            </div>
 
-</div>
+            <div class="control-group">
+                <label for="nirnayTextInput">Nirnay Content (Right Column):</label>
+                <textarea id="nirnayTextInput" oninput="saveSettings(); updateContent();">सर्व सम्मति से यह निर्णय पाया गया कि नियुक्ति दिनांक 01-09-2000 को हुई है इनका प्रथम ए ० सी0 पी0 01-09-2010 को स्वीकृत हो चूका है तथा द्वितीय ए० सी० पी० 01-09-2016 स्वीकृत हो चूका है तथा इनकी तृतीय ए०सी०पी० 01-09-2026 को 26 वर्ष की सेवा पूर्ण करने पर देय है।
+
+अतः प्रबन्ध समिति इनके संतोष जनक सेवा को देखते हुये तृतीय ए ० सी० पी० देने हेतु सर्व सम्मति से स्वीकृत प्रदान करती है।</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🏛️ मुख्य लेटर पैड व्यू -->
+    <div class="letterhead" id="main-letterhead">
+        <div class="fixed-header-container" id="header-container">
+            <div class="header">
+                <img class="logo" src="logo.png" alt="Logo"> 
+                <div class="school-details">
+                    <h1 class="school-name">श्री कृष्ण इण्टरमीडिएट कालेज सेमरा </h1>
+                    <p class="school-info">पत्रालय - कठकुइयाँ , जनपद - कुशीनगर  - पिन कोड - 274303</p>
+                </div>
+            </div>
+
+            <div class="full-width-line" id="header-line"></div>
+
+            <div class="meta-info">
+                <div>पत्रांक / (Ref No): <span class="editable-text" contenteditable="true">...................</span></div>
+                <div class="date-right">दिनांक (Date): <span class="editable-text" contenteditable="true">...................</span></div>
+            </div>
+
+            <div class="authority">प्रबन्धक / प्रधानाचार्य</div>
+        </div>
+       
+        <!-- लेटर पैड का बॉडी टाइपिंग/कंटेंट एरिया -->
+        <div class="content-fixed" id="letter-body" contenteditable="true"><br></div>
+    </div>
+
+    <!-- 📄 अलग से प्रस्ताव प्रिंट करने वाला पेपर एरिया (Standalone Prastav Paper) -->
+    <div class="paper" id="printablePaper" style="display: none;">
+        <div class="header-title-container" id="displayHeaderContainer"></div>
+        <table class="prastav-table">
+            <tr>
+                <td class="left-col" id="leftCol">
+                    <span class="col-header">प्रस्ताव संख्या - <span id="displayPrastavNoCol">02</span></span>
+                    <div class="content-body" id="displayPrastavText"></div>
+                </td>
+                <td class="right-col" id="rightCol">
+                    <span class="col-header">निर्णय</span>
+                    <div class="content-body" id="displayNirnayText"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 📜 टेम्पलेट डेटा कंटेनर (लेटर पैड के ऊपर प्रस्ताव लोड करने हेतु) -->
+    <template id="prastavTemplateInsideLetterhead">
+        <div class="header-title-container" id="lh_displayHeaderContainer" style="font-weight: bold; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1.5px solid #000; line-height: 1.6;"></div>
+        <table class="prastav-table" style="width:100%; border-collapse: separate; table-layout: fixed;">
+            <tr>
+                <td class="left-col" id="lh_leftCol" style="width: 45%; vertical-align: top; text-align: justify; padding-right: 25px;">
+                    <span class="col-header" style="font-weight: bold; text-align: center; margin-bottom: 12px; display: block; text-decoration: underline;">प्रस्ताव संख्या - <span id="lh_displayPrastavNoCol">02</span></span>
+                    <div class="content-body" id="lh_displayPrastavText"></div>
+                </td>
+                <td class="right-col" id="lh_rightCol" style="width: 55%; vertical-align: top; text-align: justify; padding-left: 25px;">
+                    <span class="col-header" style="font-weight: bold; text-align: center; margin-bottom: 12px; display: block; text-decoration: underline;">निर्णय</span>
+                    <div class="content-body" id="lh_displayNirnayText"></div>
+                </td>
+            </tr>
+        </table>
+    </template>
 
 <script>
+    // डिफ़ॉल्ट हेडर लाइन्स डेटा
+    var headerLinesData = [
+        { text: "श्री कृष्ण इण्टर कालेज सेमरा कठकुइयाँ, कुशीनगर के प्रबन्ध समिति की बैठक दिनांक 30-08-2026 के", align: "left", offset: 0 },
+        { text: "प्रस्ताव संख्या-02 की सत्य प्रतिलिपि -", align: "left", offset: 0 }
+    ];
+
     window.onload = function() {
-        var bodyArea = document.getElementById('letter-body');
-        bodyArea.focus();
+        loadSettings(); // पेज खुलते ही सेव की गई सेटिंग्स लोड करें
+        renderHeaderInputs();
+        applyCustomMargins();
+        updateContent();
     };
 
-    /* 📄 कस्टम (इंच आधारित) बायाँ व दायाँ मार्जिन लागू करने का फ़ंक्शन */
+    // 💾 सेटिंग्स को ब्राउज़र के लोकल स्टोरेज में सेव करने का फंक्शन
+    function saveSettings() {
+        var settings = {
+            leftMargin: document.getElementById('leftMarginInput').value,
+            rightMargin: document.getElementById('rightMarginInput').value,
+            topMargin: document.getElementById('topMarginInput').value,
+            columnGap: document.getElementById('columnGapInput').value,
+            indent: document.getElementById('indentInput').value,
+            fontSelect: document.getElementById('fontSelect').value,
+            fontSize: document.getElementById('fontSizeInput').value,
+            prastavNo: document.getElementById('prastavNoInput').value,
+            prastavText: document.getElementById('prastavTextInput').value,
+            nirnayText: document.getElementById('nirnayTextInput').value,
+            loadOnLh: document.getElementById('loadPrastavToLetterhead').checked,
+            appMode: document.getElementById('appModeSelect').value,
+            headerLines: headerLinesData
+        };
+        localStorage.setItem('schoolSoftwareSettings', JSON.stringify(settings));
+    }
+
+    // 📂 सेव की गई सेटिंग्स को वापस लोड करने का फंक्शन
+    function loadSettings() {
+        var saved = localStorage.getItem('schoolSoftwareSettings');
+        if (saved) {
+            try {
+                var data = JSON.parse(saved);
+                if(data.leftMargin !== undefined) document.getElementById('leftMarginInput').value = data.leftMargin;
+                if(data.rightMargin !== undefined) document.getElementById('rightMarginInput').value = data.rightMargin;
+                if(data.topMargin !== undefined) document.getElementById('topMarginInput').value = data.topMargin;
+                if(data.columnGap !== undefined) document.getElementById('columnGapInput').value = data.columnGap;
+                if(data.indent !== undefined) document.getElementById('indentInput').value = data.indent;
+                if(data.fontSelect !== undefined) document.getElementById('fontSelect').value = data.fontSelect;
+                if(data.fontSize !== undefined) document.getElementById('fontSizeInput').value = data.fontSize;
+                if(data.prastavNo !== undefined) document.getElementById('prastavNoInput').value = data.prastavNo;
+                if(data.prastavText !== undefined) document.getElementById('prastavTextInput').value = data.prastavText;
+                if(data.nirnayText !== undefined) document.getElementById('nirnayTextInput').value = data.nirnayText;
+                if(data.headerLines) headerLinesData = data.headerLines;
+
+                if(data.appMode) {
+                    document.getElementById('appModeSelect').value = data.appMode;
+                }
+                if(data.loadOnLh) {
+                    document.getElementById('loadPrastavToLetterhead').checked = true;
+                    togglePrastavOnLetterhead(true);
+                } else {
+                    switchAppMode(document.getElementById('appModeSelect').value);
+                }
+            } catch(e) {
+                console.error("Error loading settings", e);
+            }
+        }
+    }
+
+    function switchAppMode(mode) {
+        var letterheadEl = document.getElementById('main-letterhead');
+        var letterheadToolbar = document.getElementById('letterheadToolbar');
+        var prastavPaper = document.getElementById('printablePaper');
+        var prastavControl = document.getElementById('prastavControlPanel');
+        var loadOnLhCheckbox = document.getElementById('loadPrastavToLetterhead');
+
+        if (mode === 'letterhead') {
+            letterheadEl.style.display = 'block';
+            letterheadToolbar.style.display = 'flex';
+            prastavPaper.style.display = 'none';
+            
+            if(loadOnLhCheckbox.checked) {
+                prastavControl.style.display = 'block';
+            } else {
+                prastavControl.style.display = 'none';
+            }
+        } else if (mode === 'prastav') {
+            loadOnLhCheckbox.checked = false;
+            togglePrastavOnLetterhead(false);
+
+            letterheadEl.style.display = 'none';
+            letterheadToolbar.style.display = 'none';
+            prastavPaper.style.display = 'block';
+            prastavControl.style.display = 'block';
+        }
+        saveSettings();
+    }
+
+    function togglePrastavOnLetterhead(isChecked) {
+        var letterBody = document.getElementById('letter-body');
+        var prastavControl = document.getElementById('prastavControlPanel');
+        var modeSelect = document.getElementById('appModeSelect');
+
+        if (isChecked) {
+            modeSelect.value = 'letterhead';
+            switchAppMode('letterhead');
+            
+            var template = document.getElementById('prastavTemplateInsideLetterhead').content.cloneNode(true);
+            letterBody.innerHTML = "";
+            letterBody.appendChild(template);
+            letterBody.setAttribute('contenteditable', 'false');
+            
+            prastavControl.style.display = 'block';
+            updateContent();
+        } else {
+            if(modeSelect.value === 'letterhead') {
+                letterBody.innerHTML = "<br>";
+                letterBody.style.paddingTop = "0px";
+                letterBody.setAttribute('contenteditable', 'true');
+                prastavControl.style.display = 'none';
+            }
+        }
+        saveSettings();
+    }
+
     function applyCustomMargins() {
         var leftInch = parseFloat(document.getElementById('leftMarginInput').value) || 0;
         var rightInch = parseFloat(document.getElementById('rightMarginInput').value) || 0;
 
-        // 1 inch ≈ 96 pixels
         var leftPx = Math.round(leftInch * 96);
         var rightPx = Math.round(rightInch * 96);
 
-        // 1. हेडर का बायाँ और दायाँ मार्जिन बदलें
         var headerContainer = document.getElementById('header-container');
         headerContainer.style.paddingLeft = leftPx + 'px';
         headerContainer.style.paddingRight = rightPx + 'px';
 
-        // 2. हेडर की बॉर्डर लाइन को मार्जिन अनुसार एडजस्ट करें
         var headerLine = document.getElementById('header-line');
         headerLine.style.marginLeft = '-' + leftPx + 'px';
         headerLine.style.marginRight = '-' + rightPx + 'px';
 
-        // 3. मुख्य टाइपिंग एरिया का बायाँ और दायाँ मार्जिन बदलें
         var letterBody = document.getElementById('letter-body');
         letterBody.style.paddingLeft = leftPx + 'px';
         letterBody.style.paddingRight = rightPx + 'px';
 
-        // 4. अगर कोई टेबल बनी हुई है तो उसे भी नए मार्जिन के हिसाब से चौड़ा करें
         var wrappers = document.querySelectorAll('.table-resizable-wrapper');
         var newWidth = (794 - leftPx - rightPx);
         wrappers.forEach(function(wrapper) {
             wrapper.style.left = leftPx + 'px';
             wrapper.style.width = (newWidth > 100 ? newWidth : 100) + 'px';
         });
+        saveSettings();
     }
 
-    /* Tab दबाने पर 4 स्पेस आगे बढ़ने का लॉजिक */
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Tab') {
             var selection = window.getSelection();
@@ -384,11 +687,7 @@
         }
     });
 
-    /* ≡ टेक्स्ट अलाइनमेंट फ़ंक्शन */
-    function setTextAlignment(command) {
-        document.execCommand(command, false, null);
-    }
-
+    function setTextAlignment(command) { document.execCommand(command, false, null); }
     function changeSelectionFontSize(sizeValue) { if (sizeValue) { document.execCommand('fontSize', false, sizeValue); document.getElementById('fontSizeSelector').value = ""; } }
     function changeSelectionFontFamily(fontValue) { if (fontValue) { document.execCommand('fontName', false, fontValue); document.getElementById('fontFamilySelector').value = ""; } }
 
@@ -420,12 +719,10 @@
         }
 
         var wrapperId = "wrap_" + new Date().getTime();
-
         var wrapper = document.createElement('div');
         wrapper.id = wrapperId;
         wrapper.className = 'table-resizable-wrapper';
 
-        // वर्तमान इनपुट किए गए मार्जिन के हिसाब से टेबल रखें
         var leftInch = parseFloat(document.getElementById('leftMarginInput').value) || 0;
         var rightInch = parseFloat(document.getElementById('rightMarginInput').value) || 0;
         var leftPx = Math.round(leftInch * 96);
@@ -435,7 +732,7 @@
         var tableWidth = 794 - leftPx - rightPx;
         wrapper.style.width = (tableWidth > 100 ? tableWidth : 100) + 'px';
         
-        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ)</div>' +
+        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ नंबर)</div>' +
                           '<div class="resize-handle-left" onmousedown="initResize(event, \''+wrapperId+'\', \'left\')"></div>' +
                           '<table contenteditable="true"><thead><tr>';
         
@@ -451,7 +748,6 @@
                        '<div class="resize-handle-right" onmousedown="initResize(event, \''+wrapperId+'\', \'right\')"></div>';
 
         wrapper.innerHTML = htmlContent;
-        
         document.getElementById('main-letterhead').appendChild(wrapper);
     }
 
@@ -473,7 +769,6 @@
         if (!dragObj) return;
         e.preventDefault();
         var containerRect = document.getElementById('main-letterhead').getBoundingClientRect();
-        
         var leftPos = e.clientX - containerRect.left - offsetX;
         var topPos = e.clientY - containerRect.top - offsetY;
         
@@ -563,7 +858,123 @@
             alert("कृपया कर्सर को टेबल के अंदर कहीं रखें ताकि उसे डिलीट किया जा सके!");
         }
     }
-</script>
 
+    function renderHeaderInputs() {
+        var container = document.getElementById('headerLinesList');
+        if(!container) return;
+        container.innerHTML = '';
+        headerLinesData.forEach(function(item, index) {
+            var row = document.createElement('div');
+            row.className = 'header-line-row';
+            var leftSel = item.align === 'left' ? 'selected' : '';
+            var rightSel = item.align === 'right' ? 'selected' : '';
+
+            row.innerHTML = '<label>Line ' + (index + 1) + ':</label>' +
+                            '<input type="text" value="' + item.text + '" oninput="updateHeaderLineText(' + index + ', this.value)">' +
+                            '<select onchange="updateHeaderLineAlign(' + index + ', this.value)">' +
+                                '<option value="left" ' + leftSel + '>From Left</option>' +
+                                '<option value="right" ' + rightSel + '>From Right</option>' +
+                            '</select>' +
+                            '<input type="number" value="' + item.offset + '" min="0" max="500" title="Pixel offset" oninput="updateHeaderLineOffset(' + index + ', this.value)"> px';
+            container.appendChild(row);
+        });
+        updateContent();
+    }
+
+    function addHeaderLine() { headerLinesData.push({ text: '', align: 'left', offset: 0 }); renderHeaderInputs(); saveSettings(); }
+    function removeHeaderLine() { if(headerLinesData.length > 1) { headerLinesData.pop(); renderHeaderInputs(); saveSettings(); } }
+    function updateHeaderLineText(index, value) { headerLinesData[index].text = value; updateContent(); saveSettings(); }
+    function updateHeaderLineAlign(index, alignValue) { headerLinesData[index].align = alignValue; updateContent(); saveSettings(); }
+    function updateHeaderLineOffset(index, offsetValue) { headerLinesData[index].offset = offsetValue || 0; updateContent(); saveSettings(); }
+
+    function updateSettings() {
+        var topMargin = document.getElementById('topMarginInput').value;
+        var columnGap = document.getElementById('columnGapInput').value;
+        var indent = document.getElementById('indentInput').value;
+        var fontFamily = document.getElementById('fontSelect').value;
+        var fontSize = document.getElementById('fontSizeInput').value;
+
+        var paper = document.getElementById('printablePaper');
+        paper.style.paddingTop = topMargin + 'px';
+        paper.style.fontFamily = fontFamily;
+        paper.style.fontSize = fontSize + 'px';
+
+        var letterBody = document.getElementById('letter-body');
+        if(letterBody) {
+            letterBody.style.fontFamily = fontFamily;
+            letterBody.style.fontSize = fontSize + 'px';
+            if(document.getElementById('loadPrastavToLetterhead').checked) {
+                letterBody.style.paddingTop = topMargin + 'px';
+            }
+        }
+
+        document.getElementById('leftCol').style.paddingRight = columnGap + 'px';
+        document.getElementById('rightCol').style.paddingLeft = columnGap + 'px';
+
+        var lhLeftCol = document.getElementById('lh_leftCol');
+        var lhRightCol = document.getElementById('lh_rightCol');
+        if(lhLeftCol && lhRightCol) {
+            lhLeftCol.style.paddingRight = columnGap + 'px';
+            lhRightCol.style.paddingLeft = columnGap + 'px';
+        }
+
+        var paragraphs = document.querySelectorAll('.content-body p');
+        paragraphs.forEach(function(p) { p.style.textIndent = indent + 'px'; });
+    }
+
+    function formatParagraphs(text) {
+        if(!text) return '';
+        var lines = text.split('\n');
+        var result = '';
+        lines.forEach(function(line) {
+            if(line.trim().length > 0) { result += '<p>' + line.trim() + '</p>'; }
+        });
+        return result;
+    }
+
+    function renderHeaderLinesToContainer(container) {
+        if(!container) return;
+        container.innerHTML = '';
+        headerLinesData.forEach(function(item) {
+            if(item.text.trim().length > 0) {
+                var div = document.createElement('div');
+                div.innerText = item.text;
+                if(item.align === 'left') {
+                    div.style.textAlign = 'left';
+                    div.style.paddingLeft = item.offset + 'px';
+                    div.style.paddingRight = '0px';
+                } else {
+                    div.style.textAlign = 'right';
+                    div.style.paddingRight = item.offset + 'px';
+                    div.style.paddingLeft = '0px';
+                }
+                container.appendChild(div);
+            }
+        });
+    }
+
+    function updateContent() {
+        var prastavNo = document.getElementById('prastavNoInput').value;
+        var prastavText = document.getElementById('prastavTextInput').value;
+        var nirnayText = document.getElementById('nirnayTextInput').value;
+
+        renderHeaderLinesToContainer(document.getElementById('displayHeaderContainer'));
+        renderHeaderLinesToContainer(document.getElementById('lh_displayHeaderContainer'));
+
+        if(document.getElementById('displayPrastavNoCol')) {
+            document.getElementById('displayPrastavNoCol').innerText = prastavNo;
+            document.getElementById('displayPrastavText').innerHTML = formatParagraphs(prastavText);
+            document.getElementById('displayNirnayText').innerHTML = formatParagraphs(nirnayText);
+        }
+
+        if(document.getElementById('lh_displayPrastavNoCol')) {
+            document.getElementById('lh_displayPrastavNoCol').innerText = prastavNo;
+            document.getElementById('lh_displayPrastavText').innerHTML = formatParagraphs(prastavText);
+            document.getElementById('lh_displayNirnayText').innerHTML = formatParagraphs(nirnayText);
+        }
+
+        updateSettings();
+    }
+</script>
 </body>
 </html>
