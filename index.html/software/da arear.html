@@ -448,6 +448,23 @@
             </div>
         </div>
 
+        <!-- QUICK CALCULATOR PANEL -->
+        <div class="panel" style="background-color: #f7fafc; border-color: #cbd5e0;">
+            <div class="section-title" style="color: #4a5568; display: flex; justify-content: space-between; align-items: center;">
+                <span>त्वरित कैलकुलेटर (Quick Calculator)</span>
+                <span style="font-size: 11px; font-weight: normal;">यहाँ कोई भी गणितीय कैलकुलेशन (+, -, *, /) करें</span>
+            </div>
+            <div class="grid-3-col" style="align-items: center;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <input type="text" id="quickCalcInput" placeholder="उदा० 5000 + 450 + (120*2) या सीधे संख्या लिखें" style="text-transform: none; font-size: 14px;" onkeydown="if(event.key==='Enter') calculateQuickMath()">
+                </div>
+                <div class="form-group" style="flex-direction: row; gap: 5px;">
+                    <button type="button" class="btn btn-search" style="padding: 7px 12px; width: 50%;" onclick="calculateQuickMath()">गणना करें</button>
+                    <button type="button" class="btn btn-clear" style="padding: 7px 12px; width: 50%;" onclick="document.getElementById('quickCalcInput').value=''">साफ करें</button>
+                </div>
+            </div>
+        </div>
+
         <!-- NPS MASTER EMPLOYEE DIRECTORY SETTING PANEL -->
         <div class="panel nps-only-field" style="display: none; background-color: #e6fffa; border-color: #b2f5ea;">
             <div class="section-title" style="color: #234e52; display: flex; justify-content: space-between; align-items: center;">
@@ -500,7 +517,7 @@
                 </div>
                 <div class="form-group">
                     <label for="payMonth">Pay Month</label>
-                    <select id="payMonth">
+                    <select id="payMonth" onchange="markMonthUserChanged()">
                         <option value="January">January</option>
                         <option value="February">February</option>
                         <option value="March">March</option>
@@ -604,7 +621,7 @@
                 <!-- NPS DA RATE (%) FIELD -->
                 <div class="form-group nps-only-field" style="display: none;">
                     <label for="npsDaRate">महंगाई प्रतिशत (DA %)</label>
-                    <input type="number" id="npsDaRate" value="60" step="0.01" placeholder="उदा० 60" oninput="runMasterCalculations()">
+                    <input type="number" id="npsDaRate" value="60" step="0.01" placeholder="उदा० 60" oninput="markMonthUserChanged(); runMasterCalculations();">
                 </div>
 
                 <div class="form-group da-nps-field">
@@ -844,6 +861,7 @@
     let savedEmployeeList = [];
     let npsMasterDirectory = [];
     let currentMode = 'DA';
+    let userManuallyChangedMonth = false;
 
     window.addEventListener('DOMContentLoaded', () => {
         let isLoggedIn = localStorage.getItem('is_arrear_logged_in');
@@ -897,6 +915,20 @@
         }, 3000);
     }
 
+    function calculateQuickMath() {
+        let expr = document.getElementById('quickCalcInput').value.trim();
+        if (!expr) return;
+        try {
+            // Safe evaluation of mathematical expression
+            let sanitized = expr.replace(/[^0-9+\-*/().]/g, '');
+            let result = Function('"use strict";return (' + sanitized + ')')();
+            document.getElementById('quickCalcInput5') || (document.getElementById('quickCalcInput').value = `${expr} = ${result}`);
+            triggerNotificationBox(`परिणाम: ${result}`, true);
+        } catch (e) {
+            triggerNotificationBox('अमान्य गणितीय समीकरण!', false);
+        }
+    }
+
     function saveLastUsedBankInfo() {
         let bank = document.getElementById('bankName').value;
         let ifsc = document.getElementById('ifscCode').value;
@@ -909,6 +941,10 @@
         let lastIfsc = localStorage.getItem('last_used_ifsc');
         if(lastBank) document.getElementById('bankName').value = lastBank;
         if(lastIfsc) document.getElementById('ifscCode').value = lastIfsc;
+    }
+
+    function markMonthUserChanged() {
+        userManuallyChangedMonth = true;
     }
 
     /* MASTER DIRECTORY FUNCTIONS WITH SR.NO / NAME SEARCH SUPPORT */
@@ -958,7 +994,6 @@
 
         if (!val) return;
 
-        // Support search by Serial Number (e.g. "1", "2") or Name characters
         let matched = [];
         if (!isNaN(val)) {
             let index = parseInt(val) - 1;
@@ -1029,6 +1064,7 @@
 
     function switchCalculationMode() {
         currentMode = document.getElementById('calcMode').value;
+        userManuallyChangedMonth = false;
 
         const daFields = document.querySelectorAll('.da-only-field');
         const bonusFields = document.querySelectorAll('.bonus-only-field');
@@ -1536,12 +1572,11 @@
 
         let words = "";
 
-// 1. Lakh (लाख) ke liye logic
-    if (Math.floor(num / 100000) > 0) {
-        let lakhPart = Math.floor(num / 100000);
-        words += getTwoDigitWord(lakhPart) + " लाख ";
-        num %= 100000;
-    }
+        if (Math.floor(num / 100000) > 0) {
+            let lakhPart = Math.floor(num / 100000);
+            words += getTwoDigitWord(lakhPart) + " लाख ";
+            num %= 100000;
+        }
 
         if (Math.floor(num / 1000) > 0) {
             let thousandPart = Math.floor(num / 1000);
@@ -1708,7 +1743,40 @@
         saveToLocalStorageByMode();
         renderMasterTable();
         triggerNotificationBox('डेटा सफलतापूर्वक Local Storage में सेव हुआ!', true);
-        resetFormFields();
+        resetFormFieldsForNextEntry();
+    }
+
+    function resetFormFieldsForNextEntry() {
+        document.getElementById('empId').value = savedEmployeeList.length + 1;
+        document.getElementById('empName').value = '';
+        if (currentMode === 'NPS_FORMAT') {
+            document.getElementById('pranNo').value = '';
+            document.getElementById('basicPay').value = '';
+            document.getElementById('subsContry').value = '';
+            document.getElementById('govContry').value = '';
+            document.getElementById('arearRemark').value = '';
+            document.getElementById('npsRemark').value = '';
+            // Note: payMonth is intentionally preserved unless user changes it explicitly
+        } else {
+            // Other fields reset logic
+            document.getElementById('basicPay').value = '';
+            document.getElementById('daAmount').value = '';
+            document.getElementById('total').value = '';
+        }
+        document.getElementById('empName').focus();
+    }
+
+    function resetFormFields() {
+        updateNextAutoId();
+        document.getElementById('empName').value = '';
+        if (currentMode === 'NPS_FORMAT') {
+            document.getElementById('pranNo').value = '';
+            document.getElementById('basicPay').value = '';
+            document.getElementById('subsContry').value = '';
+            document.getElementById('govContry').value = '';
+            document.getElementById('arearRemark').value = '';
+            document.getElementById('npsRemark').value = '';
+        }
     }
 
     function saveToLocalStorageByMode() {
@@ -2409,6 +2477,9 @@
             document.getElementById('govContry').value = found.govContry || '';
             document.getElementById('arearRemark').value = found.arearRemark || '';
             document.getElementById('npsRemark').value = found.remark || '';
+            if (!userManuallyChangedMonth && found.payMonth) {
+                document.getElementById('payMonth').value = found.payMonth;
+            }
         } else if (currentMode === 'PARISHRAMIK') {
             document.getElementById('bankName').value = found.bankName || '';
             document.getElementById('accountNo').value = found.accountNo || '';
@@ -2436,105 +2507,90 @@
             document.getElementById('basicPay').value = found.basicPay || '';
             document.getElementById('daAmount').value = found.daAmount || '';
             document.getElementById('basicPlusDa').value = found.basicPlusDa || '';
+            document.getElementById('total').value = found.total || '';
             document.getElementById('anm').value = found.accountType || 'GPF';
-            
+            document.getElementById('gpf').value = found.gpf || 0;
+            document.getElementById('nps').value = found.nps || 0;
+            document.getElementById('nagad').value = found.nagad || 0;
+
             if (found.months && found.months.length > 0) {
-                let monthInputs = document.querySelectorAll('.month-input');
-                monthInputs.forEach((input, i) => {
-                    if (found.months[i]) {
-                        input.value = found.months[i].val.toFixed(2);
-                    }
+                document.getElementById('monthCount').value = found.months.length;
+                let container = document.getElementById('dynamicMonthGrid');
+                container.innerHTML = '';
+                found.months.forEach((mObj, i) => {
+                    let div = document.createElement('div');
+                    div.className = 'form-group';
+                    div.innerHTML = `
+                        <label for="month_${i}">${mObj.name}</label>
+                        <input type="number" id="month_${i}" data-month="${mObj.name}" class="month-input" value="${mObj.val.toFixed(2)}" oninput="calculateGrandTotalOnly()">
+                    `;
+                    container.appendChild(div);
                 });
             }
-            calculateGrandTotalOnly();
+            toggleDeductionMode();
         }
 
         triggerNotificationBox(`कर्मचारी '${found.name}' का डेटा फॉर्म में लोड हो गया है।`, true);
     }
 
     function deleteEmployeeData() {
-        let empId = document.getElementById('empId').value;
-        if (!empId) {
-            triggerNotificationBox("कृपया पहले 'Search' करके रिकॉर्ड चुनें जिसे हटाना है।", false);
+        let inputIdOrName = prompt("हटाने के लिए कर्मचारी का नाम या क्रम संख्या दर्ज करें:");
+        if (!inputIdOrName) return;
+
+        let query = inputIdOrName.trim().toLowerCase();
+        let index = savedEmployeeList.findIndex(e => e.name.toLowerCase().includes(query) || String(e.id) === query);
+
+        if (index === -1) {
+            triggerNotificationBox("हटाने के लिए कोई रिकॉर्ड नहीं मिला!", false);
             return;
         }
 
-        if (confirm("क्या आप इस रिकॉर्ड को हटाना चाहते हैं?")) {
-            savedEmployeeList = savedEmployeeList.filter(e => String(e.id) !== String(empId));
-            saveToLocalStorageByMode();
-            renderMasterTable();
-            resetFormFields();
-            triggerNotificationBox("रिकॉर्ड सफलतापूर्वक हटा दिया गया।", true);
-        }
+        let removedEmp = savedEmployeeList.splice(index, 1)[0];
+        saveToLocalStorageByMode();
+        renderMasterTable();
+        updateNextAutoId();
+        triggerNotificationBox(`कर्मचारी '${removedEmp.name}' का रिकॉर्ड हटा दिया गया।`, true);
     }
 
     function deleteSpecificEmpById(id) {
-        if (confirm("क्या आप इस विशिष्ट रिकॉर्ड को हटाना चाहते हैं?")) {
-            savedEmployeeList = savedEmployeeList.filter(e => String(e.id) !== String(id));
+        let index = savedEmployeeList.findIndex(e => String(e.id) === String(id));
+        if (index >= 0) {
+            let removedEmp = savedEmployeeList.splice(index, 1)[0];
             saveToLocalStorageByMode();
             renderMasterTable();
             updateNextAutoId();
-            triggerNotificationBox("रिकॉर्ड हटा दिया गया।", true);
-        }
-    }
-
-    function resetFormFields() {
-        document.getElementById('arrearForm').reset();
-        updateNextAutoId();
-        
-        let schoolInput = document.getElementById('schoolName');
-        if(schoolInput) schoolInput.value = "श्री कृष्ण इण्टर कालेज सेमरा कठकुइयाँ, जिला - कुशीनगर ";
-        
-        let yearInput = document.getElementById('arrearYear');
-        if(yearInput) yearInput.value = "2026-27";
-
-        let ddoInput = document.getElementById('ddoRegNo');
-        if(ddoInput) ddoInput.value = "sgv 182587b";
-
-        loadLastUsedBankInfo();
-
-        if (currentMode === 'DA') {
-            document.getElementById('prevDaRate').value = 58;
-            document.getElementById('newDaRate').value = 60;
-            generateMonthInputs();
-        } else if (currentMode === 'BONUS') {
-            document.getElementById('bonusAmountInput').value = 6908;
-            document.getElementById('bonusGpfDeductionInput').value = 5181;
-            calculateBonusLogic();
-        } else if (currentMode === 'NPS_FORMAT') {
-            document.getElementById('npsDaRate').value = 60;
+            triggerNotificationBox(`कर्मचारी '${removedEmp.name}' हटा दिया गया।`, true);
         }
     }
 
     function printLandscapeSheet() {
         if (savedEmployeeList.length === 0) {
-            triggerNotificationBox('प्रिंट करने के लिए कोई रिकॉर्ड उपलब्ध नहीं है!', false);
+            triggerNotificationBox('प्रिंट करने के लिए सूची में कोई डाटा उपलब्ध नहीं है!', false);
             return;
         }
 
-        let schoolNameVal = document.getElementById('schoolName').value || "श्री कृष्ण इण्टर कालेज सेमरा कठकुइयाँ, जिला - कुशीनगर ";
-        document.getElementById('pSchoolName').innerText = schoolNameVal;
+        let schoolNameText = document.getElementById('schoolName').value;
+        document.getElementById('pSchoolName').innerText = schoolNameText;
 
         if (currentMode === 'BONUS') {
-            document.getElementById('pSheetTitle').innerText = "बोनस भुगतान रजिस्टर विवरण (Bonus Master Sheet)";
+            document.getElementById('pSheetTitle').innerText = "बोनस वितरण एवं भुगतान रजिस्टर";
             document.getElementById('pSubHeaderDetails').innerHTML = `<b>सत्र:</b> ${document.getElementById('arrearYear').value}`;
         } else if (currentMode === 'NPS_FORMAT') {
-            document.getElementById('pSheetTitle').innerText = "NPS Schedule Contribution Statement";
             let pMonth = document.getElementById('payMonth').value;
             let pYear = document.getElementById('payYear').value;
-            document.getElementById('pSubHeaderDetails').innerHTML = `<b>Pay Month/Year:</b> ${pMonth} ${pYear} | <b>DDO Reg.No.:</b> ${document.getElementById('ddoRegNo').value}`;
+            document.getElementById('pSheetTitle').innerText = "NPS Contribution Schedule Master Bill";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>Pay Month & Year:</b> ${pMonth} ${pYear} | <b>DDO Reg.No.:</b> ${document.getElementById('ddoRegNo').value}`;
         } else if (currentMode === 'PARISHRAMIK') {
-            document.getElementById('pSheetTitle').innerText = "परिश्रमिक देयक बिल रजिस्टर (Remuneration Master Bill)";
+            document.getElementById('pSheetTitle').innerText = "परिश्रमिक देयक एवं पारिश्रमिक रजिस्टर (Remuneration Bill)";
             document.getElementById('pSubHeaderDetails').innerHTML = `<b>सत्र:</b> ${document.getElementById('arrearYear').value}`;
         } else if (currentMode === 'RETIREMENT') {
             document.getElementById('pSheetTitle').innerText = "कर्मचारी सेवानिवृत्ति एवं सेवा अवधि विवरण सूची";
-            document.getElementById('pSubHeaderDetails').innerHTML = `<b>संस्थान:</b> ${schoolNameVal}`;
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>कुल दर्ज कर्मचारी:</b> ${savedEmployeeList.length}`;
         } else {
-            document.getElementById('pSheetTitle').innerText = "अवशेष महंगाई भत्ता (DA) अंतर देयक बिल";
             let prevR = document.getElementById('prevDaRate').value;
             let newR = document.getElementById('newDaRate').value;
-            document.getElementById('pArrearPeriod').innerText = document.getElementById('arrearYear').value;
-            document.getElementById('pDaRateDiff').innerText = `${prevR}% से ${newR}%`;
+            document.getElementById('pSheetTitle').innerText = "महंगाई भत्ता (DA) अवशेष देयक मास्टर शीट";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>अवधि सत्र:</b> ${document.getElementById('arrearYear').value} | <b>DA अंतर:</b> ${prevR}% से ${newR}%`;
         }
 
         window.print();
