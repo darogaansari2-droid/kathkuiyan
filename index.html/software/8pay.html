@@ -3,11 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>8th Pay Commission Calculator & Employee Portal</title>
-    <!-- SheetJS CDN for Excel Export -->
+    <title>मास्टर वेतन एवं कैलकुलेटर पोर्टल (Master Salary Portal)</title>
+    <!-- SheetJS CDN for Excel Export in 8pay -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
-        :root {
+        /* मास्टर नेविगेशन बार स्टाइल */
+        .master-nav-bar {
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-family: Arial, sans-serif;
+        }
+        .master-nav-bar label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .master-nav-bar select {
+            padding: 8px 12px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background-color: #fff;
+            color: #0f172a;
+            cursor: pointer;
+        }
+        .app-section {
+            display: none;
+        }
+        .app-section.active {
+            display: block;
+        }
+
+        /* --- Vetan Software Styles --- */
+        #vetan-app {
+            --primary-color: #003366;
+            --secondary-color: #002288;
+            --bg-color: #f4f6f9;
+            --border-color: #ccc;
+            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 10px;
+            color: #000;
+        }
+        #vetan-app .container {
+            max-width: 1350px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #vetan-app .header-title {
+            text-align: center;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        #vetan-app .header-title h1 {
+            margin: 0;
+            color: var(--primary-color);
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+        #vetan-app .header-title h3 {
+            margin: 5px 0;
+            color: #444;
+            font-size: 15px;
+        }
+        #vetan-app .top-flex-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        #vetan-app .emp-details-bar {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: #e2e8f0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+        #vetan-app .emp-row {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+        }
+        #vetan-app .emp-row div {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+        }
+        #vetan-app .emp-row input {
+            padding: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            border: 1px solid #999;
+            border-radius: 3px;
+            margin-top: 2px;
+        }
+        #vetan-app .mini-calculator {
+            flex: 1;
+            background: #eef2f7;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px dashed var(--primary-color);
+            font-size: 12px;
+        }
+        #vetan-app .mini-calculator h5 { margin: 0 0 5px 0; color: var(--primary-color); }
+        #vetan-app .calc-row { display: flex; gap: 5px; }
+        #vetan-app .calc-row input { width: 60px; padding: 3px; font-size: 12px; }
+        #vetan-app .calc-row button { padding: 3px 8px; font-size: 12px; background: #28a745; color: #fff; border: none; border-radius: 3px; cursor: pointer;}
+        
+        /* DA Settings Box Style */
+        #vetan-app .da-settings-box {
+            background: #fffbeb;
+            border: 1px solid #f59e0b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+        #vetan-app .da-settings-box h4 {
+            width: 100%;
+            margin: 0 0 5px 0;
+            color: #b45309;
+            font-size: 13px;
+        }
+
+        #vetan-app .form-section {
+            background: #eef2f7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+        #vetan-app .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        #vetan-app .form-group label {
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: #333;
+        }
+        #vetan-app .form-group input, #vetan-app .form-group select {
+            padding: 6px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+        #vetan-app .checkbox-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #003366;
+            background: #fff;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+        #vetan-app .checkbox-group input { width: 16px; height: 16px; }
+        #vetan-app .btn-container {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            margin-top: 5px;
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 10px;
+        }
+        #vetan-app button.v-btn {
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #fff;
+        }
+        #vetan-app .btn-save { background-color: #28a745; }
+        #vetan-app .btn-update { background-color: #ffc107; color: #000; }
+        #vetan-app .btn-clear { background-color: #6c757d; }
+        #vetan-app .btn-print { background-color: #17a2b8; }
+        #vetan-app .btn-danger { background-color: #dc3545; }
+        #vetan-app table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        #vetan-app th, #vetan-app td {
+            border: 1px solid #999;
+            padding: 5px 3px;
+            text-align: center;
+        }
+        #vetan-app th {
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 11px;
+        }
+        #vetan-app tr:nth-child(even) { background-color: #f9f9f9; }
+        #vetan-app .total-row td {
+            font-weight: bold;
+            background-color: #e2e8f0;
+        }
+        #vetan-app .summary-box {
+            margin-top: 20px;
+            border: 1px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 6px;
+            background: #fff;
+        }
+        #vetan-app .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+            font-size: 14px;
+        }
+        #vetan-app .action-btns button {
+            padding: 3px 5px;
+            font-size: 10px;
+            margin: 1px;
+        }
+        #vetan-app .btn-edit { background-color: #007bff; color:#fff; }
+        #vetan-app .btn-del { background-color: #dc3545; color:#fff; }
+
+        /* --- 8pay Software Styles --- */
+        #pay8-app {
             --primary: #1e3a8a;
             --secondary: #0284c7;
             --bg: #f8fafc;
@@ -16,101 +262,79 @@
             --border: #cbd5e1;
             --danger: #dc2626;
             --success: #16a34a;
-        }
-
-        body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            margin: 0;
             padding: 20px;
         }
-
-        .container {
+        #pay8-app .container {
             max-width: 1300px;
             margin: 0 auto;
         }
-
-        h1, h2 {
+        #pay8-app h1, #pay8-app h2 {
             text-align: center;
             color: var(--primary);
         }
-
-        .card {
+        #pay8-app .card {
             background: var(--surface);
             padding: 24px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             margin-bottom: 24px;
         }
-
-        .form-grid {
+        #pay8-app .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 16px;
         }
-
-        .form-group {
+        #pay8-app .form-group {
             display: flex;
             flex-direction: column;
         }
-
-        label {
+        #pay8-app label {
             font-weight: 600;
             margin-bottom: 6px;
             font-size: 0.9rem;
         }
-
-        input, select {
+        #pay8-app input, #pay8-app select {
             padding: 10px;
             border: 1px solid var(--border);
             border-radius: 6px;
             font-size: 1rem;
         }
-
-        input:readonly {
+        #pay8-app input:readonly {
             background-color: #e2e8f0;
             cursor: not-allowed;
         }
-
-        input:focus, select:focus {
-            outline: 2px solid var(--secondary);
-        }
-
-        .btn-group {
+        #pay8-app .btn-group {
             margin-top: 20px;
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
         }
-
-        button {
+        #pay8-app button {
             padding: 10px 20px;
             border: none;
             border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s;
+            color: #fff;
         }
-
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #1d4ed8; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-warning { background: #d97706; color: white; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-info { background: #0284c7; color: white; }
-
-        .search-bar {
+        #pay8-app .btn-primary { background: var(--primary); }
+        #pay8-app .btn-danger { background: var(--danger); }
+        #pay8-app .btn-warning { background: #d97706; }
+        #pay8-app .btn-success { background: var(--success); }
+        #pay8-app .btn-info { background: #0284c7; }
+        #pay8-app .search-bar {
             margin-bottom: 16px;
             width: 100%;
             max-width: 400px;
         }
-
-        .table-responsive {
+        #pay8-app .table-responsive {
             overflow-x: auto;
         }
-
-        table {
+        #pay8-app table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
@@ -119,49 +343,39 @@
             overflow: hidden;
             line-height: 1.2;
         }
-
-        th, td {
+        #pay8-app th, #pay8-app td {
             padding: 8px 10px;
             text-align: left;
             border-bottom: 1px solid var(--border);
             font-size: 0.88rem;
         }
-
-        /* Header Style: Bold Black Text */
-        th {
+        #pay8-app th {
             background-color: #f1f5f9;
             color: #000000;
             font-weight: 800;
             text-align: center;
             border: 1px solid var(--border);
         }
-
-        tfoot tr {
+        #pay8-app tfoot tr {
             background-color: #f8fafc;
             font-weight: bold;
         }
-
-        tr:hover { background-color: #f1f5f9; }
-
-        .badge {
+        #pay8-app .badge {
             background: #e0f2fe;
             color: #0369a1;
             padding: 2px 6px;
             border-radius: 4px;
             font-weight: bold;
         }
-
-        .profit-text {
+        #pay8-app .profit-text {
             color: var(--success);
             font-weight: bold;
         }
-
-        .emp-bold {
+        #pay8-app .emp-bold {
             font-weight: 700;
             color: #0f172a;
         }
-
-        .live-preview {
+        #pay8-app .live-preview {
             margin-top: 15px;
             padding: 12px;
             background-color: #f0fdf4;
@@ -173,448 +387,989 @@
             color: #166534;
         }
 
-        /* Fixed Landscape A4 Print Settings */
+        /* Print Settings */
         @media print {
-            @page {
-                size: A4 landscape;
-                margin: 10mm 10mm 10mm 10mm;
+            .no-print, .master-nav-bar {
+                display: none !important;
             }
-            
-            body * {
-                visibility: hidden;
+            .app-section {
+                display: none !important;
             }
-
-            .print-area, .print-area * {
-                visibility: visible;
-            }
-
-            .print-area {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-
-            /* H2 Header visible in Print */
-            .print-area h2 {
+            .app-section.active {
                 display: block !important;
-                visibility: visible !important;
-                margin-bottom: 15px !important;
-                font-size: 1.4rem !important;
-                color: #000000 !important;
-                text-align: center !important;
-            }
-
-            .no-print, .btn-group, .search-bar, #empForm, .live-preview, h1 {
-                display: none !important;
-            }
-
-            .card {
-                box-shadow: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                border: none !important;
-            }
-
-            table {
-                width: 100% !important;
-                border: 1px solid #000 !important;
-                line-height: 1.2 !important;
-            }
-
-            th, td {
-                border: 1px solid #000 !important;
-                padding: 6px !important;
-                font-size: 0.8rem !important;
-            }
-
-            th {
-                color: #000000 !important;
-                font-weight: bold !important;
-                background-color: #e2e8f0 !important;
-                text-align: center !important;
-            }
-
-            th.action-col, td.action-col {
-                display: none !important;
-            }
-
-            tfoot {
-                display: table-footer-group !important;
-            }
-
-            tfoot td {
-                background-color: #ffffff !important;
-                color: #000000 !important;
-                font-weight: bold !important;
-            }
-
-            .in-words-cell {
-                font-size: 0.85rem !important;
-                font-weight: bold !important;
-                color: #000000 !important;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1 class="no-print">8th Pay Commission Calculator & Employee Portal</h1>
-
-    <!-- Employee Input Form -->
-    <div class="card no-print">
-        <h2>कर्मचारी विवरण एवं 8th Pay Commission गणना</h2>
-        <form id="empForm">
-            <input type="hidden" id="editIndex" value="-1">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="empId">कर्मचारी ID (Auto Generated)</label>
-                    <input type="text" id="empId" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="empName">कर्मचारी का नाम</label>
-                    <input type="text" id="empName" required placeholder="पूरा नाम दर्ज करें">
-                </div>
-                <div class="form-group">
-                    <label for="designation">पद (Designation)</label>
-                    <input type="text" id="designation" required placeholder="उदा. Teacher / Assistant">
-                </div>
-                <div class="form-group">
-                    <label for="basicPay">7th CPC मूल वेतन (Basic Pay ₹)</label>
-                    <input type="number" id="basicPay" required min="0" placeholder="उदा. 18000" oninput="liveCalculateAll()">
-                </div>
-                <div class="form-group">
-                    <label for="daPercent">वर्तमान महंगाई भत्ता (DA %)</label>
-                    <input type="number" id="daPercent" value="50" min="0" placeholder="उदा. 50" oninput="liveCalculateAll()">
-                </div>
-                <div class="form-group">
-                    <label for="hra7th">7th CPC HRA (वर्तमान राशि ₹)</label>
-                    <input type="number" id="hra7th" required min="0" placeholder="उदा. 1800" oninput="liveCalculateAll()">
-                </div>
-                <div class="form-group">
-                    <label for="hra8th">8th CPC HRA (अनुमानित/ग्रामीण ₹)</label>
-                    <input type="number" id="hra8th" required min="0" placeholder="उदा. 2000" oninput="liveCalculateAll()">
-                </div>
-                <div class="form-group">
-                    <label for="units">उपभोग इकाई (Consumption Units)</label>
-                    <input type="number" id="units" value="3.0" step="0.1" min="1.0" oninput="liveCalculateAll()">
-                </div>
-                <div class="form-group">
-                    <label for="govtIncreasePercent">समान वृद्धि / बढ़ोतरी (Govt Increase %)</label>
-                    <input type="number" id="govtIncreasePercent" value="14.3" step="0.1" placeholder="उदा. 14.3" oninput="liveCalculateAll()">
-                </div>
-                <div class="form-group">
-                    <label for="fitmentFactor">अनुमानित Fitment Factor (Auto)</label>
-                    <input type="number" id="fitmentFactor" value="1.71" step="0.01" readonly>
-                </div>
-            </div>
-
-            <!-- Real-time Live Calculation Preview -->
-            <div class="live-preview">
-                <span>8th Est. Basic: ₹<span id="previewBasic">0</span></span>
-                <span>8th Est. Total: ₹<span id="previewTotal">0</span></span>
-            </div>
-
-            <div class="btn-group">
-                <button type="submit" class="btn-primary" id="saveBtn">डेटा सेव करें</button>
-                <button type="button" class="btn-warning" onclick="resetForm()">फ़ॉर्म रीसेट करें</button>
-            </div>
-        </form>
+    <!-- मास्टर चयन बार (Dropdown List) -->
+    <div class="master-nav-bar no-print">
+        <div>
+            <span style="font-size: 18px; letter-spacing: 0.5px;">📂 मास्टर सॉफ्टवेयर स्विच पैनल:</span>
+        </div>
+        <div>
+            <label for="softwareSelector">सॉफ्टवेयर चुनें:</label>
+            <select id="softwareSelector" onchange="switchSoftware()">
+                <option value="vetan">वेतन अवशेष सॉफ्टवेयर (Arrears Salary Software)</option>
+                <option value="pay8">8th Pay Commission Calculator & Portal</option>
+            </select>
+        </div>
     </div>
 
-    <!-- Table Section (Print Area) -->
-    <div class="card print-area">
-        <h2>कर्मचारी सूची एवं 8th CPC अनुमानित वेतन</h2>
-        <div class="btn-group no-print" style="margin-bottom: 15px;">
-            <input type="text" id="searchBar" class="search-bar" placeholder="नाम या ID से खोजें..." onkeyup="searchEmployees()" style="margin: 0;">
-            <button type="button" class="btn-success" onclick="exportToExcel()">Excel एक्सपोर्ट करें</button>
-            <button type="button" class="btn-info" onclick="window.print()">प्रिंट करें (Landscape A4)</button>
-        </div>
-        
-        <div class="table-responsive">
-            <table id="employeeTable">
+    <!-- 1. वेतन अवशेष सॉफ्टवेयर (Vetan Software Section) -->
+    <div id="vetan-app" class="app-section active">
+        <div class="container">
+            <!-- विद्यालय शीर्षक -->
+            <div class="header-title">
+                <h1 id="schoolNameDisplay">श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा, कठकुइयाँ, कुशीनगर</h1>
+                <h3>वेतन अवशेष विवरण (Arrears Salary Statement) | अवधि: <span id="durationDisplay">अद्यतन</span></h3>
+            </div>
+
+            <!-- विद्यालय, कर्मचारी विवरण और छोटा कैलकुलेटर -->
+            <div class="top-flex-bar">
+                <div class="emp-details-bar">
+                    <div class="emp-row">
+                        <div style="flex:2;">
+                            विद्यालय का नाम (School Name):
+                            <input type="text" id="schoolNameInput" value="श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा, कठकुइयाँ, कुशीनगर" oninput="updateHeaderInfo()">
+                        </div>
+                    </div>
+                    <div class="emp-row">
+                        <div>
+                            कर्मचारी का नाम:
+                            <input type="text" id="empName" value="नाम भरें " oninput="updateHeaderInfo()">
+                        </div>
+                        <div>
+                            पद (Designation):
+                            <input type="text" id="empDesignation" value="पद भरें" oninput="updateHeaderInfo()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- छोटा कैलकुलेटर बॉक्स -->
+                <div class="mini-calculator no-print">
+                    <h5>त्वरित कैलकुलेटर (Quick Calc)</h5>
+                    <div class="calc-row">
+                        <input type="number" id="calcVal1" placeholder="संख्या 1">
+                        <select id="calcOp" style="padding:2px;">
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="*">×</option>
+                            <option value="/">÷</option>
+                        </select>
+                        <input type="number" id="calcVal2" placeholder="संख्या 2">
+                        <button onclick="runCalc()">=</button>
+                        <input type="text" id="calcRes" readonly placeholder="उत्तर" style="background:#fff; font-weight:bold; width:70px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- DA रेट मास्टर सेटिंग पैनल (New Setting Box for Future/Custom DA Rates) -->
+            <div class="da-settings-box no-print">
+                <h4>⚙️ DA रेट मास्टर सेटिंग (जुलाई 2026 या अन्य महीनों के DA रेट जोड़ने/बदलने हेतु)</h4>
+                <div class="form-group" style="flex:1;">
+                    <label>वर्ष चुनें</label>
+                    <select id="setDaYear">
+                        <script>
+                            for(let y=2026; y<=2035; y++) {
+                                document.write(`<option value="${y}" ${y==2026?'selected':''}>${y}</option>`);
+                            }
+                        </script>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>माह चुनें</label>
+                    <select id="setDaMonth">
+                        <option value="जनवरी">जनवरी</option>
+                        <option value="फरवरी">फरवरी</option>
+                        <option value="मार्च">मार्च</option>
+                        <option value="अप्रैल">अप्रैल</option>
+                        <option value="मई">मई</option>
+                        <option value="जून">जून</option>
+                        <option value="जुलाई">जुलाई</option>
+                        <option value="अगस्त">अगस्त</option>
+                        <option value="सितंबर">सितंबर</option>
+                        <option value="अक्टूबर">अक्टूबर</option>
+                        <option value="नवंबर">नवंबर</option>
+                        <option value="दिसंबर">दिसंबर</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>नया DA (%) दर्ज करें</label>
+                    <input type="number" id="setDaValue" placeholder="उदा. 62" step="0.01">
+                </div>
+                <div>
+                    <button type="button" class="v-btn btn-save" onclick="saveCustomDaRate()" style="padding: 7px 12px; font-size: 13px;">DA रेट सेव करें</button>
+                </div>
+            </div>
+
+            <!-- इनपुट फॉर्म -->
+            <div class="form-section no-print">
+                <input type="hidden" id="editIndex" value="">
+                
+                <div class="form-group">
+                    <label>वर्ष (Year)</label>
+                    <select id="sYear" onchange="onPeriodChange()">
+                        <script>
+                            for(let y=2000; y<=2035; y++) {
+                                document.write(`<option value="${y}" ${y==2026?'selected':''}>${y}</option>`);
+                            }
+                        </script>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>माह (Month)</label>
+                    <select id="sMonth" onchange="onPeriodChange()">
+                        <option value="जनवरी">जनवरी</option>
+                        <option value="फरवरी">फरवरी</option>
+                        <option value="मार्च">मार्च</option>
+                        <option value="अप्रैल">अप्रैल</option>
+                        <option value="मई">मई</option>
+                        <option value="जून">जून</option>
+                        <option value="जुलाई">जुलाई</option>
+                        <option value="अगस्त">अगस्त</option>
+                        <option value="सितंबर">सितंबर</option>
+                        <option value="अक्टूबर">अक्टूबर</option>
+                        <option value="नवंबर">नवंबर</option>
+                        <option value="दिसंबर">दिसंबर</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>मूल वेतन (Full Basic)</label>
+                    <input type="number" id="basic" placeholder="0" oninput="calculateAutoDeductionType()">
+                </div>
+
+                <div class="form-group">
+                    <label>DA (%) [ऑटो / इनपुट]</label>
+                    <input type="number" step="0.01" id="daRate" placeholder="0" oninput="calculateAutoDeductionType()">
+                </div>
+
+                <div class="form-group">
+                    <label>HRA (राशि)</label>
+                    <input type="number" id="hra" placeholder="0">
+                </div>
+
+                <div class="form-group">
+                    <label>खंडित दिन (यदि हो, max 30)</label>
+                    <input type="number" id="partialDays" placeholder="पूरा माह (30)" min="1" max="30">
+                </div>
+
+                <!-- वेतन वृद्धि (Annual Increment) विकल्प बॉक्स -->
+                <div class="checkbox-group">
+                    <input type="checkbox" id="incrementCheck" onchange="calculateAutoDeductionType()">
+                    <label for="incrementCheck" style="cursor:pointer; margin:0;">वार्षिक वेतन वृद्धि (3% Increment)</label>
+                </div>
+
+                <!-- कटौती चयन (GPF या NPS) और मान -->
+                <div class="form-group">
+                    <label style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>कटौती प्रकार</span>
+                        <select id="deductionType" style="padding:1px; font-size:10px;" onchange="calculateAutoDeductionType()">
+                            <option value="GPF">GPF (Basic 10%)</option>
+                            <option value="NPS">NPS ((Basic+DA) 10%)</option>
+                        </select>
+                    </label>
+                    <input type="number" id="gpfNpsVal" placeholder="0" style="margin-top:2px;" title="10% Auto or Manual">
+                </div>
+
+                <!-- NPS अंशदान (अतिरिक्त) -->
+                <div class="form-group">
+                    <label>NPS अंशदान (अतिरिक्त)</label>
+                    <input type="number" id="npsExtra" placeholder="0">
+                </div>
+
+                <!-- G.LIC और Income Tax -->
+                <div class="form-group">
+                    <label>G.LIC</label>
+                    <input type="number" id="gLic" placeholder="0">
+                </div>
+
+                <div class="form-group">
+                    <label>Income Tax</label>
+                    <input type="number" id="tax" placeholder="0">
+                </div>
+
+                <!-- बटन: दाईं तरफ व्यवस्थित -->
+                <div class="btn-container">
+                    <button type="button" id="saveBtn" class="v-btn btn-save" onclick="saveData()">Save Record</button>
+                    <button type="button" class="v-btn btn-clear" onclick="clearForm()">Reset</button>
+                    <button type="button" class="v-btn btn-print" onclick="window.print()">Print (Landscape)</button>
+                    <button type="button" class="v-btn btn-danger" onclick="clearLocalStorageData()">Clear All Storage</button>
+                </div>
+            </div>
+
+            <!-- डेटा टेबल -->
+            <table>
                 <thead>
                     <tr>
-                        <th>Sr. / ID</th>
-                        <th>कर्मचारी का नाम</th>
-                        <th>पद</th>
-                        <th>इकाई</th>
-                        <th>7th Basic</th>
-                        <th>7th HRA</th>
-                        <th>8th HRA</th>
-                        <th>Fitment Factor</th>
-                        <th>8th Est. Basic</th>
-                        <th>8th Est. Total</th>
-                        <th>अंतर / लाभ</th>
-                        <th class="action-col no-print">कार्रवाई</th>
+                        <th>क्र.सं.</th>
+                        <th>वर्ष</th>
+                        <th>माह</th>
+                        <th>मूल वेतन</th>
+                        <th>DA राशि</th>
+                        <th>HRA</th>
+                        <th>कुल योग (Gross)</th>
+                        <th>GPF</th>
+                        <th>NPS</th>
+                        <th>G.LIC</th>
+                        <th>Tax</th>
+                        <th>कुल कटौती</th>
+                        <th>शुद्ध देय (Net Pay)</th>
+                        <th class="no-print">Action</th>
                     </tr>
                 </thead>
-                <tbody id="employeeTableBody">
-                    <!-- Dynamic Rows -->
+                <tbody id="tableBody">
+                    <!-- डेटा यहाँ जुड़ेगा -->
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="4" style="text-align: right;"><strong>कुल योग (Total):</strong></td>
-                        <td id="tot7thBasic">₹0</td>
-                        <td id="tot7thHra">₹0</td>
-                        <td id="tot8thHra">₹0</td>
-                        <td>-</td>
-                        <td id="tot8thBasic">₹0</td>
-                        <td id="tot8thTotal" style="color: #1e3a8a;">₹0</td>
-                        <td id="totDiff" style="color: var(--success);">+₹0</td>
-                        <td class="action-col no-print"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="11" class="in-words-cell" style="padding: 10px;">
-                            <strong>अनुमानित कुल राशि (हिंदी शब्दों में):</strong> 
-                            <span id="totalInWordsHindi" style="color: #0369a1; font-weight: bold;">शून्य रुपये मात्र</span>
-                        </td>
-                        <td class="action-col no-print"></td>
-                    </tr>
+                <tfoot id="tableFoot">
+                    <!-- कुल योग यहाँ दिखाई देगा -->
                 </tfoot>
             </table>
+
+            <!-- नीचे का विस्तृत योग (Summary Section) -->
+            <div class="summary-box">
+                <div class="summary-grid">
+                    <div><strong>कुल मूल वेतन योग:</strong> <span id="totBasic">0.00</span></div>
+                    <div><strong>कुल DA राशि योग:</strong> <span id="totDaAmt">0.00</span></div>
+                    <div><strong>कुल HRA योग:</strong> <span id="totHra">0.00</span></div>
+                    <div><strong>कुल सकल वेतन (Gross Total):</strong> <span id="totGross">0.00</span></div>
+                    <div><strong>कुल कटौती (Total Deductions):</strong> <span id="totDeduction">0.00</span></div>
+                    <div><strong>कुल शुद्ध देय वेतन (Net Payable):</strong> <span id="totNetPay" style="color: green; font-size: 16px;">0.00</span></div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    let employees = JSON.parse(localStorage.getItem('8thPayCommissionData')) || [];
 
-    // Hindi Words Converter (Accurate for 1-99 numbers)
-    function numberToWordsHindi(num) {
-        if (!num || num === 0) return "शून्य रुपये मात्र";
+    <!-- 2. 8th Pay Commission कैलकुलेटर (8pay Software Section) -->
+    <div id="pay8-app" class="app-section">
+        <div class="container">
+            <!-- Employee Input Form -->
+            <div class="card no-print">
+                <h2>कर्मचारी विवरण एवं 8th Pay Commission गणना</h2>
+                <form id="empForm">
+                    <input type="hidden" id="editIndex8" value="-1">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="empId">कर्मचारी ID (Auto Generated)</label>
+                            <input type="text" id="empId" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="empName8">कर्मचारी का नाम</label>
+                            <input type="text" id="empName8" required placeholder="पूरा नाम दर्ज करें">
+                        </div>
+                        <div class="form-group">
+                            <label for="designation">पद (Designation)</label>
+                            <input type="text" id="designation" required placeholder="उदा. Teacher / Assistant">
+                        </div>
+                        <div class="form-group">
+                            <label for="basicPay">7th CPC मूल वेतन (Basic Pay ₹)</label>
+                            <input type="number" id="basicPay" required min="0" placeholder="उदा. 18000" oninput="liveCalculateAll()">
+                        </div>
+                        <div class="form-group">
+                            <label for="daPercent">वर्तमान महंगाई भत्ता (DA %)</label>
+                            <input type="number" id="daPercent" value="50" min="0" placeholder="उदा. 50" oninput="liveCalculateAll()">
+                        </div>
+                        <div class="form-group">
+                            <label for="hra7th">7th CPC HRA (वर्तमान राशि ₹)</label>
+                            <input type="number" id="hra7th" required min="0" placeholder="उदा. 1800" oninput="liveCalculateAll()">
+                        </div>
+                        <div class="form-group">
+                            <label for="hra8th">8th CPC HRA (अनुमानित/ग्रामीण ₹)</label>
+                            <input type="number" id="hra8th" required min="0" placeholder="उदा. 2000" oninput="liveCalculateAll()">
+                        </div>
+                        <div class="form-group">
+                            <label for="units">उपभोग इकाई (Consumption Units)</label>
+                            <input type="number" id="units" value="3.0" step="0.1" min="1.0" oninput="liveCalculateAll()">
+                        </div>
+                        <div class="form-group">
+                            <label for="govtIncreasePercent">समान वृद्धि / बढ़ोतरी (Govt Increase %)</label>
+                            <input type="number" id="govtIncreasePercent" value="14.3" step="0.1" placeholder="उदा. 14.3" oninput="liveCalculateAll()">
+                        </div>
+                        <div class="form-group">
+                            <label for="fitmentFactor">अनुमानित Fitment Factor (Auto)</label>
+                            <input type="number" id="fitmentFactor" value="1.71" step="0.01" readonly>
+                        </div>
+                    </div>
 
-        const wordsMap = [
-            "", "एक", "दो", "तीन", "चार", "पांच", "छह", "सात", "आठ", "नौ", "दस",
-            "ग्यारह", "बारह", "तेरह", "चौदह", "पंद्रह", "सोलह", "सत्रह", "अठारह", "उन्नीस", "बीस",
-            "इक्कीस", "बाईस", "तेईस", "चौबीस", "पच्चीस", "छब्बीस", "सत्ताईस", "अट्ठाईस", "उनतीस", "तीस",
-            "इकत्तीस", "बत्तीस", "तैंतीस", "चौंतीस", "पैंतीस", "छत्तीस", "सैंतीस", "अड़तीस", "उनतालीस", "चालिस",
-            "इकतालीस", "बयालीस", "तैंतालीस", "चौंवालिस", "पैंतालीस", "छियालीस", "सैंतीस", "अड़तालीस", "उनचास", "पचास",
-            "इक्यावन", "बावन", "तिर्पन", "चौवन", "पचपन", "छप्पन", "संतावन", "अत्तावन", "उनसठ", "साठ",
-            "इकसठ", "बासठ", "तिरसठ", "चौंसठ", "पैंसठ", "छियासठ", "सरसठ", "अड़सठ", "उनहत्तर", "सत्तर",
-            "इकहत्तर", "बहत्तर", "तिहत्तर", "चौहत्तर", "पचहत्तर", "छिहत्तर", "सतहत्तर", "अठहत्तर", "उन्यासी", "अस्सी",
-            "इक्यासी", "ब्यासी", "तिरासी", "चौरासी", "पचासी", "छियासी", "सत्तासी", "अट्ठासी", "नवासी", "नब्बे",
-            "इक्यान्वे", "बान्वे", "तिरान्वे", "चौरान्वे", "पंचान्वे", "छियान्वे", "संतानवे", "अट्ठानवे", "निन्नानवे"
-        ];
+                    <!-- Real-time Live Calculation Preview -->
+                    <div class="live-preview">
+                        <span>8th Est. Basic: ₹<span id="previewBasic">0</span></span>
+                        <span>8th Est. Total: ₹<span id="previewTotal">0</span></span>
+                    </div>
 
-        let str = "";
+                    <div class="btn-group">
+                        <button type="submit" class="btn-primary" id="saveBtn8">डेटा सेव करें</button>
+                        <button type="button" class="btn-warning" onclick="resetForm8()">फ़ॉर्म रीसेट करें</button>
+                    </div>
+                </form>
+            </div>
 
-        if (num >= 10000000) {
-            let crore = Math.floor(num / 10000000);
-            if (crore < 100) str += wordsMap[crore] + " करोड़ ";
-            num %= 10000000;
+            <!-- Table Section (Print Area) -->
+            <div class="card print-area">
+                <h2>कर्मचारी सूची एवं 8th CPC अनुमानित वेतन</h2>
+                <div class="btn-group no-print" style="margin-bottom: 15px;">
+                    <input type="text" id="searchBar" class="search-bar" placeholder="नाम या ID से खोजें..." onkeyup="searchEmployees()" style="margin: 0;">
+                    <button type="button" class="btn-success" onclick="exportToExcel()">Excel एक्सपोर्ट करें</button>
+                    <button type="button" class="btn-info" onclick="window.print()">प्रिंट करें (Landscape A4)</button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table id="employeeTable">
+                        <thead>
+                            <tr>
+                                <th>Sr. / ID</th>
+                                <th>कर्मचारी का नाम</th>
+                                <th>पद</th>
+                                <th>इकाई</th>
+                                <th>7th Basic</th>
+                                <th>7th HRA</th>
+                                <th>8th HRA</th>
+                                <th>Fitment Factor</th>
+                                <th>8th Est. Basic</th>
+                                <th>8th Est. Total</th>
+                                <th>अंतर / लाभ</th>
+                                <th class="action-col no-print">कार्रवाई</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody">
+                            <!-- Dynamic Rows -->
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" style="text-align: right;"><strong>कुल योग (Total):</strong></td>
+                                <td id="tot7thBasic">₹0</td>
+                                <td id="tot7thHra">₹0</td>
+                                <td id="tot8thHra">₹0</td>
+                                <td>-</td>
+                                <td id="tot8thBasic">₹0</td>
+                                <td id="tot8thTotal" style="color: #1e3a8a;">₹0</td>
+                                <td id="totDiff" style="color: var(--success);">+₹0</td>
+                                <td class="action-col no-print"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="11" class="in-words-cell" style="padding: 10px;">
+                                    <strong>अनुमानित कुल राशि (हिंदी शब्दों में):</strong> 
+                                    <span id="totalInWordsHindi" style="color: #0369a1; font-weight: bold;">शून्य रुपये मात्र</span>
+                                </td>
+                                <td class="action-col no-print"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Scripts -->
+    <script>
+        // सॉफ्टवेयर स्विचिंग फंक्शन
+        function switchSoftware() {
+            let selectedVal = document.getElementById('softwareSelector').value;
+            let vetanApp = document.getElementById('vetan-app');
+            let pay8App = document.getElementById('pay8-app');
+
+            if (selectedVal === 'vetan') {
+                vetanApp.classList.add('active');
+                pay8App.classList.remove('active');
+            } else {
+                pay8App.classList.add('active');
+                vetanApp.classList.remove('active');
+            }
         }
 
-        if (num >= 100000) {
-            let lakh = Math.floor(num / 100000);
-            if (lakh < 100) str += wordsMap[lakh] + " लाख ";
-            num %= 100000;
-        }
-
-        if (num >= 1000) {
-            let thousand = Math.floor(num / 1000);
-            if (thousand < 100) str += wordsMap[thousand] + " हजार ";
-            num %= 1000;
-        }
-
-        if (num >= 100) {
-            let hundred = Math.floor(num / 100);
-            str += wordsMap[hundred] + " सौ ";
-            num %= 100;
-        }
-
-        if (num > 0) {
-            str += wordsMap[num] + " ";
-        }
-
-        return str.trim() + " रुपये मात्र";
-    }
-
-    // Calculation Logic with Dynamic Fitment Factor based on Units
-    function liveCalculateAll() {
-        const basicPay = parseFloat(document.getElementById('basicPay').value) || 0;
-        const daPercent = parseFloat(document.getElementById('daPercent').value) || 0;
-        const hra8th = parseFloat(document.getElementById('hra8th').value) || 0;
-        const units = parseFloat(document.getElementById('units').value) || 3.0;
-        const govtIncrease = parseFloat(document.getElementById('govtIncreasePercent').value) || 0;
-
-        const baseFactor = 1 + (daPercent / 100);
-        
-        // Fitment factor recalculated according to Consumption Units
-        const fitmentFactor = baseFactor * (1 + (govtIncrease / 100)) * (units / 3.0);
-        document.getElementById('fitmentFactor').value = fitmentFactor.toFixed(2);
-
-        const raw8thBasic = basicPay * fitmentFactor;
-
-        const projected8thBasic = Math.round(raw8thBasic / 100) * 100;
-        const projected8thTotal = projected8thBasic + hra8th;
-
-        document.getElementById('previewBasic').innerText = projected8thBasic.toLocaleString('hi-IN');
-        document.getElementById('previewTotal').innerText = projected8thTotal.toLocaleString('hi-IN');
-
-        return { projected8thBasic, projected8thTotal, fitmentFactor };
-    }
-
-    function generateNextId() {
-        if (employees.length === 0) return 'EMP-101';
-        const ids = employees.map(e => parseInt(e.empId.replace('EMP-', '')) || 100);
-        const maxId = Math.max(...ids);
-        return `EMP-${maxId + 1}`;
-    }
-
-    document.getElementById('empForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveEmployee();
-    });
-
-    function saveEmployee() {
-        const empId = document.getElementById('empId').value;
-        const empName = document.getElementById('empName').value;
-        const designation = document.getElementById('designation').value;
-        const basicPay = parseFloat(document.getElementById('basicPay').value) || 0;
-        const daPercent = parseFloat(document.getElementById('daPercent').value) || 0;
-        const hra7th = parseFloat(document.getElementById('hra7th').value) || 0;
-        const hra8th = parseFloat(document.getElementById('hra8th').value) || 0;
-        const units = parseFloat(document.getElementById('units').value) || 3.0;
-        const govtIncreasePercent = parseFloat(document.getElementById('govtIncreasePercent').value) || 0;
-        const editIndex = parseInt(document.getElementById('editIndex').value);
-
-        const calcResults = liveCalculateAll();
-        const fitmentFactor = parseFloat(document.getElementById('fitmentFactor').value);
-
-        const currentDA = (basicPay * daPercent) / 100;
-        const currentTotal = basicPay + currentDA + hra7th;
-        const payDifference = calcResults.projected8thTotal - currentTotal;
-
-        const empObject = {
-            empId, empName, designation, basicPay, daPercent, hra7th, hra8th,
-            units, fitmentFactor, govtIncreasePercent, currentDA, currentTotal,
-            projected8thBasic: calcResults.projected8thBasic,
-            projected8thTotal: calcResults.projected8thTotal,
-            payDifference
+        /* --- Vetan Software Logic --- */
+        // बेस फिक्सड DA रेट्स (जून 2026 तक)
+        const defaultDaMasterRates = {
+            "2000": { "जनवरी": 38, "फरवरी": 38, "मार्च": 38, "अप्रैल": 38, "मई": 38, "जून": 38, "जुलाई": 41, "अगस्त": 41, "सितंबर": 41, "अक्टूबर": 41, "नवंबर": 41, "दिसंबर": 41 },
+            "2001": { "जनवरी": 43, "फरवरी": 43, "मार्च": 43, "अप्रैल": 43, "मई": 43, "जून": 43, "जुलाई": 45, "अगस्त": 45, "सितंबर": 45, "अक्टूबर": 45, "नवंबर": 45, "दिसंबर": 45 },
+            "2002": { "जनवरी": 49, "फरवरी": 49, "मार्च": 49, "अप्रैल": 49, "मई": 49, "जून": 49, "जुलाई": 52, "अगस्त": 52, "सितंबर": 52, "अक्टूबर": 52, "नवंबर": 52, "दिसंबर": 52 },
+            "2003": { "जनवरी": 55, "फरवरी": 55, "मार्च": 55, "अप्रैल": 55, "मई": 55, "जून": 55, "जुलाई": 59, "अगस्त": 59, "सितंबर": 59, "अक्टूबर": 59, "नवंबर": 59, "दिसंबर": 59 },
+            "2004": { "जनवरी": 61, "फरवरी": 61, "मार्च": 61, "अप्रैल": 11, "मई": 11, "जून": 11, "जुलाई": 14, "अगस्त": 14, "सितंबर": 14, "अक्टूबर": 14, "नवंबर": 14, "दिसंबर": 14 },
+            "2005": { "जनवरी": 17, "फरवरी": 17, "मार्च": 17, "अप्रैल": 17, "मई": 17, "जून": 17, "जुलाई": 21, "अगस्त": 21, "सितंबर": 21, "अक्टूबर": 21, "नवंबर": 21, "दिसंबर": 21 },
+            "2006": { "जनवरी": 0, "फरवरी": 0, "मार्च": 0, "अप्रैल": 0, "मई": 0, "जून": 0, "जुलाई": 2, "अगस्त": 2, "सितंबर": 2, "अक्टूबर": 2, "नवंबर": 2, "दिसंबर": 2 }, 
+            "2007": { "जनवरी": 6, "फरवरी": 6, "मार्च": 6, "अप्रैल": 6, "मई": 6, "जून": 6, "जुलाई": 9, "अगस्त": 9, "सितंबर": 9, "अक्टूबर": 9, "नवंबर": 9, "दिसंबर": 9 },
+            "2008": { "जनवरी": 12, "फरवरी": 12, "मार्च": 12, "अप्रैल": 12, "मई": 12, "जून": 12, "जुलाई": 16, "अगस्त": 16, "सितंबर": 16, "अक्टूबर": 16, "नवंबर": 16, "दिसंबर": 16 },
+            "2009": { "जनवरी": 22, "फरवरी": 22, "मार्च": 22, "अप्रैल": 22, "मई": 22, "जून": 22, "जुलाई": 27, "अगस्त": 27, "सितंबर": 27, "अक्टूबर": 27, "नवंबर": 27, "दिसंबर": 27 },
+            "2010": { "जनवरी": 35, "फरवरी": 35, "मार्च": 35, "अप्रैल": 35, "मई": 35, "जून": 35, "जुलाई": 45, "अगस्त": 45, "सितंबर": 45, "अक्टूबर": 45, "नवंबर": 45, "दिसंबर": 45 },
+            "2011": { "जनवरी": 51, "फरवरी": 51, "मार्च": 51, "अप्रैल": 51, "मई": 51, "जून": 51, "जुलाई": 58, "अगस्त": 58, "सितंबर": 58, "अक्टूबर": 58, "नवंबर": 58, "दिसंबर": 58 },
+            "2012": { "जनवरी": 65, "फरवरी": 65, "मार्च": 65, "अप्रैल": 65, "मई": 65, "जून": 65, "जुलाई": 72, "अगस्त": 72, "सितंबर": 72, "अक्टूबर": 72, "नवंबर": 72, "दिसंबर": 72 },
+            "2013": { "जनवरी": 80, "फरवरी": 80, "मार्च": 80, "अप्रैल": 80, "मई": 80, "जून": 80, "जुलाई": 90, "अगस्त": 90, "सितंबर": 90, "अक्टूबर": 90, "नवंबर": 90, "दिसंबर": 90 },
+            "2014": { "जनवरी": 100, "फरवरी": 100, "मार्च": 100, "अप्रैल": 100, "मई": 100, "जून": 100, "जुलाई": 107, "अगस्त": 107, "सितंबर": 107, "अक्टूबर": 107, "नवंबर": 107, "दिसंबर": 107 },
+            "2015": { "जनवरी": 113, "फरवरी": 113, "मार्च": 113, "अप्रैल": 113, "मई": 113, "जून": 113, "जुलाई": 119, "अगस्त": 119, "सितंबर": 119, "अक्टूबर": 119, "नवंबर": 119, "दिसंबर": 119 },
+            "2016": { "जनवरी": 0, "फरवरी": 0, "मार्च": 0, "अप्रैल": 0, "मई": 0, "जून": 0, "जुलाई": 2, "अगस्त": 2, "सितंबर": 2, "अक्टूबर": 2, "नवंबर": 2, "दिसंबर": 2 }, 
+            "2017": { "जनवरी": 4, "फरवरी": 4, "मार्च": 4, "अप्रैल": 4, "मई": 4, "जून": 4, "जुलाई": 5, "अगस्त": 5, "सितंबर": 5, "अक्टूबर": 5, "नवंबर": 5, "दिसंबर": 5 },
+            "2018": { "जनवरी": 7, "फरवरी": 7, "मार्च": 7, "अप्रैल": 7, "मई": 7, "जून": 7, "जुलाई": 9, "अगस्त": 9, "सितंबर": 9, "अक्टूबर": 9, "नवंबर": 9, "दिसंबर": 9 },
+            "2019": { "जनवरी": 12, "फरवरी": 12, "मार्च": 12, "अप्रैल": 12, "मई": 12, "जून": 12, "जुलाई": 17, "अगस्त": 17, "सितंबर": 17, "अक्टूबर": 17, "नवंबर": 17, "दिसंबर": 17 },
+            "2020": { "जनवरी": 17, "फरवरी": 17, "मार्च": 17, "अप्रैल": 17, "मई": 17, "जून": 17, "जुलाई": 17, "अगस्त": 17, "सितंबर": 17, "अक्टूबर": 17, "नवंबर": 17, "दिसंबर": 17 },
+            "2021": { "जनवरी": 17, "फरवरी": 17, "मार्च": 17, "अप्रैल": 17, "मई": 17, "जून": 17, "जुलाई": 28, "अगस्त": 28, "सितंबर": 28, "अक्टूबर": 28, "नवंबर": 28, "दिसंबर": 28 },
+            "2022": { "जनवरी": 34, "फरवरी": 34, "मार्च": 34, "अप्रैल": 34, "मई": 34, "जून": 34, "जुलाई": 38, "अगस्त": 38, "सितंबर": 38, "अक्टूबर": 38, "नवंबर": 38, "दिसंबर": 38 },
+            "2023": { "जनवरी": 42, "फरवरी": 42, "मार्च": 42, "अप्रैल": 42, "मई": 42, "जून": 42, "जुलाई": 46, "अगस्त": 46, "सितंबर": 46, "अक्टूबर": 46, "नवंबर": 46, "दिसंबर": 46 },
+            "2024": { "जनवरी": 50, "फरवरी": 50, "मार्च": 50, "अप्रैल": 50, "मई": 50, "जून": 50, "जुलाई": 53, "अगस्त": 53, "सितंबर": 53, "अक्टूबर": 53, "नवंबर": 53, "दिसंबर": 53 },
+            "2025": { "जनवरी": 55, "फरवरी": 55, "मार्च": 55, "अप्रैल": 55, "मई": 55, "जून": 55, "जुलाई": 58, "अगस्त": 58, "सितंबर": 58, "अक्टूबर": 58, "नवंबर": 58, "दिसंबर": 58 },
+            "2026": { "जनवरी": 60, "फरवरी": 60, "मार्च": 60, "अप्रैल": 60, "मई": 60, "जून": 60, "जुलाई": 60, "अगस्त": 60, "सितंबर": 60, "अक्टूबर": 60, "नवंबर": 60, "दिसंबर": 60 }
         };
 
-        if (editIndex === -1) {
-            employees.push(empObject);
-        } else {
-            employees[editIndex] = empObject;
-            document.getElementById('editIndex').value = -1;
-            document.getElementById('saveBtn').innerText = 'डेटा सेव करें';
+        // LocalStorage से डायनामिक DA रेट लोड करें या डिफॉल्ट लें
+        let daMasterRates = JSON.parse(localStorage.getItem('customDaMasterRates')) || defaultDaMasterRates;
+
+        function saveCustomDaRate() {
+            let yr = document.getElementById('setDaYear').value;
+            let mth = document.getElementById('setDaMonth').value;
+            let val = parseFloat(document.getElementById('setDaValue').value);
+
+            if(isNaN(val)) {
+                alert("कृपया मान्य DA प्रतिशत (संख्या) दर्ज करें!");
+                return;
+            }
+
+            if(!daMasterRates[yr]) {
+                daMasterRates[yr] = {};
+            }
+            daMasterRates[yr][mth] = val;
+
+            // LocalStorage में सेव करें
+            localStorage.setItem('customDaMasterRates', JSON.stringify(daMasterRates));
+            alert(`सफलतापूर्वक वर्ष ${yr} और माह ${mth} के लिए DA दर ${val}% सेव कर दी गई है!`);
+            
+            // तुरंत फॉर्म में रिफ्रेश करें
+            onPeriodChange();
         }
 
-        localStorage.setItem('8thPayCommissionData', JSON.stringify(employees));
-        resetForm();
-        renderTable();
-    }
+        let arrearsData = JSON.parse(localStorage.getItem('arrearsData')) || [];
+        const monthList = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
 
-    function renderTable(filterData = null) {
-        const tbody = document.getElementById('employeeTableBody');
-        tbody.innerHTML = '';
-        const dataToRender = filterData || employees;
+        function onPeriodChange() {
+            let yr = document.getElementById('sYear').value;
+            let mth = document.getElementById('sMonth').value;
+            let daInput = document.getElementById('daRate');
 
-        let sum7thBasic = 0, sum7thHra = 0, sum8thHra = 0, sum8thBasic = 0, sum8thTotal = 0, sumDiff = 0;
+            if (daMasterRates[yr] && daMasterRates[yr][mth] !== undefined) {
+                daInput.value = daMasterRates[yr][mth];
+            } else {
+                daInput.value = 0; 
+            }
 
-        dataToRender.forEach((emp, index) => {
-            sum7thBasic += emp.basicPay;
-            sum7thHra += emp.hra7th;
-            sum8thHra += emp.hra8th;
-            sum8thBasic += emp.projected8thBasic;
-            sum8thTotal += emp.projected8thTotal;
-            sumDiff += emp.payDifference;
+            if(mth === "जुलाई") {
+                document.getElementById('incrementCheck').checked = true;
+            } else {
+                document.getElementById('incrementCheck').checked = false;
+            }
 
-            const row = `<tr>
-                <td><strong>${emp.empId}</strong></td>
-                <td class="emp-bold">${emp.empName}</td>
-                <td class="emp-bold">${emp.designation}</td>
-                <td><span class="badge">${emp.units} Unit</span></td>
-                <td>₹${emp.basicPay.toLocaleString('hi-IN')}</td>
-                <td>₹${emp.hra7th.toLocaleString('hi-IN')}</td>
-                <td>₹${emp.hra8th.toLocaleString('hi-IN')}</td>
-                <td><strong>${emp.fitmentFactor}</strong></td>
-                <td style="color: green; font-weight: bold;">₹${emp.projected8thBasic.toLocaleString('hi-IN')}</td>
-                <td style="color: #1e3a8a; font-weight: bold;">₹${emp.projected8thTotal.toLocaleString('hi-IN')}</td>
-                <td class="profit-text">+₹${emp.payDifference.toLocaleString('hi-IN')}</td>
-                <td class="action-col no-print">
-                    <button class="btn-warning" onclick="editEmployee(${index})">Edit</button>
-                    <button class="btn-danger" onclick="deleteEmployee(${index})">Delete</button>
-                </td>
+            updateBasicWithPreviousIncrement();
+            calculateAutoDeductionType();
+        }
+
+        function updateBasicWithPreviousIncrement() {
+            if (arrearsData.length === 0) return;
+            let lastItem = arrearsData[arrearsData.length - 1];
+            if (lastItem && !document.getElementById('basic').value) {
+                document.getElementById('basic').value = lastItem.inputBasic;
+                if(lastItem.isIncrement) {
+                    document.getElementById('incrementCheck').checked = true;
+                }
+            }
+        }
+
+        function updateHeaderInfo() {
+            let schName = document.getElementById('schoolNameInput').value;
+            document.getElementById('schoolNameDisplay').innerText = schName;
+        }
+
+        function getIncrementedBasic(baseVal) {
+            if(!baseVal || isNaN(baseVal)) return 0;
+            let increased = baseVal * 1.03;
+            return Math.round(increased / 100) * 100;
+        }
+
+        function calculateAutoDeductionType() {
+            let inputBasic = parseFloat(document.getElementById('basic').value) || 0;
+            let isIncrement = document.getElementById('incrementCheck').checked;
+            let finalBasic = isIncrement ? getIncrementedBasic(inputBasic) : inputBasic;
+            let daRate = parseFloat(document.getElementById('daRate').value) || 0;
+            let daAmt = (finalBasic * daRate) / 100;
+            let deductionType = document.getElementById('deductionType').value;
+            let autoVal = 0;
+
+            if (deductionType === 'GPF') {
+                autoVal = Math.round(finalBasic * 0.10);
+            } else if (deductionType === 'NPS') {
+                autoVal = Math.round((finalBasic + daAmt) * 0.10);
+            }
+            document.getElementById('gpfNpsVal').value = autoVal;
+        }
+
+        function runCalc() {
+            let v1 = parseFloat(document.getElementById('calcVal1').value) || 0;
+            let v2 = parseFloat(document.getElementById('calcVal2').value) || 0;
+            let op = document.getElementById('calcOp').value;
+            let res = 0;
+            if(op === '+') res = v1 + v2;
+            else if(op === '-') res = v1 - v2;
+            else if(op === '*') res = v1 * v2;
+            else if(op === '/') res = v2 !== 0 ? v1 / v2 : 0;
+            document.getElementById('calcRes').value = res.toFixed(2);
+        }
+
+        function advanceToNextMonth() {
+            let mSelect = document.getElementById('sMonth');
+            let ySelect = document.getElementById('sYear');
+            let currentMonth = mSelect.value;
+            let currentIndex = monthList.indexOf(currentMonth);
+            let currentYear = parseInt(ySelect.value);
+
+            if (currentIndex < 11) {
+                mSelect.value = monthList[currentIndex + 1];
+            } else {
+                mSelect.value = monthList[0];
+                ySelect.value = currentYear + 1;
+            }
+
+            if (arrearsData.length > 0) {
+                let lastItem = arrearsData[arrearsData.length - 1];
+                if (lastItem.isIncrement) {
+                    document.getElementById('basic').value = lastItem.finalBasic;
+                    document.getElementById('incrementCheck').checked = false;
+                } else {
+                    document.getElementById('basic').value = lastItem.inputBasic;
+                }
+            }
+            onPeriodChange();
+        }
+
+        function saveData() {
+            let editIndex = document.getElementById('editIndex').value;
+            let sYear = document.getElementById('sYear').value;
+            let sMonth = document.getElementById('sMonth').value;
+            let inputBasic = parseFloat(document.getElementById('basic').value) || 0;
+            let daRate = parseFloat(document.getElementById('daRate').value) || 0;
+            let fullHra = parseFloat(document.getElementById('hra').value) || 0;
+            let days = parseInt(document.getElementById('partialDays').value) || 30;
+            if(days <= 0 || days > 30) days = 30;
+
+            let isIncrement = document.getElementById('incrementCheck').checked;
+            let finalBasic = isIncrement ? getIncrementedBasic(inputBasic) : inputBasic;
+
+            let basic = (finalBasic * days) / 30;
+            let hra = (fullHra * days) / 30;
+            let daAmt = (basic * daRate) / 100;
+            let gross = basic + daAmt + hra;
+
+            let deductionType = document.getElementById('deductionType').value;
+            let gpfNpsVal = parseFloat(document.getElementById('gpfNpsVal').value) || 0;
+            let adjustedGpfNpsVal = (gpfNpsVal * days) / 30;
+
+            let gpfAmt = (deductionType === 'GPF') ? adjustedGpfNpsVal : 0;
+            let npsExtra = parseFloat(document.getElementById('npsExtra').value) || 0;
+            let npsAmt = (deductionType === 'NPS') ? (adjustedGpfNpsVal + npsExtra) : npsExtra;
+
+            let gLic = parseFloat(document.getElementById('gLic').value) || 0;
+            let tax = parseFloat(document.getElementById('tax').value) || 0;
+            let totalDeduction = gpfAmt + npsAmt + gLic + tax;
+            let netPay = gross - totalDeduction;
+
+            let record = { 
+                sYear, sMonth, days, inputBasic, finalBasic, isIncrement, basic, daRate, daAmt, fullHra, hra, 
+                gross, deductionType, gpfNpsVal, gpfAmt, npsAmt, gLic, tax, totalDeduction, netPay 
+            };
+
+            if (editIndex === "") {
+                arrearsData.push(record);
+                localStorage.setItem('arrearsData', JSON.stringify(arrearsData));
+                document.getElementById('partialDays').value = "";
+                renderTable();
+                advanceToNextMonth();
+            } else {
+                arrearsData[editIndex] = record;
+                document.getElementById('editIndex').value = "";
+                document.getElementById('saveBtn').innerText = "Save Record";
+                document.getElementById('saveBtn').className = "v-btn btn-save";
+                localStorage.setItem('arrearsData', JSON.stringify(arrearsData));
+                document.getElementById('partialDays').value = "";
+                renderTable();
+            }
+        }
+
+        function renderTable() {
+            let tbody = document.getElementById('tableBody');
+            let tfoot = document.getElementById('tableFoot');
+            tbody.innerHTML = "";
+
+            if (arrearsData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; color:#777;">कोई डेटा उपलब्ध नहीं है। कृपया रिकॉर्ड जोड़ें।</td></tr>`;
+                tfoot.innerHTML = "";
+                updateSummary(0,0,0,0,0,0);
+                document.getElementById('durationDisplay').innerText = "अद्यतन";
+                return;
+            }
+
+            let sumBasic = 0, sumDa = 0, sumHra = 0, sumGross = 0, sumGpf = 0, sumNps = 0, sumGLic = 0, sumTax = 0, sumDed = 0, sumNet = 0;
+
+            arrearsData.forEach((item, index) => {
+                sumBasic += item.basic;
+                sumDa += item.daAmt;
+                sumHra += item.hra;
+                sumGross += item.gross;
+                sumGpf += item.gpfAmt;
+                sumNps += item.npsAmt;
+                sumGLic += item.gLic;
+                sumTax += item.tax;
+                sumDed += item.totalDeduction;
+                sumNet += item.netPay;
+
+                let row = `<tr>
+                    <td>${index + 1}</td>
+                    <td>${item.sYear}</td>
+                    <td>${item.sMonth}</td>
+                    <td>${item.basic.toFixed(2)}</td>
+                    <td>${item.daAmt.toFixed(2)} <span style="font-size:9px; color:#555;">(${item.daRate}%)</span></td>
+                    <td>${item.hra.toFixed(2)}</td>
+                    <td><b>${item.gross.toFixed(2)}</b></td>
+                    <td>${item.gpfAmt.toFixed(2)}</td>
+                    <td>${item.npsAmt.toFixed(2)}</td>
+                    <td>${item.gLic.toFixed(2)}</td>
+                    <td>${item.tax.toFixed(2)}</td>
+                    <td><b>${item.totalDeduction.toFixed(2)}</b></td>
+                    <td style="color:green; font-weight:bold;">${item.netPay.toFixed(2)}</td>
+                    <td class="no-print action-btns">
+                        <button class="btn-edit" onclick="editRecord(${index})">Edit</button>
+                        <button class="btn-del" onclick="deleteRecord(${index})">Del</button>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+
+            tfoot.innerHTML = `<tr class="total-row">
+                <td colspan="3">योग (Total)</td>
+                <td>${sumBasic.toFixed(2)}</td>
+                <td>${sumDa.toFixed(2)}</td>
+                <td>${sumHra.toFixed(2)}</td>
+                <td>${sumGross.toFixed(2)}</td>
+                <td>${sumGpf.toFixed(2)}</td>
+                <td>${sumNps.toFixed(2)}</td>
+                <td>${sumGLic.toFixed(2)}</td>
+                <td>${sumTax.toFixed(2)}</td>
+                <td>${sumDed.toFixed(2)}</td>
+                <td>${sumNet.toFixed(2)}</td>
+                <td class="no-print"></td>
             </tr>`;
-            tbody.innerHTML += row;
+
+            let firstPeriod = `${arrearsData[0].sMonth} ${arrearsData[0].sYear}`;
+            let lastPeriod = `${arrearsData[arrearsData.length - 1].sMonth} ${arrearsData[arrearsData.length - 1].sYear}`;
+            document.getElementById('durationDisplay').innerText = `${firstPeriod} से ${lastPeriod}`;
+
+            updateSummary(sumBasic, sumDa, sumHra, sumGross, sumDed, sumNet);
+        }
+
+        function updateSummary(b, da, h, g, d, n) {
+            document.getElementById('totBasic').innerText = b.toFixed(2);
+            document.getElementById('totDaAmt').innerText = da.toFixed(2);
+            document.getElementById('totHra').innerText = h.toFixed(2);
+            document.getElementById('totGross').innerText = g.toFixed(2);
+            document.getElementById('totDeduction').innerText = d.toFixed(2);
+            document.getElementById('totNetPay').innerText = n.toFixed(2);
+        }
+
+        function editRecord(index) {
+            let item = arrearsData[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('sYear').value = item.sYear;
+            document.getElementById('sMonth').value = item.sMonth;
+            document.getElementById('basic').value = item.inputBasic || item.basic;
+            document.getElementById('daRate').value = item.daRate;
+            document.getElementById('hra').value = item.fullHra || item.hra;
+            document.getElementById('partialDays').value = item.days === 30 ? '' : item.days;
+            document.getElementById('incrementCheck').checked = item.isIncrement || false;
+            document.getElementById('deductionType').value = item.deductionType || 'GPF';
+            document.getElementById('gpfNpsVal').value = item.gpfNpsVal || (item.deductionType === 'GPF' ? item.gpfAmt : item.npsAmt);
+            document.getElementById('npsExtra').value = 0;
+            document.getElementById('gLic').value = item.gLic;
+            document.getElementById('tax').value = item.tax;
+
+            let saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerText = "Update Record";
+            saveBtn.className = "v-btn btn-update";
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function deleteRecord(index) {
+            if (confirm("क्या आप वाकई इस रिकॉर्ड को हटाना चाहते हैं?")) {
+                arrearsData.splice(index, 1);
+                localStorage.setItem('arrearsData', JSON.stringify(arrearsData));
+                renderTable();
+            }
+        }
+
+        function clearLocalStorageData() {
+            if (confirm("चेतावनी: क्या आप सारा डेटा पूरी तरह साफ़ करना चाहते हैं?")) {
+                localStorage.removeItem('arrearsData');
+                localStorage.removeItem('customDaMasterRates');
+                daMasterRates = JSON.parse(JSON.stringify(defaultDaMasterRates));
+                arrearsData = [];
+                clearForm();
+                renderTable();
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('editIndex').value = "";
+            document.getElementById('basic').value = "";
+            document.getElementById('hra').value = "";
+            document.getElementById('partialDays').value = "";
+            document.getElementById('incrementCheck').checked = false;
+            document.getElementById('deductionType').value = "GPF";
+            document.getElementById('gpfNpsVal').value = "";
+            document.getElementById('npsExtra').value = "";
+            document.getElementById('gLic').value = "";
+            document.getElementById('tax').value = "";
+            let saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerText = "Save Record";
+            saveBtn.className = "v-btn btn-save";
+            onPeriodChange();
+        }
+
+
+        /* --- 8pay Software Logic --- */
+        let employees = JSON.parse(localStorage.getItem('8thPayCommissionData')) || [];
+
+        function numberToWordsHindi(num) {
+            if (!num || num === 0) return "शून्य रुपये मात्र";
+            const wordsMap = [
+                "", "एक", "दो", "तीन", "चार", "पांच", "छह", "सात", "आठ", "नौ", "दस",
+                "ग्यारह", "बारह", "तेरह", "चौदह", "पंद्रह", "सोलह", "सत्रह", "अठारह", "उन्नीस", "बीस",
+                "इक्कीस", "बाईस", "तेईस", "चौबीस", "पच्चीस", "छब्बीस", "सत्ताईस", "अट्ठाईस", "उनतीस", "तीस",
+                "इकत्तीस", "बत्तीस", "तैंतीस", "चौंतीस", "पैंतीस", "छत्तीस", "सैंतीस", "अड़तीस", "उनतालीस", "चालिस",
+                "इकतालीस", "बयालीस", "तैंतालीस", "चौंवालिस", "पैंतालीस", "छियालीस", "सैंतीस", "अड़तालीस", "उनचास", "पचास",
+                "इक्यावन", "बावन", "तिर्पन", "चौवन", "पचपन", "छप्पन", "संतावन", "अत्तावन", "उनसठ", "साठ",
+                "इकसठ", "बासठ", "तिरसठ", "चौंसठ", "पैंसठ", "छियासठ", "सरसठ", "अड़सठ", "उनहत्तर", "सत्तर",
+                "इकहत्तर", "बहत्तर", "तिहत्तर", "चौहत्तर", "पचहत्तर", "छिहत्तर", "सतहत्तर", "अठहत्तर", "उन्यासी", "अस्सी",
+                "इक्यासी", "ब्यासी", "तिरासी", "चौरासी", "पचासी", "छियासी", "सत्तासी", "अट्ठासी", "नवासी", "नब्बे",
+                "इक्यान्वे", "बान्वे", "तिरान्वे", "चौरान्वे", "पंचान्वे", "छियान्वे", "संतानवे", "अट्ठानवे", "निन्नानवे"
+            ];
+            let str = "";
+            if (num >= 10000000) {
+                let crore = Math.floor(num / 10000000);
+                if (crore < 100) str += wordsMap[crore] + " करोड़ ";
+                num %= 10000000;
+            }
+            if (num >= 100000) {
+                let lakh = Math.floor(num / 100000);
+                if (lakh < 100) str += wordsMap[lakh] + " लाख ";
+                num %= 100000;
+            }
+            if (num >= 1000) {
+                let thousand = Math.floor(num / 1000);
+                if (thousand < 100) str += wordsMap[thousand] + " हजार ";
+                num %= 1000;
+            }
+            if (num >= 100) {
+                let hundred = Math.floor(num / 100);
+                str += wordsMap[hundred] + " सौ ";
+                num %= 100;
+            }
+            if (num > 0) {
+                str += wordsMap[num] + " ";
+            }
+            return str.trim() + " रुपये मात्र";
+        }
+
+        function liveCalculateAll() {
+            const basicPay = parseFloat(document.getElementById('basicPay').value) || 0;
+            const daPercent = parseFloat(document.getElementById('daPercent').value) || 0;
+            const hra8th = parseFloat(document.getElementById('hra8th').value) || 0;
+            const units = parseFloat(document.getElementById('units').value) || 3.0;
+            const govtIncrease = parseFloat(document.getElementById('govtIncreasePercent').value) || 0;
+
+            const baseFactor = 1 + (daPercent / 100);
+            const fitmentFactor = baseFactor * (1 + (govtIncrease / 100)) * (units / 3.0);
+            document.getElementById('fitmentFactor').value = fitmentFactor.toFixed(2);
+
+            const raw8thBasic = basicPay * fitmentFactor;
+            const projected8thBasic = Math.round(raw8thBasic / 100) * 100;
+            const projected8thTotal = projected8thBasic + hra8th;
+
+            document.getElementById('previewBasic').innerText = projected8thBasic.toLocaleString('hi-IN');
+            document.getElementById('previewTotal').innerText = projected8thTotal.toLocaleString('hi-IN');
+
+            return { projected8thBasic, projected8thTotal, fitmentFactor };
+        }
+
+        function generateNextId() {
+            if (employees.length === 0) return 'EMP-101';
+            const ids = employees.map(e => parseInt(e.empId.replace('EMP-', '')) || 100);
+            const maxId = Math.max(...ids);
+            return `EMP-${maxId + 1}`;
+        }
+
+        document.getElementById('empForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveEmployee();
         });
 
-        document.getElementById('tot7thBasic').innerText = `₹${sum7thBasic.toLocaleString('hi-IN')}`;
-        document.getElementById('tot7thHra').innerText = `₹${sum7thHra.toLocaleString('hi-IN')}`;
-        document.getElementById('tot8thHra').innerText = `₹${sum8thHra.toLocaleString('hi-IN')}`;
-        document.getElementById('tot8thBasic').innerText = `₹${sum8thBasic.toLocaleString('hi-IN')}`;
-        document.getElementById('tot8thTotal').innerText = `₹${sum8thTotal.toLocaleString('hi-IN')}`;
-        document.getElementById('totDiff').innerText = `+₹${sumDiff.toLocaleString('hi-IN')}`;
+        function saveEmployee() {
+            const empId = document.getElementById('empId').value;
+            const empName = document.getElementById('empName8').value;
+            const designation = document.getElementById('designation').value;
+            const basicPay = parseFloat(document.getElementById('basicPay').value) || 0;
+            const daPercent = parseFloat(document.getElementById('daPercent').value) || 0;
+            const hra7th = parseFloat(document.getElementById('hra7th').value) || 0;
+            const hra8th = parseFloat(document.getElementById('hra8th').value) || 0;
+            const units = parseFloat(document.getElementById('units').value) || 3.0;
+            const govtIncreasePercent = parseFloat(document.getElementById('govtIncreasePercent').value) || 0;
+            const editIndex = parseInt(document.getElementById('editIndex8').value);
 
-        document.getElementById('totalInWordsHindi').innerText = numberToWordsHindi(sum8thTotal);
-    }
+            const calcResults = liveCalculateAll();
+            const fitmentFactor = parseFloat(document.getElementById('fitmentFactor').value);
 
-    function exportToExcel() {
-        if(employees.length === 0) {
-            alert("एक्सपोर्ट करने के लिए कोई डेटा उपलब्ध नहीं है!");
-            return;
-        }
-        const table = document.getElementById("employeeTable");
-        const wb = XLSX.utils.table_to_book(table, {sheet: "8th_Pay_Data"});
-        XLSX.writeFile(wb, "8th_Pay_Commission_Data.xlsx");
-    }
+            const currentDA = (basicPay * daPercent) / 100;
+            const currentTotal = basicPay + currentDA + hra7th;
+            const payDifference = calcResults.projected8thTotal - currentTotal;
 
-    function editEmployee(index) {
-        const emp = employees[index];
-        document.getElementById('empId').value = emp.empId;
-        document.getElementById('empName').value = emp.empName;
-        document.getElementById('designation').value = emp.designation;
-        document.getElementById('basicPay').value = emp.basicPay;
-        document.getElementById('daPercent').value = emp.daPercent;
-        document.getElementById('hra7th').value = emp.hra7th;
-        document.getElementById('hra8th').value = emp.hra8th;
-        document.getElementById('units').value = emp.units;
-        document.getElementById('govtIncreasePercent').value = emp.govtIncreasePercent;
-        
-        document.getElementById('editIndex').value = index;
-        document.getElementById('saveBtn').innerText = 'अपडेट करें';
+            const empObject = {
+                empId, empName, designation, basicPay, daPercent, hra7th, hra8th,
+                units, fitmentFactor, govtIncreasePercent, currentDA, currentTotal,
+                projected8thBasic: calcResults.projected8thBasic,
+                projected8thTotal: calcResults.projected8thTotal,
+                payDifference
+            };
 
-        liveCalculateAll();
-    }
+            if (editIndex === -1) {
+                employees.push(empObject);
+            } else {
+                employees[editIndex] = empObject;
+                document.getElementById('editIndex8').value = -1;
+                document.getElementById('saveBtn8').innerText = 'डेटा सेव करें';
+            }
 
-    function deleteEmployee(index) {
-        if (confirm('क्या आप इस कर्मचारी का डेटा हटाना चाहते हैं?')) {
-            employees.splice(index, 1);
             localStorage.setItem('8thPayCommissionData', JSON.stringify(employees));
-            resetForm();
-            renderTable();
+            resetForm8();
+            renderTable8();
         }
-    }
 
-    function searchEmployees() {
-        const query = document.getElementById('searchBar').value.toLowerCase();
-        const filtered = employees.filter(emp => 
-            emp.empName.toLowerCase().includes(query) || 
-            emp.empId.toLowerCase().includes(query)
-        );
-        renderTable(filtered);
-    }
+        function renderTable8(filterData = null) {
+            const tbody = document.getElementById('employeeTableBody');
+            tbody.innerHTML = '';
+            const dataToRender = filterData || employees;
 
-    function resetForm() {
-        document.getElementById('empForm').reset();
-        document.getElementById('editIndex').value = -1;
-        document.getElementById('saveBtn').innerText = 'डेटा सेव करें';
-        document.getElementById('empId').value = generateNextId();
-        document.getElementById('units').value = "3.0";
-        document.getElementById('daPercent').value = "50";
-        document.getElementById('govtIncreasePercent').value = "14.3";
-        liveCalculateAll();
-    }
+            let sum7thBasic = 0, sum7thHra = 0, sum8thHra = 0, sum8thBasic = 0, sum8thTotal = 0, sumDiff = 0;
 
-    // Initial Execution
-    document.getElementById('empId').value = generateNextId();
-    liveCalculateAll();
-    renderTable();
-</script>
+            dataToRender.forEach((emp, index) => {
+                sum7thBasic += emp.basicPay;
+                sum7thHra += emp.hra7th;
+                sum8thHra += emp.hra8th;
+                sum8thBasic += emp.projected8thBasic;
+                sum8thTotal += emp.projected8thTotal;
+                sumDiff += emp.payDifference;
 
+                const row = `<tr>
+                    <td><strong>${emp.empId}</strong></td>
+                    <td class="emp-bold">${emp.empName}</td>
+                    <td class="emp-bold">${emp.designation}</td>
+                    <td><span class="badge">${emp.units} Unit</span></td>
+                    <td>₹${emp.basicPay.toLocaleString('hi-IN')}</td>
+                    <td>₹${emp.hra7th.toLocaleString('hi-IN')}</td>
+                    <td>₹${emp.hra8th.toLocaleString('hi-IN')}</td>
+                    <td><strong>${emp.fitmentFactor}</strong></td>
+                    <td style="color: green; font-weight: bold;">₹${emp.projected8thBasic.toLocaleString('hi-IN')}</td>
+                    <td style="color: #1e3a8a; font-weight: bold;">₹${emp.projected8thTotal.toLocaleString('hi-IN')}</td>
+                    <td class="profit-text">+₹${emp.payDifference.toLocaleString('hi-IN')}</td>
+                    <td class="action-col no-print">
+                        <button class="btn-warning" onclick="editEmployee(${index})">Edit</button>
+                        <button class="btn-danger" onclick="deleteEmployee(${index})">Delete</button>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+
+            document.getElementById('tot7thBasic').innerText = `₹${sum7thBasic.toLocaleString('hi-IN')}`;
+            document.getElementById('tot7thHra').innerText = `₹${sum7thHra.toLocaleString('hi-IN')}`;
+            document.getElementById('tot8thHra').innerText = `₹${sum8thHra.toLocaleString('hi-IN')}`;
+            document.getElementById('tot8thBasic').innerText = `₹${sum8thBasic.toLocaleString('hi-IN')}`;
+            document.getElementById('tot8thTotal').innerText = `₹${sum8thTotal.toLocaleString('hi-IN')}`;
+            document.getElementById('totDiff').innerText = `+₹${sumDiff.toLocaleString('hi-IN')}`;
+
+            document.getElementById('totalInWordsHindi').innerText = numberToWordsHindi(sum8thTotal);
+        }
+
+        function exportToExcel() {
+            if(employees.length === 0) {
+                alert("एक्सपोर्ट करने के लिए कोई डेटा उपलब्ध नहीं है!");
+                return;
+            }
+            const table = document.getElementById("employeeTable");
+            const wb = XLSX.utils.table_to_book(table, {sheet: "8th_Pay_Data"});
+            XLSX.writeFile(wb, "8th_Pay_Commission_Data.xlsx");
+        }
+
+        function editEmployee(index) {
+            const emp = employees[index];
+            document.getElementById('empId').value = emp.empId;
+            document.getElementById('empName8').value = emp.empName;
+            document.getElementById('designation').value = emp.designation;
+            document.getElementById('basicPay').value = emp.basicPay;
+            document.getElementById('daPercent').value = emp.daPercent;
+            document.getElementById('hra7th').value = emp.hra7th;
+            document.getElementById('hra8th').value = emp.hra8th;
+            document.getElementById('units').value = emp.units;
+            document.getElementById('govtIncreasePercent').value = emp.govtIncreasePercent;
+            
+            document.getElementById('editIndex8').value = index;
+            document.getElementById('saveBtn8').innerText = 'अपडेट करें';
+            liveCalculateAll();
+        }
+
+        function deleteEmployee(index) {
+            if (confirm('क्या आप इस कर्मचारी का डेटा हटाना चाहते हैं?')) {
+                employees.splice(index, 1);
+                localStorage.setItem('8thPayCommissionData', JSON.stringify(employees));
+                resetForm8();
+                renderTable8();
+            }
+        }
+
+        function searchEmployees() {
+            const query = document.getElementById('searchBar').value.toLowerCase();
+            const filtered = employees.filter(emp => 
+                emp.empName.toLowerCase().includes(query) || 
+                emp.empId.toLowerCase().includes(query)
+            );
+            renderTable8(filtered);
+        }
+
+        function resetForm8() {
+            document.getElementById('empForm').reset();
+            document.getElementById('editIndex8').value = -1;
+            document.getElementById('saveBtn8').innerText = 'डेटा सेव करें';
+            document.getElementById('empId').value = generateNextId();
+            document.getElementById('units').value = "3.0";
+            document.getElementById('daPercent').value = "50";
+            document.getElementById('govtIncreasePercent').value = "14.3";
+            liveCalculateAll();
+        }
+
+        // Window Load Initialization
+        window.onload = function() {
+            // Vetan Init
+            onPeriodChange();
+            updateHeaderInfo();
+            renderTable();
+            if (arrearsData.length > 0) {
+                let lastItem = arrearsData[arrearsData.length - 1];
+                if(lastItem.isIncrement) {
+                    document.getElementById('basic').value = lastItem.finalBasic;
+                } else {
+                    document.getElementById('basic').value = lastItem.inputBasic;
+                }
+            }
+
+            // 8pay Init
+            document.getElementById('empId').value = generateNextId();
+            liveCalculateAll();
+            renderTable8();
+        };
+    </script>
 </body>
 </html>
