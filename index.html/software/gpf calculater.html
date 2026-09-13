@@ -3,24 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GPF Calculation System</title>
+<title>Unified GPF Management System</title>
+
+<!-- Tailwind CSS CDN for App 2 -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    // Disable Tailwind preflight so it doesn't conflict with App 1's custom CSS
+    tailwind.config = {
+        corePlugins: {
+            preflight: false,
+        }
+    }
+</script>
 
 <style>
-*, *::before, *::after {
+/* ─── APP 1 STYLES ─── */
+#viewApp1 *, #viewApp1 *::before, #viewApp1 *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-body {
+#viewApp1 {
     font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     padding: 10px 20px 20px 20px; 
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #ffe4e1 !important; /* Main Background - Soft Pink */
+    background-color: #ffe4e1;
     min-height: 100vh;
+    width: 100%;
 }
 
 /* LOGIN MODAL STYLES */
@@ -99,7 +112,7 @@ body {
     display: none;
 }
 
-/* MAIN CONTENT */
+/* MAIN CONTENT BLUR UNTIL LOGGED IN */
 #mainContent {
     width: 100%;
     display: flex;
@@ -123,7 +136,7 @@ body {
 /* Header container right-aligned */
 .top-inputs-container {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     margin-bottom: 15px; 
     justify-content: flex-end; 
     width: 100%;
@@ -136,15 +149,14 @@ body {
     flex-direction: column;
 }
 
-#acno-box { width: 140px; }
-#name-box { width: 220px; }
-#year-box { width: 120px; }
-#lock-box { width: 180px; }
+#acno-box { width: 160px; }
+#name-box { width: 250px; }
+#year-box { width: 130px; }
 
 .top-inputs-container label {
     display: block;
     margin-bottom: 5px;
-    font-size: 16px; 
+    font-size: 18px; 
     text-align: left;
     color: #333;
 }
@@ -161,36 +173,6 @@ body {
     background-color: #ffffff; 
 }
 
-/* Lock Panel Style */
-.lock-control {
-    display: flex;
-    gap: 5px;
-}
-.lock-control input {
-    height: 38px;
-}
-.lock-btn {
-    padding: 0 10px;
-    height: 38px;
-    font-size: 12px;
-    border: 1px solid #000;
-    border-radius: 4px;
-    cursor: pointer;
-    background: #d81b60;
-    color: #fff;
-    font-weight: bold;
-}
-.status-badge {
-    font-size: 12px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: white;
-    margin-left: 5px;
-}
-.status-locked { background: #c62828; }
-.status-unlocked { background: #2e7d32; }
-
-/* Horizontal Scroll Wrapper */
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
@@ -198,8 +180,7 @@ body {
     padding-bottom: 10px;
 }
 
-/* Main Grid */
-.container {
+.container-grid {
     display: grid;
     grid-template-columns: repeat(7, minmax(180px, 1fr)); 
     gap: 15px;
@@ -207,7 +188,7 @@ body {
     min-width: 1280px;
 }
 
-.container > div {
+.container-grid > div {
     background: pink; 
     padding: 15px 10px; 
     border-radius: 8px;
@@ -218,7 +199,7 @@ body {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-h3 {
+#viewApp1 h3 {
     text-align: center;
     font-size: 18px; 
     border-bottom: 2px solid #000000;
@@ -240,7 +221,7 @@ h3 {
     gap: 5px;
 }
 
-label {
+#viewApp1 label {
     font-size: 16px; 
     min-width: 65px;
     text-align: left;
@@ -248,7 +229,7 @@ label {
     color: #000000;
 }
 
-input {
+#viewApp1 input {
     width: 100%; 
     height: 30px; 
     font-size: 14px;
@@ -261,7 +242,7 @@ input {
     outline: none;
 }
 
-input:focus {
+#viewApp1 input:focus {
     border-color: #4a0014;
     background-color: #fffdf0 !important; 
     box-shadow: 0 0 3px rgba(163, 0, 54, 0.5);
@@ -275,7 +256,7 @@ input:focus {
     width: 100%;
 }
 
-button {
+#viewApp1 button {
     width: 100%;
     padding: 6px 0; 
     font-size: 14px; 
@@ -292,82 +273,74 @@ button {
 
 .gpf-sheet { background: #8e44ad; } 
 .gpf-sheet:hover { background: #6c3483; }
-
 .save { background: #2e7d32; }
 .save:hover { background: #1b5e20; }
-
 .search { background: #1565c0; }
 .search:hover { background: #0d47a1; }
-
 .clear { background: #37474f; }
 .clear:hover { background: #263238; }
-
 .update { background: #ef6c00; color: white; }
 .update:hover { background: #e65100; }
-
 .delete { background: #c62828; }
 .delete:hover { background: #b71c1c; }
 
-.clear-local { background: #d32f2f; }
-.clear-local:hover { background: #9a0007; }
-
-button:active {
-    transform: scale(0.97);
-}
-
-/* LOCAL STORAGE DISPLAY TABLE STYLES */
-.local-table-section {
+/* ─── APP 2 STYLES ─── */
+#viewApp2 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f1f5f9;
+    padding: 16px;
     width: 100%;
-    margin-top: 25px;
-    background: #ffffff;
-    border: 2px solid #d81b60;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    min-height: 100vh;
 }
 
-.local-table-section h3 {
-    text-align: left;
-    color: #2e7d32;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #2e7d32;
-    padding-bottom: 5px;
-}
-
-.local-data-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 13px;
-}
-
-.local-data-table th, .local-data-table td {
-    border: 1px solid #ccc;
-    padding: 6px 8px;
+#viewApp2 table th, #viewApp2 table td {
+    font-size: 12px;
+    padding: 5px 8px;
     text-align: center;
+    border: 1px solid #cbd5e1;
 }
 
-.local-data-table th {
-    background-color: #fce4ec;
-    color: #880e4f;
+#viewApp2 thead th {
+    background-color: #1e3a8a;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.local-data-table tr:nth-child(even) {
-    background-color: #f9f9f9;
+#viewApp2 tfoot td {
+    background-color: #e2e8f0;
+    font-weight: bold;
+    font-size: 12px;
 }
 
-@media screen and (max-width: 768px) {
-    body { padding: 8px; }
-    .top-inputs-container { justify-content: space-between; gap: 10px; }
-    #acno-box, #name-box, #year-box, #lock-box { width: 48%; }
-    .container { grid-template-columns: 1fr; min-width: 100%; }
-    .table-wrapper { overflow-x: visible; }
+#viewApp2 input[type="number"], #viewApp2 input[type="text"], #viewApp2 select {
+    width: 100%;
+    background: transparent;
+    border: none;
+    text-align: center;
+    outline: none;
+    font-size: 12px;
+}
+
+#viewApp2 input[type="number"]:focus, #viewApp2 input[type="text"]:focus, #viewApp2 select:focus {
+    background-color: #eff6ff;
+    border-bottom: 1px dashed #2563eb;
+}
+
+@media print {
+    .no-print, .global-switcher-bar {
+        display: none !important;
+    }
+    body {
+        padding: 0 !important;
+    }
 }
 </style>
 </head>
 <body>
 
-<!-- LOGIN MODAL -->
+<!-- LOGIN MODAL (App 1) -->
 <div id="loginModal">
     <div class="login-card">
         <h2>S K I C GPF SYSTEM LOGIN</h2>
@@ -384,12 +357,27 @@ button:active {
     </div>
 </div>
 
-<!-- MAIN CONTENT -->
+<!-- GLOBAL SOFTWARE SWITCHER DROPDOWN BAR -->
+<div class="global-switcher-bar" style="background:#0f172a; color:white; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; width:100%; box-shadow:0 2px 4px rgba(0,0,0,0.2); position:sticky; top:0; z-index:9999;">
+    <div style="font-size:16px; font-weight:bold;">🗂️ Unified GPF Portal</div>
+    <div>
+        <label for="softwareSelector" style="font-size:14px; margin-right:10px; color:#cbd5e1;">सॉफ्टवेयर चुनें (Select Software):</label>
+        <select id="softwareSelector" onchange="switchSoftware()" style="padding:6px 12px; font-size:14px; font-weight:bold; border-radius:6px; background:#ffffff; color:#0f172a; border:none; outline:none; cursor:pointer;">
+            <option value="app1">1. GPF Calculation System (SKIC)</option>
+            <option value="app2">2. GPF व्यक्तिगत खाता (Personal Ledger)</option>
+        </select>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- APPLICATION 1: GPF Calculation System -->
+<!-- ═══════════════════════════════════════ -->
+<div id="viewApp1">
 <div id="mainContent">
 
 <!-- MARQUEE DISPLAY PATTI -->
 <div class="marquee-container">
-    <marquee behavior="scroll" direction="left" scrollamount="10">S K I C GPF INTEREST SOFTWARE</marquee>
+    <marquee behavior="scroll" direction="left" scrollamount="10">S K I C     GPF INTEREST SOFTWARE</marquee>
 </div>
 
 <!-- TOP INPUT BAR -->
@@ -406,18 +394,10 @@ button:active {
         <label>Year</label>
         <input type="text" id="year" placeholder="e.g. 2018-19">
     </div>
-    <!-- LOCK / UNLOCK CONTROLS -->
-    <div class="top-input-group" id="lock-box">
-        <label>Sheet Lock <span id="lockStatus" class="status-badge status-locked">LOCKED</span></label>
-        <div class="lock-control">
-            <input type="password" id="sheetPass" placeholder="Password">
-            <button class="lock-btn" id="lockToggleBtn" onclick="toggleSheetLock()">UNLOCK</button>
-        </div>
-    </div>
 </div>
 
 <div class="table-wrapper">
-<div class="container">
+<div class="container-grid">
 
 <!-- COLUMN 1 -->
 <div>
@@ -545,74 +525,164 @@ button:active {
     <button class="clear" onclick="clearAllData()">CLEAR ALL</button>
     <button class="update" onclick="updateData()">UPDATE</button>
     <button class="delete" onclick="deleteData()">DELETE</button>
-    <button class="clear-local" onclick="clearLocalStorageData()">DELETE LOCAL STORAGE</button>
 </div>
 </div>
 
 </div>
 </div>
 
-<!-- LOCAL STORAGE SAVED DATA DISPLAY TABLE -->
-<div class="local-table-section">
-    <h3>Local Storage Saved Records (Laser View)</h3>
-    <div style="overflow-x: auto;">
-        <table class="local-data-table">
-            <thead>
-                <tr>
-                    <th>S.No.</th>
-                    <th>Ac No / ID</th>
-                    <th>Name</th>
-                    <th>Year</th>
-                    <th>BF (t76)</th>
-                    <th>Current (t77)</th>
-                    <th>Total (t78)</th>
-                    <th>Interest (t79)</th>
-                    <th>Loan (t80)</th>
-                    <th>Grand Total (t81)</th>
-                    <th>Laser (t83)</th>
-                    <th>Diff (t84)</th>
-                </tr>
-            </thead>
-            <tbody id="localTableBody">
-                <!-- Local data rows dynamically added here -->
-            </tbody>
-        </table>
+</div>
+</div>
+
+
+<!-- ═══════════════════════════════════════ -->
+<!-- APPLICATION 2: GPF Personal Ledger     -->
+<!-- ═══════════════════════════════════════ -->
+<div id="viewApp2" style="display: none;">
+    <div class="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-5 border border-slate-300">
+        
+        <!-- School / Office Header -->
+        <div class="text-center border-b pb-3 mb-3">
+            <h1 class="text-lg font-bold text-blue-900">Gpf Portal 2026</h1>
+            <h2 class="text-sm font-semibold text-slate-700">सामान्य भविष्य निधि (GPF) वार्षिक लेखा विवरण</h2>
+        </div>
+
+        <!-- Employee Info Form -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200 mb-3 text-xs">
+            <div>
+                <label class="block font-bold text-slate-600 mb-0.5">खाता संख्या:</label>
+                <input type="text" id="accNo" value="यहाँ खाता भरें" class="bg-white border rounded p-1 text-left font-semibold">
+            </div>
+            <div>
+                <label class="block font-bold text-slate-600 mb-0.5">कर्मचारी का नाम:</label>
+                <input type="text" id="empName" value="यहाँ नाम भरें" class="bg-white border rounded p-1 text-left font-semibold">
+            </div>
+            <div>
+                <label class="block font-bold text-slate-600 mb-0.5">पद:</label>
+                <input type="text" id="empDesig" value="यहाँ पद भरें" class="bg-white border rounded p-1 text-left font-semibold">
+            </div>
+        </div>
+
+        <!-- Top Settings Panel -->
+        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200 mb-3 no-print space-y-2">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-center text-xs">
+                <div>
+                    <label class="block font-bold text-blue-900 mb-0.5">लेखा वर्ष (Start Year):</label>
+                    <input type="number" id="baseYear" value="2026" class="bg-white border rounded p-1 text-center font-semibold" onchange="updateMonthsAndCalculate()">
+                </div>
+                <div>
+                    <label class="block font-bold text-blue-900 mb-0.5">ब्याज अवधि (चक्र):</label>
+                    <select id="interestPeriod" class="bg-white border rounded p-1 text-center font-semibold" onchange="onPeriodChange()">
+                        <option value="12">वार्षिक (1 वर्ष - 1 दर)</option>
+                        <option value="6">अर्धवार्षिक (6-6 माह - 2 दरें)</option>
+                        <option value="4">तिमाही (4-4 माह - 3 दरें)</option>
+                        <option value="3">त्रैमासिक (3-3 माह - 4 दरें)</option>
+                    </select>
+                </div>
+                <div id="singleRateDiv">
+                    <label class="block font-bold text-blue-900 mb-0.5">ब्याज दर (%): (उदा. 7.1 या 11)</label>
+                    <input type="number" id="interestRate" value="7.1" step="0.1" class="bg-white border rounded p-1 text-center font-semibold" onchange="calculateGPF_App2()">
+                </div>
+            </div>
+
+            <!-- Dynamic Interest Rates Container -->
+            <div id="multiRatesContainer" class="hidden border-t border-blue-200 pt-2 mt-1">
+                <label class="block font-bold text-blue-900 mb-1 text-xs">विभिन्न अवधियों के लिए अलग-अलग ब्याज दर (%):</label>
+                <div id="ratesInputsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-2"></div>
+            </div>
+        </div>
+
+        <!-- Opening Balance Bar -->
+        <div class="flex justify-end mb-2">
+            <div class="bg-slate-50 border border-slate-300 rounded px-3 py-1.5 flex items-center gap-2 text-sm">
+                <span class="font-extrabold text-slate-800">प्रारंभिक अवशेष (मार्च):</span>
+                <input type="number" id="openingBal" value="100" class="w-32 bg-white border rounded p-1 text-right font-extrabold text-blue-900 text-base" onchange="calculateGPF_App2()">
+            </div>
+        </div>
+
+        <!-- Vertical Ledger Table -->
+        <div class="overflow-x-auto mb-3">
+            <table id="ledgerTable" class="w-full border-collapse bg-white">
+                <thead>
+                    <tr>
+                        <th style="width: 14%;">माह / वर्ष</th>
+                        <th style="width: 12%;">कटौती (माह) <span class="text-[10px] font-normal block no-print">(मार्च बदलने पर सब में लागू)</span></th>
+                        <th style="width: 12%;">महं० / वोनस</th>
+                        <th style="width: 12%;">जी०पी०एफ० ऋण <span class="text-[10px] font-normal block no-print">(मार्च बदलने पर सब में लागू)</span></th>
+                        <th style="width: 15%;">मासिक योग (कटौती+महं०+ऋण)</th>
+                        <th style="width: 15%;">स्थाई / अस्थाई आहरण</th>
+                        <th style="width: 15%;">मासिक योग (शेष)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+                <tfoot>
+                    <tr>
+                        <td class="text-left font-bold">योग:</td>
+                        <td id="footSub" class="text-right">0.00</td>
+                        <td id="footBonus" class="text-right">0.00</td>
+                        <td id="footLoan" class="text-right text-blue-900">0.00</td>
+                        <td id="footTotalAdd" class="text-right text-blue-900">0.00</td>
+                        <td id="footTemp" class="text-right font-extrabold text-red-700">0.00</td>
+                        <td id="footSumOfBalances" class="text-right text-emerald-800">0.00</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Calculations & Summary Section -->
+        <div class="flex justify-end mb-3">
+            <div class="bg-blue-50 p-3 rounded-lg border border-blue-200 w-full md:w-1/2 text-xs space-y-1.5">
+                <p class="flex justify-between py-1 border-b border-blue-200">
+                    <span class="font-semibold text-slate-700">प्रारंभिक अवशेष :</span> 
+                    <span id="lblOpening" class="font-bold text-blue-600 text-sm">147326</span>
+                </p>
+                <p class="flex justify-between py-1 border-b border-blue-200">
+                    <span class="font-semibold text-slate-700">कटौती का कुल योग:</span> 
+                    <span id="lblTotalSub" class="font-bold text-blue-600">0</span>
+                </p>
+                <p class="flex justify-between py-1 border-b border-blue-200">
+                    <span class="font-semibold text-slate-700">वार्षिक ब्याज:</span>
+                    <span id="lblInterest" class="font-bold text-green-600">0</span>
+                </p>
+                <p class="flex justify-between py-1 border-b border-blue-200">
+                    <span class="font-semibold text-slate-700">सम्पूर्ण योग:</span> 
+                    <span id="lblGrandTotal" class="font-bold text-blue-600">0</span>
+                </p>
+                <p class="flex justify-between py-1 border-b border-blue-200 items-center">
+                    <span class="font-semibold text-slate-700">सत्र दौरान लिया गया ऋण:</span> 
+                    <span id="lblTakenLoan" class="font-bold font-extrabold text-red-700 text-sm">0</span>
+                </p>
+                <p class="flex justify-between py-1.5 bg-emerald-100 px-2 rounded mt-1 border border-emerald-200">
+                    <span class="font-bold text-emerald-900">अंतिम अवशेष :</span> 
+                    <span id="lblClosingBalance" class="font-bold text-emerald-600 text-sm">0</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end gap-3 no-print">
+            <button onclick="calculateGPF_App2()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded font-semibold shadow text-xs">🔄 गणना करें</button>
+            <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-1.5 rounded font-semibold shadow text-xs">🖨️ प्रिंट करें</button>
+        </div>
+
     </div>
 </div>
 
-</div>
 
 <script>
-// SHEET LOCK SYSTEM (Password: daroga)
-const UNLOCK_PASSWORD = "daroga";
-let isSheetUnlocked = false;
-
-function toggleSheetLock() {
-    let passInput = document.getElementById("sheetPass");
-    let statusBadge = document.getElementById("lockStatus");
-    let toggleBtn = document.getElementById("lockToggleBtn");
-
-    if (!isSheetUnlocked) {
-        if (passInput.value.trim() === UNLOCK_PASSWORD) {
-            isSheetUnlocked = true;
-            statusBadge.innerText = "UNLOCKED";
-            statusBadge.className = "status-badge status-unlocked";
-            toggleBtn.innerText = "LOCK";
-            passInput.value = "";
-            alert("गूगल शीट अनलॉक हो गई है! अब सिस्टम Google Sheet मोड में काम करेगा।");
-        } else {
-            alert("गलत Password!");
-        }
+// ─── GLOBAL SWITCHER FUNCTION ───
+function switchSoftware() {
+    let sel = document.getElementById("softwareSelector").value;
+    if(sel === "app1") {
+        document.getElementById("viewApp1").style.display = "flex";
+        document.getElementById("viewApp2").style.display = "none";
     } else {
-        isSheetUnlocked = false;
-        statusBadge.innerText = "LOCKED";
-        statusBadge.className = "status-badge status-locked";
-        toggleBtn.innerText = "UNLOCK";
-        alert("गूगल शीट लॉक हो गई है! अब सिस्टम Local Storage मोड में काम करेगा।");
+        document.getElementById("viewApp1").style.display = "none";
+        document.getElementById("viewApp2").style.display = "block";
     }
 }
 
-// LOGIN CHECK FUNCTIONALITY
+// ─── APP 1 SCRIPTS ───
 function checkLogin() {
     let id = document.getElementById("loginId").value.trim();
     let pass = document.getElementById("loginPassword").value.trim();
@@ -630,13 +700,12 @@ window.addEventListener('DOMContentLoaded', () => {
     if (sessionStorage.getItem("isLoggedIn") === "true") {
         document.getElementById("loginModal").style.display = "none";
     }
-    renderLocalStorageTable();
+    renderLedgerRows(); // Initialize App 2 as well
 });
 
 const API_URL = "https://script.google.com/macros/s/AKfycbzgnCYtgVb3wE9lnz4OSzC4szP_BGr1TKuM76WItxDG4t1rfbaoTtcZ3VNAfOnDSNg/exec";
 
 let isSearchMode = false;
-let manualEditedT53toT64 = {}; // t53-t64 Manual Edits Track karne ke liye
 
 const interestRateMaster = {
     "1956-57": 3.75, "1957-58": 3.75, "1958-59": 3.75, "1959-60": 3.75, "1960-61": 3.75, "1961-62": 3.75,
@@ -653,9 +722,7 @@ const interestRateMaster = {
     "2020-21": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2021-22": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 },
     "2022-23": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2023-24": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 },
     "2024-25": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2025-26": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 },
-    "2026-27": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2027-28": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 },
-    "2028-29": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2029-30": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 },
-    "2030-31": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }, "2031-32": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }
+    "2026-27": { q1: 7.1, q2: 7.1, q3: 7.1, q4: 7.1 }
 };
 
 function v(id){ return Number(document.getElementById(id).value)||0; }
@@ -677,17 +744,6 @@ function fill(start,end){
     }
 }
 fill(1,12); fill(14,25);
-
-// Manual input tracking for t53 to t64
-for(let i=53; i<=64; i++){
-    let el = document.getElementById("t"+i);
-    if(el){
-        el.addEventListener("input", function(){
-            manualEditedT53toT64["t"+i] = true;
-            calc();
-        });
-    }
-}
 
 document.getElementById("year").addEventListener("input", function() {
     let yearVal = this.value.trim();
@@ -716,7 +772,6 @@ document.getElementById("year").addEventListener("input", function() {
             document.getElementById("t75").value = rateData;
         }
     } 
-    
     isSearchMode = false;
     calc(); 
 });
@@ -749,19 +804,18 @@ function calc(){
     let loanTotal=0; for(let i=40;i<=51;i++){ loanTotal += v("t"+i); }
     document.getElementById("t52").value=loanTotal;
 
-    // Auto-fill calculation for Grand Total (t53 to t64), respecting manual inputs
-    if (!manualEditedT53toT64["t53"]) document.getElementById("t53").value = v("t27") - v("t40") + v("t66");
-    if (!manualEditedT53toT64["t54"]) document.getElementById("t54").value = v("t53") + v("t28") - v("t41");
-    if (!manualEditedT53toT64["t55"]) document.getElementById("t55").value = v("t54") + v("t29") - v("t42");
-    if (!manualEditedT53toT64["t56"]) document.getElementById("t56").value = v("t55") + v("t30") - v("t43");
-    if (!manualEditedT53toT64["t57"]) document.getElementById("t57").value = v("t56") + v("t31") - v("t44");
-    if (!manualEditedT53toT64["t58"]) document.getElementById("t58").value = v("t57") + v("t32") - v("t45");
-    if (!manualEditedT53toT64["t59"]) document.getElementById("t59").value = v("t58") + v("t33") - v("t46");
-    if (!manualEditedT53toT64["t60"]) document.getElementById("t60").value = v("t59") + v("t34") - v("t47");
-    if (!manualEditedT53toT64["t61"]) document.getElementById("t61").value = v("t60") + v("t35") - v("t48");
-    if (!manualEditedT53toT64["t62"]) document.getElementById("t62").value = v("t61") + v("t36") - v("t49");
-    if (!manualEditedT53toT64["t63"]) document.getElementById("t63").value = v("t62") + v("t37") - v("t50");
-    if (!manualEditedT53toT64["t64"]) document.getElementById("t64").value = v("t63") + v("t38") - v("t51");
+    document.getElementById("t53").value=v("t27")-v("t40")+v("t66");
+    document.getElementById("t54").value=v("t53")+v("t28")-v("t41");
+    document.getElementById("t55").value=v("t54")+v("t29")-v("t42");
+    document.getElementById("t56").value=v("t55")+v("t30")-v("t43");
+    document.getElementById("t57").value=v("t56")+v("t31")-v("t44");
+    document.getElementById("t58").value=v("t57")+v("t32")-v("t45");
+    document.getElementById("t59").value=v("t58")+v("t33")-v("t46");
+    document.getElementById("t60").value=v("t59")+v("t34")-v("t47");
+    document.getElementById("t61").value=v("t60")+v("t35")-v("t48");
+    document.getElementById("t62").value=v("t61")+v("t36")-v("t49");
+    document.getElementById("t63").value=v("t62")+v("t37")-v("t50");
+    document.getElementById("t64").value=v("t63")+v("t38")-v("t51");
 
     let grand=0; for(let i=53;i<=64;i++){ grand += v("t"+i); }
     document.getElementById("t65").value=grand;
@@ -780,12 +834,10 @@ function calc(){
     }
 
     document.getElementById("t74").value = totalInterest;
-    
     document.getElementById("t76").value = v("t66");
     document.getElementById("t77").value = v("t39");
     let total78 = v("t76") + v("t77");
     document.getElementById("t78").value = total78;
-    
     document.getElementById("t79").value = v("t74");
     document.getElementById("t80").value = v("t52"); 
     
@@ -829,44 +881,40 @@ if(el82) {
     });
 }
 
-// ─── LOCAL STORAGE TABLE RENDER ───
-function renderLocalStorageTable() {
-    let tbody = document.getElementById("localTableBody");
-    tbody.innerHTML = "";
-    let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
-    
-    if (localData.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='12'>Local Storage में कोई रिकॉर्ड नहीं है।</td></tr>";
-        return;
+async function syncOfflineData() {
+    if (!navigator.onLine) return; 
+    let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
+    if (offlineQueue.length === 0) return;
+    let remainingQueue = [];
+    let successCount = 0;
+    for (let data of offlineQueue) {
+        try {
+            let res = await fetch(API_URL, { 
+                method: "POST", 
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(data) 
+            });
+            if (!res.ok) throw new Error("Server error");
+            successCount++;
+        } catch (error) {
+            remainingQueue.push(data);
+        }
     }
-
-    localData.forEach((row, index) => {
-        let tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${index + 1}</td>
-            <td>${row.acno || ''}</td>
-            <td>${row.empname || ''}</td>
-            <td>${row.year || ''}</td>
-            <td>${row.t76 || ''}</td>
-            <td>${row.t77 || ''}</td>
-            <td>${row.t78 || ''}</td>
-            <td>${row.t79 || ''}</td>
-            <td>${row.t80 || ''}</td>
-            <td>${row.t81 || ''}</td>
-            <td>${row.t83 || ''}</td>
-            <td>${row.t84 || ''}</td>
-        `;
-        tbody.appendChild(tr);
-    });
+    localStorage.setItem("gpf_offline_queue", JSON.stringify(remainingQueue));
+    if (remainingQueue.length === 0 && successCount > 0) {
+        alert("बधाई हो! इंटरनेट वापस आ गया है और ऑफ़लाइन सेव किया हुआ " + successCount + " डेटा गूगल शीट में सिंक हो गया है।");
+    }
 }
 
-// ─── SAVE DATA FUNCTION ───
+window.addEventListener('online', syncOfflineData);
+window.addEventListener('load', syncOfflineData);
+
 async function saveData(){
     let acnoInput = document.getElementById("acno");
     let yearInput = document.getElementById("year");
     let empnameInput = document.getElementById("empname");
     
-    if(!acnoInput.value || !yearInput.value) { alert("ID और Year डालना जरूरी है!"); return; }
+    if(!acnoInput.value || !yearInput.value) { alert("ID aur Year daalna zaroori hai!"); return; }
     
     let totalVal = document.getElementById("t81").value; 
     let data={ 
@@ -884,16 +932,11 @@ async function saveData(){
         t84: document.getElementById("t84").value
     };
 
-    // 1. LOCKED MODE -> Purely Local Storage
-    if (!isSheetUnlocked) {
-        let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
-        localData.push(data);
-        localStorage.setItem("gpf_local_records", JSON.stringify(localData));
-        
-        renderLocalStorageTable();
-        alert("Locked Mode: डेटा सफलतापूर्वक Local Storage में सेव हो गया है।");
-        
-        // Save karne ke baad purane calculation inputs clear karke t81 ki value ko t66 (BF) me auto fill karein
+    if (!navigator.onLine) {
+        let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
+        offlineQueue.push(data);
+        localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
+        alert("Internet nahi hai! Data local storage me temporary save ho गया है।");
         clearCalculationData(); 
         document.getElementById("t66").value = totalVal; 
         isSearchMode = false;
@@ -901,7 +944,6 @@ async function saveData(){
         return;
     }
 
-    // 2. UNLOCKED MODE -> Purely Google Sheet
     try{
         let res=await fetch(API_URL,{ 
             method:"POST", 
@@ -909,91 +951,39 @@ async function saveData(){
             body:JSON.stringify(data) 
         });
         let result = await res.text();
-        alert("Unlocked Mode: " + result);
-        
+        alert(result);
         clearCalculationData(); 
         document.getElementById("t66").value = totalVal; 
         isSearchMode = false;
         calc(); 
     }catch(error){ 
-        alert("Network Error: Google Sheet में सेव नहीं हो पाया।"); 
+        let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
+        offlineQueue.push(data);
+        localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
+        alert("Network Error: Data locally safe kar liya gaya hai."); 
     }
 }
 
-// ─── SEARCH DATA FUNCTION ───
 async function searchData(){
-    let acnoInput = document.getElementById("acno").value.trim();
-    let yearInput = document.getElementById("year").value.trim();
+    let acnoInput = document.getElementById("acno");
+    let yearInput = document.getElementById("year");
     let empnameInput = document.getElementById("empname");
 
-    if(!acnoInput) { alert("ढूंढने के लिए ID / Ac No. डालें!"); return; }
-
-    // 1. LOCKED MODE -> SEARCH ONLY IN LOCAL STORAGE
-    if (!isSheetUnlocked) {
-        let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
-        
-        // Find exact match or latest record for this Account Number
-        let matches = localData.filter(item => item.acno === acnoInput);
-        
-        if (matches.length === 0) {
-            alert("Local Storage में इस ID का कोई डेटा नहीं मिला!");
-            return;
-        }
-
-        let exactMatch = yearInput ? matches.find(item => item.year === yearInput) : null;
-        let latestMatch = matches[matches.length - 1]; // Sabse hal ka record
-
-        clearCalculationData();
-
-        if (exactMatch) {
-            // Same year ka data milne par pura form load hoga
-            empnameInput.value = exactMatch.empname || "";
-            document.getElementById("t66").value = exactMatch.t76 || "";
-            document.getElementById("t76").value = exactMatch.t76 || "";
-            document.getElementById("t77").value = exactMatch.t77 || "";
-            document.getElementById("t78").value = exactMatch.t78 || "";
-            document.getElementById("t79").value = exactMatch.t79 || "";
-            document.getElementById("t80").value = exactMatch.t80 || "";
-            document.getElementById("t81").value = exactMatch.t81 || "";
-            document.getElementById("t83").value = exactMatch.t83 || "";
-            document.getElementById("t84").value = exactMatch.t84 || "";
-            isSearchMode = true;
-            alert("Local Storage से इस साल का रिकॉर्ड मिल गया!");
-        } else {
-            // Agle year ki entry ke liye BF auto bhar jayega
-            empnameInput.value = latestMatch.empname || "";
-            if (latestMatch.t81) {
-                document.getElementById("t66").value = latestMatch.t81;
-                document.getElementById("t76").value = latestMatch.t81;
-            }
-            alert(`Local Storage से पिछला Grand Total (Year: ${latestMatch.year}) का ${latestMatch.t81} अपने आप BF (t66 & t76) में भर गया है!`);
-        }
-        
-        calc();
-        return;
-    }
-
-    // 2. UNLOCKED MODE -> SEARCH ONLY IN GOOGLE SHEET
-    if (!navigator.onLine) { alert("Google Sheet से सर्च करने के लिए इंटरनेट जरूरी है!"); return; }
-    if (!yearInput) { alert("Google Sheet में ढूंढने के लिए Year भी दर्ज करें!"); return; }
-
+    if(!navigator.onLine) { alert("Data Search karne ke liye Internet zaroori hai!"); return; }
+    if(!acnoInput.value || !yearInput.value) { alert("Dhundhne ke liye ID aur Year dono daalein!"); return; }
     try {
-        let res = await fetch(API_URL + "?action=search&acno=" + encodeURIComponent(acnoInput) + "&year=" + encodeURIComponent(yearInput));
+        let res = await fetch(API_URL + "?action=search&acno=" + encodeURIComponent(acnoInput.value.trim()) + "&year=" + encodeURIComponent(yearInput.value.trim()));
         let data = await res.json();
         
-        if(data.status == "NOT_FOUND"){ alert("Google Sheet में इस ID और Year का डेटा नहीं मिला!"); return; }
-        
+        if(data.status == "NOT_FOUND"){ alert("Is ID aur Year ka koi data nahi mila!"); return; }
         clearCalculationData();
         
         empnameInput.value = data.empname || "";
-        document.getElementById("acno").value = data.acno || acnoInput;
-        document.getElementById("year").value = data.year || yearInput;
-        
+        acnoInput.value = data.acno || acnoInput.value.trim();
+        yearInput.value = data.year || yearInput.value.trim();
         isSearchMode = true; 
         
-        let bfVal = data.t76 !== undefined ? data.t76 : "";
-        document.getElementById("t66").value = bfVal;
-        document.getElementById("t76").value = bfVal; 
+        document.getElementById("t76").value = data.t76 !== undefined ? data.t76 : ""; 
         document.getElementById("t77").value = data.t77 !== undefined ? data.t77 : ""; 
         document.getElementById("t78").value = data.t78 !== undefined ? data.t78 : ""; 
         document.getElementById("t79").value = data.t79 !== undefined ? data.t79 : ""; 
@@ -1002,27 +992,18 @@ async function searchData(){
         document.getElementById("t83").value = data.t83 !== undefined ? data.t83 : ""; 
         document.getElementById("t84").value = data.t84 !== undefined ? data.t84 : "";
         
-        calc();
-        alert("Google Sheet से Data Successfully Load हो गया!");
+        alert("Data Successfully Loaded!");
     } catch(error) { 
-        console.error(error);
-        alert("Search Error: Google Sheet से डेटा नहीं आ रहा है।"); 
+        alert("Search Error: Sheet se data nahi aa raha hai."); 
     }
 }
 
-// ─── UPDATE DATA FUNCTION ───
 async function updateData(){
-    if (!isSheetUnlocked) {
-        alert("गूगल शीट Locked है! Local Storage के रिकॉर्ड्स को अपडेट करने के लिए फिर से Save बटन दबाएं या Sheet Unlock करें।");
-        return;
-    }
-
     let acnoInput = document.getElementById("acno");
     let yearInput = document.getElementById("year");
     let empnameInput = document.getElementById("empname");
 
-    if(!acnoInput.value || !yearInput.value) { alert("Update के लिए ID और Year जरूरी है!"); return; }
-
+    if(!acnoInput.value || !yearInput.value) { alert("Update ke liye ID aur Year zaroori hai!"); return; }
     let totalVal = document.getElementById("t81").value; 
     let data={ 
         action: "update", 
@@ -1039,6 +1020,17 @@ async function updateData(){
         t84: document.getElementById("t84").value
     };
 
+    if (!navigator.onLine) {
+        let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
+        offlineQueue.push(data);
+        localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
+        alert("Internet nahi hai! Update Queue me save ho gaya hai.");
+        document.getElementById("t66").value = totalVal; 
+        isSearchMode = false;
+        calc();
+        return;
+    }
+
     try{
         let res=await fetch(API_URL,{ 
             method:"POST", 
@@ -1047,27 +1039,19 @@ async function updateData(){
         });
         let result=await res.text();
         alert(result);
-        
         document.getElementById("t66").value = totalVal; 
         isSearchMode = false;
         calc(); 
     }catch(error){ alert("Update Error"); }
 }
 
-// ─── DELETE DATA FUNCTION ───
 async function deleteData(){
-    if (!isSheetUnlocked) {
-        alert("गूगल शीट Locked है! Google Sheet से डेटा डिलीट करने के लिए Unlock करें। Local Storage डिलीट करने के लिए लाल बटन यूज़ करें।");
-        return;
-    }
-
     let acnoInput = document.getElementById("acno");
     let yearInput = document.getElementById("year");
 
-    if(!navigator.onLine) { alert("Data Delete करने के लिए इंटरनेट जरूरी है!"); return; }
-
-    if(!acnoInput.value || !yearInput.value) { alert("Delete करने के लिए ID और Year डालें!"); return; }
-    if(!confirm("क्या आप सच में गूगल शीट से यह रिकॉर्ड डिलीट करना चाहते हैं?")) return;
+    if(!navigator.onLine) { alert("Data Delete karne ke liye Internet zaroori hai!"); return; }
+    if(!acnoInput.value || !yearInput.value) { alert("Delete karne ke liye ID aur Year daalein!"); return; }
+    if(!confirm("Kya aap sach me yeh record delete karna chahte hain?")) return;
     try{
         let data={ action:"delete", acno:acnoInput.value.trim(), year:yearInput.value.trim() };
         let res=await fetch(API_URL,{ 
@@ -1081,29 +1065,11 @@ async function deleteData(){
     }catch(error){ alert("Delete Error"); }
 }
 
-function clearLocalStorageData() {
-    let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
-    if (localData.length === 0) {
-        alert("Local Storage में कोई डेटा नहीं है!");
-        return;
-    }
-    if (confirm("क्या आप सच में Local Storage का सारा डेटा डिलीट करना चाहते हैं?")) {
-        localStorage.removeItem("gpf_local_records");
-        renderLocalStorageTable();
-        alert("Local Storage सफलतापूर्वक खाली कर दिया गया है।");
-    }
-}
-
 function openGpfSheet() {
-    if (!isSheetUnlocked) {
-        alert("गूगल शीट Locked है! देखने के लिए पहले Unlock करें।");
-        return;
-    }
     window.open("https://drive.google.com/drive/recent", '_blank');
 }
 
 function clearCalculationData(){
-    manualEditedT53toT64 = {};
     for(let i=1;i<=84;i++){
         let el = document.getElementById("t"+i);
         if(el) el.value="";
@@ -1112,11 +1078,176 @@ function clearCalculationData(){
 
 function clearAllData(){
     isSearchMode = false;
-    manualEditedT53toT64 = {};
     document.getElementById("acno").value=""; 
     document.getElementById("empname").value=""; 
     document.getElementById("year").value="";
     clearCalculationData();
+}
+
+
+// ─── APP 2 SCRIPTS (Personal Ledger) ───
+const monthNamesHindi = ["मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितम्बर", "अक्टूबर", "नवम्बर", "दिसम्बर", "जनवरी", "फरवरी"];
+
+let monthDataValues = Array.from({length: 12}, () => ({sub: 0, bonus: 0, loan: 0, temp: 0}));
+
+function getMonthsList() {
+    let baseYear = parseInt(document.getElementById("baseYear").value) || 2000;
+    let list = [];
+    for (let i = 0; i < 12; i++) {
+        let yr = (i < 10) ? baseYear : (baseYear + 1);
+        let shortYr = String(yr).slice(-2);
+        list.push(`${monthNamesHindi[i]}-${shortYr}`);
+    }
+    return list;
+}
+
+function updateMonthsAndCalculate() {
+    renderLedgerRows();
+}
+
+function onPeriodChange() {
+    let period = parseInt(document.getElementById("interestPeriod").value);
+    let singleDiv = document.getElementById("singleRateDiv");
+    let multiContainer = document.getElementById("multiRatesContainer");
+    let grid = document.getElementById("ratesInputsGrid");
+    grid.innerHTML = "";
+
+    if (period === 12) {
+        singleDiv.classList.remove("hidden");
+        multiContainer.classList.add("hidden");
+    } else {
+        singleDiv.classList.add("hidden");
+        multiContainer.classList.remove("hidden");
+
+        let parts = 12 / period;
+        for (let p = 0; p < parts; p++) {
+            let startMonthIdx = p * period;
+            let endMonthIdx = startMonthIdx + period - 1;
+            let labelText = `${monthNamesHindi[startMonthIdx]} से ${monthNamesHindi[endMonthIdx]}`;
+            
+            let div = document.createElement("div");
+            div.innerHTML = `
+                <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">${labelText}:</label>
+                <input type="number" id="ratePart_${p}" value="7.1" step="0.1" class="bg-white border rounded p-1 text-center font-semibold rate-input" onchange="calculateGPF_App2()">
+            `;
+            grid.appendChild(div);
+        }
+    }
+    calculateGPF_App2();
+}
+
+function handleAutoFill(field, changedIdx) {
+    if (changedIdx === 0) {
+        let val = Number(document.getElementById(`${field}_0`).value) || 0;
+        for (let i = 1; i < 12; i++) {
+            document.getElementById(`${field}_${i}`).value = val;
+        }
+    }
+    calculateGPF_App2();
+}
+
+function renderLedgerRows() {
+    const tbody = document.getElementById("tableBody");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    let monthsList = getMonthsList();
+
+    monthsList.forEach((mName, idx) => {
+        let m = monthDataValues[idx];
+        let tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-50";
+        tr.innerHTML = `
+            <td class="font-semibold text-left bg-slate-50">${mName}</td>
+            <td><input type="number" value="${m.sub}" id="sub_${idx}" oninput="handleAutoFill('sub', ${idx})"></td>
+            <td><input type="number" value="${m.bonus}" id="bonus_${idx}" oninput="calculateGPF_App2()"></td>
+            <td><input type="number" value="${m.loan}" id="loan_${idx}" oninput="handleAutoFill('loan', ${idx})"></td>
+            <td id="rowTotal_${idx}" class="font-semibold text-right bg-slate-50 text-blue-900">0.00</td>
+            <td><input type="number" value="${m.temp}" id="temp_${idx}" oninput="calculateGPF_App2()"></td>
+            <td id="bal_${idx}" class="font-bold text-right bg-blue-50">0.00</td>
+        `;
+        tbody.appendChild(tr);
+    });
+    onPeriodChange();
+}
+
+function calculateGPF_App2() {
+    let opening = Math.round(Number(document.getElementById("openingBal").value) || 0);
+    document.getElementById("lblOpening").innerText = opening;
+    
+    let currentBal = opening;
+    let sumOfBalances = 0;
+    let totalMonthlyAddSum = 0;
+    let totalTempWithdrawal = 0;
+
+    let period = parseInt(document.getElementById("interestPeriod").value);
+    let totalInterest = 0;
+    let monthlyBalances = [];
+
+    for (let i = 0; i < 12; i++) {
+        let sub = Number(document.getElementById(`sub_${i}`).value) || 0;
+        let bonus = Number(document.getElementById(`bonus_${i}`).value) || 0;
+        let loan = Number(document.getElementById(`loan_${i}`).value) || 0;
+        let temp = Number(document.getElementById(`temp_${i}`).value) || 0;
+
+        monthDataValues[i] = {sub, bonus, loan, temp};
+
+        let rowMonthlyAdd = sub + bonus + loan;
+        document.getElementById(`rowTotal_${i}`).innerText = rowMonthlyAdd.toFixed(2);
+
+        currentBal = currentBal + rowMonthlyAdd - temp;
+        sumOfBalances += currentBal;
+        monthlyBalances.push(currentBal);
+
+        totalMonthlyAddSum += rowMonthlyAdd;
+        totalTempWithdrawal += temp;
+
+        document.getElementById(`bal_${i}`).innerText = currentBal.toFixed(2);
+    }
+
+    let footSubVal = 0, footBonusVal = 0, footLoanVal = 0;
+    for(let i=0; i<12; i++) {
+        footSubVal += Number(document.getElementById(`sub_${i}`).value) || 0;
+        footBonusVal += Number(document.getElementById(`bonus_${i}`).value) || 0;
+        footLoanVal += Number(document.getElementById(`loan_${i}`).value) || 0;
+    }
+
+    document.getElementById("footSub").innerText = footSubVal.toFixed(2);
+    document.getElementById("footBonus").innerText = footBonusVal.toFixed(2);
+    document.getElementById("footLoan").innerText = footLoanVal.toFixed(2);
+    document.getElementById("footTotalAdd").innerText = totalMonthlyAddSum.toFixed(2);
+    document.getElementById("footTemp").innerText = totalTempWithdrawal.toFixed(2);
+    document.getElementById("footSumOfBalances").innerText = sumOfBalances.toFixed(2);
+
+    if (period === 12) {
+        let rawRate = Number(document.getElementById("interestRate").value) || 7.1;
+        let rate = rawRate > 1 ? rawRate / 100 : rawRate;
+        totalInterest = (sumOfBalances * rate) / 12;
+    } else {
+        let parts = 12 / period;
+        for (let p = 0; p < parts; p++) {
+            let rateInput = document.getElementById(`ratePart_${p}`);
+            let rawRate = rateInput ? (Number(rateInput.value) || 7.1) : 7.1;
+            let rate = rawRate > 1 ? rawRate / 100 : rawRate;
+            
+            let periodSum = 0;
+            for (let m = p * period; m < (p + 1) * period; m++) {
+                periodSum += monthlyBalances[m];
+            }
+            totalInterest += (periodSum * rate) / 12;
+        }
+    }
+
+    let roundedTotalSub = Math.round(totalMonthlyAddSum);
+    let roundedInterest = Math.round(totalInterest);
+    let grandTotal = Math.round(opening + roundedTotalSub + roundedInterest);
+    let roundedTakenLoan = Math.round(totalTempWithdrawal);
+    let closingBalance = grandTotal - roundedTakenLoan;
+
+    document.getElementById("lblTotalSub").innerText = roundedTotalSub;
+    document.getElementById("lblInterest").innerText = roundedInterest;
+    document.getElementById("lblGrandTotal").innerText = grandTotal;
+    document.getElementById("lblTakenLoan").innerText = roundedTakenLoan;
+    document.getElementById("lblClosingBalance").innerText = closingBalance;
 }
 </script>
 
