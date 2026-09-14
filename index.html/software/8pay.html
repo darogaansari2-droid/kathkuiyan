@@ -60,23 +60,6 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        #vetan-app .header-title {
-            text-align: center;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        #vetan-app .header-title h1 {
-            margin: 0;
-            color: var(--primary-color);
-            font-size: 18px;
-            text-transform: uppercase;
-        }
-        #vetan-app .header-title h3 {
-            margin: 5px 0;
-            color: #444;
-            font-size: 15px;
-        }
         #vetan-app .top-flex-bar {
             display: flex;
             gap: 15px;
@@ -87,32 +70,29 @@
             flex: 2;
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            background: #e2e8f0;
-            padding: 10px 15px;
-            border-radius: 6px;
+            gap: 6px;
+            background: transparent; /* पट्टी में कोई रंग नहीं */
+            padding: 5px 0px;
             font-weight: bold;
-            font-size: 14px;
-            color: var(--primary-color);
+            font-size: 13px;
+            color: #000;
         }
         #vetan-app .emp-row {
             display: flex;
             gap: 15px;
-            justify-content: space-between;
+            align-items: center;
         }
-        #vetan-app .emp-row div {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            font-size: 12px;
+        #vetan-app .emp-row label-text {
+            width: 180px;
+            flex-shrink: 0;
         }
         #vetan-app .emp-row input {
-            padding: 4px;
+            flex: 1;
+            padding: 3px 6px;
             font-size: 13px;
             font-weight: bold;
             border: 1px solid #999;
             border-radius: 3px;
-            margin-top: 2px;
         }
         #vetan-app .mini-calculator {
             flex: 1;
@@ -123,9 +103,9 @@
             font-size: 12px;
         }
         #vetan-app .mini-calculator h5 { margin: 0 0 5px 0; color: var(--primary-color); }
-        #vetan-app .calc-row { display: flex; gap: 5px; }
-        #vetan-app .calc-row input { width: 60px; padding: 3px; font-size: 12px; }
-        #vetan-app .calc-row button { padding: 3px 8px; font-size: 12px; background: #28a745; color: #fff; border: none; border-radius: 3px; cursor: pointer;}
+        #vetan-app .calc-row { display: flex; gap: 5px; align-items: center; }
+        #vetan-app .calc-row input { padding: 4px; font-size: 12px; }
+        #vetan-app .calc-row button { padding: 4px 10px; font-size: 12px; background: #28a745; color: #fff; border: none; border-radius: 3px; cursor: pointer;}
         
         /* DA Settings Box Style */
         #vetan-app .da-settings-box {
@@ -398,6 +378,11 @@
             .app-section.active {
                 display: block !important;
             }
+            #vetan-app .emp-row input {
+                border: none;
+                background: transparent;
+                font-weight: bold;
+            }
         }
     </style>
 </head>
@@ -420,52 +405,40 @@
     <!-- 1. वेतन अवशेष सॉफ्टवेयर (Vetan Software Section) -->
     <div id="vetan-app" class="app-section active">
         <div class="container">
-            <!-- विद्यालय शीर्षक -->
-            <div class="header-title">
-                <h1 id="schoolNameDisplay">श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा, कठकुइयाँ, कुशीनगर</h1>
-                <h3>वेतन अवशेष विवरण (Arrears Salary Statement) | अवधि: <span id="durationDisplay">अद्यतन</span></h3>
-            </div>
 
             <!-- विद्यालय, कर्मचारी विवरण और छोटा कैलकुलेटर -->
             <div class="top-flex-bar">
                 <div class="emp-details-bar">
                     <div class="emp-row">
-                        <div style="flex:2;">
-                            विद्यालय का नाम (School Name):
-                            <input type="text" id="schoolNameInput" value="श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा, कठकुइयाँ, कुशीनगर" oninput="updateHeaderInfo()">
-                        </div>
+                        <span style="width: 170px;">विद्यालय का नाम :-</span>
+                        <input type="text" id="schoolNameInput" value="श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा, कठकुइयाँ, कुशीनगर" oninput="updateHeaderInfo()">
                     </div>
                     <div class="emp-row">
-                        <div>
-                            कर्मचारी का नाम:
-                            <input type="text" id="empName" value="नाम भरें " oninput="updateHeaderInfo()">
-                        </div>
-                        <div>
-                            पद (Designation):
-                            <input type="text" id="empDesignation" value="पद भरें" oninput="updateHeaderInfo()">
-                        </div>
+                        <span style="width: 170px;">कर्मचारी का नाम :-</span>
+                        <input type="text" id="empName" value="नाम भरें" oninput="updateHeaderInfo()">
+                    </div>
+                    <div class="emp-row">
+                        <span style="width: 170px;">पद :-</span>
+                        <input type="text" id="empDesignation" value="पद भरें" oninput="updateHeaderInfo()">
+                    </div>
+                    <!-- वेतन अवशेष विवरण और अवधि (अब कर्मचारी के नाम के नीचे) -->
+                    <div style="margin-top: 4px; font-size: 14px; color: #333; font-weight: bold;">
+                        वेतन अवशेष विवरण (Arrears Salary Statement) | अवधि: <span id="durationDisplay">अद्यतन</span>
                     </div>
                 </div>
 
-                <!-- छोटा कैलकुलेटर बॉक्स -->
+                <!-- छोटा कैलकुलेटर बॉक्स (प्रिंट में छिपा हुआ) -->
                 <div class="mini-calculator no-print">
                     <h5>त्वरित कैलकुलेटर (Quick Calc)</h5>
                     <div class="calc-row">
-                        <input type="number" id="calcVal1" placeholder="संख्या 1">
-                        <select id="calcOp" style="padding:2px;">
-                            <option value="+">+</option>
-                            <option value="-">-</option>
-                            <option value="*">×</option>
-                            <option value="/">÷</option>
-                        </select>
-                        <input type="number" id="calcVal2" placeholder="संख्या 2">
+                        <input type="text" id="calcExpr" placeholder="उदा. 200*2/10 या 200-74*10" onkeydown="if(event.key==='Enter') runCalc()" style="flex:1;">
                         <button onclick="runCalc()">=</button>
-                        <input type="text" id="calcRes" readonly placeholder="उत्तर" style="background:#fff; font-weight:bold; width:70px;">
+                        <input type="text" id="calcRes" readonly placeholder="उत्तर" style="background:#fff; font-weight:bold; width:80px; text-align:center;">
                     </div>
                 </div>
             </div>
 
-            <!-- DA रेट मास्टर सेटिंग पैनल (New Setting Box for Future/Custom DA Rates) -->
+            <!-- DA रेट मास्टर सेटिंग पैनल -->
             <div class="da-settings-box no-print">
                 <h4>⚙️ DA रेट मास्टर सेटिंग (जुलाई 2026 या अन्य महीनों के DA रेट जोड़ने/बदलने हेतु)</h4>
                 <div class="form-group" style="flex:1;">
@@ -592,7 +565,7 @@
                     <input type="number" id="tax" placeholder="0">
                 </div>
 
-                <!-- बटन: दाईं तरफ व्यवस्थित -->
+                <!-- बटन -->
                 <div class="btn-container">
                     <button type="button" id="saveBtn" class="v-btn btn-save" onclick="saveData()">Save Record</button>
                     <button type="button" class="v-btn btn-clear" onclick="clearForm()">Reset</button>
@@ -647,7 +620,6 @@
     <!-- 2. 8th Pay Commission कैलकुलेटर (8pay Software Section) -->
     <div id="pay8-app" class="app-section">
         <div class="container">
-            <!-- Employee Input Form -->
             <div class="card no-print">
                 <h2>कर्मचारी विवरण एवं 8th Pay Commission गणना</h2>
                 <form id="empForm">
@@ -695,7 +667,6 @@
                         </div>
                     </div>
 
-                    <!-- Real-time Live Calculation Preview -->
                     <div class="live-preview">
                         <span>8th Est. Basic: ₹<span id="previewBasic">0</span></span>
                         <span>8th Est. Total: ₹<span id="previewTotal">0</span></span>
@@ -708,7 +679,6 @@
                 </form>
             </div>
 
-            <!-- Table Section (Print Area) -->
             <div class="card print-area">
                 <h2>कर्मचारी सूची एवं 8th CPC अनुमानित वेतन</h2>
                 <div class="btn-group no-print" style="margin-bottom: 15px;">
@@ -735,9 +705,7 @@
                                 <th class="action-col no-print">कार्रवाई</th>
                             </tr>
                         </thead>
-                        <tbody id="employeeTableBody">
-                            <!-- Dynamic Rows -->
-                        </tbody>
+                        <tbody id="employeeTableBody"></tbody>
                         <tfoot>
                             <tr>
                                 <td colspan="4" style="text-align: right;"><strong>कुल योग (Total):</strong></td>
@@ -766,7 +734,6 @@
 
     <!-- JavaScript Scripts -->
     <script>
-        // सॉफ्टवेयर स्विचिंग फंक्शन
         function switchSoftware() {
             let selectedVal = document.getElementById('softwareSelector').value;
             let vetanApp = document.getElementById('vetan-app');
@@ -781,8 +748,6 @@
             }
         }
 
-        /* --- Vetan Software Logic --- */
-        // बेस फिक्सड DA रेट्स (जून 2026 तक)
         const defaultDaMasterRates = {
             "2000": { "जनवरी": 38, "फरवरी": 38, "मार्च": 38, "अप्रैल": 38, "मई": 38, "जून": 38, "जुलाई": 41, "अगस्त": 41, "सितंबर": 41, "अक्टूबर": 41, "नवंबर": 41, "दिसंबर": 41 },
             "2001": { "जनवरी": 43, "फरवरी": 43, "मार्च": 43, "अप्रैल": 43, "मई": 43, "जून": 43, "जुलाई": 45, "अगस्त": 45, "सितंबर": 45, "अक्टूबर": 45, "नवंबर": 45, "दिसंबर": 45 },
@@ -813,7 +778,6 @@
             "2026": { "जनवरी": 60, "फरवरी": 60, "मार्च": 60, "अप्रैल": 60, "मई": 60, "जून": 60, "जुलाई": 60, "अगस्त": 60, "सितंबर": 60, "अक्टूबर": 60, "नवंबर": 60, "दिसंबर": 60 }
         };
 
-        // LocalStorage से डायनामिक DA रेट लोड करें या डिफॉल्ट लें
         let daMasterRates = JSON.parse(localStorage.getItem('customDaMasterRates')) || defaultDaMasterRates;
 
         function saveCustomDaRate() {
@@ -831,11 +795,8 @@
             }
             daMasterRates[yr][mth] = val;
 
-            // LocalStorage में सेव करें
             localStorage.setItem('customDaMasterRates', JSON.stringify(daMasterRates));
             alert(`सफलतापूर्वक वर्ष ${yr} और माह ${mth} के लिए DA दर ${val}% सेव कर दी गई है!`);
-            
-            // तुरंत फॉर्म में रिफ्रेश करें
             onPeriodChange();
         }
 
@@ -875,8 +836,7 @@
         }
 
         function updateHeaderInfo() {
-            let schName = document.getElementById('schoolNameInput').value;
-            document.getElementById('schoolNameDisplay').innerText = schName;
+            // केवल इनपुट बॉक्स के माध्यम से डेटा मैनेज करने के लिए
         }
 
         function getIncrementedBasic(baseVal) {
@@ -903,15 +863,27 @@
         }
 
         function runCalc() {
-            let v1 = parseFloat(document.getElementById('calcVal1').value) || 0;
-            let v2 = parseFloat(document.getElementById('calcVal2').value) || 0;
-            let op = document.getElementById('calcOp').value;
-            let res = 0;
-            if(op === '+') res = v1 + v2;
-            else if(op === '-') res = v1 - v2;
-            else if(op === '*') res = v1 * v2;
-            else if(op === '/') res = v2 !== 0 ? v1 / v2 : 0;
-            document.getElementById('calcRes').value = res.toFixed(2);
+            let expr = document.getElementById('calcExpr').value.trim();
+            if(!expr) {
+                document.getElementById('calcRes').value = "";
+                return;
+            }
+            try {
+                // सुरक्षित रूप से केवल गणितीय व्यंजकों (numbers, operators, decimals, brackets) को अनुमति दें
+                let sanitized = expr.replace(/[^0-9+\-*/().]/g, '');
+                if (!sanitized) {
+                    document.getElementById('calcRes').value = "अमान्य";
+                    return;
+                }
+                let res = Function('"use strict";return (' + sanitized + ')')();
+                if (isNaN(res) || !isFinite(res)) {
+                    document.getElementById('calcRes').value = "त्रुटि";
+                } else {
+                    document.getElementById('calcRes').value = Number.isInteger(res) ? res : res.toFixed(2);
+                }
+            } catch (e) {
+                document.getElementById('calcRes').value = "त्रुटि";
+            }
         }
 
         function advanceToNextMonth() {
@@ -1350,11 +1322,8 @@
             liveCalculateAll();
         }
 
-        // Window Load Initialization
         window.onload = function() {
-            // Vetan Init
             onPeriodChange();
-            updateHeaderInfo();
             renderTable();
             if (arrearsData.length > 0) {
                 let lastItem = arrearsData[arrearsData.length - 1];
@@ -1365,7 +1334,6 @@
                 }
             }
 
-            // 8pay Init
             document.getElementById('empId').value = generateNextId();
             liveCalculateAll();
             renderTable8();
