@@ -76,6 +76,10 @@
         }
         label { font-weight: 600; margin-bottom: 4px; color: #2d3748; font-size: 12px; }
         input, select, textarea { padding: 8px 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px; background-color: #fcfdfd; }
+        
+        .dual-input-group { display: flex; gap: 8px; }
+        .dual-input-group input, .dual-input-group textarea { flex: 1; }
+        .hindi-input { background-color: #f0fff4 !important; border-color: #9ae6b4 !important; color: #22543d; }
 
         .instruction-box { margin-top: 15px; border: 2px dashed #e53e3e; padding: 12px; background-color: #fff5f5; color: #c53030; font-size: 12px; border-radius: 4px; }
         .instruction-title { font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
@@ -124,7 +128,7 @@
             @page { size: A4; margin: 12mm 10mm; }
             body { background: white; padding: 0; margin: 0; color: #000; font-size: 12px; }
             .form-container { box-shadow: none; padding: 15px; border: 2px solid #000; outline: 3px solid #000; outline-offset: -6px; max-width: 800px; }
-            .btn-container, .photo-upload-box span, .sig-upload-box span, input[type="file"], .instruction-box, .admin-search-panel, .btn-admin-toggle, .loading-overlay, .password-modal-overlay, .otp-box { display: none !important; }
+            .btn-container, .photo-upload-box span, .sig-upload-box span, input[type="file"], .instruction-box, .admin-search-panel, .btn-admin-toggle, .loading-overlay, .password-modal-overlay, .otp-box, .hindi-input { display: none !important; }
             .photo-upload-box { border: 1px solid #000; background: transparent; height: 125px; width: 110px; }
             .photo-upload-box img { display: block !important; object-fit: contain !important; }
             .sig-upload-box { border: 1px dashed #000; background: transparent; height: 30px; width: 150px; }
@@ -182,8 +186,12 @@
                     <option value="2027-28">सत्र: 2027-28</option>
                     <option value="2028-29">सत्र: 2028-29</option>
                     <option value="2029-30">सत्र: 2029-30</option>
+                    <option value="2030-31">सत्र: 2030-31</option>
+                    <option value="2031-32">सत्र: 2031-32</option>
+                   <option value="2032-33">सत्र: 2032-33</option>
+                   <option value="2033-34">सत्र: 2033-34</option>
                 </select>
-                <span id="sessionSaveStatus" style="font-size: 11px; color: #2f855a; font-weight: bold;">💾 Saved</span>
+                <span id="sessionSaveStatus" style="font-size: 11px; color: #2f855a; font-weight: bold; display: none;">💾 Saved</span>
             </div>
         </div>
 
@@ -288,8 +296,11 @@
         <div class="section-heading">1. Chhatr Ka Vivaran (Student Details)</div>
         <div class="row">
             <div class="col">
-                <label>Chhatr Ka Naam (Student Name):</label>
-                <input type="text" name="studentName" id="studentName" placeholder="Capital Letters me bharein" required>
+                <label>Chhatr Ka Naam (Student Name) & [ऑटो हिंदी]:</label>
+                <div class="dual-input-group">
+                    <input type="text" name="studentName" id="studentName" placeholder="Capital Letters me bharein" oninput="capitalizeFirst(this); convertToHindi(this, 'studentNameHindi')" required>
+                    <input type="text" name="studentNameHindi" id="studentNameHindi" class="hindi-input" placeholder="हिंदी नाम (सुधार करें)">
+                </div>
             </div>
             <div class="col">
                 <label>Janmtithi (Date of Birth):</label>
@@ -313,16 +324,22 @@
                 </select>
             </div>
             <div class="col">
-                <label>Jati (Caste/Category):</label>
-                <input type="text" name="category" placeholder="अपनी जाति दर्ज करें" required>
+                <label>Jati (Caste/Category) & [ऑटो हिंदी]:</label>
+                <div class="dual-input-group">
+                    <input type="text" name="category" id="category" placeholder="अपनी जाति दर्ज करें" oninput="capitalizeFirst(this); convertToHindi(this, 'categoryHindi')" required>
+                    <input type="text" name="categoryHindi" id="categoryHindi" class="hindi-input" placeholder="हिंदी जाति">
+                </div>
             </div>
         </div>
 
         <div class="section-heading">2. Abhibhavak Ka Vivaran (Parents Details)</div>
         <div class="row">
             <div class="col">
-                <label>Pita Ka Naam (Father's Name):</label>
-                <input type="text" name="fatherName" placeholder="Pita ka naam" required>
+                <label>Pita Ka Naam (Father's Name) & [ऑटो हिंदी]:</label>
+                <div class="dual-input-group">
+                    <input type="text" name="fatherName" id="fatherName" placeholder="Pita ka naam" oninput="capitalizeFirst(this); convertToHindi(this, 'fatherNameHindi')" required>
+                    <input type="text" name="fatherNameHindi" id="fatherNameHindi" class="hindi-input" placeholder="पिता का नाम">
+                </div>
             </div>
             <div class="col">
                 <label>Pita Ka Aadhaar No.:</label>
@@ -331,8 +348,11 @@
         </div>
         <div class="row">
             <div class="col">
-                <label>Mata Ka Naam (Mother's Name):</label>
-                <input type="text" name="motherName" placeholder="Mata ka naam" required>
+                <label>Mata Ka Naam (Mother's Name) & [ऑटो हिंदी]:</label>
+                <div class="dual-input-group">
+                    <input type="text" name="motherName" id="motherName" placeholder="Mata ka naam" oninput="capitalizeFirst(this); convertToHindi(this, 'motherNameHindi')" required>
+                    <input type="text" name="motherNameHindi" id="motherNameHindi" class="hindi-input" placeholder="माता का नाम">
+                </div>
             </div>
             <div class="col">
                 <label>Mata Ka Aadhaar No.:</label>
@@ -353,14 +373,20 @@
         </div>
         <div class="row">
             <div class="col">
-                <label>Antim Vidyalay Ka Naam (Last School Name):</label>
-                <input type="text" name="lastSchool" placeholder="Pichle school ka naam aur pata" required>
+                <label>Antim Vidyalay Ka Naam (Last School Name) & [ऑटो हिंदी]:</label>
+                <div class="dual-input-group">
+                    <input type="text" name="lastSchool" id="lastSchool" placeholder="Pichle school ka naam aur pata" oninput="capitalizeFirst(this); convertToHindi(this, 'lastSchoolHindi')" required>
+                    <input type="text" name="lastSchoolHindi" id="lastSchoolHindi" class="hindi-input" placeholder="विद्यालय का नाम">
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <label>Pura Pata (Full Address):</label>
-                <textarea name="address" rows="2" placeholder="Gram, Post, Jila, Pin Code..." required></textarea>
+                <label>Pura Pata (Full Address) & [ऑटो हिंदी]:</label>
+                <div class="dual-input-group">
+                    <textarea name="address" id="address" rows="2" placeholder="Gram, Post, Jila, Pin Code..." oninput="capitalizeFirst(this); convertToHindi(this, 'addressHindi')" required></textarea>
+                    <textarea name="addressHindi" id="addressHindi" class="hindi-input" rows="2" placeholder="पूरा पता हिंदी में"></textarea>
+                </div>
             </div>
         </div>
 
@@ -372,7 +398,7 @@
             <div class="sig-box" style="text-align: left; width: auto; display: flex; flex-direction: column; gap: 8px;">
                 <div>
                     <label style="display:inline-block; width: 80px;">स्थान (Place):</label>
-                    <input type="text" name="inputPlace" id="inputPlace" placeholder="यहाँ स्थान लिखें" style="padding: 4px 8px; width: 140px;" required>
+                    <input type="text" name="inputPlace" id="inputPlace" placeholder="यहाँ स्थान लिखें" oninput="capitalizeFirst(this)" style="padding: 4px 8px; width: 140px;" required>
                 </div>
                 <div>
                     <label style="display:inline-block; width: 80px;">तिथि (Date):</label>
@@ -408,6 +434,12 @@
             </div>
         </div>
 
+        <!-- WhatsApp संदेश भेजने के लिए त्वरित बटन -->
+        <div id="whatsappQuickBox" style="display: none; margin-top: 15px; padding: 12px; background: #e6fffa; border: 1px solid #319795; border-radius: 4px; text-align: center;">
+            <div style="font-weight: bold; color: #234e52; margin-bottom: 5px;">🟢 WhatsApp संदेश तैयार है:</div>
+            <a id="whatsappDirectLink" href="#" target="_blank" class="btn" style="background-color: #25d366; color: white; text-decoration: none; display: inline-block; padding: 8px 16px;">💬 यहाँ क्लिक करके WhatsApp भेजें</a>
+        </div>
+
         <div class="instruction-box">
             <div class="instruction-title">⚠️ आवश्यक निर्देश (Important Instructions):</div>
             <p style="margin: 5px 0;">शुल्क नगद विद्यालय पर जमा होगा कक्षा 6,7एवं 8 में शुल्क देय नहीं है । यदि 5 दिन बीत जाने पर शुल्क या कागजात जमा नहीं होते हैं, तो नामांकन निरस्त कर दिया जायेगा।</p>
@@ -441,7 +473,6 @@
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7DJrNjPKSMp-NNHXZsDIO5CEc-Pi5l5xlEx2VrUWb5euKob7W9k3Kf39ygAWWDXlXZg/exec";
     const ADMIN_PASSWORD = "admin@123"; 
 
-    // ADMISSION & SESSION STATUS OBJECT
     let ADMISSION_SETTINGS = {
         activeSession: "2026-27",
         allClosed: false,
@@ -450,7 +481,38 @@
         }
     };
 
-    // Load admission & session settings from LocalStorage
+    function capitalizeFirst(inputElement) {
+        let val = inputElement.value;
+        if (val.length > 0) {
+            inputElement.value = val.replace(/(^\w{1})|(\s+\w{1})/g, letter => letter.toUpperCase());
+        }
+    }
+
+    function convertToHindi(sourceInput, targetHindiId) {
+        let text = sourceInput.value.trim();
+        let targetField = document.getElementById(targetHindiId);
+        if (!targetField) return;
+
+        if (text === "") {
+            targetField.value = "";
+            return;
+        }
+
+        let apiURL = `https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=hi-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`;
+        
+        fetch(apiURL)
+            .then(res => res.json())
+            .then(data => {
+                if (data && data[0] === "SUCCESS") {
+                    let hindiSuggestion = data[1][0][1][0];
+                    targetField.value = hindiSuggestion;
+                }
+            })
+            .catch(err => {
+                console.log("Transliteration note: ", err);
+            });
+    }
+
     function loadAdmissionSettings() {
         const saved = localStorage.getItem('schoolAdmissionSettings');
         if (saved) {
@@ -459,7 +521,6 @@
             } catch(e) {}
         }
         
-        // Update Admin UI Controls & Form Header Title
         if(document.getElementById('ctrlSessionYear')) {
             document.getElementById('ctrlSessionYear').value = ADMISSION_SETTINGS.activeSession || "2026-27";
         }
@@ -473,7 +534,6 @@
         }
     }
 
-    // Save admission & session settings to LocalStorage
     function saveAdmissionSettings() {
         const sessionDropdown = document.getElementById('ctrlSessionYear');
         if(sessionDropdown) {
@@ -490,11 +550,10 @@
         
         localStorage.setItem('schoolAdmissionSettings', JSON.stringify(ADMISSION_SETTINGS));
         
-        // Visual indicator feedback
         const statusSpan = document.getElementById('sessionSaveStatus');
         if(statusSpan) {
             statusSpan.style.display = 'inline';
-            setTimeout(() => { statusSpan.style.display = 'inline'; }, 1500);
+            setTimeout(() => { statusSpan.style.display = 'none'; }, 1500);
         }
     }
 
@@ -524,10 +583,15 @@
         document.getElementById('loadingOverlay').style.display = 'none';
     }
 
+    // FIX 1: Robust fetchNextSerialNumber
     function fetchNextSerialNumber() {
         fetch(SCRIPT_URL + "?action=getNextId")
-        .then(res => res.json())
-        .then(data => {
+        .then(res => res.text())
+        .then(textData => {
+            let data;
+            try {
+                data = JSON.parse(textData);
+            } catch(e) { return; }
             if(data && data.nextId) {
                 document.getElementById('serialNumber').value = data.nextId;
             }
@@ -628,6 +692,7 @@
         document.getElementById('updateBtn').style.display = 'none';
         document.getElementById('submitBtn').style.display = 'inline-block';
         document.getElementById('submitBtn').disabled = true;
+        document.getElementById('whatsappQuickBox').style.display = 'none';
         
         document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
         document.getElementById('inputDate').value = new Date().toISOString().substring(0,10);
@@ -658,6 +723,7 @@
         document.getElementById('passwordModal').style.display = 'none';
     }
 
+    // FIX 2: Robust searchStudentById with text response handling
     function searchStudentById() {
         const searchId = document.getElementById('searchIdInput').value;
         if (!searchId) {
@@ -668,9 +734,17 @@
         showLoading("छात्र का विवरण खोजा जा रहा है...");
 
         fetch(SCRIPT_URL + "?action=getStudent&serialNumber=" + searchId)
-        .then(res => res.json())
-        .then(data => {
+        .then(res => res.text())
+        .then(textData => {
             hideLoading();
+            let data;
+            try {
+                data = JSON.parse(textData);
+            } catch (e) {
+                alert("⚠️ सर्वर त्रुटि या रिकॉर्ड नहीं मिला: " + textData);
+                return;
+            }
+
             if (data.result === "error") {
                 alert(data.message);
                 return;
@@ -679,17 +753,29 @@
             document.getElementById('serialNumber').value = data.serialNumber || '';
             document.getElementById('studentClass').value = data.class || '';
             document.getElementById('studentName').value = data.studentName || '';
+            if(data.studentNameHindi) document.getElementById('studentNameHindi').value = data.studentNameHindi;
+            
             document.getElementById('studentMobile').value = data.mobile || '';
             document.querySelector('select[name="religion"]').value = data.religion || '';
             document.querySelector('input[name="category"]').value = data.category || '';
+            if(data.categoryHindi) document.getElementById('categoryHindi').value = data.categoryHindi;
+
             document.querySelector('input[name="studentAadhaar"]').value = data.studentAadhaar || '';
             document.querySelector('input[name="fatherName"]').value = data.fatherName || '';
+            if(data.fatherNameHindi) document.getElementById('fatherNameHindi').value = data.fatherNameHindi;
+
             document.querySelector('input[name="fatherAadhaar"]').value = data.fatherAadhaar || '';
             document.querySelector('input[name="motherName"]').value = data.motherName || '';
+            if(data.motherNameHindi) document.getElementById('motherNameHindi').value = data.motherNameHindi;
+
             document.querySelector('input[name="motherAadhaar"]').value = data.motherAadhaar || '';
             document.querySelector('input[name="email"]').value = data.email || '';
             document.querySelector('input[name="lastSchool"]').value = data.lastSchool || '';
+            if(data.lastSchoolHindi) document.getElementById('lastSchoolHindi').value = data.lastSchoolHindi;
+
             document.querySelector('textarea[name="address"]').value = data.address || '';
+            if(data.addressHindi) document.getElementById('addressHindi').value = data.addressHindi;
+
             document.getElementById('inputPlace').value = data.inputPlace || '';
 
             if (data.formDate) document.getElementById('formDate').value = data.formDate;
@@ -717,7 +803,6 @@
         document.getElementById('formDate').value = new Date().toISOString().substring(0,10);
         document.getElementById('inputDate').value = new Date().toISOString().substring(0,10);
 
-        // Class Selection Admission Checking
         document.getElementById('studentClass').addEventListener('change', function() {
             const selectedClass = this.value;
 
@@ -734,7 +819,7 @@
         });
     }
 
-    // FORM SUBMIT HANDLER (Fixed Print First, then WhatsApp instantly)
+    // FORM SUBMIT HANDLER (SAVE)
     document.getElementById('admissionForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -798,16 +883,19 @@
             if(res.result === "success") {
                 alert(`सत्र ${obj.sessionYear} नामांकन फार्म (Sr No: ${res.serialNumber}) सफलतापूर्वक जमा कर लिया गया है!`);
 
-                // 1. पहले प्रिंट विंडो खोलें ताकि छात्र के पास तुरंत फॉर्म आ जाए
-                window.print();
-
-                // 2. प्रिंट विंडो के ठीक बाद WhatsApp संदेश नए टैब में खोलें
                 const msgStudent = `प्रिय छात्र ${obj.studentName},\nश्री कृष्ण इण्टर कालेज सेमरा में सत्र ${obj.sessionYear} हेतु आपका नामांकन फार्म (Sr No: ${res.serialNumber}, Class: ${obj.class}) सफलतापूर्वक जमा कर लिया गया है।\n- धन्यवाद।`;
                 const whatsappUrl = `https://api.whatsapp.com/send?phone=91${obj.mobile}&text=${encodeURIComponent(msgStudent)}`;
                 
-                setTimeout(() => {
-                    window.open(whatsappUrl, '_blank');
-                }, 500);
+                const wpLink = document.getElementById('whatsappDirectLink');
+                wpLink.href = whatsappUrl;
+                document.getElementById('whatsappQuickBox').style.display = 'block';
+
+                window.print();
+
+                let wpWindow = window.open(whatsappUrl, '_blank');
+                if (!wpWindow) {
+                    alert("⚠️ ब्राउज़र ने पॉप-अप ब्लॉक कर दिया है। कृपया नीचे हरे रंग के 'WhatsApp भेजें' बटन पर क्लिक करें।");
+                }
 
                 resetFormCustom();
             } else {
@@ -820,7 +908,7 @@
         });
     });
 
-    // CANCEL ADMISSION HANDLER
+    // FIX 3: Robust cancelAdmissionAndSendWhatsApp (Delete)
     function cancelAdmissionAndSendWhatsApp() {
         const mobile = document.getElementById('studentMobile').value;
         const name = document.getElementById('studentName').value;
@@ -847,9 +935,17 @@
                 serialNumber: srNo
             })
         })
-        .then(res => res.json())
-        .then(res => {
+        .then(res => res.text())
+        .then(textData => {
             hideLoading();
+            let res;
+            try {
+                res = JSON.parse(textData);
+            } catch (e) {
+                alert("⚠️ सर्वर त्रुटि: " + textData);
+                return;
+            }
+
             if (res.result === "success") {
                 alert("नामांकन निरस्त कर दिया गया है एवं विद्यालय पोर्टल से हटा दिया गया है।");
 
