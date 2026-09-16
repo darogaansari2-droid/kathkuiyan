@@ -77,9 +77,19 @@
         label { font-weight: 600; margin-bottom: 4px; color: #2d3748; font-size: 12px; }
         input, select, textarea { padding: 8px 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px; background-color: #fcfdfd; }
         
-        .dual-input-group { display: flex; gap: 8px; }
-        .dual-input-group input, .dual-input-group textarea { flex: 1; }
-        .hindi-input { background-color: #f0fff4 !important; border-color: #9ae6b4 !important; color: #22543d; }
+        /* हिंदी नाम और इनपुट को पास रखने के लिए नया फ्लेक्स लेआउट */
+        .input-hindi-group { position: relative; display: flex; align-items: center; gap: 8px; }
+        .input-hindi-group input, .input-hindi-group textarea { flex: 1; box-sizing: border-box; }
+        .hindi-hint {
+            font-size: 13px;
+            color: #2b6cb0;
+            background: #ebf8ff;
+            padding: 6px 10px;
+            border: 1px solid #90cdf4;
+            border-radius: 4px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
 
         .instruction-box { margin-top: 15px; border: 2px dashed #e53e3e; padding: 12px; background-color: #fff5f5; color: #c53030; font-size: 12px; border-radius: 4px; }
         .instruction-title { font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
@@ -125,10 +135,22 @@
         .otp-status { font-size: 12px; font-weight: bold; margin-top: 5px; }
 
         @media print {
-            @page { size: A4; margin: 12mm 10mm; }
             body { background: white; padding: 0; margin: 0; color: #000; font-size: 12px; }
             .form-container { box-shadow: none; padding: 15px; border: 2px solid #000; outline: 3px solid #000; outline-offset: -6px; max-width: 800px; }
-            .btn-container, .photo-upload-box span, .sig-upload-box span, input[type="file"], .instruction-box, .admin-search-panel, .btn-admin-toggle, .loading-overlay, .password-modal-overlay, .otp-box, .hindi-input { display: none !important; }
+            .btn-container, .photo-upload-box span, .sig-upload-box span, input[type="file"], .instruction-box, .admin-search-panel, .btn-admin-toggle, .loading-overlay, .password-modal-overlay, .otp-box { display: none !important; }
+
+            /* प्रिंट के समय हिंदी हिंट को साधारण टेक्स्ट की तरह दिखाने के लिए */
+            .hindi-hint { 
+                display: inline-block !important; 
+                background: transparent !important; 
+                border: none !important; 
+                border-bottom: 1px dotted #000 !important; 
+                padding: 2px 0 !important; 
+                font-size: 14px !important; 
+                color: #000 !important; 
+                box-shadow: none !important;
+            }
+
             .photo-upload-box { border: 1px solid #000; background: transparent; height: 125px; width: 110px; }
             .photo-upload-box img { display: block !important; object-fit: contain !important; }
             .sig-upload-box { border: 1px dashed #000; background: transparent; height: 30px; width: 150px; }
@@ -188,8 +210,8 @@
                     <option value="2029-30">सत्र: 2029-30</option>
                     <option value="2030-31">सत्र: 2030-31</option>
                     <option value="2031-32">सत्र: 2031-32</option>
-                   <option value="2032-33">सत्र: 2032-33</option>
-                   <option value="2033-34">सत्र: 2033-34</option>
+                    <option value="2032-33">सत्र: 2032-33</option>
+                    <option value="2033-34">सत्र: 2033-34</option>
                 </select>
                 <span id="sessionSaveStatus" style="font-size: 11px; color: #2f855a; font-weight: bold; display: none;">💾 Saved</span>
             </div>
@@ -296,10 +318,10 @@
         <div class="section-heading">1. Chhatr Ka Vivaran (Student Details)</div>
         <div class="row">
             <div class="col">
-                <label>Chhatr Ka Naam (Student Name) & [ऑटो हिंदी]:</label>
-                <div class="dual-input-group">
-                    <input type="text" name="studentName" id="studentName" placeholder="Capital Letters me bharein" oninput="capitalizeFirst(this); convertToHindi(this, 'studentNameHindi')" required>
-                    <input type="text" name="studentNameHindi" id="studentNameHindi" class="hindi-input" placeholder="हिंदी नाम (सुधार करें)">
+                <label>Chhatr Ka Naam (Student Name):</label>
+                <div class="input-hindi-group">
+                    <input type="text" name="studentName" id="studentName" placeholder="Capital Letters me bharein" oninput="capitalizeFirst(this); transliterateToHindi(this, 'studentNameHindiHint')" required>
+                    <span id="studentNameHindiHint" class="hindi-hint" contenteditable="true" title="क्लिक करके हिंदी सुधार सकते हैं"></span>
                 </div>
             </div>
             <div class="col">
@@ -324,10 +346,10 @@
                 </select>
             </div>
             <div class="col">
-                <label>Jati (Caste/Category) & [ऑटो हिंदी]:</label>
-                <div class="dual-input-group">
-                    <input type="text" name="category" id="category" placeholder="अपनी जाति दर्ज करें" oninput="capitalizeFirst(this); convertToHindi(this, 'categoryHindi')" required>
-                    <input type="text" name="categoryHindi" id="categoryHindi" class="hindi-input" placeholder="हिंदी जाति">
+                <label>Jati (Caste/Category):</label>
+                <div class="input-hindi-group">
+                    <input type="text" name="category" id="category" placeholder="अपनी जाति दर्ज करें" oninput="capitalizeFirst(this); transliterateToHindi(this, 'categoryHindiHint')" required>
+                    <span id="categoryHindiHint" class="hindi-hint" contenteditable="true" title="क्लिक करके हिंदी सुधार सकते हैं"></span>
                 </div>
             </div>
         </div>
@@ -335,10 +357,10 @@
         <div class="section-heading">2. Abhibhavak Ka Vivaran (Parents Details)</div>
         <div class="row">
             <div class="col">
-                <label>Pita Ka Naam (Father's Name) & [ऑटो हिंदी]:</label>
-                <div class="dual-input-group">
-                    <input type="text" name="fatherName" id="fatherName" placeholder="Pita ka naam" oninput="capitalizeFirst(this); convertToHindi(this, 'fatherNameHindi')" required>
-                    <input type="text" name="fatherNameHindi" id="fatherNameHindi" class="hindi-input" placeholder="पिता का नाम">
+                <label>Pita Ka Naam (Father's Name):</label>
+                <div class="input-hindi-group">
+                    <input type="text" name="fatherName" id="fatherName" placeholder="Pita ka naam" oninput="capitalizeFirst(this); transliterateToHindi(this, 'fatherNameHindiHint')" required>
+                    <span id="fatherNameHindiHint" class="hindi-hint" contenteditable="true" title="क्लिक करके हिंदी सुधार सकते हैं"></span>
                 </div>
             </div>
             <div class="col">
@@ -348,10 +370,10 @@
         </div>
         <div class="row">
             <div class="col">
-                <label>Mata Ka Naam (Mother's Name) & [ऑटो हिंदी]:</label>
-                <div class="dual-input-group">
-                    <input type="text" name="motherName" id="motherName" placeholder="Mata ka naam" oninput="capitalizeFirst(this); convertToHindi(this, 'motherNameHindi')" required>
-                    <input type="text" name="motherNameHindi" id="motherNameHindi" class="hindi-input" placeholder="माता का नाम">
+                <label>Mata Ka Naam (Mother's Name):</label>
+                <div class="input-hindi-group">
+                    <input type="text" name="motherName" id="motherName" placeholder="Mata ka naam" oninput="capitalizeFirst(this); transliterateToHindi(this, 'motherNameHindiHint')" required>
+                    <span id="motherNameHindiHint" class="hindi-hint" contenteditable="true" title="क्लिक करके हिंदी सुधार सकते हैं"></span>
                 </div>
             </div>
             <div class="col">
@@ -373,19 +395,19 @@
         </div>
         <div class="row">
             <div class="col">
-                <label>Antim Vidyalay Ka Naam (Last School Name) & [ऑटो हिंदी]:</label>
-                <div class="dual-input-group">
-                    <input type="text" name="lastSchool" id="lastSchool" placeholder="Pichle school ka naam aur pata" oninput="capitalizeFirst(this); convertToHindi(this, 'lastSchoolHindi')" required>
-                    <input type="text" name="lastSchoolHindi" id="lastSchoolHindi" class="hindi-input" placeholder="विद्यालय का नाम">
+                <label>Antim Vidyalay Ka Naam (Last School Name):</label>
+                <div class="input-hindi-group">
+                    <input type="text" name="lastSchool" id="lastSchool" placeholder="Pichle school ka naam aur pata" oninput="capitalizeFirst(this); transliterateToHindi(this, 'lastSchoolHindiHint')" required>
+                    <span id="lastSchoolHindiHint" class="hindi-hint" contenteditable="true" title="क्लिक करके हिंदी सुधार सकते हैं"></span>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <label>Pura Pata (Full Address) & [ऑटो हिंदी]:</label>
-                <div class="dual-input-group">
-                    <textarea name="address" id="address" rows="2" placeholder="Gram, Post, Jila, Pin Code..." oninput="capitalizeFirst(this); convertToHindi(this, 'addressHindi')" required></textarea>
-                    <textarea name="addressHindi" id="addressHindi" class="hindi-input" rows="2" placeholder="पूरा पता हिंदी में"></textarea>
+                <label>Pura Pata (Full Address):</label>
+                <div class="input-hindi-group">
+                    <textarea name="address" id="address" rows="2" placeholder="Gram, Post, Jila, Pin Code..." oninput="capitalizeFirst(this); transliterateToHindi(this, 'addressHindiHint')" required></textarea>
+                    <span id="addressHindiHint" class="hindi-hint" contenteditable="true" title="क्लिक करके हिंदी सुधार सकते हैं"></span>
                 </div>
             </div>
         </div>
@@ -398,7 +420,10 @@
             <div class="sig-box" style="text-align: left; width: auto; display: flex; flex-direction: column; gap: 8px;">
                 <div>
                     <label style="display:inline-block; width: 80px;">स्थान (Place):</label>
-                    <input type="text" name="inputPlace" id="inputPlace" placeholder="यहाँ स्थान लिखें" oninput="capitalizeFirst(this)" style="padding: 4px 8px; width: 140px;" required>
+                    <div class="input-hindi-group" style="display:inline-flex; width: 220px; vertical-align: middle;">
+                        <input type="text" name="inputPlace" id="inputPlace" placeholder="यहाँ स्थान लिखें" oninput="capitalizeFirst(this); transliterateToHindi(this, 'inputPlaceHindiHint')" style="padding: 4px 8px; width: 100%;" required>
+                        <span id="inputPlaceHindiHint" class="hindi-hint" contenteditable="true" style="font-size: 11px; padding: 3px 6px;"></span>
+                    </div>
                 </div>
                 <div>
                     <label style="display:inline-block; width: 80px;">तिथि (Date):</label>
@@ -488,29 +513,28 @@
         }
     }
 
-    function convertToHindi(sourceInput, targetHindiId) {
-        let text = sourceInput.value.trim();
-        let targetField = document.getElementById(targetHindiId);
-        if (!targetField) return;
-
-        if (text === "") {
-            targetField.value = "";
+    // गूगल ट्रांसलिटरेशन एपीआई आधारित ऑटो हिंदी कनवर्टर
+    function transliterateToHindi(inputEl, hintId) {
+        const text = inputEl.value.trim();
+        const hintSpan = document.getElementById(hintId);
+        if (!text) {
+            hintSpan.innerText = "";
             return;
         }
-
-        let apiURL = `https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=hi-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`;
+        
+        const apiURL = `https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=hi-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8`;
         
         fetch(apiURL)
-            .then(res => res.json())
+            .then(response => response.json())
             .then(data => {
                 if (data && data[0] === "SUCCESS") {
-                    let hindiSuggestion = data[1][0][1][0];
-                    targetField.value = hindiSuggestion;
+                    const hindiWord = data[1][0][1][0];
+                    if (hindiWord) {
+                        hintSpan.innerText = hindiWord;
+                    }
                 }
             })
-            .catch(err => {
-                console.log("Transliteration note: ", err);
-            });
+            .catch(err => {});
     }
 
     function loadAdmissionSettings() {
@@ -583,7 +607,6 @@
         document.getElementById('loadingOverlay').style.display = 'none';
     }
 
-    // FIX 1: Robust fetchNextSerialNumber
     function fetchNextSerialNumber() {
         fetch(SCRIPT_URL + "?action=getNextId")
         .then(res => res.text())
@@ -678,6 +701,8 @@
         parentSigPreview.src = ''; parentSigPreview.style.display = 'none'; parentSigText.style.display = 'block';
         base64PhotoData = ""; base64StudentSig = ""; base64ParentSig = "";
         
+        document.querySelectorAll('.hindi-hint').forEach(el => el.innerText = '');
+
         isMobileVerified = false;
         generatedOTP = null;
         document.getElementById('otpMobileInput').value = '';
@@ -723,7 +748,6 @@
         document.getElementById('passwordModal').style.display = 'none';
     }
 
-    // FIX 2: Robust searchStudentById with text response handling
     function searchStudentById() {
         const searchId = document.getElementById('searchIdInput').value;
         if (!searchId) {
@@ -753,30 +777,41 @@
             document.getElementById('serialNumber').value = data.serialNumber || '';
             document.getElementById('studentClass').value = data.class || '';
             document.getElementById('studentName').value = data.studentName || '';
-            if(data.studentNameHindi) document.getElementById('studentNameHindi').value = data.studentNameHindi;
+            transliterateToHindi(document.getElementById('studentName'), 'studentNameHindiHint');
             
             document.getElementById('studentMobile').value = data.mobile || '';
             document.querySelector('select[name="religion"]').value = data.religion || '';
-            document.querySelector('input[name="category"]').value = data.category || '';
-            if(data.categoryHindi) document.getElementById('categoryHindi').value = data.categoryHindi;
+            
+            const catInput = document.querySelector('input[name="category"]');
+            catInput.value = data.category || '';
+            transliterateToHindi(catInput, 'categoryHindiHint');
 
             document.querySelector('input[name="studentAadhaar"]').value = data.studentAadhaar || '';
-            document.querySelector('input[name="fatherName"]').value = data.fatherName || '';
-            if(data.fatherNameHindi) document.getElementById('fatherNameHindi').value = data.fatherNameHindi;
+            
+            const fNameInput = document.querySelector('input[name="fatherName"]');
+            fNameInput.value = data.fatherName || '';
+            transliterateToHindi(fNameInput, 'fatherNameHindiHint');
 
             document.querySelector('input[name="fatherAadhaar"]').value = data.fatherAadhaar || '';
-            document.querySelector('input[name="motherName"]').value = data.motherName || '';
-            if(data.motherNameHindi) document.getElementById('motherNameHindi').value = data.motherNameHindi;
+            
+            const mNameInput = document.querySelector('input[name="motherName"]');
+            mNameInput.value = data.motherName || '';
+            transliterateToHindi(mNameInput, 'motherNameHindiHint');
 
             document.querySelector('input[name="motherAadhaar"]').value = data.motherAadhaar || '';
             document.querySelector('input[name="email"]').value = data.email || '';
-            document.querySelector('input[name="lastSchool"]').value = data.lastSchool || '';
-            if(data.lastSchoolHindi) document.getElementById('lastSchoolHindi').value = data.lastSchoolHindi;
+            
+            const lSchoolInput = document.querySelector('input[name="lastSchool"]');
+            lSchoolInput.value = data.lastSchool || '';
+            transliterateToHindi(lSchoolInput, 'lastSchoolHindiHint');
 
-            document.querySelector('textarea[name="address"]').value = data.address || '';
-            if(data.addressHindi) document.getElementById('addressHindi').value = data.addressHindi;
+            const addrInput = document.querySelector('textarea[name="address"]');
+            addrInput.value = data.address || '';
+            transliterateToHindi(addrInput, 'addressHindiHint');
 
-            document.getElementById('inputPlace').value = data.inputPlace || '';
+            const placeInput = document.getElementById('inputPlace');
+            placeInput.value = data.inputPlace || '';
+            transliterateToHindi(placeInput, 'inputPlaceHindiHint');
 
             if (data.formDate) document.getElementById('formDate').value = data.formDate;
             if (data.dob) document.getElementById('dob').value = data.dob;
@@ -819,7 +854,6 @@
         });
     }
 
-    // FORM SUBMIT HANDLER (SAVE)
     document.getElementById('admissionForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -908,7 +942,6 @@
         });
     });
 
-    // FIX 3: Robust cancelAdmissionAndSendWhatsApp (Delete)
     function cancelAdmissionAndSendWhatsApp() {
         const mobile = document.getElementById('studentMobile').value;
         const name = document.getElementById('studentName').value;
@@ -963,14 +996,13 @@
         });
     }
 
-    // UPDATE DATA HANDLER
     function updateStudentData() {
         showLoading("डेटा अपडेट किया जा रहा है...");
         const form = document.getElementById('admissionForm');
         const formData = new FormData(form);
         const obj = {};
         formData.forEach((val, key) => {
-            if(key !== "studentPhoto" && key !== "studentSig" && key !== "parentSig") {
+            if(key !== "studentPhoto"	&& key !== "studentSig" && key !== "parentSig") {
                 obj[key] = val;
             }
         });
@@ -1002,7 +1034,7 @@
                 alert("डेटा सफलतापूर्वक अपडेट कर दिया गया है!");
                 resetFormCustom();
             } else {
-                alert(res.message);
+                res.message;
             }
         })
         .catch(err => {
