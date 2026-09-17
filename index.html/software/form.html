@@ -77,7 +77,6 @@
         label { font-weight: 600; margin-bottom: 4px; color: #2d3748; font-size: 12px; }
         input, select, textarea { padding: 8px 10px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 13px; background-color: #fcfdfd; }
         
-        /* हिंदी नाम और इनपुट को पास रखने के लिए नया फ्लेक्स लेआउट */
         .input-hindi-group { position: relative; display: flex; align-items: center; gap: 8px; }
         .input-hindi-group input, .input-hindi-group textarea { flex: 1; box-sizing: border-box; }
         .hindi-hint {
@@ -139,7 +138,6 @@
             .form-container { box-shadow: none; padding: 15px; border: 2px solid #000; outline: 3px solid #000; outline-offset: -6px; max-width: 800px; }
             .btn-container, .photo-upload-box span, .sig-upload-box span, input[type="file"], .instruction-box, .admin-search-panel, .btn-admin-toggle, .loading-overlay, .password-modal-overlay, .otp-box { display: none !important; }
 
-            /* प्रिंट के समय हिंदी हिंट को साधारण टेक्स्ट की तरह दिखाने के लिए */
             .hindi-hint { 
                 display: inline-block !important; 
                 background: transparent !important; 
@@ -495,7 +493,7 @@
 </div>
 
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7DJrNjPKSMp-NNHXZsDIO5CEc-Pi5l5xlEx2VrUWb5euKob7W9k3Kf39ygAWWDXlXZg/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyQTuFVYUR3V1DeG96q6gqbvrxh1VxII-GVIcMjfj1oj_C3yJKZyz9emV_j_c7teWbgSg/exec";
     const ADMIN_PASSWORD = "admin@123"; 
 
     let ADMISSION_SETTINGS = {
@@ -513,7 +511,6 @@
         }
     }
 
-    // गूगल ट्रांसलिटरेशन एपीआई आधारित ऑटो हिंदी कनवर्टर
     function transliterateToHindi(inputEl, hintId) {
         const text = inputEl.value.trim();
         const hintSpan = document.getElementById(hintId);
@@ -832,6 +829,44 @@
         });
     }
 
+    // आयु सीमा जाँचने के लिए फंक्शन (कक्षा 6, 7, 8, 9, 11 के मानक के अनुसार)
+    function validateAgeLimit() {
+        const selectedClass = document.getElementById('studentClass').value;
+        const dobVal = document.getElementById('dob').value;
+
+        if (!selectedClass || !dobVal) return true; // यदि क्लास या जन्मतिथि नहीं भरी है तो आगे रोकें नहीं
+
+        const dobDate = new Date(dobVal);
+        const today = new Date();
+        
+        // आयु की गणना वर्षों में (31 मार्च या वर्तमान तिथि के आधार पर, यहाँ वर्तमान वर्ष से गणना की गई है)
+        let age = today.getFullYear() - dobDate.getFullYear();
+        const m = today.getMonth() - dobDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) {
+            age--;
+        }
+
+        // मानक न्यूनतम आयु सीमा (मानक के अनुसार - Class 6: 11 वर्ष, Class 7: 12 वर्ष, Class 8: 13 वर्ष, Class 9: 14 वर्ष, Class 11: 16 वर्ष आदि या अपने अनुसार सेट कर सकते हैं)
+        const minAgeRequirements = {
+            "6": 10,
+            "7": 11,
+            "8": 12,
+            "9": 13,
+            "10": 14,
+            "11": 15,
+            "12": 16
+        };
+
+        const requiredMinAge = minAgeRequirements[selectedClass];
+
+        if (requiredMinAge && age < requiredMinAge) {
+            alert(`⚠️ Under Age: कक्षा ${selectedClass} में नामांकन के लिए छात्र की न्यूनतम आयु ${requiredMinAge} वर्ष होनी चाहिए, जबकि वर्तमान आयु लगभग ${age} वर्ष है। अतः इस कक्षा के लिए आयु पूरी नहीं है।`);
+            return false;
+        }
+
+        return true;
+    }
+
     window.onload = function() {
         loadAdmissionSettings();
         fetchNextSerialNumber();
@@ -850,7 +885,16 @@
             if (selectedClass && ADMISSION_SETTINGS.closedClasses[selectedClass]) {
                 alert(`⚠️ क्षमा करें! Class ${selectedClass} के लिए ऑनलाइन एडमिशन की प्रक्रिया समाप्त हो चुकी है।`);
                 this.value = "";
+                return;
             }
+
+            // क्लास बदलने पर आयु की जाँच तुरंत करना चाहें तो कर सकते हैं
+            validateAgeLimit();
+        });
+
+        // जन्मतिथि बदलने पर भी आयु सीमा की जाँच करें
+        document.getElementById('dob').addEventListener('change', function() {
+            validateAgeLimit();
         });
     }
 
@@ -864,6 +908,11 @@
         }
         if (selectedClass && ADMISSION_SETTINGS.closedClasses[selectedClass]) {
             alert(`⚠️ क्षमा करें! Class ${selectedClass} के लिए ऑनलाइन एडमिशन बंद हो चुका है।`);
+            return;
+        }
+
+        // सबमिट करने से पहले आयु सीमा का अनिवार्य सत्यापन
+        if (!validateAgeLimit()) {
             return;
         }
 
@@ -1002,7 +1051,7 @@
         const formData = new FormData(form);
         const obj = {};
         formData.forEach((val, key) => {
-            if(key !== "studentPhoto"	&& key !== "studentSig" && key !== "parentSig") {
+            if(key !== "studentPhoto" && key !== "studentSig" && key !== "parentSig") {
                 obj[key] = val;
             }
         });
