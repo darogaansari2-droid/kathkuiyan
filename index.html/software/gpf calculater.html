@@ -331,7 +331,7 @@ button:active {
 
 /* ─── APP 2 STYLES ─── */
 #viewApp2 {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Areal, sans-serif;
     background-color: #f1f5f9;
     padding: 16px;
     width: 100%;
@@ -434,6 +434,15 @@ button:active {
     }
     body {
         padding: 0 !important;
+    }
+    /* App 2 table headers print fix - Pure Black & Clear */
+    #viewApp2 table th {
+        color: #000000 !important;
+        background-color: #e2e8f0 !important;
+        border: 1px solid #000000 !important;
+        font-weight: bold !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 }
 </style>
