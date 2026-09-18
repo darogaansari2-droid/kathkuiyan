@@ -52,12 +52,23 @@
                     <input type="number" id="effectiveTotalLoan" readonly class="w-full px-3 py-2 bg-slate-200 border rounded-md font-bold text-blue-900" value="0">
                 </div>
 
+                <!-- Monthly Installment Input -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">मासिक किस्त (Monthly Installment)</label>
+                    <input type="number" id="monthlyInstallmentInput" value="0" class="w-full px-3 py-2 bg-amber-50 border border-amber-300 rounded-md font-bold text-amber-900" placeholder="Monthly Kist" oninput="handleMonthlyInstallmentInput()">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">कुल और शेष किस्तों की स्थिति (Installments Status)</label>
+                    <input type="text" id="totalInstallmentsCount" readonly class="w-full px-3 py-2 bg-slate-200 border rounded-md font-bold text-indigo-700 text-xs sm:text-sm" value="0 किस्त">
+                </div>
+
                 <!-- March to February Table Inputs -->
                 <div class="md:col-span-3 bg-white p-4 rounded border border-slate-200">
                     <h3 class="font-bold text-slate-700 mb-1">मासिक कटौती विवरण (March से February तक)</h3>
-                    <p class="text-xs text-slate-500 mb-3">March mein amount darj karein, poore saal mein auto-fill hoga. Beech ke kisi mahine mein amount badalne par aage ke mahine wahi nayi amount se auto-update honge.</p>
+                    <p class="text-xs text-slate-500 mb-3">Jis mahine se katauti shuru karni ho wahan amount dalein, pehle ke mahine 0 rakhein, aage ke mahine auto-fill honge.</p>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-                        <div><label class="block text-xs font-medium text-slate-600">March</label><input type="number" id="m_march" value="0" class="w-full px-2 py-1 border rounded text-sm bg-yellow-50 font-semibold" onchange="handleMonthChange('march')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">March</label><input type="number" id="m_march" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('march')"></div>
                         <div><label class="block text-xs font-medium text-slate-600">April</label><input type="number" id="m_april" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('april')"></div>
                         <div><label class="block text-xs font-medium text-slate-600">May</label><input type="number" id="m_may" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('may')"></div>
                         <div><label class="block text-xs font-medium text-slate-600">June</label><input type="number" id="m_june" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('june')"></div>
@@ -84,7 +95,6 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1">लोन समाप्ति स्थिति (Status)</label>
-                    <!-- Yahan font size chhota (text-xs / text-sm) kiya gaya hai -->
                     <input type="text" id="completionStatus" readonly class="w-full px-3 py-2 bg-slate-200 border rounded-md font-bold text-purple-700 text-xs sm:text-sm" value="Status...">
                 </div>
 
@@ -107,7 +117,9 @@
                             <tr>
                                 <th class="p-3 border text-center w-16">क्र.सं.</th>
                                 <th class="p-3 border">वित्तीय वर्ष (Year)</th>
-                                <th class="p-3 border">कुल लोन</th>
+                                <th class="p-3 border">प्रारंभिक / पिछला लोन</th>
+                                <th class="p-3 border">नया लोन</th>
+                                <th class="p-3 border">कुल प्रभावी लोन</th>
                                 <th class="p-3 border">कटौती (Deduction)</th>
                                 <th class="p-3 border">शेष (Balance)</th>
                                 <th class="p-3 border">स्थिति (Status)</th>
@@ -134,10 +146,42 @@
             let newLoan = parseFloat(document.getElementById('newLoanAdded').value) || 0;
             let effectiveTotal = openingLoan + newLoan;
             document.getElementById('effectiveTotalLoan').value = effectiveTotal;
-            handleMonthChange('march');
+            
+            let firstActiveMonth = '';
+            for (let m of monthsList) {
+                let val = parseFloat(document.getElementById('m_' + m).value) || 0;
+                if (val > 0) {
+                    firstActiveMonth = m;
+                    break;
+                }
+            }
+            if (firstActiveMonth) {
+                handleMonthChange(firstActiveMonth);
+            } else {
+                monthsList.forEach(m => {
+                    document.getElementById('m_' + m).value = 0;
+                });
+                calculateAnnualDeduction();
+            }
         }
 
-        function handleMonthChange(triggerMonth = 'march') {
+        function handleMonthlyInstallmentInput() {
+            let kistVal = parseFloat(document.getElementById('monthlyInstallmentInput').value) || 0;
+            if (kistVal > 0) {
+                let targetMonth = 'march';
+                for (let m of monthsList) {
+                    let val = parseFloat(document.getElementById('m_' + m).value) || 0;
+                    if (val > 0) {
+                        targetMonth = m;
+                        break;
+                    }
+                }
+                document.getElementById('m_' + targetMonth).value = kistVal;
+                handleMonthChange(targetMonth);
+            }
+        }
+
+        function handleMonthChange(triggerMonth) {
             if (isAutoUpdating) return;
             let effectiveTotal = parseFloat(document.getElementById('effectiveTotalLoan').value) || 0;
             let runningBalance = effectiveTotal;
@@ -147,17 +191,27 @@
             let triggerIndex = monthsList.indexOf(triggerMonth);
             if (triggerIndex === -1) triggerIndex = 0;
 
-            let activeRate = parseFloat(document.getElementById('m_march').value) || 0;
+            for (let i = 0; i < triggerIndex; i++) {
+                document.getElementById('m_' + monthsList[i]).value = 0;
+            }
+
+            let activeRate = parseFloat(document.getElementById('m_' + triggerMonth).value) || 0;
+            if (activeRate === 0) {
+                activeRate = parseFloat(document.getElementById('monthlyInstallmentInput').value) || 0;
+                if (activeRate > 0) {
+                    document.getElementById('m_' + triggerMonth).value = activeRate;
+                }
+            }
 
             monthsList.forEach((m, index) => {
                 let box = document.getElementById('m_' + m);
-                let val = parseFloat(box.value) || 0;
 
                 if (index < triggerIndex) {
-                    runningBalance -= val;
+                    box.value = 0;
                 } else if (index === triggerIndex) {
+                    let val = parseFloat(box.value) || 0;
                     activeRate = val > 0 ? val : activeRate;
-                    if (runningBalance > 0) {
+                    if (runningBalance > 0 && activeRate > 0) {
                         let deduct = Math.min(activeRate, runningBalance);
                         box.value = deduct;
                         runningBalance -= deduct;
@@ -165,7 +219,7 @@
                         box.value = 0;
                     }
                 } else {
-                    if (runningBalance > 0) {
+                    if (runningBalance > 0 && activeRate > 0) {
                         let deduct = Math.min(activeRate, runningBalance);
                         box.value = deduct;
                         runningBalance -= deduct;
@@ -174,6 +228,18 @@
                     }
                 }
             });
+
+            let displayRate = 0;
+            for (let m of monthsList) {
+                let v = parseFloat(document.getElementById('m_' + m).value) || 0;
+                if (v > 0) {
+                    displayRate = v;
+                    break;
+                }
+            }
+            if (displayRate > 0) {
+                document.getElementById('monthlyInstallmentInput').value = displayRate;
+            }
 
             isAutoUpdating = false;
             calculateAnnualDeduction();
@@ -186,10 +252,28 @@
             let currentFinancialYear = document.getElementById('financialYear').value || "2025-2026";
 
             let currentBalanceCheck = effectiveTotal;
+            let activeInstallmentRate = 0;
+            for (let m of monthsList) {
+                let v = parseFloat(document.getElementById('m_' + m).value) || 0;
+                if (v > 0) {
+                    activeInstallmentRate = v;
+                    break;
+                }
+            }
+            if (activeInstallmentRate === 0) {
+                activeInstallmentRate = parseFloat(document.getElementById('monthlyInstallmentInput').value) || 0;
+            }
+
+            let paidInstallmentsCount = 0;
+
             monthsList.forEach(m => {
                 let box = document.getElementById('m_' + m);
                 let val = parseFloat(box.value) || 0;
                 totalDeducted += val;
+
+                if (val > 0) {
+                    paidInstallmentsCount++;
+                }
 
                 if (val > 0 && currentBalanceCheck > 0) {
                     lastDeductionMonth = m;
@@ -202,6 +286,19 @@
 
             document.getElementById('totalDeductedYear').value = totalDeducted;
             document.getElementById('balanceLoan').value = balance;
+
+            let totalInstallmentsNeeded = 0;
+            let remainingInstallmentsNeeded = 0;
+            if (activeInstallmentRate > 0 && effectiveTotal > 0) {
+                totalInstallmentsNeeded = Math.ceil(effectiveTotal / activeInstallmentRate);
+                remainingInstallmentsNeeded = Math.ceil(balance / activeInstallmentRate);
+            }
+
+            if (effectiveTotal === 0) {
+                document.getElementById('totalInstallmentsCount').value = "0 किस्त";
+            } else {
+                document.getElementById('totalInstallmentsCount').value = `कुल: ${totalInstallmentsNeeded} | इस साल भरी: ${paidInstallmentsCount} | शेष बची: ${remainingInstallmentsNeeded}`;
+            }
 
             const monthHindiNames = {
                 'march': 'मार्च', 'april': 'अप्रैल', 'may': 'मई', 'june': 'जून',
@@ -220,14 +317,12 @@
                 return;
             }
 
-            let marchRate = parseFloat(document.getElementById('m_march').value) || 0;
-
-            if (marchRate <= 0) {
+            if (activeInstallmentRate <= 0) {
                 document.getElementById('completionStatus').value = `शेष लोन: ₹${balance} (कटौती राशि दर्ज करें)`;
                 return;
             }
 
-            let extraMonthsNeeded = Math.ceil(balance / marchRate);
+            let extraMonthsNeeded = Math.ceil(balance / activeInstallmentRate);
             
             let startYr = 2025;
             let endYr = 2026;
@@ -255,13 +350,15 @@
             let recordData = {
                 id: document.getElementById('recordId').value || 'REC_' + Date.now(),
                 financialYear: document.getElementById('financialYear').value || '2025-2026',
-                totalLoan: document.getElementById('totalLoan').value,
-                newLoanAdded: document.getElementById('newLoanAdded').value,
-                effectiveTotalLoan: document.getElementById('effectiveTotalLoan').value,
+                totalLoan: document.getElementById('totalLoan').value || 0,
+                newLoanAdded: document.getElementById('newLoanAdded').value || 0,
+                effectiveTotalLoan: document.getElementById('effectiveTotalLoan').value || 0,
+                monthlyInstallmentInput: document.getElementById('monthlyInstallmentInput').value || 0,
+                totalInstallmentsCount: document.getElementById('totalInstallmentsCount').value || '0 किस्त',
                 months: Object.fromEntries(monthsList.map(m => [m, parseFloat(document.getElementById('m_' + m).value) || 0])),
-                totalDeductedYear: document.getElementById('totalDeductedYear').value,
-                balanceLoan: document.getElementById('balanceLoan').value,
-                completionStatus: document.getElementById('completionStatus').value
+                totalDeductedYear: document.getElementById('totalDeductedYear').value || 0,
+                balanceLoan: document.getElementById('balanceLoan').value || 0,
+                completionStatus: document.getElementById('completionStatus').value || ''
             };
 
             let records = JSON.parse(localStorage.getItem('simple_loan_records')) || [];
@@ -315,7 +412,7 @@
         }
 
         function clearAllData() {
-            if (confirm("चेतावनी: क्या आप localStorage का सारा डेटा हमेशा के लिए हटाना चाहते हैं?")) {
+            if (confirm("क्या आप localStorage का सारा डेटा हमेशा के लिए हटाना चाहते हैं?")) {
                 localStorage.removeItem('simple_loan_records');
                 loadRecords();
                 resetForm();
@@ -329,7 +426,7 @@
             tbody.innerHTML = '';
 
             if (records.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500">कोई डेटा उपलब्ध नहीं है।</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-slate-500">कोई डेटा उपलब्ध नहीं है।</td></tr>`;
                 return;
             }
 
@@ -339,10 +436,12 @@
                 tr.innerHTML = `
                     <td class="p-3 border text-center font-bold text-slate-600">${index + 1}</td>
                     <td class="p-3 border font-bold text-emerald-800">${rec.financialYear || 'N/A'}</td>
-                    <td class="p-3 border font-semibold">₹${rec.effectiveTotalLoan}</td>
-                    <td class="p-3 border text-green-700 font-semibold">₹${rec.totalDeductedYear}</td>
-                    <td class="p-3 border text-red-600 font-semibold">₹${rec.balanceLoan}</td>
-                    <td class="p-3 border text-xs text-purple-700 font-medium">${rec.completionStatus}</td>
+                    <td class="p-3 border font-semibold">₹${rec.totalLoan || 0}</td>
+                    <td class="p-3 border font-semibold text-blue-700">+₹${rec.newLoanAdded || 0}</td>
+                    <td class="p-3 border font-bold text-indigo-900">₹${rec.effectiveTotalLoan || 0}</td>
+                    <td class="p-3 border text-green-700 font-semibold">₹${rec.totalDeductedYear || 0}</td>
+                    <td class="p-3 border text-red-600 font-semibold">₹${rec.balanceLoan || 0}</td>
+                    <td class="p-3 border text-xs text-purple-700 font-medium">${rec.completionStatus || ''}</td>
                     <td class="p-3 border text-center space-x-2 no-print">
                         <button onclick="editRecord('${rec.id}')" class="bg-amber-500 text-white px-2 py-1 rounded text-xs hover:bg-amber-600">Edit</button>
                         <button onclick="deleteRecord('${rec.id}')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Delete</button>
@@ -359,17 +458,19 @@
             
             document.getElementById('recordId').value = rec.id;
             document.getElementById('financialYear').value = rec.financialYear || '2025-2026';
-            document.getElementById('totalLoan').value = rec.totalLoan;
+            document.getElementById('totalLoan').value = rec.totalLoan || 0;
             document.getElementById('newLoanAdded').value = rec.newLoanAdded || 0;
-            document.getElementById('effectiveTotalLoan').value = rec.effectiveTotalLoan;
+            document.getElementById('effectiveTotalLoan').value = rec.effectiveTotalLoan || 0;
+            document.getElementById('monthlyInstallmentInput').value = rec.monthlyInstallmentInput || 0;
+            document.getElementById('totalInstallmentsCount').value = rec.totalInstallmentsCount || '0 किस्त';
 
             for (let m in rec.months) {
                 if(document.getElementById('m_' + m)) document.getElementById('m_' + m).value = rec.months[m];
             }
 
-            document.getElementById('totalDeductedYear').value = rec.totalDeductedYear;
-            document.getElementById('balanceLoan').value = rec.balanceLoan;
-            document.getElementById('completionStatus').value = rec.completionStatus;
+            document.getElementById('totalDeductedYear').value = rec.totalDeductedYear || 0;
+            document.getElementById('balanceLoan').value = rec.balanceLoan || 0;
+            document.getElementById('completionStatus').value = rec.completionStatus || '';
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
