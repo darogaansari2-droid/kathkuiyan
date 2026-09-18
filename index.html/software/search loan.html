@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Loan Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+            .no-print, #loanForm, .bg-\[\#003366\], h2.no-print { display: none !important; }
+            body { background: white; -webkit-print-color-adjust: exact; }
+            .max-w-6xl { max-width: 100% !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; }
+            #printTableContainer { display: block !important; width: 100% !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen p-4 md:p-6">
+
+    <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-6 md:p-8">
+        <!-- Header -->
+        <div class="bg-[#003366] text-white p-6 text-center rounded-lg mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold">श्री कृष्ण इण्टरमीडिएट कालेज</h1>
+            <p class="text-sm md:text-base text-blue-200 mt-1">Simple Loan Auto-Deduction Calculator</p>
+        </div>
+
+        <div class="space-y-6">
+            <!-- Form -->
+            <form id="loanForm" class="bg-slate-50 p-4 md:p-6 rounded-lg border border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-4" onsubmit="event.preventDefault();">
+                <input type="hidden" id="recordId">
+                
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">वित्तीय वर्ष (Financial Year)</label>
+                    <input type="text" id="financialYear" value="2025-2026" class="w-full px-3 py-2 bg-emerald-50 border border-emerald-300 rounded-md font-bold text-emerald-900" placeholder="e.g. 2025-2026">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">प्रारंभिक / पिछला शेष लोन (Opening Loan)</label>
+                    <input type="number" id="totalLoan" value="0" class="w-full px-3 py-2 bg-blue-50 border border-blue-300 rounded-md font-bold text-blue-900" placeholder="0" oninput="calculateTotals()">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">नया लोन (New Loan Added)</label>
+                    <input type="number" id="newLoanAdded" value="0" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white" oninput="calculateTotals()">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">कुल योग्य लोन (Total Effective Loan)</label>
+                    <input type="number" id="effectiveTotalLoan" readonly class="w-full px-3 py-2 bg-slate-200 border rounded-md font-bold text-blue-900" value="0">
+                </div>
+
+                <!-- March to February Table Inputs -->
+                <div class="md:col-span-3 bg-white p-4 rounded border border-slate-200">
+                    <h3 class="font-bold text-slate-700 mb-1">मासिक कटौती विवरण (March से February तक)</h3>
+                    <p class="text-xs text-slate-500 mb-3">March mein amount darj karein, poore saal mein auto-fill hoga. Beech ke kisi mahine mein amount badalne par aage ke mahine wahi nayi amount se auto-update honge.</p>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                        <div><label class="block text-xs font-medium text-slate-600">March</label><input type="number" id="m_march" value="0" class="w-full px-2 py-1 border rounded text-sm bg-yellow-50 font-semibold" onchange="handleMonthChange('march')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">April</label><input type="number" id="m_april" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('april')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">May</label><input type="number" id="m_may" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('may')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">June</label><input type="number" id="m_june" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('june')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">July</label><input type="number" id="m_july" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('july')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">August</label><input type="number" id="m_august" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('august')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">September</label><input type="number" id="m_september" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('september')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">October</label><input type="number" id="m_october" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('october')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">November</label><input type="number" id="m_november" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('november')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">December</label><input type="number" id="m_december" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('december')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">January</label><input type="number" id="m_january" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('january')"></div>
+                        <div><label class="block text-xs font-medium text-slate-600">February</label><input type="number" id="m_february" value="0" class="w-full px-2 py-1 border rounded text-sm bg-white" onchange="handleMonthChange('february')"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">कुल कटौती (Total Deducted)</label>
+                    <input type="number" id="totalDeductedYear" readonly class="w-full px-3 py-2 bg-slate-200 border rounded-md font-bold text-green-700" value="0">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">शेष बचा लोन (Closing Balance)</label>
+                    <input type="number" id="balanceLoan" readonly class="w-full px-3 py-2 bg-slate-200 border rounded-md font-bold text-red-600" value="0">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">लोन समाप्ति स्थिति (Status)</label>
+                    <!-- Yahan font size chhota (text-xs / text-sm) kiya gaya hai -->
+                    <input type="text" id="completionStatus" readonly class="w-full px-3 py-2 bg-slate-200 border rounded-md font-bold text-purple-700 text-xs sm:text-sm" value="Status...">
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="md:col-span-3 flex flex-wrap gap-3 mt-2 no-print">
+                    <button type="button" onclick="saveRecord()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-md shadow transition">Save Record</button>
+                    <button type="button" onclick="loadNextYearOpening()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2 rounded-md shadow transition">अगले वर्ष का शेष लोन लाएं (Next Year)</button>
+                    <button type="button" onclick="window.print()" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-5 py-2 rounded-md shadow transition">🖨️ Print Saved Records</button>
+                    <button type="button" onclick="clearAllData()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-md shadow transition">सब कुछ डिलीट करें (Clear All)</button>
+                    <button type="button" onclick="resetForm()" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-5 py-2 rounded-md shadow transition">Reset / Clear Form</button>
+                </div>
+            </form>
+
+            <!-- Table -->
+            <div class="mt-8" id="printTableContainer">
+                <h2 class="text-xl font-bold text-slate-700 mb-4 no-print">सहेजे गए रिकॉर्ड्स (Saved Records)</h2>
+                <div class="overflow-x-auto border rounded-lg shadow-sm bg-white">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead class="bg-slate-200 text-slate-700 uppercase text-xs">
+                            <tr>
+                                <th class="p-3 border text-center w-16">क्र.सं.</th>
+                                <th class="p-3 border">वित्तीय वर्ष (Year)</th>
+                                <th class="p-3 border">कुल लोन</th>
+                                <th class="p-3 border">कटौती (Deduction)</th>
+                                <th class="p-3 border">शेष (Balance)</th>
+                                <th class="p-3 border">स्थिति (Status)</th>
+                                <th class="p-3 border text-center no-print">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordTableBody" class="divide-y divide-slate-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const monthsList = ['march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december', 'january', 'february'];
+        let isAutoUpdating = false;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            loadRecords();
+        });
+
+        function calculateTotals() {
+            let openingLoan = parseFloat(document.getElementById('totalLoan').value) || 0;
+            let newLoan = parseFloat(document.getElementById('newLoanAdded').value) || 0;
+            let effectiveTotal = openingLoan + newLoan;
+            document.getElementById('effectiveTotalLoan').value = effectiveTotal;
+            handleMonthChange('march');
+        }
+
+        function handleMonthChange(triggerMonth = 'march') {
+            if (isAutoUpdating) return;
+            let effectiveTotal = parseFloat(document.getElementById('effectiveTotalLoan').value) || 0;
+            let runningBalance = effectiveTotal;
+
+            isAutoUpdating = true;
+
+            let triggerIndex = monthsList.indexOf(triggerMonth);
+            if (triggerIndex === -1) triggerIndex = 0;
+
+            let activeRate = parseFloat(document.getElementById('m_march').value) || 0;
+
+            monthsList.forEach((m, index) => {
+                let box = document.getElementById('m_' + m);
+                let val = parseFloat(box.value) || 0;
+
+                if (index < triggerIndex) {
+                    runningBalance -= val;
+                } else if (index === triggerIndex) {
+                    activeRate = val > 0 ? val : activeRate;
+                    if (runningBalance > 0) {
+                        let deduct = Math.min(activeRate, runningBalance);
+                        box.value = deduct;
+                        runningBalance -= deduct;
+                    } else {
+                        box.value = 0;
+                    }
+                } else {
+                    if (runningBalance > 0) {
+                        let deduct = Math.min(activeRate, runningBalance);
+                        box.value = deduct;
+                        runningBalance -= deduct;
+                    } else {
+                        box.value = 0;
+                    }
+                }
+            });
+
+            isAutoUpdating = false;
+            calculateAnnualDeduction();
+        }
+
+        function calculateAnnualDeduction() {
+            let effectiveTotal = parseFloat(document.getElementById('effectiveTotalLoan').value) || 0;
+            let totalDeducted = 0;
+            let lastDeductionMonth = "";
+            let currentFinancialYear = document.getElementById('financialYear').value || "2025-2026";
+
+            let currentBalanceCheck = effectiveTotal;
+            monthsList.forEach(m => {
+                let box = document.getElementById('m_' + m);
+                let val = parseFloat(box.value) || 0;
+                totalDeducted += val;
+
+                if (val > 0 && currentBalanceCheck > 0) {
+                    lastDeductionMonth = m;
+                    currentBalanceCheck -= val;
+                }
+            });
+
+            let balance = effectiveTotal - totalDeducted;
+            if (balance < 0) balance = 0;
+
+            document.getElementById('totalDeductedYear').value = totalDeducted;
+            document.getElementById('balanceLoan').value = balance;
+
+            const monthHindiNames = {
+                'march': 'मार्च', 'april': 'अप्रैल', 'may': 'मई', 'june': 'जून',
+                'july': 'जुलाई', 'august': 'अगस्त', 'september': 'सितंबर', 'october': 'अक्टूबर',
+                'november': 'नवंबर', 'december': 'दिसंबर', 'january': 'जनवरी', 'february': 'फरवरी'
+            };
+
+            if (effectiveTotal === 0) {
+                document.getElementById('completionStatus').value = "कोई लोन नहीं";
+                return;
+            }
+
+            if (balance === 0 && lastDeductionMonth) {
+                let hindiMonth = monthHindiNames[lastDeductionMonth] || lastDeductionMonth;
+                document.getElementById('completionStatus').value = `${currentFinancialYear} के ${hindiMonth} माह तक पूरा हो जाएगा I`;
+                return;
+            }
+
+            let marchRate = parseFloat(document.getElementById('m_march').value) || 0;
+
+            if (marchRate <= 0) {
+                document.getElementById('completionStatus').value = `शेष लोन: ₹${balance} (कटौती राशि दर्ज करें)`;
+                return;
+            }
+
+            let extraMonthsNeeded = Math.ceil(balance / marchRate);
+            
+            let startYr = 2025;
+            let endYr = 2026;
+            let parts = currentFinancialYear.split('-');
+            if (parts.length === 2 && !isNaN(parseInt(parts[0])) && !isNaN(parseInt(parts[1]))) {
+                startYr = parseInt(parts[0]);
+                endYr = parseInt(parts[1]);
+            }
+
+            let futureMonthIndex = extraMonthsNeeded - 1; 
+            let additionalYears = Math.floor(futureMonthIndex / 12) + 1;
+            let finalMonthIndex = futureMonthIndex % 12;
+
+            let targetStartYr = startYr + additionalYears;
+            let targetEndYr = endYr + additionalYears;
+            let targetFinancialYear = `${targetStartYr}-${targetEndYr}`;
+
+            let finalMonthKey = monthsList[finalMonthIndex];
+            let finalHindiMonth = monthHindiNames[finalMonthKey] || finalMonthKey;
+
+            document.getElementById('completionStatus').value = `${targetFinancialYear} के ${finalHindiMonth} माह तक पूरा हो जाएगा I`;
+        }
+
+        function saveRecord() {
+            let recordData = {
+                id: document.getElementById('recordId').value || 'REC_' + Date.now(),
+                financialYear: document.getElementById('financialYear').value || '2025-2026',
+                totalLoan: document.getElementById('totalLoan').value,
+                newLoanAdded: document.getElementById('newLoanAdded').value,
+                effectiveTotalLoan: document.getElementById('effectiveTotalLoan').value,
+                months: Object.fromEntries(monthsList.map(m => [m, parseFloat(document.getElementById('m_' + m).value) || 0])),
+                totalDeductedYear: document.getElementById('totalDeductedYear').value,
+                balanceLoan: document.getElementById('balanceLoan').value,
+                completionStatus: document.getElementById('completionStatus').value
+            };
+
+            let records = JSON.parse(localStorage.getItem('simple_loan_records')) || [];
+            let existingIndex = records.findIndex(r => r.id === recordData.id);
+            
+            if (existingIndex !== -1) {
+                records[existingIndex] = recordData;
+                alert("Record updated successfully!");
+            } else {
+                records.push(recordData);
+                alert("Record saved successfully!");
+            }
+
+            localStorage.setItem('simple_loan_records', JSON.stringify(records));
+            loadRecords();
+            resetForm();
+        }
+
+        function loadNextYearOpening() {
+            let records = JSON.parse(localStorage.getItem('simple_loan_records')) || [];
+            
+            if (records.length === 0) {
+                alert("कोई पिछला रिकॉर्ड उपलब्ध नहीं है I");
+                return;
+            }
+
+            let lastRecord = records[records.length - 1];
+            let remainingBalance = parseFloat(lastRecord.balanceLoan) || 0;
+            let lastYear = lastRecord.financialYear || "2025-2026";
+
+            let nextYearStr = "2026-2027";
+            let parts = lastYear.split('-');
+            if (parts.length === 2) {
+                let startYr = parseInt(parts[0]);
+                let endYr = parseInt(parts[1]);
+                if (!isNaN(startYr) && !isNaN(endYr)) {
+                    nextYearStr = (startYr + 1) + "-" + (endYr + 1);
+                }
+            }
+
+            document.getElementById('loanForm').reset();
+            document.getElementById('recordId').value = '';
+            
+            document.getElementById('financialYear').value = nextYearStr;
+            document.getElementById('totalLoan').value = remainingBalance;
+            
+            calculateTotals();
+
+            alert("वित्तीय वर्ष (" + nextYearStr + ") और पिछला शेष लोन (₹" + remainingBalance + ") सफलतापूर्वक लोड हो गया है I");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function clearAllData() {
+            if (confirm("चेतावनी: क्या आप localStorage का सारा डेटा हमेशा के लिए हटाना चाहते हैं?")) {
+                localStorage.removeItem('simple_loan_records');
+                loadRecords();
+                resetForm();
+                alert("सारा डेटा साफ़ कर दिया गया है I");
+            }
+        }
+
+        function loadRecords() {
+            let records = JSON.parse(localStorage.getItem('simple_loan_records')) || [];
+            let tbody = document.getElementById('recordTableBody');
+            tbody.innerHTML = '';
+
+            if (records.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500">कोई डेटा उपलब्ध नहीं है।</td></tr>`;
+                return;
+            }
+
+            records.forEach((rec, index) => {
+                let tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-3 border text-center font-bold text-slate-600">${index + 1}</td>
+                    <td class="p-3 border font-bold text-emerald-800">${rec.financialYear || 'N/A'}</td>
+                    <td class="p-3 border font-semibold">₹${rec.effectiveTotalLoan}</td>
+                    <td class="p-3 border text-green-700 font-semibold">₹${rec.totalDeductedYear}</td>
+                    <td class="p-3 border text-red-600 font-semibold">₹${rec.balanceLoan}</td>
+                    <td class="p-3 border text-xs text-purple-700 font-medium">${rec.completionStatus}</td>
+                    <td class="p-3 border text-center space-x-2 no-print">
+                        <button onclick="editRecord('${rec.id}')" class="bg-amber-500 text-white px-2 py-1 rounded text-xs hover:bg-amber-600">Edit</button>
+                        <button onclick="deleteRecord('${rec.id}')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function editRecord(id) {
+            let records = JSON.parse(localStorage.getItem('simple_loan_records')) || [];
+            let rec = records.find(r => r.id === id);
+            if (!rec) return;
+            
+            document.getElementById('recordId').value = rec.id;
+            document.getElementById('financialYear').value = rec.financialYear || '2025-2026';
+            document.getElementById('totalLoan').value = rec.totalLoan;
+            document.getElementById('newLoanAdded').value = rec.newLoanAdded || 0;
+            document.getElementById('effectiveTotalLoan').value = rec.effectiveTotalLoan;
+
+            for (let m in rec.months) {
+                if(document.getElementById('m_' + m)) document.getElementById('m_' + m).value = rec.months[m];
+            }
+
+            document.getElementById('totalDeductedYear').value = rec.totalDeductedYear;
+            document.getElementById('balanceLoan').value = rec.balanceLoan;
+            document.getElementById('completionStatus').value = rec.completionStatus;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteRecord(id) {
+            if (confirm("क्या आप इस रिकॉर्ड को डिलीट करना चाहते हैं?")) {
+                let records = JSON.parse(localStorage.getItem('simple_loan_records')) || [];
+                records = records.filter(r => r.id !== id);
+                localStorage.setItem('simple_loan_records', JSON.stringify(records));
+                loadRecords();
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('loanForm').reset();
+            document.getElementById('recordId').value = '';
+            document.getElementById('financialYear').value = '2025-2026';
+            calculateTotals();
+        }
+    </script>
+</body>
+</html>
