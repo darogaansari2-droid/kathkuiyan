@@ -52,13 +52,32 @@
                     <input type="number" id="effectiveTotalLoan" readonly class="w-full px-3 py-2 bg-slate-200 border rounded-md font-bold text-blue-900" value="0">
                 </div>
 
+                <!-- Start Month Dropdown -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">कटौती प्रारंभ माह (Start Month)</label>
+                    <select id="startMonthSelect" class="w-full px-3 py-2 border rounded-md bg-white font-bold text-slate-800" onchange="onStartMonthChange()">
+                        <option value="march" selected>March (मार्च)</option>
+                        <option value="april">April (अप्रैल)</option>
+                        <option value="may">May (मई)</option>
+                        <option value="june">June (जून)</option>
+                        <option value="july">July (जुलाई)</option>
+                        <option value="august">August (अगस्त)</option>
+                        <option value="september">September (सितंबर)</option>
+                        <option value="october">October (अक्टूबर)</option>
+                        <option value="november">November (नवंबर)</option>
+                        <option value="december">December (दिसंबर)</option>
+                        <option value="january">January (जनवरी)</option>
+                        <option value="february">February (फरवरी)</option>
+                    </select>
+                </div>
+
                 <!-- Monthly Installment Input -->
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-1">मासिक किस्त (Monthly Installment)</label>
                     <input type="number" id="monthlyInstallmentInput" value="0" class="w-full px-3 py-2 bg-amber-50 border border-amber-300 rounded-md font-bold text-amber-900" placeholder="Monthly Kist" oninput="handleMonthlyInstallmentInput()">
                 </div>
 
-                <div>
+                <div class="md:col-span-3">
                     <label class="block text-sm font-semibold text-slate-700 mb-1">कुल और शेष किस्तों की स्थिति (Installments Status)</label>
                     <input type="text" id="totalInstallmentsCount" readonly class="w-full px-3 py-2 bg-slate-200 border rounded-md font-bold text-indigo-700 text-xs sm:text-sm" value="0 किस्त">
                 </div>
@@ -147,37 +166,52 @@
             let effectiveTotal = openingLoan + newLoan;
             document.getElementById('effectiveTotalLoan').value = effectiveTotal;
             
-            let firstActiveMonth = '';
-            for (let m of monthsList) {
-                let val = parseFloat(document.getElementById('m_' + m).value) || 0;
-                if (val > 0) {
-                    firstActiveMonth = m;
-                    break;
+            let targetMonth = document.getElementById('startMonthSelect').value || 'march';
+            let activeRate = parseFloat(document.getElementById('monthlyInstallmentInput').value) || 0;
+            
+            if (activeRate > 0) {
+                handleMonthChange(targetMonth);
+            } else {
+                let firstActiveMonth = '';
+                for (let m of monthsList) {
+                    let val = parseFloat(document.getElementById('m_' + m).value) || 0;
+                    if (val > 0) {
+                        firstActiveMonth = m;
+                        break;
+                    }
+                }
+                if (firstActiveMonth) {
+                    handleMonthChange(firstActiveMonth);
+                } else {
+                    monthsList.forEach(m => {
+                        document.getElementById('m_' + m).value = 0;
+                    });
+                    calculateAnnualDeduction();
                 }
             }
-            if (firstActiveMonth) {
-                handleMonthChange(firstActiveMonth);
+        }
+
+        function onStartMonthChange() {
+            let targetMonth = document.getElementById('startMonthSelect').value || 'march';
+            let kistVal = parseFloat(document.getElementById('monthlyInstallmentInput').value) || 0;
+            if (kistVal > 0) {
+                monthsList.forEach(m => document.getElementById('m_' + m).value = 0);
+                document.getElementById('m_' + targetMonth).value = kistVal;
+                handleMonthChange(targetMonth);
             } else {
-                monthsList.forEach(m => {
-                    document.getElementById('m_' + m).value = 0;
-                });
-                calculateAnnualDeduction();
+                calculateTotals();
             }
         }
 
         function handleMonthlyInstallmentInput() {
             let kistVal = parseFloat(document.getElementById('monthlyInstallmentInput').value) || 0;
+            let targetMonth = document.getElementById('startMonthSelect').value || 'march';
             if (kistVal > 0) {
-                let targetMonth = 'march';
-                for (let m of monthsList) {
-                    let val = parseFloat(document.getElementById('m_' + m).value) || 0;
-                    if (val > 0) {
-                        targetMonth = m;
-                        break;
-                    }
-                }
+                monthsList.forEach(m => document.getElementById('m_' + m).value = 0);
                 document.getElementById('m_' + targetMonth).value = kistVal;
                 handleMonthChange(targetMonth);
+            } else {
+                calculateTotals();
             }
         }
 
@@ -353,6 +387,7 @@
                 totalLoan: document.getElementById('totalLoan').value || 0,
                 newLoanAdded: document.getElementById('newLoanAdded').value || 0,
                 effectiveTotalLoan: document.getElementById('effectiveTotalLoan').value || 0,
+                startMonth: document.getElementById('startMonthSelect').value || 'march',
                 monthlyInstallmentInput: document.getElementById('monthlyInstallmentInput').value || 0,
                 totalInstallmentsCount: document.getElementById('totalInstallmentsCount').value || '0 किस्त',
                 months: Object.fromEntries(monthsList.map(m => [m, parseFloat(document.getElementById('m_' + m).value) || 0])),
@@ -404,6 +439,7 @@
             
             document.getElementById('financialYear').value = nextYearStr;
             document.getElementById('totalLoan').value = remainingBalance;
+            document.getElementById('startMonthSelect').value = 'march';
             
             calculateTotals();
 
@@ -461,6 +497,7 @@
             document.getElementById('totalLoan').value = rec.totalLoan || 0;
             document.getElementById('newLoanAdded').value = rec.newLoanAdded || 0;
             document.getElementById('effectiveTotalLoan').value = rec.effectiveTotalLoan || 0;
+            document.getElementById('startMonthSelect').value = rec.startMonth || 'march';
             document.getElementById('monthlyInstallmentInput').value = rec.monthlyInstallmentInput || 0;
             document.getElementById('totalInstallmentsCount').value = rec.totalInstallmentsCount || '0 किस्त';
 
@@ -488,6 +525,7 @@
             document.getElementById('loanForm').reset();
             document.getElementById('recordId').value = '';
             document.getElementById('financialYear').value = '2025-2026';
+            document.getElementById('startMonthSelect').value = 'march';
             calculateTotals();
         }
     </script>
