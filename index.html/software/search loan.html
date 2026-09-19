@@ -120,10 +120,10 @@
                 <!-- Action Buttons -->
                 <div class="md:col-span-3 flex flex-wrap gap-3 mt-2 no-print">
                     <button type="button" onclick="saveRecord()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-2.5 py-1 rounded-md shadow transition">Save Record</button>
-                    <button type="button" onclick="loadNextYearOpening()" class="bg-emerald-700 hover:bg-emerald-700 text-white font-semibold px-3py-2 rounded-md shadow transition">अगले वर्ष का शेष लोन लाएं (Next Year)</button>
-                    <button type="button" onclick="window.print()" class="bg-purple-600 hover:bg-purple-1000 text-white font-semibold px-5 py-2 rounded-md shadow transition">🖨️ Print Saved Records</button>
-                    <button type="button" onclick="clearAllData()" class="bg-red-600 hover:bg-red-1000 text-white font-semibold px-5 py-2 rounded-md shadow transition">सब कुछ डिलीट करें (Clear All)</button>
-                    <button type="button" onclick="resetForm()" class="bg-gray-500 hover:bg-gray-1000 text-white font-semibold px-5 py-2 rounded-md shadow transition">Reset / Clear Form</button>
+                    <button type="button" onclick="loadNextYearOpening()" class="bg-emerald-700 hover:bg-emerald-700 text-white font-semibold px-3 py-2 rounded-md shadow transition">अगले वर्ष का शेष लोन लाएं (Next Year)</button>
+                    <button type="button" onclick="window.print()" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-5 py-2 rounded-md shadow transition">🖨️ Print Saved Records</button>
+                    <button type="button" onclick="clearAllData()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-md shadow transition">सब कुछ डिलीट करें (Clear All)</button>
+                    <button type="button" onclick="resetForm()" class="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-5 py-2 rounded-md shadow transition">Reset / Clear Form</button>
                 </div>
             </form>
 
@@ -194,40 +194,42 @@
         function onStartMonthChange() {
             let targetMonth = document.getElementById('startMonthSelect').value || 'march';
             let kistVal = parseFloat(document.getElementById('monthlyInstallmentInput').value) || 0;
+            
+            monthsList.forEach(m => document.getElementById('m_' + m).value = 0);
             if (kistVal > 0) {
-                monthsList.forEach(m => document.getElementById('m_' + m).value = 0);
                 document.getElementById('m_' + targetMonth).value = kistVal;
-                handleMonthChange(targetMonth);
-            } else {
-                calculateTotals();
             }
+            handleMonthChange(targetMonth);
         }
 
         function handleMonthlyInstallmentInput() {
             let kistVal = parseFloat(document.getElementById('monthlyInstallmentInput').value) || 0;
             let targetMonth = document.getElementById('startMonthSelect').value || 'march';
+            
+            monthsList.forEach(m => document.getElementById('m_' + m).value = 0);
             if (kistVal > 0) {
-                monthsList.forEach(m => document.getElementById('m_' + m).value = 0);
                 document.getElementById('m_' + targetMonth).value = kistVal;
-                handleMonthChange(targetMonth);
-            } else {
-                calculateTotals();
             }
+            handleMonthChange(targetMonth);
         }
 
         function handleMonthChange(triggerMonth) {
             if (isAutoUpdating) return;
             let effectiveTotal = parseFloat(document.getElementById('effectiveTotalLoan').value) || 0;
-            let runningBalance = effectiveTotal;
-
+            
             isAutoUpdating = true;
 
             let triggerIndex = monthsList.indexOf(triggerMonth);
             if (triggerIndex === -1) triggerIndex = 0;
 
+            let runningBalance = effectiveTotal;
+
+            // Preserve previous months' values and subtract them from running balance
             for (let i = 0; i < triggerIndex; i++) {
-                document.getElementById('m_' + monthsList[i]).value = 0;
+                let prevVal = parseFloat(document.getElementById('m_' + monthsList[i]).value) || 0;
+                runningBalance -= prevVal;
             }
+            if (runningBalance < 0) runningBalance = 0;
 
             let activeRate = parseFloat(document.getElementById('m_' + triggerMonth).value) || 0;
             if (activeRate === 0) {
@@ -241,7 +243,7 @@
                 let box = document.getElementById('m_' + m);
 
                 if (index < triggerIndex) {
-                    box.value = 0;
+                    // Do not change previous months
                 } else if (index === triggerIndex) {
                     let val = parseFloat(box.value) || 0;
                     activeRate = val > 0 ? val : activeRate;
@@ -480,7 +482,7 @@
                     <td class="p-3 border text-xs text-green-700 font-semibold">${rec.completionStatus || ''}</td>
                     <td class="p-3 border text-center space-x-2 no-print">
                         <button onclick="editRecord('${rec.id}')" class="bg-green-700 text-white px-2 py-1 rounded text-xs hover:bg-amber-600">Edit</button>
-                        <button onclick="deleteRecord('${rec.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Delete</button>
+                        <button onclick="deleteRecord('${rec.id}')" class="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700">Delete</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
