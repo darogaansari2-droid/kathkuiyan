@@ -363,7 +363,7 @@
         <div class="p-header">
             <div class="p-school-name">SHRI KRISHN INTER COLLEGE SEMRA</div>
             <div class="p-school-address">POST - KATHKUIYAN, DIST- KUSHINAGAR PIN CODE - 274303</div>
-            <div class="p-form-title">Scholar's Register & Transfer Certificate Form</div>
+            <div class="p-form-title">Scholar's Register & Transfer Certificate </div>
         </div>
     </div>
 
@@ -485,7 +485,7 @@
         let pass = document.getElementById("loginPassword").value.trim();
         let err = document.getElementById("loginError");
 
-        if (id === "transfer" && pass === "123") {
+        if (id === "tc" && pass === "123") {
             sessionStorage.setItem("isTcLoggedIn", "true");
             document.getElementById("loginModal").style.display = "none";
         } else {
@@ -574,6 +574,7 @@
     document.getElementById('field_29').addEventListener('input', function() { runChainCalculation(29); });
     document.getElementById('field_34').addEventListener('input', function() { runChainCalculation(34); });
     document.getElementById('field_48').addEventListener('input', function() { runChainCalculation(48); });
+    document.getElementById('field_53').addEventListener('input', function() { runChainCalculation(53); });
 
     function clearFieldsRange(start, end) {
         for(let i = start; i <= end; i++) {
@@ -585,33 +586,38 @@
     function runChainCalculation(startField) {
         if (startField <= 14) {
             let f14 = document.getElementById('field_14').value.trim();
-            if (!f14) { clearFieldsRange(15, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
+            if (!f14) { clearFieldsRange(15, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 66); return; }
             else { let res1 = processSingleBlock(f14, 'field_15', 'field_16', 'field_17', 'field_18'); if (res1.nextAdmDate) document.getElementById('field_19').value = res1.nextAdmDate; }
         }
         if (startField <= 19) {
             let f19 = document.getElementById('field_19').value.trim();
-            if (!f19) { clearFieldsRange(20, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
+            if (!f19) { clearFieldsRange(20, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 66); return; }
             else { let res2 = processSingleBlock(f19, 'field_20', 'field_21', 'field_22', 'field_23'); if (res2.nextAdmDate) document.getElementById('field_24').value = res2.nextAdmDate; }
         }
         if (startField <= 24) {
             let f24 = document.getElementById('field_24').value.trim();
-            if (!f24) { clearFieldsRange(25, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
+            if (!f24) { clearFieldsRange(25, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 66); return; }
             else { let res3 = processSingleBlock(f24, 'field_25', 'field_26', 'field_27', 'field_28'); if (res3.nextAdmDate) document.getElementById('field_29').value = res3.nextAdmDate; }
         }
         if (startField <= 29) {
             let f29 = document.getElementById('field_29').value.trim();
-            if (!f29) { clearFieldsRange(30, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
+            if (!f29) { clearFieldsRange(30, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 66); return; }
             else { let res4 = processSingleBlock(f29, 'field_30', 'field_31', 'field_32', 'field_33'); if (res4.nextAdmDate) document.getElementById('field_34').value = res4.nextAdmDate; }
         }
         if (startField <= 34) {
             let f34 = document.getElementById('field_34').value.trim();
-            if (!f34) { clearFieldsRange(35, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
+            if (!f34) { clearFieldsRange(35, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 66); return; }
             else { let res5 = processSingleBlock(f34, 'field_35', 'field_38', 'field_39', 'field_40'); if (res5.nextAdmDate) document.getElementById('field_48').value = res5.nextAdmDate; }
         }
         if (startField <= 48) {
             let f48 = document.getElementById('field_48').value.trim();
-            if (!f48) { clearFieldsRange(49, 52); return; }
-            else { processSingleBlock(f48, 'field_49', 'field_50', 'field_51', 'field_52'); }
+            if (!f48) { clearFieldsRange(49, 66); return; }
+            else { let res6 = processSingleBlock(f48, 'field_49', 'field_50', 'field_51', 'field_52'); if (res6.nextAdmDate) document.getElementById('field_53').value = res6.nextAdmDate; }
+        }
+        if (startField <= 53) {
+            let f53 = document.getElementById('field_53').value.trim();
+            if (!f53) { clearFieldsRange(54, 66); return; }
+            else { processSingleBlock(f53, 'field_54', 'field_57', 'field_58', 'field_59'); }
         }
     }
 
@@ -930,7 +936,7 @@
         document.getElementById('tc_xi_4').innerText = document.getElementById('field_51').value || '';
         document.getElementById('tc_xi_5').innerText = document.getElementById('field_52').value || '';
 
-        // Class XII mapping (Updated with Varsh, Achran and Parikshafal)
+        // Class XII mapping
         document.getElementById('tc_xii_1').innerText = document.getElementById('field_53').value || '';
         document.getElementById('tc_xii_2').innerText = document.getElementById('field_54').value || '';
         document.getElementById('tc_xii_5').innerText = document.getElementById('field_57').value || '';
@@ -967,9 +973,15 @@
             if (clsKey === 'x') {
                 document.getElementById('tc_x_3').innerText = leavingDate;
                 document.getElementById('tc_x_4').innerText = leavingCause;
+                if (!leavingDate) {
+                    document.getElementById('tc_x_7').innerText = "अ सं. प्रद फेल";
+                }
             } else if (clsKey === 'xii') {
                 document.getElementById('tc_xii_3').innerText = leavingDate;
                 document.getElementById('tc_xii_4').innerText = leavingCause;
+                if (!leavingDate) {
+                    document.getElementById('tc_xii_7').innerText = "अ सं. प्रद फेल";
+                }
             } else {
                 let dEl = document.getElementById(`tc_${clsKey}_rem_date`);
                 let cEl = document.getElementById(`tc_${clsKey}_rem_cause`);
@@ -977,10 +989,19 @@
                 if(cEl) cEl.innerText = leavingCause;
             }
         } else {
-            document.getElementById('tc_x_3').innerText = document.getElementById('field_36').value || '';
+            let xRemDate = document.getElementById('field_36').value.trim();
+            document.getElementById('tc_x_3').innerText = xRemDate;
             document.getElementById('tc_x_4').innerText = document.getElementById('field_37').value || '';
-            document.getElementById('tc_xii_3').innerText = document.getElementById('field_55').value || '';
+            if (xRemDate === "" && document.getElementById('field_34').value.trim() !== "") {
+                document.getElementById('tc_x_7').innerText = "अ सं. प्रद फेल";
+            }
+
+            let xiiRemDate = document.getElementById('field_55').value.trim();
+            document.getElementById('tc_xii_3').innerText = xiiRemDate;
             document.getElementById('tc_xii_4').innerText = document.getElementById('field_56').value || '';
+            if (xiiRemDate === "" && document.getElementById('field_53').value.trim() !== "") {
+                document.getElementById('tc_xii_7').innerText = "अ सं. प्रद फेल";
+            }
         }
 
         window.print();
