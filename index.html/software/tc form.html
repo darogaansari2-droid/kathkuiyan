@@ -148,8 +148,8 @@
         .vertical-container { display: flex; flex-direction: column; gap: 4px; justify-content: space-between; flex: 1; }
         .form-group { display: flex; flex-direction: row; align-items: center; justify-content: space-between; width: 100%; }
         .form-group label { font-size: 0.70rem; font-weight: 800; color: #111; width: 35%; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .form-group input { width: 65%; padding: 4px 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 0.8rem; font-weight: bold; }
-        .form-group input:focus { border-color: var(--primary-color); background-color: #fff; outline: none; box-shadow: 0 0 4px rgba(0,51,102,0.2); }
+        .form-group input, .form-group select { width: 65%; padding: 4px 6px; border: 1px solid #ccc; border-radius: 3px; font-size: 0.8rem; font-weight: bold; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary-color); background-color: #fff; outline: none; box-shadow: 0 0 4px rgba(0,51,102,0.2); }
         
         .btn-container { display: flex; justify-content: center; gap: 8px; margin-top: 2px; padding-top: 4px; border-top: 1px solid #eee; width: 100%; flex-wrap: wrap; }
         
@@ -163,58 +163,27 @@
 
         /* --- MOBILE RESPONSIVE MEDIA QUERIES --- */
         @media screen and (max-width: 768px) {
-            body {
-                padding: 2px;
-            }
-            .container {
-                overflow: visible;
-            }
-            header h1 {
-                font-size: 1rem;
-            }
-            .flex-container {
-                flex-direction: column;
-                overflow-x: visible;
-                gap: 12px;
-            }
-            .series-section {
-                min-width: 100%;
-            }
-            .form-group label {
-                font-size: 0.8rem;
-                width: 40%;
-            }
-            .form-group input {
-                width: 60%;
-                font-size: 0.85rem;
-                padding: 6px;
-            }
-            .btn-container {
-                gap: 6px;
-            }
-            .btn {
-                flex: 1 1 45%;
-                padding: 8px 10px;
-                font-size: 0.8rem;
-            }
+            body { padding: 2px; }
+            .container { overflow: visible; }
+            header h1 { font-size: 1rem; }
+            .flex-container { flex-direction: column; overflow-x: visible; gap: 12px; }
+            .series-section { min-width: 100%; }
+            .form-group label { font-size: 0.8rem; width: 40%; }
+            .form-group input, .form-group select { width: 60%; font-size: 0.85rem; padding: 6px; }
+            .btn-container { gap: 6px; }
+            .btn { flex: 1 1 45%; padding: 8px 10px; font-size: 0.8rem; }
         }
 
         /* --- PRINT PREVIEW DESIGN --- */
-        #tcPrintTemplate {
-            display: none;
-        }
+        #tcPrintTemplate { display: none; }
 
         @media print {
             @page {
                 size: A4 portrait;
                 margin: 5mm 10mm 5mm 10mm;
             }
-            body * {
-                visibility: hidden;
-            }
-            #tcPrintTemplate, #tcPrintTemplate * {
-                visibility: visible;
-            }
+            body * { visibility: hidden; }
+            #tcPrintTemplate, #tcPrintTemplate * { visibility: visible; }
             #tcPrintTemplate {
                 display: block !important;
                 position: absolute;
@@ -228,7 +197,6 @@
                 print-color-adjust: exact !important;
             }
 
-            /* लोगो इमेज वाटरमार्क प्रिंट फ़िक्स */
             #tcPrintTemplate::before {
                 content: "" !important;
                 position: fixed !important;
@@ -283,12 +251,7 @@
                 border-collapse: collapse;
                 margin-bottom: 6px;
             }
-            .p-top-table td {
-                border: none;
-                padding: 2px;
-                font-size: 11px;
-                font-weight: bold;
-            }
+            .p-top-table td { border: none; padding: 2px; font-size: 11px; font-weight: bold; }
             
             .p-main-table td {
                 border: 1px solid #000;
@@ -298,10 +261,7 @@
                 line-height: 1.5;
                 background-color: transparent !important; 
             }
-            .p-main-table td strong, .p-main-table td span {
-                font-size: 13.5px;
-                font-weight: bold;
-            }
+            .p-main-table td strong, .p-main-table td span { font-size: 13.5px; font-weight: bold; }
             
             .p-class-table th, .p-class-table td {
                 border: 1px solid #000;
@@ -355,6 +315,34 @@
     <form id="tcForm" style="display: flex; flex-direction: column; flex: 1; justify-content: space-between; width: 100%;">
         <input type="hidden" id="current_row_index" value="">
         <div id="seriesContainer" class="flex-container"></div>
+
+        <!-- TC / निष्कासन सेटिंग (Leaving Class Setting) -->
+        <div style="background: #eef3f7; border: 1.5px solid var(--primary-color); border-radius: 4px; padding: 6px; margin-bottom: 4px;">
+            <div style="font-size: 0.8rem; font-weight: bold; color: var(--primary-color); margin-bottom: 4px; text-align: center;">TC / निष्कासन सेटिंग (Leaving Class Setting - वैकल्पिक)</div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <div class="form-group" style="flex: 1; min-width: 140px;">
+                    <label for="tcLeavingClass" style="width: 45%;">कक्षा चुनें:</label>
+                    <select id="tcLeavingClass">
+                        <option value="">-- सामान्य / स्वतः --</option>
+                        <option value="VI">Class VI</option>
+                        <option value="VII">Class VII</option>
+                        <option value="VIII">Class VIII</option>
+                        <option value="IX">Class IX</option>
+                        <option value="X">Class X</option>
+                        <option value="XI">Class XI</option>
+                        <option value="XII">Class XII</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 140px;">
+                    <label for="tcLeavingDate" style="width: 45%;">निष्कासन तिथि:</label>
+                    <input type="text" id="tcLeavingDate" placeholder="DD/MM/YYYY">
+                </div>
+                <div class="form-group" style="flex: 1; min-width: 180px;">
+                    <label for="tcLeavingCause" style="width: 45%;">नाम कटने का कारण:</label>
+                    <input type="text" id="tcLeavingCause" placeholder="कारण लिखें">
+                </div>
+            </div>
+        </div>
 
         <div class="btn-container">
             <button type="button" class="btn btn-save" onclick="processSafeAction('SAVE')">SAVE</button>
@@ -444,22 +432,22 @@
             </tr>
         </thead>
         <tbody>
-            <tr><td>VI</td><td><span id="tc_vi_1"></span></td><td><span id="tc_vi_2"></span></td><td></td><td></td><td><span id="tc_vi_3"></span></td><td><span id="tc_vi_4"></span></td><td><span id="tc_vi_5"></span></td><td></td></tr>
+            <tr><td>VI</td><td><span id="tc_vi_1"></span></td><td><span id="tc_vi_2"></span></td><td><span id="tc_vi_rem_date"></span></td><td><span id="tc_vi_rem_cause"></span></td><td><span id="tc_vi_3"></span></td><td><span id="tc_vi_4"></span></td><td><span id="tc_vi_5"></span></td><td></td></tr>
             <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             
-            <tr><td>VII</td><td><span id="tc_vii_1"></span></td><td><span id="tc_vii_2"></span></td><td></td><td></td><td><span id="tc_vii_3"></span></td><td><span id="tc_vii_4"></span></td><td><span id="tc_vii_5"></span></td><td></td></tr>
+            <tr><td>VII</td><td><span id="tc_vii_1"></span></td><td><span id="tc_vii_2"></span></td><td><span id="tc_vii_rem_date"></span></td><td><span id="tc_vii_rem_cause"></span></td><td><span id="tc_vii_3"></span></td><td><span id="tc_vii_4"></span></td><td><span id="tc_vii_5"></span></td><td></td></tr>
             <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             
-            <tr><td>VIII</td><td><span id="tc_viii_1"></span></td><td><span id="tc_viii_2"></span></td><td></td><td></td><td><span id="tc_viii_3"></span></td><td><span id="tc_viii_4"></span></td><td><span id="tc_viii_5"></span></td><td></td></tr>
+            <tr><td>VIII</td><td><span id="tc_viii_1"></span></td><td><span id="tc_viii_2"></span></td><td><span id="tc_viii_rem_date"></span></td><td><span id="tc_viii_rem_cause"></span></td><td><span id="tc_viii_3"></span></td><td><span id="tc_viii_4"></span></td><td><span id="tc_viii_5"></span></td><td></td></tr>
             <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             
-            <tr><td>IX</td><td><span id="tc_ix_1"></span></td><td><span id="tc_ix_2"></span></td><td></td><td></td><td><span id="tc_ix_3"></span></td><td><span id="tc_ix_4"></span></td><td><span id="tc_ix_5"></span></td><td></td></tr>
+            <tr><td>IX</td><td><span id="tc_ix_1"></span></td><td><span id="tc_ix_2"></span></td><td><span id="tc_ix_rem_date"></span></td><td><span id="tc_ix_rem_cause"></span></td><td><span id="tc_ix_3"></span></td><td><span id="tc_ix_4"></span></td><td><span id="tc_ix_5"></span></td><td></td></tr>
             <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             
             <tr><td>X</td><td><span id="tc_x_1"></span></td><td><span id="tc_x_2"></span></td><td><span id="tc_x_3"></span></td><td><span id="tc_x_4"></span></td><td><span id="tc_x_5"></span></td><td><span id="tc_x_6"></span></td><td><span id="tc_x_7"></span></td><td></td></tr>
             <tr><td>X (RE)</td><td><span id="tc_x_re_1"></span></td><td><span id="tc_x_re_2"></span></td><td><span id="tc_x_re_3"></span></td><td><span id="tc_x_re_4"></span></td><td><span id="tc_x_re_5"></span></td><td><span id="tc_x_re_6"></span></td><td><span id="tc_x_re_7"></span></td><td></td></tr>
             
-            <tr><td>XI</td><td><span id="tc_xi_1"></span></td><td><span id="tc_xi_2"></span></td><td></td><td></td><td><span id="tc_xi_3"></span></td><td><span id="tc_xi_4"></span></td><td><span id="tc_xi_5"></span></td><td></td></tr>
+            <tr><td>XI</td><td><span id="tc_xi_1"></span></td><td><span id="tc_xi_2"></span></td><td><span id="tc_xi_rem_date"></span></td><td><span id="tc_xi_rem_cause"></span></td><td><span id="tc_xi_3"></span></td><td><span id="tc_xi_4"></span></td><td><span id="tc_xi_5"></span></td><td></td></tr>
             <tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
             
             <tr><td>XII</td><td><span id="tc_xii_1"></span></td><td><span id="tc_xii_2"></span></td><td><span id="tc_xii_3"></span></td><td><span id="tc_xii_4"></span></td><td><span id="tc_xii_5"></span></td><td><span id="tc_xii_6"></span></td><td><span id="tc_xii_7"></span></td><td></td></tr>
@@ -497,7 +485,7 @@
         let pass = document.getElementById("loginPassword").value.trim();
         let err = document.getElementById("loginError");
 
-        if (id === "transfer" && pass === "1234") {
+        if (id === "transfer" && pass === "123") {
             sessionStorage.setItem("isTcLoggedIn", "true");
             document.getElementById("loginModal").style.display = "none";
         } else {
@@ -598,27 +586,27 @@
         if (startField <= 14) {
             let f14 = document.getElementById('field_14').value.trim();
             if (!f14) { clearFieldsRange(15, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
-            else { let res1 = processSingleBlock(f14, 'field_15', 'field_16', 'field_17', 'field_18'); if (res1.nextYear) document.getElementById('field_19').value = `01/04/${res1.nextYear}`; }
+            else { let res1 = processSingleBlock(f14, 'field_15', 'field_16', 'field_17', 'field_18'); if (res1.nextAdmDate) document.getElementById('field_19').value = res1.nextAdmDate; }
         }
         if (startField <= 19) {
             let f19 = document.getElementById('field_19').value.trim();
             if (!f19) { clearFieldsRange(20, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
-            else { let res2 = processSingleBlock(f19, 'field_20', 'field_21', 'field_22', 'field_23'); if (res2.nextYear) document.getElementById('field_24').value = `01/04/${res2.nextYear}`; }
+            else { let res2 = processSingleBlock(f19, 'field_20', 'field_21', 'field_22', 'field_23'); if (res2.nextAdmDate) document.getElementById('field_24').value = res2.nextAdmDate; }
         }
         if (startField <= 24) {
             let f24 = document.getElementById('field_24').value.trim();
             if (!f24) { clearFieldsRange(25, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
-            else { let res3 = processSingleBlock(f24, 'field_25', 'field_26', 'field_27', 'field_28'); if (res3.nextYear) document.getElementById('field_29').value = `01/04/${res3.nextYear}`; }
+            else { let res3 = processSingleBlock(f24, 'field_25', 'field_26', 'field_27', 'field_28'); if (res3.nextAdmDate) document.getElementById('field_29').value = res3.nextAdmDate; }
         }
         if (startField <= 29) {
             let f29 = document.getElementById('field_29').value.trim();
             if (!f29) { clearFieldsRange(30, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
-            else { let res4 = processSingleBlock(f29, 'field_30', 'field_31', 'field_32', 'field_33'); if (res4.nextYear) document.getElementById('field_34').value = `01/04/${res4.nextYear}`; }
+            else { let res4 = processSingleBlock(f29, 'field_30', 'field_31', 'field_32', 'field_33'); if (res4.nextAdmDate) document.getElementById('field_34').value = res4.nextAdmDate; }
         }
         if (startField <= 34) {
             let f34 = document.getElementById('field_34').value.trim();
             if (!f34) { clearFieldsRange(35, 35); clearFieldsRange(38, 42); clearFieldsRange(48, 52); return; }
-            else { let res5 = processSingleBlock(f34, 'field_35', 'field_38', 'field_39', 'field_40'); if (res5.nextYear) document.getElementById('field_48').value = `01/04/${res5.nextYear}`; }
+            else { let res5 = processSingleBlock(f34, 'field_35', 'field_38', 'field_39', 'field_40'); if (res5.nextAdmDate) document.getElementById('field_48').value = res5.nextAdmDate; }
         }
         if (startField <= 48) {
             let f48 = document.getElementById('field_48').value.trim();
@@ -628,13 +616,32 @@
     }
 
     function processSingleBlock(inputDate, nextDateId, sessionId, conductId, resultId) {
-        let output = { nextYear: null }; if(!inputDate) return output;
+        let output = { nextYear: null, nextAdmDate: null }; if(!inputDate) return output;
         let parts = inputDate.split('/');
         if(parts.length === 3) {
             let d = parseInt(parts[0]), m = parseInt(parts[1]), y = parseInt(parts[2]);
             if(!isNaN(d) && !isNaN(m) && !isNaN(y)) {
                 let ny = y + 1; output.nextYear = ny;
-                if(nextDateId) document.getElementById(nextDateId).value = `31/03/${ny}`;
+                
+                let promDate = new Date(ny, 2, 31); 
+                if (promDate.getDay() === 0) { promDate = new Date(ny, 2, 30); }
+                
+                let admDate = new Date(ny, 3, 1); 
+                if (admDate.getDay() === 0) { admDate = new Date(ny, 3, 2); }
+                
+                let pDay = String(promDate.getDate()).padStart(2, '0');
+                let pMonth = String(promDate.getMonth() + 1).padStart(2, '0');
+                let pYear = promDate.getFullYear();
+                let finalPromDateStr = `${pDay}/${pMonth}/${pYear}`;
+
+                let aDay = String(admDate.getDate()).padStart(2, '0');
+                let aMonth = String(admDate.getMonth() + 1).padStart(2, '0');
+                let aYear = admDate.getFullYear();
+                let finalAdmDateStr = `${aDay}/${aMonth}/${aYear}`;
+
+                output.nextAdmDate = finalAdmDateStr;
+
+                if(nextDateId) document.getElementById(nextDateId).value = finalPromDateStr;
                 if(sessionId) document.getElementById(sessionId).value = `${y}-${ny.toString().slice(-2)}`;
                 if(conductId) document.getElementById(conductId).value = "उत्तम";
                 if(resultId) document.getElementById(resultId).value = "सं. प्रद उत्तीर्ण";
@@ -677,7 +684,15 @@
     }
 
     function updateMessage(msg) { document.getElementById('messageBox').value = msg; }
-    function resetForm() { document.getElementById('tcForm').reset(); document.getElementById('current_row_index').value = ""; targetSheetUrl = ""; updateMessage("Form reset Completed."); }
+    function resetForm() { 
+        document.getElementById('tcForm').reset(); 
+        document.getElementById('current_row_index').value = ""; 
+        targetSheetUrl = ""; 
+        document.getElementById('tcLeavingClass').value = "";
+        document.getElementById('tcLeavingDate').value = "";
+        document.getElementById('tcLeavingCause').value = "";
+        updateMessage("Form reset Completed."); 
+    }
 
     /* === ऑफ़लाइन सिंक मैकेनिज्म (OFFLINE SYNC LOGIC) === */
 
@@ -894,10 +909,9 @@
         document.getElementById('tc_ix_4').innerText = document.getElementById('field_32').value || '';
         document.getElementById('tc_ix_5').innerText = document.getElementById('field_33').value || '';
 
+        // Class X mapping
         document.getElementById('tc_x_1').innerText = document.getElementById('field_34').value || '';
         document.getElementById('tc_x_2').innerText = document.getElementById('field_35').value || '';
-        document.getElementById('tc_x_3').innerText = document.getElementById('field_36').value || '';
-        document.getElementById('tc_x_4').innerText = document.getElementById('field_37').value || '';
         document.getElementById('tc_x_5').innerText = document.getElementById('field_38').value || '';
         document.getElementById('tc_x_6').innerText = document.getElementById('field_39').value || '';
         document.getElementById('tc_x_7').innerText = document.getElementById('field_40').value || '';
@@ -916,14 +930,13 @@
         document.getElementById('tc_xi_4').innerText = document.getElementById('field_51').value || '';
         document.getElementById('tc_xi_5').innerText = document.getElementById('field_52').value || '';
 
+        // Class XII mapping (Updated with Varsh, Achran and Parikshafal)
         document.getElementById('tc_xii_1').innerText = document.getElementById('field_53').value || '';
         document.getElementById('tc_xii_2').innerText = document.getElementById('field_54').value || '';
-        document.getElementById('tc_xii_3').innerText = document.getElementById('field_55').value || '';
-        document.getElementById('tc_xii_4').innerText = document.getElementById('field_56').value || '';
         document.getElementById('tc_xii_5').innerText = document.getElementById('field_57').value || '';
         document.getElementById('tc_xii_6').innerText = document.getElementById('field_58').value || '';
         document.getElementById('tc_xii_7').innerText = document.getElementById('field_59').value || '';
-
+        
         document.getElementById('tc_xii_re_1').innerText = document.getElementById('field_60').value || '';
         document.getElementById('tc_xii_re_2').innerText = document.getElementById('field_61').value || '';
         document.getElementById('tc_xii_re_3').innerText = document.getElementById('field_62').value || '';
@@ -931,6 +944,44 @@
         document.getElementById('tc_xii_re_5').innerText = document.getElementById('field_64').value || '';
         document.getElementById('tc_xii_re_6').innerText = document.getElementById('field_65').value || '';
         document.getElementById('tc_xii_re_7').innerText = document.getElementById('field_66').value || '';
+
+        // Reset all dynamic removal cells first
+        ['vi', 'vii', 'viii', 'ix', 'xi'].forEach(cls => {
+            let dEl = document.getElementById(`tc_${cls}_rem_date`);
+            let cEl = document.getElementById(`tc_${cls}_rem_cause`);
+            if(dEl) dEl.innerText = '';
+            if(cEl) cEl.innerText = '';
+        });
+        document.getElementById('tc_x_3').innerText = '';
+        document.getElementById('tc_x_4').innerText = '';
+        document.getElementById('tc_xii_3').innerText = '';
+        document.getElementById('tc_xii_4').innerText = '';
+
+        // Apply leaving setting or default form fields for X and XII
+        let leavingClass = document.getElementById('tcLeavingClass').value;
+        let leavingDate = document.getElementById('tcLeavingDate').value.trim();
+        let leavingCause = document.getElementById('tcLeavingCause').value.trim();
+
+        if (leavingClass) {
+            let clsKey = leavingClass.toLowerCase();
+            if (clsKey === 'x') {
+                document.getElementById('tc_x_3').innerText = leavingDate;
+                document.getElementById('tc_x_4').innerText = leavingCause;
+            } else if (clsKey === 'xii') {
+                document.getElementById('tc_xii_3').innerText = leavingDate;
+                document.getElementById('tc_xii_4').innerText = leavingCause;
+            } else {
+                let dEl = document.getElementById(`tc_${clsKey}_rem_date`);
+                let cEl = document.getElementById(`tc_${clsKey}_rem_cause`);
+                if(dEl) dEl.innerText = leavingDate;
+                if(cEl) cEl.innerText = leavingCause;
+            }
+        } else {
+            document.getElementById('tc_x_3').innerText = document.getElementById('field_36').value || '';
+            document.getElementById('tc_x_4').innerText = document.getElementById('field_37').value || '';
+            document.getElementById('tc_xii_3').innerText = document.getElementById('field_55').value || '';
+            document.getElementById('tc_xii_4').innerText = document.getElementById('field_56').value || '';
+        }
 
         window.print();
     }
