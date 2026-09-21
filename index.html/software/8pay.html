@@ -71,7 +71,7 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            background: transparent; /* पट्टी में कोई रंग नहीं */
+            background: transparent;
             padding: 5px 0px;
             font-weight: bold;
             font-size: 13px;
@@ -81,10 +81,6 @@
             display: flex;
             gap: 15px;
             align-items: center;
-        }
-        #vetan-app .emp-row label-text {
-            width: 180px;
-            flex-shrink: 0;
         }
         #vetan-app .emp-row input {
             flex: 1;
@@ -107,7 +103,6 @@
         #vetan-app .calc-row input { padding: 4px; font-size: 12px; }
         #vetan-app .calc-row button { padding: 4px 10px; font-size: 12px; background: #28a745; color: #fff; border: none; border-radius: 3px; cursor: pointer;}
         
-        /* DA Settings Box Style */
         #vetan-app .da-settings-box {
             background: #fffbeb;
             border: 1px solid #f59e0b;
@@ -207,6 +202,11 @@
             font-size: 11px;
         }
         #vetan-app tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        /* Ensures tfoot renders as regular row group so it behaves like normal rows and doesn't repeat per page */
+        #vetan-app tfoot {
+            display: table-row-group;
+        }
         #vetan-app .total-row td {
             font-weight: bold;
             background-color: #e2e8f0;
@@ -383,6 +383,10 @@
                 background: transparent;
                 font-weight: bold;
             }
+            /* Explicitly forcing table-row-group in print so tfoot never repeats per page */
+            #vetan-app tfoot {
+                display: table-row-group !important;
+            }
         }
     </style>
 </head>
@@ -421,7 +425,6 @@
                         <span style="width: 170px;">पद :-</span>
                         <input type="text" id="empDesignation" value="पद भरें" oninput="updateHeaderInfo()">
                     </div>
-                    <!-- वेतन अवशेष विवरण और अवधि (अब कर्मचारी के नाम के नीचे) -->
                     <div style="margin-top: 4px; font-size: 14px; color: #333; font-weight: bold;">
                         वेतन अवशेष विवरण (Arrears Salary Statement) | अवधि: <span id="durationDisplay">अद्यतन</span>
                     </div>
@@ -598,7 +601,7 @@
                     <!-- डेटा यहाँ जुड़ेगा -->
                 </tbody>
                 <tfoot id="tableFoot">
-                    <!-- कुल योग यहाँ दिखाई देगा -->
+                    <!-- कुल योग केवल अंत में यहाँ दिखाई देगा -->
                 </tfoot>
             </table>
 
@@ -869,7 +872,6 @@
                 return;
             }
             try {
-                // सुरक्षित रूप से केवल गणितीय व्यंजकों (numbers, operators, decimals, brackets) को अनुमति दें
                 let sanitized = expr.replace(/[^0-9+\-*/().]/g, '');
                 if (!sanitized) {
                     document.getElementById('calcRes').value = "अमान्य";
