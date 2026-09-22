@@ -23,31 +23,6 @@
             text-align: center;
             color: #003366;
         }
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .tab-btn {
-            background-color: #002288;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            font-size: 15px;
-            margin: 0 5px;
-            border-radius: 4px;
-        }
-        .tab-btn.active {
-            background-color: #0044cc;
-            font-weight: bold;
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
         textarea, input, select {
             width: 100%;
             padding: 8px;
@@ -60,17 +35,6 @@
         }
         .form-group {
             margin-bottom: 10px;
-        }
-        .editor-toolbar {
-            margin-bottom: 10px;
-        }
-        .editor-toolbar button {
-            padding: 5px 10px;
-            margin-right: 5px;
-            background: #eee;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            border-radius: 3px;
         }
         .btn-action {
             background-color: #28a745;
@@ -116,10 +80,10 @@
             position: relative;
         }
 
-        /* Watermark Styling - Aur zyada neeche shift kiya gaya hai */
+        /* Watermark Styling */
         .watermark-container {
             position: absolute;
-            top: 30%; /* Upar se aur neeche karne ke liye value badha di gayi hai */
+            top: 30%;
             left: 0;
             width: 100%;
             height: 70%;
@@ -159,7 +123,7 @@
                 width: 100%;
                 border: none;
                 padding-top: var(--print-header-top, 1.5in) !important;
-                padding-bottom: 20mm !important;
+                padding-bottom: var(--print-bottom, 20mm) !important;
                 padding-left: var(--print-left, 20mm) !important;
                 padding-right: var(--print-right, 20mm) !important;
                 box-sizing: border-box;
@@ -171,34 +135,13 @@
 
 <div class="container">
     <h2>श्री कृष्ण इण्टरमीडिएट कालेज - Office Software</h2>
-    
-    <div class="tabs">
-        <button class="tab-btn active" onclick="openTab(event, 'wordTab')">MS Word</button>
-        <button class="tab-btn" onclick="openTab(event, 'letterTab')">Letter Form & Layout</button>
-    </div>
-
-    <!-- MS Word Section -->
-    <div id="wordTab" class="tab-content active">
-        <h3>MS Word Style Document Editor (Hindi / English)</h3>
-        <div class="editor-toolbar">
-            <button onclick="formatText('bold')"><b>B</b></button>
-            <button onclick="formatText('italic')"><i>I</i></button>
-            <button onclick="formatText('underline')"><u>U</u></button>
-            <select id="langSelect" style="width: 150px; display:inline-block;" onchange="toggleLanguage()">
-                <option value="hi">Language: Hindi</option>
-                <option value="en">Language: English</option>
-            </select>
-        </div>
-        <textarea id="wordArea" rows="10" placeholder="Yahan apna text likhein..."></textarea>
-        <button class="btn-action" onclick="printDocument('wordArea')">Print / Save Document</button>
-    </div>
 
     <!-- Letter Generator Section -->
-    <div id="letterTab" class="tab-content">
-        <h3>Letter Data & Spacing Settings</h3>
+    <div id="letterTab">
+        <h3>Letter Data & Layout Settings</h3>
 
         <div class="form-group">
-            <label><b>Letter Title (Jaise: नियुक्ति - पत्र, अवकाश हेतु प्रार्थना पत्र, आदि):</b></label>
+            <label><b>Letter Title ( नियुक्ति - पत्र, प्रमाण - पत्र एवं अन्य पत्र  इत्यादि ):</b></label>
             <input type="text" id="inputTitle" value="नियुक्ति - पत्र" oninput="updateLetter()">
         </div>
 
@@ -215,12 +158,12 @@
 आपकी नियुक्ति उ०प्र० मा० शिक्षा सेवा चयन बोर्ड प्रयागराज के पत्र पत्रांक शि० से० आयोग / 2011- 2077 ( 5 ) / 2026-27 दिनांक 11/09/2026 द्वारा प्रशिक्षित स्नातक शिक्षक गणित के पद पर हुआ है I जिसके क्रम में जि० वि० नि० कुशीनगर ने अपने पत्र दिनांक 19/09/2026 पत्रांक 6636-43 / 2026-27 द्वारा पैनल / आदेश जारी किया गया है I बड़े हर्ष के साथ आपको सूचित किया जा रहा है कि आपकी नियुक्ति इस विद्यालय में स० अ० गणित के पद पर कर ली गयी है I पत्र प्राप्ति के एक सप्ताह के अन्दर किसी भी कार्य दिवस में विद्यालय पर आकर अपना कार्य भार ग्रहण करें I</textarea>
         </div>
 
-        <h4 style="margin-top:20px;">Margin & Spacing Controls:</h4>
+        <h4 style="margin-top:20px;">Margin, Spacing & Font Controls:</h4>
         
         <div class="control-panel">
             <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                 <div>
-                    <label>Header Top Margin (Inch):</label>
+                    <label>Header Top Margin:</label>
                     <select id="selectHeaderTop" onchange="updateSpacing()">
                         <option value="0.5in">0.5 Inch</option>
                         <option value="1.0in">1.0 Inch</option>
@@ -233,11 +176,39 @@
                     </select>
                 </div>
                 <div>
-                    <label>Left Margin (Space):</label>
+                    <label>Bottom Margin:</label>
+                    <select id="selectBottomMargin" onchange="updateSpacing()">
+                        <option value="10mm">10 mm</option>
+                        <option value="20mm" selected>20 mm</option>
+                        <option value="30mm">30 mm</option>
+                        <option value="40mm">40 mm</option>
+                        <option value="50mm">50 mm</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Font Size:</label>
+                    <select id="selectFontSize" onchange="updateSpacing()">
+                        <option value="14px">14 px</option>
+                        <option value="15px">15 px</option>
+                        <option value="16px" selected>16 px (Normal)</option>
+                        <option value="17px">17 px</option>
+                        <option value="18px">18 px</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Text Alignment:</label>
+                    <select id="selectAlign" onchange="updateSpacing()">
+                        <option value="justify" selected>Justify (Both Sides)</option>
+                        <option value="left">Left Aligned</option>
+                        <option value="center">Center</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Left Margin Space:</label>
                     <input type="range" id="rangeLeft" min="0" max="80" value="0" oninput="updateSpacing()">
                 </div>
                 <div>
-                    <label>Right Margin (Space):</label>
+                    <label>Right Margin Space:</label>
                     <input type="range" id="rangeRight" min="0" max="80" value="0" oninput="updateSpacing()">
                 </div>
                 <div>
@@ -267,51 +238,26 @@
             <div class="letter-content-inner">
                 <!-- Dynamic Underlined Heading -->
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <span id="prevTitleBox" style="font-weight: bold; text-decoration: underline; font-size: 16px;">नियुक्ति - पत्र</span>
+                    <span id="prevTitleBox" style="font-weight: bold; text-decoration: underline; font-size: 18px;">नियुक्ति - पत्र</span>
                 </div>
 
                 <div id="prevAddressBox" style="white-space: pre-wrap; font-weight: normal;">सेवा में,
 श्री जगदम्बा कुमार पाण्डेय पुत्र श्री ध्रुव देव पाण्डेय, ग्राम- अकबरपुर, पोस्ट - बलकुड़िया, जिला – कुशीनगर</div>
                 
-            
             <br>
             
-            <div id="prevParaBox" style="text-align: justify; white-space: pre-wrap;">
+            <div id="prevParaBox" style="white-space: pre-wrap;">
 महोदय,
 
 आपकी नियुक्ति उ०प्र० मा० शिक्षा सेवा चयन बोर्ड प्रयागराज के पत्र पत्रांक: शि० से० आयोग / 2011- 2077 ( 5 ) / 2026-27 दिनांक 11/09/2026 द्वारा प्रशिक्षित स्नातक शिक्षक गणित के पद पर हुआ है I जिसके क्रम में जि० वि० नि० कुशीनगर ने अपने पत्र दिनांक 19/09/2026 पत्रांक/ 6636-43 / 2026-27 द्वारा पैनल / आदेश जारी किया गया है I बड़े हर्ष के साथ आपको सूचित किया जा रहा है कि आपकी नियुक्ति इस विद्यालय में स० अ० गणित के पद पर कर ली गयी है I पत्र प्राप्ति के एक सप्ताह के अन्दर किसी भी कार्य दिवस में विद्यालय पर आकर अपना कार्य भार ग्रहण करें I
-
-
             </div>
           
-            <p align="right">भवदीय,</b><br> </p>
+            <p align="right">भवदीय,<br></p>
         </div>
-        
     </div>
-
 </div>
 
 <script>
-    function openTab(evt, tabName) {
-        let tabcontent = document.getElementsByClassName("tab-content");
-        for (let i = 0; i < tabcontent.length; i++) {
-            tabcontent[i].style.display = "none";
-        }
-        let tablinks = document.getElementsByClassName("tab-btn");
-        for (let i = 0; i < tablinks.length; i++) {
-            tablinks[i].className = tablinks[i].className.replace(" active", "");
-        }
-        document.getElementById(tabName).style.display = "block";
-        evt.currentTarget.className += " active";
-    }
-
-    // --- LETTER FUNCTIONS ---
-    function toggleLanguage() {
-        let lang = document.getElementById('langSelect').value;
-        let area = document.getElementById('wordArea');
-        area.placeholder = (lang === 'hi') ? "Hindi mein type karein..." : "Type in English...";
-    }
-
     function updateLetter() {
         let titleText = document.getElementById('inputTitle').value;
         document.getElementById('prevTitleBox').innerText = titleText;
@@ -326,18 +272,27 @@
 
     function updateSpacing() {
         let headerTopInch = document.getElementById('selectHeaderTop').value;
+        let bottomMargin = document.getElementById('selectBottomMargin').value;
+        let fontSize = document.getElementById('selectFontSize').value;
+        let textAlign = document.getElementById('selectAlign').value;
         let leftVal = document.getElementById('rangeLeft').value;
         let rightVal = document.getElementById('rangeRight').value;
         let lineHeight = document.getElementById('selectLineHeight').value;
 
         let previewBox = document.getElementById('printableLetter');
         previewBox.style.paddingTop = headerTopInch;
+        previewBox.style.paddingBottom = bottomMargin;
         previewBox.style.paddingLeft = (40 + parseInt(leftVal)) + 'px';
         previewBox.style.paddingRight = (40 + parseInt(rightVal)) + 'px';
         previewBox.style.lineHeight = lineHeight;
+        previewBox.style.fontSize = fontSize;
+        
+        let paraBox = document.getElementById('prevParaBox');
+        paraBox.style.textAlign = textAlign;
 
         // Print media variables ke liye
         document.documentElement.style.setProperty('--print-header-top', headerTopInch);
+        document.documentElement.style.setProperty('--print-bottom', bottomMargin);
         document.documentElement.style.setProperty('--print-left', (20 + parseInt(leftVal)/3) + 'mm');
         document.documentElement.style.setProperty('--print-right', (20 + parseInt(rightVal)/3) + 'mm');
     }
@@ -347,11 +302,14 @@
         localStorage.setItem('savedAddress', document.getElementById('inputAddressPara').value);
         localStorage.setItem('savedPara', document.getElementById('inputPara').value);
         localStorage.setItem('savedHeaderTop', document.getElementById('selectHeaderTop').value);
+        localStorage.setItem('savedBottomMargin', document.getElementById('selectBottomMargin').value);
+        localStorage.setItem('savedFontSize', document.getElementById('selectFontSize').value);
+        localStorage.setItem('savedAlign', document.getElementById('selectAlign').value);
         localStorage.setItem('savedLeft', document.getElementById('rangeLeft').value);
         localStorage.setItem('savedRight', document.getElementById('rangeRight').value);
         localStorage.setItem('savedLineHeight', document.getElementById('selectLineHeight').value);
         
-        alert('Aapka data aur setting permanently save ho gaya hai!');
+        alert('Aapka data aur sabhi layout settings permanently save ho gayi hain!');
     }
 
     function loadSavedData() {
@@ -360,6 +318,9 @@
             document.getElementById('inputAddressPara').value = localStorage.getItem('savedAddress');
             document.getElementById('inputPara').value = localStorage.getItem('savedPara');
             document.getElementById('selectHeaderTop').value = localStorage.getItem('savedHeaderTop') || "1.5in";
+            document.getElementById('selectBottomMargin').value = localStorage.getItem('savedBottomMargin') || "20mm";
+            document.getElementById('selectFontSize').value = localStorage.getItem('savedFontSize') || "16px";
+            document.getElementById('selectAlign').value = localStorage.getItem('savedAlign') || "justify";
             document.getElementById('rangeLeft').value = localStorage.getItem('savedLeft') || 0;
             document.getElementById('rangeRight').value = localStorage.getItem('savedRight') || 0;
             document.getElementById('selectLineHeight').value = localStorage.getItem('savedLineHeight') || "1.8";
@@ -367,14 +328,6 @@
             updateLetter();
             updateSpacing();
         }
-    }
-
-    function printDocument(elementId) {
-        let content = document.getElementById(elementId).value;
-        let win = window.open('', '', 'height=700,width=700');
-        win.document.write('<html><head><title>Print</title></head><body><pre style="font-family:Arial; font-size:16px;">' + content + '</pre></body></html>');
-        win.document.close();
-        win.print();
     }
 </script>
 
