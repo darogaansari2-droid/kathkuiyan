@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>श्री कृष्ण इण्टरमीडिएट कालेज - Office Software[cite: 1]</title>
+    <title>श्री कृष्ण इण्टरमीडिएट कालेज - Office Software</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -80,7 +80,7 @@
             position: relative;
         }
 
-        /* Watermark Container with Inch-based Scaling Support */
+        /* Watermark Container with Image Support */
         .watermark-container {
             position: absolute;
             left: 0;
@@ -93,10 +93,12 @@
             overflow: hidden;
             z-index: 1;
         }
-        .watermark-svg {
+        .watermark-img {
             width: 300px;
-            height: 300px;
-            opacity: 0.32;
+            height: auto;
+            opacity: 0.20;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
         .letter-content-inner {
             position: relative;
@@ -108,7 +110,7 @@
             body * {
                 visibility: hidden;
             }
-            #printableLetter, #printableLetter * {
+            #printableLetter, #printableLetter *, #printableLetter .watermark-container, #printableLetter .watermark-container * {
                 visibility: visible;
             }
             #printableLetter {
@@ -119,8 +121,8 @@
                 border: none;
                 padding-top: var(--print-header-top, 1.5in) !important;
                 padding-bottom: var(--print-bottom, 20mm) !important;
-                padding-left: var(--print-left, 20mm) !important;
-                padding-right: var(--print-right, 20mm) !important;
+                padding-left: var(--print-left, 0.5in) !important;
+                padding-right: var(--print-right, 0.5in) !important;
                 box-sizing: border-box;
             }
         }
@@ -129,7 +131,7 @@
 <body onload="loadSavedData()">
 
 <div class="container">
-    <h2>श्री कृष्ण इण्टरमीडिएट कालेज - Office Software[cite: 1]</h2>
+    <h2>श्री कृष्ण इण्टरमीडिएट कालेज - Office Software</h2>
 
     <!-- Letter Generator Section -->
     <div id="letterTab">
@@ -214,12 +216,26 @@
                     </select>
                 </div>
                 <div>
-                    <label>Left Margin Space:</label>
-                    <input type="range" id="rangeLeft" min="0" max="80" value="0" oninput="updateSpacing()">
+                    <label>Left Margin:</label>
+                    <select id="selectLeftMargin" onchange="updateSpacing()">
+                        <option value="0.25in">0.25 Inch</option>
+                        <option value="0.5in" selected>0.5 Inch</option>
+                        <option value="0.75in">0.75 Inch</option>
+                        <option value="1.0in">1.0 Inch</option>
+                        <option value="1.25in">1.25 Inch</option>
+                        <option value="1.5in">1.5 Inch</option>
+                    </select>
                 </div>
                 <div>
-                    <label>Right Margin Space:</label>
-                    <input type="range" id="rangeRight" min="0" max="80" value="0" oninput="updateSpacing()">
+                    <label>Right Margin:</label>
+                    <select id="selectRightMargin" onchange="updateSpacing()">
+                        <option value="0.25in">0.25 Inch</option>
+                        <option value="0.5in" selected>0.5 Inch</option>
+                        <option value="0.75in">0.75 Inch</option>
+                        <option value="1.0in">1.0 Inch</option>
+                        <option value="1.25in">1.25 Inch</option>
+                        <option value="1.5in">1.5 Inch</option>
+                    </select>
                 </div>
                 <div>
                     <label>Line Spacing:</label>
@@ -240,19 +256,9 @@
         <h4 style="margin-top:20px; border-bottom: 2px solid #003366; padding-bottom: 5px;">Letter Preview (Live View):</h4>
         
         <div class="letter-preview" id="printableLetter">
-            <!-- Poora Gol aur Chhota Watermark Stamp -->
+            <!-- logo.jpg Watermark Integration -->
             <div class="watermark-container" id="watermarkContainer">
-                <svg class="watermark-svg" viewBox="0 0 300 300">
-                    <defs>
-                        <!-- Poora 360 degree closed circle path with smaller radius -->
-                        <path id="circlePath" d="M 150, 50 A 100,100 0 1,1 149.9,50 Z" />
-                    </defs>
-                    <text fill="#002244" font-size="28" font-weight="bold" letter-spacing="2.4">
-                        <textPath href="#circlePath" startOffset="0%" text-anchor="start">
-                            श्री कृष्ण इण्टरमीडिएट कालेज सेमरा कठकुइयाँ 
-                        </textPath>
-                    </text>
-                </svg>
+                <img src="logo.png" alt="Watermark Logo" class="watermark-img">
             </div>
 
             <div class="letter-content-inner">
@@ -272,8 +278,6 @@
 आपकी नियुक्ति उ०प्र० मा० शिक्षा सेवा चयन बोर्ड प्रयागराज के पत्र पत्रांक: शि० से० आयोग / 2011- 2077 ( 5 ) / 2026-27 दिनांक 11/09/2026 द्वारा प्रशिक्षित स्नातक शिक्षक गणित के पद पर हुआ है I जिसके क्रम में जि० वि० नि० कुशीनगर ने अपने पत्र दिनांक 19/09/2026 पत्रांक/ 6636-43 / 2026-27 द्वारा पैनल/ आदेश जारी किया गया है I बड़े हर्ष के साथ आपको सूचित किया जा रहा है कि आपकी नियुक्ति इस विद्यालय में स० अ० गणित के पद पर कर ली गयी है I पत्र प्राप्ति के एक सप्ताह के अन्दर किसी भी कार्य दिवस में विद्यालय पर आकर अपना कार्य भार ग्रहण करें I
             </div>
 
-          
-            
         </div>
     </div>
 </div>
@@ -286,7 +290,6 @@
             let start = e.target.selectionStart;
             let end = e.target.selectionEnd;
             let val = e.target.value;
-            // Insert 4 non-breaking spaces or tab spacing
             e.target.value = val.substring(0, start) + "\t" + val.substring(end);
             e.target.selectionStart = e.target.selectionEnd = start + 1;
             updateLetter();
@@ -311,15 +314,15 @@
         let fontSize = document.getElementById('selectFontSize').value;
         let textAlign = document.getElementById('selectAlign').value;
         let watermarkPosInch = document.getElementById('selectWatermarkPos').value;
-        let leftVal = document.getElementById('rangeLeft').value;
-        let rightVal = document.getElementById('rangeRight').value;
+        let leftMarginInch = document.getElementById('selectLeftMargin').value;
+        let rightMarginInch = document.getElementById('selectRightMargin').value;
         let lineHeight = document.getElementById('selectLineHeight').value;
 
         let previewBox = document.getElementById('printableLetter');
         previewBox.style.paddingTop = headerTopInch;
         previewBox.style.paddingBottom = bottomMargin;
-        previewBox.style.paddingLeft = (40 + parseInt(leftVal)) + 'px';
-        previewBox.style.paddingRight = (40 + parseInt(rightVal)) + 'px';
+        previewBox.style.paddingLeft = leftMarginInch;
+        previewBox.style.paddingRight = rightMarginInch;
         previewBox.style.lineHeight = lineHeight;
         previewBox.style.fontSize = fontSize;
         
@@ -334,8 +337,8 @@
         // Print media variables ke liye
         document.documentElement.style.setProperty('--print-header-top', headerTopInch);
         document.documentElement.style.setProperty('--print-bottom', bottomMargin);
-        document.documentElement.style.setProperty('--print-left', (20 + parseInt(leftVal)/3) + 'mm');
-        document.documentElement.style.setProperty('--print-right', (20 + parseInt(rightVal)/3) + 'mm');
+        document.documentElement.style.setProperty('--print-left', leftMarginInch);
+        document.documentElement.style.setProperty('--print-right', rightMarginInch);
     }
 
     function saveDataPermanently() {
@@ -347,8 +350,8 @@
         localStorage.setItem('savedFontSize', document.getElementById('selectFontSize').value);
         localStorage.setItem('savedAlign', document.getElementById('selectAlign').value);
         localStorage.setItem('savedWatermarkPos', document.getElementById('selectWatermarkPos').value);
-        localStorage.setItem('savedLeft', document.getElementById('rangeLeft').value);
-        localStorage.setItem('savedRight', document.getElementById('rangeRight').value);
+        localStorage.setItem('savedLeftMargin', document.getElementById('selectLeftMargin').value);
+        localStorage.setItem('savedRightMargin', document.getElementById('selectRightMargin').value);
         localStorage.setItem('savedLineHeight', document.getElementById('selectLineHeight').value);
         
         alert('Aapka data aur sabhi layout settings permanently save ho gayi hain!');
@@ -364,8 +367,8 @@
             document.getElementById('selectFontSize').value = localStorage.getItem('savedFontSize') || "16px";
             document.getElementById('selectAlign').value = localStorage.getItem('savedAlign') || "justify";
             document.getElementById('selectWatermarkPos').value = localStorage.getItem('savedWatermarkPos') || "2.0in";
-            document.getElementById('rangeLeft').value = localStorage.getItem('savedLeft') || 0;
-            document.getElementById('rangeRight').value = localStorage.getItem('savedRight') || 0;
+            document.getElementById('selectLeftMargin').value = localStorage.getItem('savedLeftMargin') || "0.5in";
+            document.getElementById('selectRightMargin').value = localStorage.getItem('savedRightMargin') || "0.5in";
             document.getElementById('selectLineHeight').value = localStorage.getItem('savedLineHeight') || "1.8";
             
             updateLetter();
