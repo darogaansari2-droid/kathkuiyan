@@ -846,6 +846,7 @@ window.addEventListener("DOMContentLoaded", function() {
         document.getElementById("main-app").style.display = "flex";
         loadPersistentRegBoardData();
         loadLateBoardFeeSettings();
+        autoSelectCurrentMonth();
         updateLiveGrandTotal();
     } else {
         document.getElementById("login-overlay").style.display = "flex";
@@ -856,12 +857,13 @@ window.addEventListener("DOMContentLoaded", function() {
 function checkLogin() {
     let u = document.getElementById("loginUser").value.trim();
     let p = document.getElementById("loginPass").value.trim();
-    if(u === "fees" && p === "1234") {
+    if(u === "fees" && p === "123") {
         sessionStorage.setItem("isLoggedIn", "true");
         document.getElementById("login-overlay").style.display = "none";
         document.getElementById("main-app").style.display = "flex";
         loadPersistentRegBoardData();
         loadLateBoardFeeSettings();
+        autoSelectCurrentMonth();
         updateLiveGrandTotal();
     } else {
         document.getElementById("loginError").style.display = "block";
@@ -936,6 +938,28 @@ function setVal(id,v){ document.getElementById(id).value=v; }
 function msg(m){
     document.getElementById("msg").innerText=m;
     setTimeout(()=>{ document.getElementById("msg").innerHTML="&nbsp;"; },15000);
+}
+
+/* AUTO SELECT CURRENT MONTH */
+function autoSelectCurrentMonth() {
+    let combMonth = document.getElementById("combMonth");
+    if(combMonth && !combMonth.value) {
+        const d = new Date();
+        const m = d.getMonth(); // 0:Jan, 1:Feb, 2:Mar, 6:Jul, 7:Aug, 8:Sep, 9:Oct
+        let monthMap = {
+            6: "Jul",
+            7: "Aug",
+            8: "Sep",
+            9: "Oct",
+            0: "Jan",
+            1: "Feb",
+            2: "March"
+        };
+        if(monthMap[m]) {
+            combMonth.value = monthMap[m];
+            calculateData();
+        }
+    }
 }
 
 /* MARQUEE TEXT UPDATE FUNCTION */
@@ -1237,7 +1261,7 @@ function calculateData(){
     setVal("txt31", "");
     setVal("txt32", "");
 
-    let isJulyMonth = (month === "Jul" || month === "Jul/Jan");
+    let isJulyMonth = ["Jul", "Aug", "Sep", "Oct", "Jul/Jan"].includes(month);
     let julyStudents = (a + b); 
 
     // Board Fee Setting check
@@ -1439,7 +1463,6 @@ function searchData(){
     let id = document.getElementById("txt1").value.trim();
     if(id === "") { msg("⚠️ kripya SEARCH ke liye ID darj karein!"); return; }
 
-    // Step 1: Pehle Local Storage check karein
     let recordStr = localStorage.getItem(id);
     if(recordStr) {
         try {
@@ -1451,7 +1474,6 @@ function searchData(){
         } catch(e) { }
     }
 
-    // Step 2: Agar Local Storage me nahi mila, toh Google Sheet se Search karein
     if (navigator.onLine) {
         msg("🔍 Google Sheet me ID " + id + " search kiya ja raha hai...");
         fetch(WEB_APP_URL, {
@@ -1474,7 +1496,6 @@ function searchData(){
                 }
 
                 populateFormData(record);
-                // Search ke baad wapas Local Storage me save karna taki grand total update ho jaye
                 localStorage.setItem(id, JSON.stringify(record));
                 updateLiveGrandTotal();
                 updateMarqueeInfo();
@@ -1487,7 +1508,7 @@ function searchData(){
             msg("❌ Search request me error aayi! Google Apps Script me SEARCH action check karein.");
         });
     } else {
-        msg("⚠️ Offline hone ke karan Google Sheet se search nahi kiya ja sakta!");
+        msg("⚠️ Offline hone ke karan Google Sheet से search nahi kiya ja sakta!");
     }
 }
 
@@ -1537,7 +1558,6 @@ function populateFormData(record) {
 
     for(let i=2; i<=34; i++){ 
         let val = record["txt" + i] || "";
-        // Format Date (txt27) & Time (txt28) coming from ISO string
         if(i === 27) val = formatDateString(val);
         if(i === 28) val = formatTimeString(val);
         setVal("txt" + i, val); 
@@ -1546,6 +1566,9 @@ function populateFormData(record) {
     setVal("customBankInput", record.customBank || 0);
     setVal("customHeadInput", record.customHead || 0);
     setVal("customTotalInput", record.customTotal || 0);
+
+    // Mark as manual/loaded date so update keeps the original date and time
+    isManualDate = true;
 }
 
 function deleteRecord(){
@@ -1560,7 +1583,7 @@ function deleteRecord(){
         }
         clearForm();
         updateLiveGrandTotal();
-        msg("🗑️ Record Local Storage aur Google Sheet se delete ho gaya.");
+        msg("🗑️ Record Local Storage aur Google Sheet से delete ho gaya.");
     }
 }
 
@@ -1571,7 +1594,6 @@ function deleteLocalRecordOnly(){
     
     if(pwd === "1234") {
         if(confirm("⚠️ क्या आप निश्चित हैं कि आप पूरा Local Storage (Fees Data) खाली करना चाहते हैं?")) {
-            // IDs और डाटा पूरा clear करना लेकिन Settings सुरक्षित रखना
             let regData = localStorage.getItem("reg_board_data");
             let lateSettings = localStorage.getItem("late_board_fee_settings");
 
@@ -1592,7 +1614,7 @@ function deleteLocalRecordOnly(){
 /* CLEAR FORM */
 function clearForm(){
     setVal("txt1", "");
-    setVal("combMonth", "");
+    autoSelectCurrentMonth();
     setVal("combCoste", "");
     setVal("combClass", "");
     setVal("janTxt2", "");
