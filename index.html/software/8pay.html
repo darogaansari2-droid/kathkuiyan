@@ -202,15 +202,8 @@
             font-size: 11px;
         }
         #vetan-app tr:nth-child(even) { background-color: #f9f9f9; }
-        
-        /* Ensures tfoot renders as regular row group so it behaves like normal rows and doesn't repeat per page */
-        #vetan-app tfoot {
-            display: table-row-group;
-        }
-        #vetan-app .total-row td {
-            font-weight: bold;
-            background-color: #e2e8f0;
-        }
+        #vetan-app tfoot { display: table-row-group; }
+        #vetan-app .total-row td { font-weight: bold; background-color: #e2e8f0; }
         #vetan-app .summary-box {
             margin-top: 20px;
             border: 1px solid var(--primary-color);
@@ -224,11 +217,7 @@
             gap: 10px;
             font-size: 14px;
         }
-        #vetan-app .action-btns button {
-            padding: 3px 5px;
-            font-size: 10px;
-            margin: 1px;
-        }
+        #vetan-app .action-btns button { padding: 3px 5px; font-size: 10px; margin: 1px; }
         #vetan-app .btn-edit { background-color: #007bff; color:#fff; }
         #vetan-app .btn-del { background-color: #dc3545; color:#fff; }
 
@@ -251,10 +240,7 @@
             max-width: 1300px;
             margin: 0 auto;
         }
-        #pay8-app h1, #pay8-app h2 {
-            text-align: center;
-            color: var(--primary);
-        }
+        #pay8-app h1, #pay8-app h2 { text-align: center; color: var(--primary); }
         #pay8-app .card {
             background: var(--surface);
             padding: 24px;
@@ -267,31 +253,16 @@
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 16px;
         }
-        #pay8-app .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        #pay8-app label {
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-        }
+        #pay8-app .form-group { display: flex; flex-direction: column; }
+        #pay8-app label { font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
         #pay8-app input, #pay8-app select {
             padding: 10px;
             border: 1px solid var(--border);
             border-radius: 6px;
             font-size: 1rem;
         }
-        #pay8-app input:readonly {
-            background-color: #e2e8f0;
-            cursor: not-allowed;
-        }
-        #pay8-app .btn-group {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
+        #pay8-app input:readonly { background-color: #e2e8f0; cursor: not-allowed; }
+        #pay8-app .btn-group { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
         #pay8-app button {
             padding: 10px 20px;
             border: none;
@@ -306,14 +277,8 @@
         #pay8-app .btn-warning { background: #d97706; }
         #pay8-app .btn-success { background: var(--success); }
         #pay8-app .btn-info { background: #0284c7; }
-        #pay8-app .search-bar {
-            margin-bottom: 16px;
-            width: 100%;
-            max-width: 400px;
-        }
-        #pay8-app .table-responsive {
-            overflow-x: auto;
-        }
+        #pay8-app .search-bar { margin-bottom: 16px; width: 100%; max-width: 400px; }
+        #pay8-app .table-responsive { overflow-x: auto; }
         #pay8-app table {
             width: 100%;
             border-collapse: collapse;
@@ -336,25 +301,10 @@
             text-align: center;
             border: 1px solid var(--border);
         }
-        #pay8-app tfoot tr {
-            background-color: #f8fafc;
-            font-weight: bold;
-        }
-        #pay8-app .badge {
-            background: #e0f2fe;
-            color: #0369a1;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        #pay8-app .profit-text {
-            color: var(--success);
-            font-weight: bold;
-        }
-        #pay8-app .emp-bold {
-            font-weight: 700;
-            color: #0f172a;
-        }
+        #pay8-app tfoot tr { background-color: #f8fafc; font-weight: bold; }
+        #pay8-app .badge { background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        #pay8-app .profit-text { color: var(--success); font-weight: bold; }
+        #pay8-app .emp-bold { font-weight: 700; color: #0f172a; }
         #pay8-app .live-preview {
             margin-top: 15px;
             padding: 12px;
@@ -367,26 +317,66 @@
             color: #166534;
         }
 
+        /* --- ACP Software Styles --- */
+        #acp-app {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+        }
+        #acp-app .acp-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-top: 5px solid #003366;
+        }
+        #acp-app .acp-header { background: #fff; padding: 20px; text-align: center; border-bottom: 1px solid #ddd; }
+        #acp-app .acp-header h1 { margin: 0; font-size: 24px; color: #000; }
+        #acp-app .acp-header p { margin: 5px 0 0; color: #555; font-size: 14px; }
+        #acp-app .acp-badge { display: inline-block; background: #e0f0ff; color: #003366; font-weight: bold; font-size: 12px; padding: 5px 15px; border-radius: 20px; margin-top: 10px; }
+        #acp-app .acp-form-section { padding: 20px; background: #f9fbff; }
+        #acp-app .acp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        #acp-app .acp-full-width { grid-column: span 2; }
+        #acp-app label { display: block; font-weight: bold; font-size: 13px; color: #333; margin-bottom: 5px; }
+        #acp-app input, #acp-app select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
+        #acp-app input:focus, #acp-app select:focus { outline: none; border-color: #003366; box-shadow: 0 0 5px rgba(0,51,102,0.3); }
+        #acp-app .acp-btn-container { text-align: center; margin-top: 20px; grid-column: span 2; }
+        #acp-app button.calc-btn { background: #003366; color: white; border: none; padding: 12px 30px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; }
+        #acp-app button.calc-btn:hover { background: #002244; }
+        #acp-app .result-section { padding: 20px; border-top: 2px solid #ddd; display: none; }
+        #acp-app .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        #acp-app button.print-btn { background: #333; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 15px; }
+        #acp-app .info-bar { background: #f1f1f1; padding: 10px; border-radius: 5px; display: grid; grid-template-columns: 3fr 3fr 3fr; gap: 10px; font-size: 15px; margin-bottom: 20px; }
+        #acp-app .boxes-grid { display: grid; grid-template-columns: 3fr 3fr 3fr; gap: 15px; margin-bottom: 20px; }
+        #acp-app .box { padding: 15px; border-radius: 8px; border: 1px solid #ccc; background: white; font-size: 15px; }
+        #acp-app .box.b2 { background: #f0f7ff; border-color: #bce8f1; }
+        #acp-app .box.b3 { background: #fffdf0; border-color: #faebcc; border-width: 2px; }
+        #acp-app .box-title { font-weight: bold; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        #acp-app .acp-footer { background: #f1f1f1; text-align: center; padding: 10px; font-size: 12px; color: #666; border-top: 1px solid #ddd; }
+
         /* Print Settings */
         @media print {
-            .no-print, .master-nav-bar {
-                display: none !important;
-            }
-            .app-section {
-                display: none !important;
-            }
-            .app-section.active {
-                display: block !important;
-            }
-            #vetan-app .emp-row input {
-                border: none;
-                background: transparent;
-                font-weight: bold;
-            }
-            /* Explicitly forcing table-row-group in print so tfoot never repeats per page */
-            #vetan-app tfoot {
-                display: table-row-group !important;
-            }
+            .no-print, .master-nav-bar { display: none !important; }
+            .app-section { display: none !important; }
+            .app-section.active { display: block !important; }
+            #vetan-app .emp-row input { border: none; background: transparent; font-weight: bold; }
+            #vetan-app tfoot { display: table-row-group !important; }
+
+            /* ACP Print Rules */
+            #acp-app { background: white; padding: 0; font-size: 16px; color: #000; }
+            #acp-app .acp-container { box-shadow: none; border: none; width: 100%; max-width: 100%; }
+            #acp-app .result-section { display: block !important; padding: 0; border: none; }
+            #acp-app .acp-header h1 { font-size: 26px; }
+            #acp-app .acp-header p { font-size: 16px; }
+            #acp-app #printStageTitle { font-size: 18px !important; margin-bottom: 20px; }
+            #acp-app .info-bar { font-size: 15px; padding: 12px; background: #fff !important; border: 1px solid #000; }
+            #acp-app .boxes-grid { gap: 20px; }
+            #acp-app .box { font-size: 15px; border: 1px solid #000; background: #fff !important; }
+            #acp-app .box-title { font-size: 16px; font-weight: bold; }
+            #acp-app .acp-footer { display: none; }
         }
     </style>
 </head>
@@ -402,6 +392,7 @@
             <select id="softwareSelector" onchange="switchSoftware()">
                 <option value="vetan">वेतन अवशेष सॉफ्टवेयर (Arrears Salary Software)</option>
                 <option value="pay8">8th Pay Commission Calculator & Portal</option>
+                <option value="acp">ACP सत्यापन पोर्टल (ACP Verification Portal)</option>
             </select>
         </div>
     </div>
@@ -409,8 +400,6 @@
     <!-- 1. वेतन अवशेष सॉफ्टवेयर (Vetan Software Section) -->
     <div id="vetan-app" class="app-section active">
         <div class="container">
-
-            <!-- विद्यालय, कर्मचारी विवरण और छोटा कैलकुलेटर -->
             <div class="top-flex-bar">
                 <div class="emp-details-bar">
                     <div class="emp-row">
@@ -430,7 +419,6 @@
                     </div>
                 </div>
 
-                <!-- छोटा कैलकुलेटर बॉक्स (प्रिंट में छिपा हुआ) -->
                 <div class="mini-calculator no-print">
                     <h5>त्वरित कैलकुलेटर (Quick Calc)</h5>
                     <div class="calc-row">
@@ -441,7 +429,6 @@
                 </div>
             </div>
 
-            <!-- DA रेट मास्टर सेटिंग पैनल -->
             <div class="da-settings-box no-print">
                 <h4>⚙️ DA रेट मास्टर सेटिंग (जुलाई 2026 या अन्य महीनों के DA रेट जोड़ने/बदलने हेतु)</h4>
                 <div class="form-group" style="flex:1;">
@@ -480,7 +467,6 @@
                 </div>
             </div>
 
-            <!-- इनपुट फॉर्म -->
             <div class="form-section no-print">
                 <input type="hidden" id="editIndex" value="">
                 
@@ -533,13 +519,11 @@
                     <input type="number" id="partialDays" placeholder="पूरा माह (30)" min="1" max="30">
                 </div>
 
-                <!-- वेतन वृद्धि (Annual Increment) विकल्प बॉक्स -->
                 <div class="checkbox-group">
                     <input type="checkbox" id="incrementCheck" onchange="calculateAutoDeductionType()">
                     <label for="incrementCheck" style="cursor:pointer; margin:0;">वार्षिक वेतन वृद्धि (3% Increment)</label>
                 </div>
 
-                <!-- कटौती चयन (GPF या NPS) और मान -->
                 <div class="form-group">
                     <label style="display:flex; justify-content:space-between; align-items:center;">
                         <span>कटौती प्रकार</span>
@@ -551,13 +535,11 @@
                     <input type="number" id="gpfNpsVal" placeholder="0" style="margin-top:2px;" title="10% Auto or Manual">
                 </div>
 
-                <!-- NPS अंशदान (अतिरिक्त) -->
                 <div class="form-group">
                     <label>NPS अंशदान (अतिरिक्त)</label>
                     <input type="number" id="npsExtra" placeholder="0">
                 </div>
 
-                <!-- G.LIC और Income Tax -->
                 <div class="form-group">
                     <label>G.LIC</label>
                     <input type="number" id="gLic" placeholder="0">
@@ -568,7 +550,6 @@
                     <input type="number" id="tax" placeholder="0">
                 </div>
 
-                <!-- बटन -->
                 <div class="btn-container">
                     <button type="button" id="saveBtn" class="v-btn btn-save" onclick="saveData()">Save Record</button>
                     <button type="button" class="v-btn btn-clear" onclick="clearForm()">Reset</button>
@@ -577,7 +558,6 @@
                 </div>
             </div>
 
-            <!-- डेटा टेबल -->
             <table>
                 <thead>
                     <tr>
@@ -597,15 +577,10 @@
                         <th class="no-print">Action</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
-                    <!-- डेटा यहाँ जुड़ेगा -->
-                </tbody>
-                <tfoot id="tableFoot">
-                    <!-- कुल योग केवल अंत में यहाँ दिखाई देगा -->
-                </tfoot>
+                <tbody id="tableBody"></tbody>
+                <tfoot id="tableFoot"></tfoot>
             </table>
 
-            <!-- नीचे का विस्तृत योग (Summary Section) -->
             <div class="summary-box">
                 <div class="summary-grid">
                     <div><strong>कुल मूल वेतन योग:</strong> <span id="totBasic">0.00</span></div>
@@ -618,7 +593,6 @@
             </div>
         </div>
     </div>
-
 
     <!-- 2. 8th Pay Commission कैलकुलेटर (8pay Software Section) -->
     <div id="pay8-app" class="app-section">
@@ -735,19 +709,145 @@
         </div>
     </div>
 
+    <!-- 3. ACP सत्यापन पोर्टल (ACP Software Section) -->
+    <div id="acp-app" class="app-section">
+        <div class="acp-container">
+            <div class="acp-header">
+                <h1>श्री कृष्ण इण्टरमीडिएट कालेज</h1>
+                <p>सेमरा, कठकुइयाँ, जनपद - कुशीनगर (उत्तर प्रदेश)</p>
+                <div class="acp-badge no-print">चरणबद्ध वेतन निर्धारण एवं ACP सत्यापन पोर्टल</div>
+            </div>
+
+            <div class="acp-form-section no-print">
+                <div class="acp-grid">
+                    <div>
+                        <label>कर्मचारी का नाम:</label>
+                        <input type="text" id="acpEmpName" placeholder="कर्मचारी का पूरा नाम">
+                    </div>
+
+                    <div>
+                        <label>पद (Designation):</label>
+                        <select id="acpDesignation">
+                            <option value="Principal">प्रधानाचार्य (Principal)</option>
+                            <option value="Lecturer">प्रवक्ता (Lecturer / L.T.)</option>
+                            <option value="Teacher">सहायक अध्यापक (T.G.T.)</option>
+                            <option value="HeadClerk">प्रधान लिपिक (Head Clerk)</option>
+                            <option value="AssistantClerk" selected>सहायक लिपिक (Assistant Clerk)</option>
+                            <option value="Peon">परिचारक / चतुर्थ श्रेणी (Peon / Class-4)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>प्रथम नियुक्ति तिथि (Exact Date):</label>
+                        <input type="date" id="acpAppointmentDate">
+                    </div>
+
+                    <div>
+                        <label>वार्षिक वेतनवृद्धि माह:</label>
+                        <select id="acpIncrementMonth">
+                            <option value="7" selected>जुलाई (July - सामान्य नियम)</option>
+                            <option value="1">जनवरी (January - वैकल्पिक नियम)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>गणनीय ACP का चयन करें:</label>
+                        <select id="acpStage">
+                            <option value="1">10 वर्ष (प्रथम ACP)</option>
+                            <option value="2">16 वर्ष (द्वितीय ACP)</option>
+                            <option value="3" selected>26 वर्ष (तृतीय ACP)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>कर्मचारी का वर्तमान वेतन स्तर (Pay Level 1-17):</label>
+                        <select id="acpCurrentLevel">
+                            <option value="1">Level 1</option>
+                            <option value="2">Level 2</option>
+                            <option value="3">Level 3</option>
+                            <option value="4">Level 4</option>
+                            <option value="5">Level 5</option>
+                            <option value="6">Level 6</option>
+                            <option value="7">Level 7</option>
+                            <option value="8">Level 8</option>
+                            <option value="9">Level 9</option>
+                            <option value="10">Level 10</option>
+                            <option value="11">Level 11</option>
+                            <option value="12">Level 12</option>
+                            <option value="13">Level 13</option>
+                            <option value="क13">Level क13</option>
+                            <option value="14">Level 14</option>
+                            <option value="15">Level 15</option>
+                            <option value="16">Level 16</option>
+                            <option value="17">Level 17</option>
+                        </select>
+                    </div>
+
+                    <div class="acp-full-width">
+                        <label>वर्तमान मूल वेतन (₹) [वेतनवृद्धि पूर्व]:</label>
+                        <input type="text" id="acpCurrentBasic" value="0" placeholder="मूल वेतन डालें">
+                    </div>
+
+                    <div class="acp-btn-container">
+                        <button class="calc-btn" onclick="calculateMatrixACP()">🧮 चरणबद्ध सही गणना देखें</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="acpResultSection" class="result-section">
+                <div class="result-header no-print">
+                    <h3 style="margin:0; color:#003366;">📄 ACP चरणबद्ध वेतन निर्धारण प्रमाण पत्र</h3>
+                    <button class="print-btn" onclick="window.print()">🖨️ प्रिंट करें</button>
+                </div>
+
+                <div style="text-align:center; margin-bottom:15px; font-weight:bold; color:#003366;" id="printStageTitle">वेतन निर्धारण आदेश</div>
+
+                <div class="info-bar">
+                    <div><strong>नाम:</strong> <span id="dispName"></span></div>
+                    <div><strong>पद:</strong> <span id="dispDesig"></span></div>
+                    <div><strong>पात्रता तिथि:</strong> <span id="dispDate"></span></div>
+                </div>
+
+                <div class="boxes-grid">
+                    <div class="box">
+                        <div class="box-title" style="color: #a94442;">1. ACP से पूर्व स्थिति</div>
+                        <div>मूल वेतन: <span id="box1_base" style="font-weight:bold;"></span></div>
+                    </div>
+                    <div class="box b2">
+                        <div class="box-title" style="color: #31708f;">2. वार्षिक वेतनवृद्धि पश्चात</div>
+                        <div>नया मान: <span id="box2_inc" style="font-weight:bold;"></span></div>
+                    </div>
+                    <div class="box b3">
+                        <div class="box-title" style="color: #8a6d3b;">3. अंतिम ACP निर्धारण</div>
+                        <div>निर्धारित वेतन: <span id="box3_final" style="font-weight:bold; color:green;"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="acp-footer">
+                श्री कृष्ण इण्टरमीडिएट कालेज सेमरा, कठकुइयाँ, कुशीनगर - प्रशासनिक पोर्टल
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript Scripts -->
     <script>
         function switchSoftware() {
             let selectedVal = document.getElementById('softwareSelector').value;
             let vetanApp = document.getElementById('vetan-app');
             let pay8App = document.getElementById('pay8-app');
+            let acpApp = document.getElementById('acp-app');
+
+            vetanApp.classList.remove('active');
+            pay8App.classList.remove('active');
+            acpApp.classList.remove('active');
 
             if (selectedVal === 'vetan') {
                 vetanApp.classList.add('active');
-                pay8App.classList.remove('active');
-            } else {
+            } else if (selectedVal === 'pay8') {
                 pay8App.classList.add('active');
-                vetanApp.classList.remove('active');
+            } else if (selectedVal === 'acp') {
+                acpApp.classList.add('active');
             }
         }
 
@@ -838,9 +938,7 @@
             }
         }
 
-        function updateHeaderInfo() {
-            // केवल इनपुट बॉक्स के माध्यम से डेटा मैनेज करने के लिए
-        }
+        function updateHeaderInfo() {}
 
         function getIncrementedBasic(baseVal) {
             if(!baseVal || isNaN(baseVal)) return 0;
@@ -1105,7 +1203,6 @@
             onPeriodChange();
         }
 
-
         /* --- 8pay Software Logic --- */
         let employees = JSON.parse(localStorage.getItem('8thPayCommissionData')) || [];
 
@@ -1322,6 +1419,100 @@
             document.getElementById('daPercent').value = "50";
             document.getElementById('govtIncreasePercent').value = "14.3";
             liveCalculateAll();
+        }
+
+
+        /* --- ACP Software Logic --- */
+        const payMatrixTable = {
+            "1": [18000, 18500, 19100, 19700, 20300, 20900, 21500, 22100, 22800, 23500, 24200, 24900, 25600, 26400, 27200, 28000, 28800, 29700, 30600, 31500, 32400, 33400, 34400, 35400, 36500, 37600, 38700, 39900, 41100, 42300, 43600, 44900, 46200, 47600, 49000, 50500, 52000, 53600, 55200, 56900],
+            "2": [19900, 20500, 21100, 21700, 22400, 23100, 23800, 24500, 25200, 26000, 26800, 27600, 28400, 29300, 30200, 31100, 32000, 33000, 34000, 35000, 36100, 37200, 38300, 39400, 40600, 41800, 43100, 44400, 47100, 48500, 50000, 51500, 53000, 54600, 56200, 57900, 59600, 61400, 63200],
+            "3": [21700, 22400, 23100, 23800, 24500, 25200, 26000, 26800, 27600, 28400, 29300, 30200, 31100, 32000, 33000, 34000, 35000, 36100, 37200, 38300, 39400, 40600, 41800, 43100, 44400, 45700, 47100, 48500, 50000, 51500, 53000, 54600, 56200, 57900, 59600, 61400, 63200, 65100, 67100, 69100],
+            "4": [25500, 26300, 27100, 27900, 28700, 29600, 30500, 31400, 32300, 33300, 34300, 35300, 36400, 37500, 38600, 39800, 41000, 42200, 43500, 44800, 45100, 47500, 48900, 50400, 51900, 53500, 55100, 56800, 58500, 60300, 62100, 64000, 65900, 67900, 69900, 72000, 74200, 76400, 78700, 81100],
+            "5": [29200, 30100, 31000, 31900, 32900, 33900, 34900, 35900, 37000, 38100, 39200, 40400, 41600, 42800, 44100, 45400, 46800, 48200, 49600, 51100, 52600, 54200, 55800, 57500, 59200, 61000, 62800, 64700, 66600, 68600, 70700, 72800, 75000, 77300, 79600, 82000, 84500, 87000, 89600, 92300],
+            "6": [35400, 36500, 37600, 38700, 39900, 41100, 42300, 43600, 44900, 46200, 47600, 49000, 50500, 52000, 53600, 55200, 56900, 58600, 60400, 62000, 64100, 66000, 68000, 70000, 72100, 74300, 76500, 78800, 81200, 83600, 86100, 88700, 91400, 94100, 96900, 99800, 102800, 105900, 109100, 112400],
+            "7": [44900, 46200, 47600, 49000, 50500, 52000, 53600, 55200, 56900, 58600, 60400, 62200, 64100, 66000, 68000, 70000, 72100, 74300, 76500, 78800, 81200, 83600, 86100, 88700, 91400, 94100, 96900, 99800, 102800, 105900, 109100, 112400, 115800, 119300, 122900, 126600, 130400, 134300, 138300, 142400],
+            "8": [47600, 49000, 50500, 52000, 53600, 55200, 56900, 58600, 60400, 62200, 64100, 66000, 68000, 70000, 72100, 74300, 76500, 78800, 81200, 83600, 86100, 88700, 91400, 94100, 96900, 99800, 102800, 105900, 109100, 112400, 115800, 119300, 122900, 126600, 130400, 134300, 138300, 142400, 146700, 151100],
+            "9": [53100, 54700, 56300, 58000, 59700, 61500, 63300, 65200, 67200, 69200, 71300, 73400, 75600, 77900, 80200, 82600, 85100, 87700, 90300, 93000, 95800, 98700, 101700, 104800, 107900, 111100, 114400, 117800, 121300, 124900, 128600, 132500, 136500, 140600, 144800, 149100, 153600, 158200, 162900, 167800],
+            "10": [56100, 57800, 59500, 61300, 63100, 65000, 67000, 69000, 71100, 73200, 75400, 77700, 80000, 82400, 84900, 87400, 90000, 92700, 95500, 98400, 101400, 104400, 107500, 110700, 114000, 117400, 120900, 124500, 128200, 132000, 135900, 136000, 140100, 144300, 148600, 153100, 157700, 162400, 167300, 172300, 177500],
+            "11": [67700, 69700, 71800, 74000, 76200, 78500, 80900, 83300, 85800, 88400, 91100, 93800, 96600, 99500, 102500, 105600, 108800, 112100, 115500, 119000, 122600, 126300, 130100, 134000, 138000, 142100, 146400, 150800, 155300, 160000, 164800, 169700, 174800, 180000, 185400, 191000, 196700, 202600, 208700],
+            "12": [78800, 81200, 83600, 86100, 88700, 91400, 94100, 96900, 99800, 102800, 105900, 109100, 112400, 115800, 119300, 122900, 126600, 130400, 134300, 138300, 142400, 146700, 151100, 155600, 160300, 165100, 170100, 175200, 180500, 185900, 191500, 197200, 203100, 209200],
+            "13": [118500, 122100, 125800, 129600, 133500, 137500, 141600, 145800, 150200, 154700, 159300, 164100, 169000, 174100, 179300, 184700, 190200, 195900, 201800, 207900, 214100],
+            "क13": [131100, 135000, 139100, 143300, 147600, 152000, 156600, 161300, 166100, 171100, 176200, 181500, 186900, 192500, 198300, 204200, 210300, 216600],
+            "14": [144200, 148500, 153000, 157600, 162300, 167200, 172200, 177400, 182700, 188200, 193800, 199600, 205600, 211800, 218200],
+            "15": [182200, 187700, 193300, 199100, 205100, 211300, 217600, 224100],
+            "16": [205400, 211600, 217900, 224400],
+            "17": [225000]
+        };
+
+        function addExactYears(dateStr, years) {
+            if (!dateStr) return 'तारीख दर्ज नहीं है';
+            let d = new Date(dateStr);
+            d.setFullYear(d.getFullYear() + years);
+            let day = String(d.getDate()).padStart(2, '0');
+            let monthNames = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
+            return `${day} ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+        }
+
+        function getNextCellInLevel(level, val) {
+            let arr = payMatrixTable[level];
+            if (!arr) return val;
+            let idx = arr.indexOf(val);
+            if (idx !== -1 && idx + 1 < arr.length) return arr[idx + 1];
+            let found = arr.find(item => item > val);
+            return found !== undefined ? found : val;
+        }
+
+        function getACPFinalValue(nextLevel, targetVal) {
+            let arr = payMatrixTable[nextLevel];
+            if (!arr) return targetVal;
+            if (arr.includes(targetVal)) return targetVal;
+            let higherVal = arr.find(item => item > targetVal);
+            return higherVal !== undefined ? higherVal : targetVal;
+        }
+
+        function calculateMatrixACP() {
+            let name = document.getElementById('acpEmpName').value || 'कर्मचारी';
+            let desigText = document.getElementById('acpDesignation').options[document.getElementById('acpDesignation').selectedIndex].text;
+            let appDateStr = document.getElementById('acpAppointmentDate').value;
+            let stage = document.getElementById('acpStage').value;
+            let currentLevel = document.getElementById('acpCurrentLevel').value;
+            
+            let rawBasic = document.getElementById('acpCurrentBasic').value.replace(/,/g, '').trim();
+            let currentBasic = parseFloat(rawBasic);
+
+            if (!appDateStr) {
+                alert('कृपया पहले नियुक्ति तिथि (Appointment Date) चुनें!');
+                return;
+            }
+
+            if (isNaN(currentBasic) || currentBasic <= 0) {
+                alert('कृपया सही मूल वेतन (Basic Salary) दर्ज करें!');
+                return;
+            }
+
+            let yearsToAdd = stage === '1' ? 10 : (stage === '2' ? 16 : 26);
+            let stageName = stage === '1' ? 'प्रथम ACP (10 वर्ष)' : (stage === '2' ? 'द्वितीय ACP (16 वर्ष)' : 'तृतीय ACP (26 वर्ष)');
+            
+            let exactEligibleDate = addExactYears(appDateStr, yearsToAdd);
+            let step1_incremented = getNextCellInLevel(currentLevel, currentBasic);
+
+            const levelSeq = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', 'क13', '14', '15', '16', '17'];
+            let currentIndex = levelSeq.indexOf(currentLevel);
+            let nextLevelIndex = (currentIndex !== -1 && currentIndex + 1 < levelSeq.length) ? currentIndex + 1 : currentIndex;
+            let nextLevel = levelSeq[nextLevelIndex];
+
+            let step2_acpFinal = getACPFinalValue(nextLevel, step1_incremented);
+
+            document.getElementById('dispName').innerText = name;
+            document.getElementById('dispDesig').innerText = `${desigText} (L-${currentLevel} ➔ L-${nextLevel})`;
+            document.getElementById('dispDate').innerText = exactEligibleDate;
+            document.getElementById('printStageTitle').innerText = `वेतन निर्धारण आदेश - ${stageName}`;
+
+            document.getElementById('box1_base').innerText = '₹ ' + currentBasic.toLocaleString('en-IN');
+            document.getElementById('box2_inc').innerText = '₹ ' + step1_incremented.toLocaleString('en-IN');
+            document.getElementById('box3_final').innerText = '₹ ' + step2_acpFinal.toLocaleString('en-IN');
+
+            document.getElementById('acpResultSection').style.display = 'block';
         }
 
         window.onload = function() {
