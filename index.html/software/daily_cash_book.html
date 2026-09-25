@@ -8,11 +8,11 @@
         :root {
             --primary-color: #1e3799;
             --success-color: #27ae60;
-            --danger-color: #ff0000; /* Dark Red */
+            --danger-color: #ff0000;
             --light-bg: #f8f9fa;
             --dark-text: #2c3e50;
             --dropdown-blue: #1e3799;
-            --dark-green: #27ae60; /* Dark Green */
+            --dark-green: #27ae60;
         }
 
         * {
@@ -33,7 +33,6 @@
             padding: 5px;
         }
 
-        /* LOGIN SCREEN STYLES */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -94,7 +93,6 @@
             display: none;
         }
 
-        /* MAIN APP STYLES - FULL SCREEN RESPONSIVE FIT */
         .container {
             width: 100%;
             max-width: 100%;
@@ -115,6 +113,8 @@
             border-bottom: 2px solid var(--primary-color);
             padding-bottom: 3px;
             flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 5px;
         }
 
         h2 {
@@ -133,14 +133,36 @@
             border-radius: 4px;
             font-weight: bold;
             cursor: pointer;
-            margin-left: auto;
-            margin-right: 8px;
             font-size: 12px;
             transition: 0.2s;
         }
         .btn-lock-toggle.unlocked {
             background: #27ae60;
         }
+
+        .btn-sync {
+            background: #e67e22;
+            color: white;
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-sync:hover { background: #d35400; }
+
+        .btn-sheet-action {
+            background: #8e44ad;
+            color: white;
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-sheet-action:hover { background: #732d91; }
 
         .btn-print {
             background: #2980b9;
@@ -150,7 +172,6 @@
             border-radius: 4px;
             font-weight: bold;
             cursor: pointer;
-            margin-right: 8px;
             font-size: 12px;
         }
         .btn-print:hover { background: #1f6391; }
@@ -167,7 +188,6 @@
         }
         .btn-logout:hover { background: #5d6d7e; }
 
-        /* COMPACT MARQUEE */
         .marquee-wrapper {
             background: linear-gradient(90deg, #1e3799, #2c3e50);
             color: #fff;
@@ -188,7 +208,6 @@
             align-items: center;
         }
 
-        /* COMPACT DASHBOARD */
         .dashboard {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -223,7 +242,6 @@
             font-weight: bold;
         }
 
-        /* VERY COMPACT INPUT SECTIONS */
         .form-section, .search-section {
             background: var(--light-bg);
             padding: 6px 10px;
@@ -245,7 +263,6 @@
             margin-bottom: 4px;
         }
 
-        /* LIVE SEARCH FILTER DISPLAY BOXES STYLES */
         .filter-result-row {
             display: flex;
             gap: 10px;
@@ -354,7 +371,6 @@
         .btn-edit { background: #2980b9; color: white; padding: 2px 6px; font-size: 10px; border-radius: 4px; border:none; cursor:pointer; font-weight: bold;}
         .btn-delete { background: var(--danger-color); color: white; padding: 2px 6px; font-size: 10px; border-radius: 4px; border:none; cursor:pointer; font-weight: bold;}
 
-        /* HIGHER SPECIFICITY TABLE FOR EXTRA VIEW */
         .table-container {
             overflow-y: auto;
             overflow-x: auto;
@@ -386,7 +402,6 @@
             font-size: 11px;
         }
 
-        /* Screen Alignment Setup */
         .col-center { text-align: center !important; }
         .col-right { text-align: right !important; }
 
@@ -405,7 +420,6 @@
             font-weight: bold;
         }
 
-        /* LANDSCAPE PRINT CSS CODE WITH ALIGNMENTS */
         @media print {
             @page {
                 size: A4 landscape;
@@ -429,6 +443,8 @@
             .btn-print, 
             .btn-logout,
             .btn-lock-toggle,
+            .btn-sync,
+            .btn-sheet-action,
             th:last-child, 
             td:last-child { 
                 display: none !important; 
@@ -496,6 +512,8 @@
     <div class="header-area">
         <h2>🔒 Personal Ledger Cash Book</h2>
         <button class="btn-lock-toggle" id="lockToggleBtn" onclick="toggleActionSecurity()">🔒 Unlock Actions</button>
+        <button class="btn-sync" onclick="syncDataToGoogleSheet()">☁️ Google Sync</button>
+        <button class="btn-sheet-action" onclick="openSheetSearchModal()">🔍 Sheet Search & Delete</button>
         <button class="btn-print" onclick="window.print()">🖨️ Landscape Print</button>
         <button class="btn-logout" onclick="logout()">Logout / Lock</button>
     </div>
@@ -556,8 +574,8 @@
             <div>
                 <label>Transaction Type</label>
                 <select id="tx-type">
-                    <option value="Credit">Credit /Debit </option>
-                    <option value="Debit">Debit (Kharch / -)</option>
+                    <option value="Credit">Credit (+) </option>
+                    <option value="Debit">Debit (-)</option>
                 </select>
             </div>
             <div>
@@ -645,6 +663,8 @@
 </div>
 
 <script>
+    // Apna Google Apps Script Web App URL yahan daalein
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwpNEBzp1S79dFq0xVICl28lQhYSTQfOXp39j4mfkGymK-m5k3ZKbga2lRqYpDpvz8Dpw/exec";
     let isActionsUnlocked = false; 
 
     window.addEventListener('DOMContentLoaded', (event) => {
@@ -671,7 +691,6 @@
         }
     }
 
-    // Date Format (YYYY-MM-DD to DD/MM/YYYY) convert karne ke liye function
     function formatDateToDDMMYYYY(dateString) {
         if (!dateString) return "";
         const parts = dateString.split('-');
@@ -727,6 +746,104 @@
         initialHandBalance = parseFloat(localStorage.getItem('initialHandBalance')) || 0;
         
         filterAndRender();
+    }
+
+    function syncDataToGoogleSheet() {
+        if (WEB_APP_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE") {
+            alert("Kripya code me apna sahi WEB_APP_URL set karein!");
+            return;
+        }
+
+        const payload = {
+            action: "syncData",
+            initialOpeningBalance: initialOpeningBalance,
+            initialHandBalance: initialHandBalance,
+            data: cashBookData
+        };
+
+        alert("Google Sheet par data sync ho raha hai, kripya pratiksha karein...");
+
+        fetch(WEB_APP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(() => {
+            alert("Data safaltapoorvak Google Sheet ke Cash Book me sync ho gaya hai!");
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Sync karne me kuch samasya aayi.");
+        });
+    }
+
+  function openSheetSearchModal() {
+        const query = prompt("Google Sheet se search karne ke liye S.No (ID) ya Name darj karein:");
+        if (!query) return;
+
+        if (WEB_APP_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE") {
+            alert("Kripya pehle sahi WEB_APP_URL set karein!");
+            return;
+        }
+
+        const payload = {
+            action: "searchSheet",
+            query: query
+        };
+
+        alert("Google Sheet se data khoja ja raha hai...");
+
+        fetch(WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(res => {
+            if(res.status === "success" && res.data.length > 0) {
+                let msg = "Milaye gaye records:\n\n";
+                res.data.forEach(item => {
+                    msg += `S.No: ${item.sNo} | Sheet Row: ${item.rowIndex} | Date: ${item.date} | Name: ${item.name} | Type: ${item.type} | Amt: ${item.credit || item.debit}\n`;
+                });
+                
+                let deleteRow = prompt(msg + "\nKiska data delete karna hai? Upar dikhaya gaya 'Sheet Row' number yahan dalein:");
+                if(deleteRow) {
+                    let targetRow = parseInt(deleteRow);
+                    if(!isNaN(targetRow)) {
+                        deleteRowFromGoogleSheet(targetRow);
+                    } else {
+                        alert("Galat row index darj kiya gaya!");
+                    }
+                }
+            } else {
+                alert("Google Sheet me is naam ya ID se koi record nahi mila!");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Search karne me error aayi.");
+        });
+    }
+
+    function deleteRowFromGoogleSheet(rowIndex) {
+        const payload = {
+            action: "deleteSheetRow",
+            rowIndex: rowIndex
+        };
+
+        fetch(WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(res => {
+            if(res.status === "success") {
+                alert("Google Sheet se record safaltapoorvak delete kar diya gaya hai!");
+            } else {
+                alert("Delete karne me asafalta: " + res.message);
+            }
+        })
+        .catch(err => alert("Error deleting row: " + err));
     }
 
     function resetForm() {
@@ -942,7 +1059,6 @@
         currentGlobalClosingBalance = currentACBalance;
         currentGlobalHandBalance = currentHandBalance;
 
-        // Update top master dashboard 
         document.getElementById('dash-opening-ac').innerText = "₹" + initialOpeningBalance.toFixed(2);
         document.getElementById('dash-opening-hand').innerText = "₹" + initialHandBalance.toFixed(2);
         document.getElementById('dash-credit').innerText = "₹" + masterTotalCredit.toFixed(2);
@@ -951,7 +1067,6 @@
 
         updateFormOpeningBalanceField();
 
-        // Apply filters
         const sName = document.getElementById('search-name').value.toLowerCase().trim();
         const sDate = document.getElementById('search-date').value;
         const sMonth = document.getElementById('search-month').value;
@@ -965,7 +1080,6 @@
             return true;
         });
 
-        // Calculations for filtered statistics
         let filterCredit = 0;
         let filterDebit = 0;
         filteredData.forEach(e => {
@@ -978,7 +1092,6 @@
         document.getElementById('filter-total-debit').innerText = "₹" + filterDebit.toFixed(2);
         document.getElementById('filter-total-debit-words').innerText = numberToWords(filterDebit);
 
-        // Render rows inside table
         const tbody = document.getElementById('ledger-entries');
         tbody.innerHTML = "";
 
@@ -994,7 +1107,6 @@
             let drText = entry.type === 'Debit' ? "₹" + entry.amount.toFixed(2) : "-";
             let typeClass = entry.type === 'Credit' ? "text-credit" : "text-debit";
             
-            // Format to DD/MM/YYYY
             let displayedDate = formatDateToDDMMYYYY(entry.date);
 
             tr.innerHTML = `
