@@ -953,7 +953,7 @@
         /* Hindi Audio Speech Function */
         function speakAndOpen(url, softwareName) {
             if ('speechSynthesis' in window) {
-                var textToSpeak = "Kya aapka " + softwareName + " software kholna chahte hai";
+                var textToSpeak = "Kya aap " + softwareName + " software kholna chahte hai";
                 var utterance = new SpeechSynthesisUtterance(textToSpeak);
                 utterance.lang = 'hi-IN';
                 utterance.rate = 1.0;
