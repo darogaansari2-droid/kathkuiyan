@@ -693,6 +693,8 @@ cursor: pointer;
                         <div class="class-card-body">
                             <div>सा०/पिछड़ा: <span class="val" id="c9_gen">0</span></div>
                             <div>अनु०जाति: <span class="val" id="c9_sc">0</span></div>
+                            <div>पुरानी सा०/पि०: <span class="val" id="c9_jan_gen">0</span></div>
+                            <div>पुरानी अनु०: <span class="val" id="c9_jan_sc">0</span></div>
                             <div>कुल छात्र: <span class="val" id="c9_total_count">0</span></div>
                             <div>कुल फीस: ₹<span class="val" id="c9_fee">0</span></div>
                         </div>
@@ -702,6 +704,8 @@ cursor: pointer;
                         <div class="class-card-body">
                             <div>सा०/पिछड़ा: <span class="val" id="c10_gen">0</span></div>
                             <div>अनु०जाति: <span class="val" id="c10_sc">0</span></div>
+                            <div>पुरानी सा०/पि०: <span class="val" id="c10_jan_gen">0</span></div>
+                            <div>पुरानी अनु०: <span class="val" id="c10_jan_sc">0</span></div>
                             <div>कुल छात्र: <span class="val" id="c10_total_count">0</span></div>
                             <div>कुल फीस: ₹<span class="val" id="c10_fee">0</span></div>
                         </div>
@@ -711,6 +715,8 @@ cursor: pointer;
                         <div class="class-card-body">
                             <div>सा०/पिछड़ा: <span class="val" id="c11_gen">0</span></div>
                             <div>अनु०जाति: <span class="val" id="c11_sc">0</span></div>
+                            <div>पुरानी सा०/पि०: <span class="val" id="c11_jan_gen">0</span></div>
+                            <div>पुरानी अनु०: <span class="val" id="c11_jan_sc">0</span></div>
                             <div>कुल छात्र: <span class="val" id="c11_total_count">0</span></div>
                             <div>कुल फीस: ₹<span class="val" id="c11_fee">0</span></div>
                         </div>
@@ -720,6 +726,8 @@ cursor: pointer;
                         <div class="class-card-body">
                             <div>सा०/पिछड़ा: <span class="val" id="c12_gen">0</span></div>
                             <div>अनु०जाति: <span class="val" id="c12_sc">0</span></div>
+                            <div>पुरानी सा०/पि०: <span class="val" id="c12_jan_gen">0</span></div>
+                            <div>पुरानी अनु०: <span class="val" id="c12_jan_sc">0</span></div>
                             <div>कुल छात्र: <span class="val" id="c12_total_count">0</span></div>
                             <div>कुल फीस: ₹<span class="val" id="c12_fee">0</span></div>
                         </div>
@@ -1077,10 +1085,10 @@ function updateLiveGrandTotal() {
     let grandCombinedTotal = 0;
 
     let classStats = {
-        9:  { gen: 0, sc: 0, totalCount: 0, fee: 0 },
-        10: { gen: 0, sc: 0, totalCount: 0, fee: 0 },
-        11: { gen: 0, sc: 0, totalCount: 0, fee: 0 },
-        12: { gen: 0, sc: 0, totalCount: 0, fee: 0 }
+        9:  { gen: 0, sc: 0, janGen: 0, janSc: 0, totalCount: 0, fee: 0 },
+        10: { gen: 0, sc: 0, janGen: 0, janSc: 0, totalCount: 0, fee: 0 },
+        11: { gen: 0, sc: 0, janGen: 0, janSc: 0, totalCount: 0, fee: 0 },
+        12: { gen: 0, sc: 0, janGen: 0, janSc: 0, totalCount: 0, fee: 0 }
     };
 
     for(let i=2; i<=34; i++) grandTotals[i] = 0;
@@ -1112,11 +1120,15 @@ function updateLiveGrandTotal() {
                         if(mainCls > 0) {
                             let genCnt = Number(record.txt2) || 0;
                             let scCnt = Number(record.txt3) || 0;
+                            let janGenCnt = Number(record.janTxt2) || 0;
+                            let janScCnt = Number(record.janTxt3) || 0;
                             let totalFee = Number(record.txt26) || 0;
 
                             classStats[mainCls].gen += genCnt;
                             classStats[mainCls].sc += scCnt;
-                            classStats[mainCls].totalCount += (genCnt + scCnt);
+                            classStats[mainCls].janGen += janGenCnt;
+                            classStats[mainCls].janSc += janScCnt;
+                            classStats[mainCls].totalCount += (genCnt + scCnt + janGenCnt + janScCnt);
                             classStats[mainCls].fee += totalFee;
                         }
                     }
@@ -1132,6 +1144,8 @@ function updateLiveGrandTotal() {
     [9, 10, 11, 12].forEach(c => {
         document.getElementById(`c${c}_gen`).innerText = classStats[c].gen;
         document.getElementById(`c${c}_sc`).innerText = classStats[c].sc;
+        document.getElementById(`c${c}_jan_gen`).innerText = classStats[c].janGen;
+        document.getElementById(`c${c}_jan_sc`).innerText = classStats[c].janSc;
         document.getElementById(`c${c}_total_count`).innerText = classStats[c].totalCount;
         document.getElementById(`c${c}_fee`).innerText = classStats[c].fee;
     });
@@ -1567,7 +1581,6 @@ function populateFormData(record) {
     setVal("customHeadInput", record.customHead || 0);
     setVal("customTotalInput", record.customTotal || 0);
 
-    // Mark as manual/loaded date so update keeps the original date and time
     isManualDate = true;
 }
 
