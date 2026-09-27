@@ -953,7 +953,7 @@
         /* Hindi Audio Speech Function */
         function speakAndOpen(url, softwareName) {
             if ('speechSynthesis' in window) {
-                var textToSpeak = "Aap dwara shri krishn inter college portal ke " + softwareName + " software ko open kiya gaya hai";
+                var textToSpeak = "Aap dwara shri krishn inter college ke portal par " + softwareName + " software ko open kiya gaya hai";
                 var utterance = new SpeechSynthesisUtterance(textToSpeak);
                 utterance.lang = 'hi-IN';
                 utterance.rate = 1.0;
