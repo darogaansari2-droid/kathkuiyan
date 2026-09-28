@@ -890,18 +890,18 @@
                 newWindow.opener = null;
             }
         }
-/* Hindi Audio Speech Function - Fixed */
+/* Hindi Audio Speech Function - Fixed Double Open Issue */
 function speakAndOpen(url, softwareName) {
     if ('speechSynthesis' in window) {
         // Pehle se chal rahi kisi bhi aawaz ko rok dein
         window.speechSynthesis.cancel();
 
-        var textToSpeak = "आप द्वारा एस के आइ सी पोर्टल पर  " + softwareName + " सॉफ्टवेयर ओपेन किया गया है ";
+        var textToSpeak = "एस के आइ सी पोर्टल पर  " + softwareName + " सॉफ्टवेयर ओपेन किया गया है ";
         var utterance = new SpeechSynthesisUtterance(textToSpeak);
         
         utterance.lang = 'hi-IN';
-        utterance.rate = 1.0; // Bolne ki speed (Normal)
-        utterance.pitch = 1.1; // Pitch thoda badhane se aawaz saaf aur sweet aati hai
+        utterance.rate = 1.0; 
+        utterance.pitch = 1.1; 
 
         // Laptop aur mobile par Hindi voice detect karne ki koshish
         var voices = window.speechSynthesis.getVoices();
@@ -912,21 +912,30 @@ function speakAndOpen(url, softwareName) {
             }
         }
 
-        // Jab audio poori tarah khatam ho jaye, tab hi URL open ho
+        var isOpened = false; // Yeh ensure karega ki page sirf ek hi baar khule
+
+        function openOnce() {
+            if (!isOpened) {
+                isOpened = true;
+                clearTimeout(safetyTimer); // Safety timer ko cancel kar do
+                secureOpen(url);
+            }
+        }
+
+        // Jab audio poori tarah khatam ho jaye
         utterance.onend = function() {
-            secureOpen(url);
+            openOnce();
         };
 
-        // Fallback timer: Agar kisi browser mein onend na chale toh 5 second baad khul jayega
-        var safetyTimer = setTimeout(function() {
-            secureOpen(url);
-        }, 5000);
-
-        // Error aane par bhi page khul jaye
+        // Error aane par
         utterance.onerror = function() {
-            clearTimeout(safetyTimer);
-            secureOpen(url);
+            openOnce();
         };
+
+        // Safety timer: Agar kisi wajah se audio 5 second se zyada le toh page khul jaye
+        var safetyTimer = setTimeout(function() {
+            openOnce();
+        }, 5000);
 
         // Aawaz bolna shuru karein
         window.speechSynthesis.speak(utterance);
@@ -936,7 +945,7 @@ function speakAndOpen(url, softwareName) {
     }
 }
 
-// Chrome browser mein voices load hone mein thoda time lagta hai, iske liye yeh zaroori hai:
+// Chrome browser mein voices load hone ke liye
 if ('speechSynthesis' in window) {
     window.speechSynthesis.onvoiceschanged = function() {
         window.speechSynthesis.getVoices();
