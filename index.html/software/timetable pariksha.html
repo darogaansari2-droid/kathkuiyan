@@ -567,50 +567,50 @@
         </div>
 
         <div id="settingsPanel" class="tt-settings-panel no-print">
-            <h3>समय और घंटी की सेटिंग</h3>
+            <h3>समय और घण्टी की सेटिंग</h3>
             <div class="tt-form-group">
-                <label>सामान्य घंटी अवधि (मिनट):</label>
+                <label>सामान्य घण्टी अवधि (मिनट):</label>
                 <input type="number" id="periodDuration" value="40">
             </div>
             <div class="tt-form-group">
-                <label>छठी घंटी अवधि (मिनट):</label>
+                <label>छठवीं घण्टी अवधि (मिनट):</label>
                 <input type="number" id="period6Duration" value="35">
             </div>
             <div class="tt-form-group">
-                <label>सातवीं घंटी अवधि (मिनट):</label>
+                <label>सातवीं घण्टी अवधि (मिनट):</label>
                 <input type="number" id="period7Duration" value="35">
             </div>
             <div class="tt-form-group">
-                <label>आठवीं घंटी अवधि (मिनट):</label>
+                <label>आठवीं घण्टी अवधि (मिनट):</label>
                 <input type="number" id="eighthPeriodDuration" value="30">
             </div>
             <div class="tt-form-group">
-                <label>मध्यांतर किस घंटी के बाद:</label>
+                <label>मध्यांतर किस घण्टी के बाद:</label>
                 <select id="intervalAfterPeriod">
-                    <option value="3">तीसरी घंटी के बाद</option>
-                    <option value="4">चौथी घंटी के बाद</option>
-                    <option value="5" selected>पाँचवीं घंटी के बाद</option>
-                    <option value="6">छठी घंटी के बाद</option>
+                    <option value="3">तीसरी घण्टी के बाद</option>
+                    <option value="4">चौथी घण्टी के बाद</option>
+                    <option value="5" selected>पाँचवीं घण्टी के बाद</option>
+                    <option value="6">छठवीं घण्टी के बाद</option>
                 </select>
             </div>
             <div class="tt-form-group">
-                <label>मध्यांतर अवधि (मिनट):</label>
+                <label>मध्यान्तर अवधि (मिनट):</label>
                 <input type="number" id="intervalDuration" value="25">
             </div>
             <div class="tt-form-group">
                 <label>फॉर्मेट-1 प्रार्थना समय:</label>
-                <input type="time" id="f1Prayer" value="07:50">
+                <input type="time" id="f1Prayer" value="07:50 ">
             </div>
             <div class="tt-form-group">
-                <label>फॉर्मेट-1 प्रथम घंटी:</label>
-                <input type="time" id="f1FirstBell" value="08:00">
+                <label>फॉर्मेट-1 प्रथम घण्टी:</label>
+                <input type="time" id="f1FirstBell" value="08:00 ">
             </div>
             <div class="tt-form-group">
                 <label>फॉर्मेट-2 प्रार्थना समय:</label>
                 <input type="time" id="f2Prayer" value="10:00">
             </div>
             <div class="tt-form-group">
-                <label>फॉर्मेट-2 प्रथम घंटी:</label>
+                <label>फॉर्मेट-2 प्रथम घण्टी:</label>
                 <input type="time" id="f2FirstBell" value="10:10">
             </div>
             <div style="margin-top: 10px;">
@@ -624,7 +624,7 @@
                 <thead>
                     <tr>
                         <th>क्रम संख्या</th>
-                        <th>घंटी</th>
+                        <th>घण्टी</th>
                         <th>समय (Time)</th>
                         <th>अवधि (Duration)</th>
                     </tr>
@@ -1669,8 +1669,8 @@ function minutesToTime(totalMinutes) {
 }
 
 function getHindiPeriodName(num) {
-    const names = {1:"पहली घंटी",2:"दूसरी घंटी",3:"तीसरी घंटी",4:"चौथी घंटी",5:"पाँचवीं घंटी",6:"छठी घंटी",7:"सातवीं घंटी",8:"आठवीं घंटी"};
-    return names[num] || `${num}वीं घंटी`;
+    const names = {1:"पहली घण्टी (I)",2:"दूसरी घण्टी (II)",3:"तीसरी घण्टी (III)",4:"चौथी घण्टी (IV)",5:"पाँचवीं घण्टी (V)",6:"छठवीं घण्टी (VI)",7:"सातवीं घण्टी (VII)",8:"आठवीं घण्टी (VIII)"};
+    return names[num] || `${num}वीं घण्टी`;
 }
 
 function changeFormat() { generateTimetable(); }
@@ -1692,7 +1692,7 @@ function generateTimetable() {
     let currentTime = timeToMinutes(format === 'format1' ? settings.f1FirstBell : settings.f2FirstBell);
     let prayerTime = timeToMinutes(format === 'format1' ? settings.f1Prayer : settings.f2Prayer);
     
-    let schedule = [{ sNo: "प्रारम्भ", name: "प्रार्थना", start: prayerTime, end: currentTime, duration: currentTime - prayerTime }];
+    let schedule = [{ sNo: "प्रारम्भ (Start )", name: "प्रार्थना (Prayer Time) ", start: prayerTime, end: currentTime, duration: currentTime - prayerTime }];
     let periodCounter = 1;
 
     for (let i = 1; i <= 8; i++) {
