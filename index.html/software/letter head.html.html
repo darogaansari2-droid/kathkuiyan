@@ -927,7 +927,16 @@
         var lines = text.split('\n');
         var result = '';
         lines.forEach(function(line) {
-            if(line.trim().length > 0) { result += '<p>' + line.trim() + '</p>'; }
+            if(line.trim().length > 0) { 
+                // Yadi line mein 'भवदीय' ya koi signature related text hai, toh use right align karne ke liye wrap kar denge
+                if(line.trim() === 'भवदीय' || line.trim().startsWith('भवदीय')) {
+                    result += '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' + line.trim() + '</div>';
+                } else {
+                    result += '<p>' + line.trim() + '</p>'; 
+                }
+            } else {
+                result += '<br>';
+            }
         });
         return result;
     }
