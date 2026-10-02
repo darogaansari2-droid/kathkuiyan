@@ -611,6 +611,7 @@
                 </div>
             </div>
         </header>
+
         <div class="notice-bar">
             <div class="marquee-container">
                 <marquee behavior="scroll" direction="left" scrollamount="5" onmouseover="this.stop();" onmouseout="this.start();">
@@ -909,8 +910,8 @@
     <script>
         var SOFTWARE_USER_ID = "skickkt"; 
         var SOFTWARE_PASSWORD = "107827";
-        var DRIVE_USER_ID = "dsahab"; 
-        var DRIVE_PASSWORD = "786";
+        var DRIVE_USER_ID = "dsahab";  
+        var DRIVE_PASSWORD = "786";    
 
         function toggleLoginForm() {
             var form = document.getElementById("loginForm");
@@ -950,49 +951,54 @@
             }
         }
 
-       /* Cross-Browser Unified & Clear Hindi Audio Speech Function */
-function speakAndOpen(url, softwareName) {
-    // 1. Naya tab ya software turant (bina kisi delay ke) open karein
-    secureOpen(url);
+  /* Mahila Voice Speech Synthesis Function */
+        function speakAndOpen(url, softwareName) {
+            secureOpen(url);
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                var textToSpeak = "एस के आइ सी पोर्टल पर " + softwareName + " सॉफ्टवेयर ओपन किया गया है।";
+                var utterance = new SpeechSynthesisUtterance(textToSpeak);
+                utterance.lang = 'hi-IN';
+                utterance.rate = 0.95; 
+                utterance.pitch = 1.3;  /* High pitch for female voice */
+                utterance.volume = 1.0; 
 
-    // 2. Uske baad audio background mein play karein
-    if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        
-        var textToSpeak = "एस के आइ सी पोर्टल पर " + softwareName + " सॉफ्टवेयर ओपन किया गया है।";
-        var utterance = new SpeechSynthesisUtterance(textToSpeak);
-        
-        utterance.lang = 'hi-IN';
-        utterance.rate = 0.95; 
-        utterance.pitch = 1.0; 
-        utterance.volume = 1.0;
-        
-        var voices = window.speechSynthesis.getVoices();
-        var selectedVoice = null;
-        
-        for (var i = 0; i < voices.length; i++) {
-            if (voices[i].lang === 'hi-IN' || voices[i].lang === 'hi_IN') {
-                selectedVoice = voices[i];
-                break;
-            }
-        }
-        
-        if (!selectedVoice) {
-            for (var j = 0; j < voices.length; j++) {
-                if (voices[j].lang.toLowerCase().includes('hi')) {
-                    selectedVoice = voices[j];
-                    break;
+                var voices = window.speechSynthesis.getVoices();
+                var selectedVoice = null;
+
+                // Priority for Indian Female voices (e.g. Google हिन्दी / Microsoft Swara / natural female tags)
+                for (var i = 0; i < voices.length; i++) {
+                    var name = voices[i].name.toLowerCase();
+                    if ((voices[i].lang === 'hi-IN' || voices[i].lang === 'hi_IN') && (name.includes('female') || name.includes('kalpana') || name.includes('swara') || name.includes('lekha') || name.includes('google') || name.includes('heera'))) {
+                        selectedVoice = voices[i];
+                        break;
+                    }
                 }
+
+                // Fallback to any hi-IN voice if specific female name not found
+                if (!selectedVoice) {
+                    for (var j = 0; j < voices.length; j++) {
+                        if (voices[j].lang === 'hi-IN' || voices[j].lang === 'hi_IN') {
+                            selectedVoice = voices[j];
+                            break;
+                        }
+                    }
+                }
+
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                }
+
+                window.speechSynthesis.speak(utterance);
             }
         }
-        
-        if (selectedVoice) {
-            utterance.voice = selectedVoice;
+
+        // Ensure voices are loaded for browsers that load them asynchronously
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = function() {
+                window.speechSynthesis.getVoices();
+            };
         }
-        
-        window.speechSynthesis.speak(utterance);
-    }
-}
 
         function openSecureDrive() {
             document.getElementById("customDriveUser").value = "";
