@@ -881,7 +881,7 @@
                     </a>
                     <a href="#" onclick="speakAndOpen('./software/niyukti.html', 'Niyukti Patr'); return false;" class="software-list-item">
                         <i class="fa-solid fa-file-signature"></i> Niyukti Patr
-                    </a>                                                          
+                    </a>                                              
                     <a href="#" onclick="openSecureDrive(); return false;" class="software-list-item drive-highlight">
                         <i class="fa-solid fa-cloud-arrow-up"></i> Google Drive
                     </a>
@@ -909,8 +909,8 @@
     <script>
         var SOFTWARE_USER_ID = "skickkt"; 
         var SOFTWARE_PASSWORD = "107827";
-        var DRIVE_USER_ID = "dsahab";  
-        var DRIVE_PASSWORD = "786";    
+        var DRIVE_USER_ID = "dsahab"; 
+        var DRIVE_PASSWORD = "786";
 
         function toggleLoginForm() {
             var form = document.getElementById("loginForm");
@@ -950,67 +950,50 @@
             }
         }
 
-      /* Hindi Audio Speech Function - Fixed Double Open Issue */
+       /* Cross-Browser Unified & Clear Hindi Audio Speech Function */
 function speakAndOpen(url, softwareName) {
-    if ('speechSynthesis' in window) {
-        // Pehle se chal rahi kisi bhi aawaz ko rok dein
-        window.speechSynthesis.cancel();
+    // 1. Naya tab ya software turant (bina kisi delay ke) open karein
+    secureOpen(url);
 
-        var textToSpeak = "एस के आइ सी पोर्टल पर  " + softwareName + " सॉफ्टवेयर ओपेन किया गया है ";
+    // 2. Uske baad audio background mein play karein
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        
+        var textToSpeak = "एस के आइ सी पोर्टल पर " + softwareName + " सॉफ्टवेयर ओपन किया गया है।";
         var utterance = new SpeechSynthesisUtterance(textToSpeak);
         
         utterance.lang = 'hi-IN';
-        utterance.rate = 1.0; 
-        utterance.pitch = 1.1; 
-
-        // Laptop aur mobile par Hindi voice detect karne ki koshish
+        utterance.rate = 0.95; 
+        utterance.pitch = 1.0; 
+        utterance.volume = 1.0;
+        
         var voices = window.speechSynthesis.getVoices();
+        var selectedVoice = null;
+        
         for (var i = 0; i < voices.length; i++) {
-            if (voices[i].lang.includes('hi') || voices[i].lang.includes('HI')) {
-                utterance.voice = voices[i];
+            if (voices[i].lang === 'hi-IN' || voices[i].lang === 'hi_IN') {
+                selectedVoice = voices[i];
                 break;
             }
         }
-
-        var isOpened = false; // Yeh ensure karega ki page sirf ek hi baar khule
-
-        function openOnce() {
-            if (!isOpened) {
-                isOpened = true;
-                clearTimeout(safetyTimer); // Safety timer ko cancel kar do
-                secureOpen(url);
+        
+        if (!selectedVoice) {
+            for (var j = 0; j < voices.length; j++) {
+                if (voices[j].lang.toLowerCase().includes('hi')) {
+                    selectedVoice = voices[j];
+                    break;
+                }
             }
         }
-
-        // Jab audio poori tarah khatam ho jaye
-        utterance.onend = function() {
-            openOnce();
-        };
-
-        // Error aane par
-        utterance.onerror = function() {
-            openOnce();
-        };
-
-        // Safety timer: Agar kisi wajah se audio 5 second se zyada le toh page khul jaye
-        var safetyTimer = setTimeout(function() {
-            openOnce();
-        }, 5000);
-
-        // Aawaz bolna shuru karein
+        
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+        }
+        
         window.speechSynthesis.speak(utterance);
-    } else {
-        // Agar browser support na kare toh turant khol de
-        secureOpen(url);
     }
 }
 
-// Chrome browser mein voices load hone ke liye
-if ('speechSynthesis' in window) {
-    window.speechSynthesis.onvoiceschanged = function() {
-        window.speechSynthesis.getVoices();
-    };
-}
         function openSecureDrive() {
             document.getElementById("customDriveUser").value = "";
             document.getElementById("customDrivePass").value = "";
