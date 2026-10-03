@@ -5,11 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>श्री कृष्ण इण्टरमीडिएट कालेज - Office Software</title>
     <style>
+        /* Marquee Patti Styling - Full Screen Width */
+        .marquee-banner {
+            width: 100%;
+            background-color: #003366;
+            color: #ffffff;
+            padding: 10px 0;
+            font-weight: bold;
+            font-size: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .marquee-banner marquee {
+            width: 100%;
+        }
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f6f9;
             margin: 0;
             padding: 20px;
+            padding-top: 60px; /* To prevent content from hiding behind fixed marquee */
         }
         .container {
             max-width: 1000px;
@@ -22,6 +41,7 @@
         h2 {
             text-align: center;
             color: #003366;
+            margin-top: 0;
         }
         textarea, input, select {
             width: 100%;
@@ -96,7 +116,7 @@
         .watermark-img {
             width: 300px;
             height: auto;
-            opacity: 0.20;
+            opacity: 0.25;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
@@ -105,10 +125,13 @@
             z-index: 2;
         }
 
-        /* Print Settings */
+        /* Print Settings - Hide Marquee Patti on Print */
         @media print {
             body * {
                 visibility: hidden;
+            }
+            .marquee-banner {
+                display: none !important;
             }
             #printableLetter, #printableLetter *, #printableLetter .watermark-container, #printableLetter .watermark-container * {
                 visibility: visible;
@@ -130,6 +153,11 @@
 </head>
 <body onload="loadSavedData()">
 
+    <!-- Full Screen Top Marquee Patti Added Outside Container -->
+    <div class="marquee-banner">
+        <marquee behavior="scroll" direction="left" scrollamount="10">Skic Semra Kathkuiyan - Kushinagar - Portal - 2026 From...</marquee>
+    </div>
+
 <div class="container">
     <h2>श्री कृष्ण इण्टरमीडिएट कालेज - Office Software</h2>
 
@@ -144,15 +172,15 @@
 
         <h4 style="margin-top:10px;">1. Sewa Mein & Address Section:</h4>
         <div class="form-group">
-            <textarea id="inputAddressPara" rows="4" oninput="updateLetter()" onkeydown="handleTabKey(event)">सेवा में,
-श्री जगदम्बा कुमार पाण्डेय पुत्र श्री ध्रुव देव पाण्डेय, ग्राम- अकबरपुर, पोस्ट - बलकुड़िया, जिला – कुशीनगर</textarea>
+         <textarea id="inputAddressPara" rows="4" oninput="updateLetter()" onkeydown="handleTabKey(event)">सेवा में,
+		श्री जगदम्बा कुमार पाण्डेय पुत्र श्री ध्रुव देव पाण्डेय 
+                                    ग्राम- अकबरपुर, पोस्ट - बलकुड़िया, जिला – कुशीनगर</textarea>
         </div>
 
         <h4 style="margin-top:10px;">2. Main Paragraph Section:</h4>
         <div class="form-group">
-            <textarea id="inputPara" rows="6" oninput="updateLetter()" onkeydown="handleTabKey(event)">महोदय,
-
-आपकी नियुक्ति उ०प्र० मा० शिक्षा सेवा चयन बोर्ड प्रयागराज के पत्र पत्रांक शि० से० आयोग / 2011- 2077 ( 5 ) / 2026-27 दिनांक 11/09/2026 द्वारा प्रशिक्षित स्नातक शिक्षक गणित के पद पर हुआ है I जिसके क्रम में जि० वि० नि० कुशीनगर ने अपने पत्र दिनांक 19/09/2026 पत्रांक 6636-43 / 2026-27 द्वारा पैनल / आदेश जारी किया गया है I बड़े हर्ष के साथ आपको सूचित किया जा रहा है कि आपकी नियुक्ति इस विद्यालय में स० अ० गणित के पद पर कर ली गयी है I पत्र प्राप्ति के एक सप्ताह के अन्दर किसी भी कार्य दिवस में विद्यालय पर आकर अपना कार्य भार ग्रहण करें I</textarea>
+         <textarea id="inputPara" rows="6" oninput="updateLetter()" onkeydown="handleTabKey(event)">महोदय,
+		आपकी नियुक्ति उ०प्र० मा० शिक्षा सेवा चयन बोर्ड प्रयागराज के पत्र पत्रांक शि० से० आयोग / 2011- 2077 ( 5 ) / 2026-27 दिनांक 11/09/2026 द्वारा प्रशिक्षित स्नातक शिक्षक गणित के पद पर हुआ है I जिसके क्रम में जि० वि० नि० कुशीनगर ने अपने पत्र दिनांक 19/09/2026 पत्रांक 6636-43 / 2026-27 द्वारा पैनल / आदेश जारी किया गया है I बड़े हर्ष के साथ आपको सूचित किया जा रहा है कि आपकी नियुक्ति इस विद्यालय में स० अ० गणित के पद पर कर ली गयी है I पत्र प्राप्ति के एक सप्ताह के अन्दर किसी भी कार्य दिवस में विद्यालय पर आकर अपना कार्य भार ग्रहण करें I</textarea>
         </div>
 
         <h4 style="margin-top:20px;">Margin, Spacing & Font Controls:</h4>
@@ -256,7 +284,7 @@
         <h4 style="margin-top:20px; border-bottom: 2px solid #003366; padding-bottom: 5px;">Letter Preview (Live View):</h4>
         
         <div class="letter-preview" id="printableLetter">
-            <!-- logo.jpg Watermark Integration -->
+            <!-- logo.png Watermark Integration -->
             <div class="watermark-container" id="watermarkContainer">
                 <img src="logo.png" alt="Watermark Logo" class="watermark-img">
             </div>
@@ -267,15 +295,14 @@
                     <span id="prevTitleBox" style="font-weight: bold; text-decoration: underline; font-size: 18px;">नियुक्ति - पत्र</span>
                 </div>
 
-                <div id="prevAddressBox" style="white-space: pre-wrap; font-weight: normal;">सेवा में,
-श्री जगदम्बा कुमार पाण्डेय पुत्र श्री ध्रुव देव पाण्डेय, ग्राम- अकबरपुर, पोस्ट - बलकुड़िया, जिला – कुशीनगर</div>
+          <div id="prevAddressBox" style="white-space: pre-wrap; font-weight: normal;">सेवा में,
+		श्री जगदम्बा कुमार पाण्डेय पुत्र श्री ध्रुव देव पाण्डेय, ग्राम- अकबरपुर, पोस्ट - बलकुड़िया, जिला – कुशीनगर</div>
                 
             <br>
             
             <div id="prevParaBox" style="white-space: pre-wrap;">
 महोदय,
-
-आपकी नियुक्ति उ०प्र० मा० शिक्षा सेवा चयन बोर्ड प्रयागराज के पत्र पत्रांक: शि० से० आयोग / 2011- 2077 ( 5 ) / 2026-27 दिनांक 11/09/2026 द्वारा प्रशिक्षित स्नातक शिक्षक गणित के पद पर हुआ है I जिसके क्रम में जि० वि० नि० कुशीनगर ने अपने पत्र दिनांक 19/09/2026 पत्रांक/ 6636-43 / 2026-27 द्वारा पैनल/ आदेश जारी किया गया है I बड़े हर्ष के साथ आपको सूचित किया जा रहा है कि आपकी नियुक्ति इस विद्यालय में स० अ० गणित के पद पर कर ली गयी है I पत्र प्राप्ति के एक सप्ताह के अन्दर किसी भी कार्य दिवस में विद्यालय पर आकर अपना कार्य भार ग्रहण करें I
+		आपकी नियुक्ति उ०प्र० मा० शिक्षा सेवा चयन बोर्ड प्रयागराज के पत्र पत्रांक: शि० से० आयोग / 2011- 2077 ( 5 ) / 2026-27 दिनांक 11/09/2026 द्वारा प्रशिक्षित स्नातक शिक्षक गणित के पद पर हुआ है I जिसके क्रम में जि० वि० नि० कुशीनगर ने अपने पत्र दिनांक 19/09/2026 पत्रांक/ 6636-43 / 2026-27 द्वारा पैनल/ आदेश जारी किया गया है I बड़े हर्ष के साथ आपको सूचित किया जा रहा है कि आपकी नियुक्ति इस विद्यालय में स० अ० गणित के पद पर कर ली गयी है I पत्र प्राप्ति के एक सप्ताह के अन्दर किसी भी कार्य दिवस में विद्यालय पर आकर अपना कार्य भार ग्रहण करें I
             </div>
 
         </div>
@@ -290,7 +317,7 @@
             let start = e.target.selectionStart;
             let end = e.target.selectionEnd;
             let val = e.target.value;
-            e.target.value = val.substring(0, start) + "\t" + val.substring(end);
+            e.target.value = val.substring(0, start) + "	" + val.substring(end);
             e.target.selectionStart = e.target.selectionEnd = start + 1;
             updateLetter();
         }
@@ -304,8 +331,8 @@
         let addressText = document.getElementById('inputAddressPara').value;
         document.getElementById('prevAddressBox').innerText = addressText;
 
-        let customPara = document.getElementById('inputPara').value;
-        document.getElementById('prevParaBox').innerText = customPara;
+        let customPrinterPara = document.getElementById('inputPara').value;
+        document.getElementById('prevParaBox').innerText = customPrinterPara;
     }
 
     function updateSpacing() {
@@ -359,7 +386,7 @@
 
     function loadSavedData() {
         if (localStorage.getItem('savedAddress') !== null) {
-            document.getElementById('inputTitle').value = localStorage.getItem('savedTitle') || "";
+            document.getElementById('inputTitle').value = localStorage.getItem('savedTitle') || "नियुक्ति - पत्र";
             document.getElementById('inputAddressPara').value = localStorage.getItem('savedAddress');
             document.getElementById('inputPara').value = localStorage.getItem('savedPara');
             document.getElementById('selectHeaderTop').value = localStorage.getItem('savedHeaderTop') || "1.5in";
@@ -368,7 +395,7 @@
             document.getElementById('selectAlign').value = localStorage.getItem('savedAlign') || "justify";
             document.getElementById('selectWatermarkPos').value = localStorage.getItem('savedWatermarkPos') || "2.0in";
             document.getElementById('selectLeftMargin').value = localStorage.getItem('savedLeftMargin') || "0.5in";
-            document.getElementById('selectRightMargin').value = localStorage.getItem('savedRightMargin') || "0.5in";
+            document.getElementById('selectRightMargin').value, document.getElementById('selectRightMargin').value = localStorage.getItem('savedRightMargin') || "0.5in";
             document.getElementById('selectLineHeight').value = localStorage.getItem('savedLineHeight') || "1.8";
             
             updateLetter();
