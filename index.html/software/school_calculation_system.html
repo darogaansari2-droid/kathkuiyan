@@ -107,6 +107,7 @@ display: none;
 /* MAIN APP CONTAINER */
 #main-app {
 display: none;
+width: 100%;
 height: 100%;
 flex-direction: column;
 }
@@ -213,6 +214,12 @@ margin: 0;
 font-size: 20px;
 }
 
+.header-right-btns {
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
 .logout-btn {
 background: #dc2626;
 color: white;
@@ -223,6 +230,22 @@ font-size: 12px;
 cursor: pointer;
 font-weight: bold;
 height: auto;
+}
+
+.sheet-lock-btn {
+background: #d97706;
+color: white;
+border: none;
+padding: 4px 12px;
+border-radius: 4px;
+font-size: 12px;
+cursor: pointer;
+font-weight: bold;
+height: auto;
+}
+
+.sheet-lock-btn.unlocked {
+background: #16a34a;
 }
 
 /* मैसेज बॉक्स */
@@ -613,7 +636,7 @@ cursor: pointer;
         <h2>System Login</h2>
         <div class="input-group">
             <label>Login ID</label>
-            <input type="password" id="loginUser" placeholder="Enter Login ID">
+            <input type="text" id="loginUser" placeholder="Enter Login ID">
         </div>
         <div class="input-group">
             <label>Password</label>
@@ -633,7 +656,10 @@ cursor: pointer;
     <div class="container">
         <div class="header-row">
             <h2>S K I C Software</h2>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div class="header-right-btns">
+                <button id="sheetLockBtn" class="sheet-lock-btn" onclick="toggleSheetLock()">🔒 Sheet Locked</button>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
         </div>
 
         <div class="message" id="msg">&nbsp;</div>
@@ -846,6 +872,31 @@ const teacherMapping = {
     "12B": "Vinay Mani Tripathi"
 };
 
+/* GOOGLE SHEET LOCK STATE (Default Locked = false, Unlocked = true) */
+let isGoogleSheetUnlocked = false;
+
+function toggleSheetLock() {
+    if(isGoogleSheetUnlocked) {
+        isGoogleSheetUnlocked = false;
+        let btn = document.getElementById("sheetLockBtn");
+        btn.innerText = "🔒 Sheet Locked";
+        btn.classList.remove("unlocked");
+        msg("🔒 Google Sheet अब लॉक कर दी गई है। अब सारा काम केवल Local Storage पर होगा।");
+    } else {
+        let pwd = prompt("Google Sheet अनलॉक करने के लिए पासवर्ड दर्ज करें:");
+        if(pwd === null) return;
+        if(pwd === "fees") {
+            isGoogleSheetUnlocked = true;
+            let btn = document.getElementById("sheetLockBtn");
+            btn.innerText = "🔓 Sheet Unlocked";
+            btn.classList.add("unlocked");
+            msg("🔓 Google Sheet अनलॉक हो गई है! अब Google Sheet और Local Storage दोनों पर काम होगा।");
+        } else {
+            alert("❌ गलत पासवर्ड! शीट लॉक ही रहेगी।");
+        }
+    }
+}
+
 /* LOGIN LOGIC */
 window.addEventListener("DOMContentLoaded", function() {
     let logged = sessionStorage.getItem("isLoggedIn");
@@ -955,7 +1006,7 @@ function autoSelectCurrentMonth() {
     let combMonth = document.getElementById("combMonth");
     if(combMonth && !combMonth.value) {
         const d = new Date();
-        const m = d.getMonth(); // 0:Jan, 1:Feb, 2:Mar, 6:Jul, 7:Aug, 8:Sep, 9:Oct
+        const m = d.getMonth(); 
         let monthMap = {
             6: "Jul",
             7: "Aug",
@@ -1164,7 +1215,6 @@ function updateLiveGrandTotal() {
             <div class="total-item-val" id="gt_${i}">${grandTotals[i]}</div>
         </div>`;
         
-        // जब नई छात्र संख्या (txt3) समाप्त हो, ठीक उसके बाद पुरानी सा०/पिछड़ा और पुरानी अनुसूचित जोड़े जाएं
         if(i === 3) {
             html += `
             <div class="total-item">
@@ -1178,7 +1228,6 @@ function updateLiveGrandTotal() {
         }
     }
 
-    // Baaki remaining items (29 se 34 tak)
     for(let i=29; i<=34; i++) {
         html += `
         <div class="total-item">
@@ -1374,6 +1423,10 @@ for(let i=2; i<=34; i++){
     if(element){ element.addEventListener("input", calculateData); }
 }
 
+/* ==========================================
+   SAVE, UPDATE, SEARCH, DELETE WITH LOCK LOGIC
+   ========================================== */
+
 function saveData(){
     let currentMahangai = val("txt7");
     let currentVilamb = val("txt4");
@@ -1419,8 +1472,14 @@ function saveData(){
 
     localStorage.setItem(id, JSON.stringify(data));
     localStorage.setItem("lastId", id);
-
     updateLiveGrandTotal();
+
+    if (!isGoogleSheetUnlocked) {
+        msg("💾 Data successfully saved to Local Storage (Google Sheet is Locked).");
+        clearForm();
+        setVal("txt1", Number(id) + 1);
+        return;
+    }
 
     if (navigator.onLine) {
         msg("Sending data to Sheet...");
@@ -1444,7 +1503,7 @@ function saveData(){
 
 function updateData(){
     let id = document.getElementById("txt1").value.trim();
-    if(id === "") { msg("⚠️ kripya UPDATE ke liye ID darj karein!"); return; }
+    if(id === "") { msg("⚠️ kripya UPDATE के लिए ID दर्ज करें!"); return; }
 
     let currentMahangai = val("txt7");
     let currentVilamb = val("txt4");
@@ -1485,6 +1544,12 @@ function updateData(){
     localStorage.setItem(id, JSON.stringify(data));
     updateLiveGrandTotal();
 
+    if (!isGoogleSheetUnlocked) {
+        msg("🔄 Data successfully updated in Local Storage (Google Sheet is Locked).");
+        clearForm();
+        return;
+    }
+
     if (navigator.onLine) {
         msg("Updating data in Sheet...");
         fetch(WEB_APP_URL, { method:"POST", body:JSON.stringify(data) })
@@ -1501,7 +1566,7 @@ function updateData(){
 
 function searchData(){
     let id = document.getElementById("txt1").value.trim();
-    if(id === "") { msg("⚠️ kripya SEARCH ke liye ID darj karein!"); return; }
+    if(id === "") { msg("⚠️ kripya SEARCH के लिए ID दर्ज करें!"); return; }
 
     let recordStr = localStorage.getItem(id);
     if(recordStr) {
@@ -1509,13 +1574,21 @@ function searchData(){
             let record = JSON.parse(recordStr);
             populateFormData(record);
             updateMarqueeInfo();
-            msg("✅ Record Local Storage se mil gaya (ID: " + id + ")");
+            msg("✅ Record Local Storage से मिल गया (ID: " + id + ")");
+            if (!isGoogleSheetUnlocked) {
+                return;
+            }
             return;
         } catch(e) { }
     }
 
+    if (!isGoogleSheetUnlocked) {
+        msg("⚠️ ID " + id + " Local Storage में नहीं मिला (Google Sheet Locked है, अतः Google Sheet से खोज नहीं की गई)।");
+        return;
+    }
+
     if (navigator.onLine) {
-        msg("🔍 Google Sheet me ID " + id + " search kiya ja raha hai...");
+        msg("🔍 Google Sheet में ID " + id + " search किया जा रहा है...");
         fetch(WEB_APP_URL, {
             method: "POST",
             body: JSON.stringify({ action: "SEARCH", id: id })
@@ -1539,16 +1612,16 @@ function searchData(){
                 localStorage.setItem(id, JSON.stringify(record));
                 updateLiveGrandTotal();
                 updateMarqueeInfo();
-                msg("✅ Record Google Sheet se mil gaya aur Local Storage me Update ho gaya (ID: " + id + ")");
+                msg("✅ Record Google Sheet से मिल गया और Local Storage में Update हो गया (ID: " + id + ")");
             } else {
-                msg("⚠️ ID " + id + " Google Sheet aur Local Storage dono me nahi mila!");
+                msg("⚠️ ID " + id + " Google Sheet और Local Storage दोनों में नहीं मिला!");
             }
         })
         .catch(err => {
-            msg("❌ Search request me error aayi! Google Apps Script me SEARCH action check karein.");
+            msg("❌ Search request में error आई!");
         });
     } else {
-        msg("⚠️ Offline hone ke karan Google Sheet से search nahi kiya ja sakta!");
+        msg("⚠️ Offline होने के कारण Google Sheet से search नहीं किया जा सकता!");
     }
 }
 
@@ -1611,7 +1684,17 @@ function populateFormData(record) {
 
 function deleteRecord(){
     let id = document.getElementById("txt1").value.trim();
-    if(id === "") { msg("⚠️ kripya DELETE ke liye ID darj karein!"); return; }
+    if(id === "") { msg("⚠️ kripya DELETE के लिए ID दर्ज करें!"); return; }
+
+    if (!isGoogleSheetUnlocked) {
+        if(confirm("Kya aap wakayi ID " + id + " ko sirf Local Storage से delete karna chahte hain? (Google Sheet Locked hai)")) {
+            localStorage.removeItem(id);
+            clearForm();
+            updateLiveGrandTotal();
+            msg("🗑️ Record Local Storage से delete हो गया (Google Sheet Locked थी)।");
+        }
+        return;
+    }
 
     if(confirm("Kya aap wakayi ID " + id + " ko Local aur Google Sheet dono se delete karna chahte hain?")) {
         localStorage.removeItem(id);
@@ -1621,7 +1704,7 @@ function deleteRecord(){
         }
         clearForm();
         updateLiveGrandTotal();
-        msg("🗑️ Record Local Storage aur Google Sheet से delete ho gaya.");
+        msg("🗑️ Record Local Storage और Google Sheet से delete हो गया।");
     }
 }
 
@@ -1671,6 +1754,11 @@ function clearForm(){
 }
 
 function openGoogleSheet(){
+    if(!isGoogleSheetUnlocked) {
+        alert("⚠️ Google Sheet locked hai! Pehle 'Sheet Locked' button par click karke password (fees) daal kar unlock karein.");
+        msg("⚠️ Google Sheet locked hai!");
+        return;
+    }
     window.open("https://docs.google.com/spreadsheets/d/1_your_sheet_id_here/edit", "_blank");
 }
 
@@ -1682,6 +1770,11 @@ function addToOfflineQueue(data) {
 }
 
 function syncOfflineData(isSilent) {
+    if(!isGoogleSheetUnlocked) {
+        if(!isSilent) msg("⚠️ Google Sheet Locked है, अतः Sync अभी नहीं हो सकता।");
+        return;
+    }
+
     let queue = JSON.parse(localStorage.getItem("offlineQueue") || "[]");
     if(queue.length === 0) {
         if(!isSilent) msg("ℹ️ Koi offline data pending nahi hai.");
@@ -1705,3 +1798,4 @@ function syncOfflineData(isSilent) {
 
 </body>
 </html>
+```[file-tag: code-generated-file-school_calculation_system_fixed.html]
