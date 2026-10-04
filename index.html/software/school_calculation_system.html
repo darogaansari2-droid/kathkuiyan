@@ -919,7 +919,9 @@ const labels={
 31:"कक्षा 11 Registration",
 32:"कक्षा 12 Board",
 33:"Total Registration",
-34:"Total Board"
+34:"Total Board",
+janTxt2: "पुरानी सा०/पिछड़ा",
+janTxt3: "पुरानी अनुसूचित"
 };
 
 /* AUTO TEXTBOX GENERATION (2 TO 34) */
@@ -1080,6 +1082,7 @@ function updateLiveGrandTotal() {
     let searchCls = (document.getElementById("searchClassInput") ? document.getElementById("searchClassInput").value.trim().toLowerCase() : "");
 
     let grandTotals = {};
+    let grandJanTotals = { janTxt2: 0, janTxt3: 0 };
     let grandBankTotal = 0;
     let grandHeadTotal = 0;
     let grandCombinedTotal = 0;
@@ -1106,6 +1109,9 @@ function updateLiveGrandTotal() {
 
                     if(matchesDate && matchesClass) {
                         for(let i=2; i<=34; i++) grandTotals[i] += Number(record["txt" + i]) || 0;
+                        grandJanTotals.janTxt2 += Number(record["janTxt2"]) || 0;
+                        grandJanTotals.janTxt3 += Number(record["janTxt3"]) || 0;
+
                         grandBankTotal += Number(record["customBank"]) || 0;
                         grandHeadTotal += Number(record["customHead"]) || 0;
                         grandCombinedTotal += Number(record["customTotal"]) || 0;
@@ -1151,7 +1157,29 @@ function updateLiveGrandTotal() {
     });
 
     let html = "";
-    for(let i=2; i<=34; i++) {
+    for(let i=2; i<=26; i++) {
+        html += `
+        <div class="total-item">
+            <div class="total-item-label">${labels[i]}</div>
+            <div class="total-item-val" id="gt_${i}">${grandTotals[i]}</div>
+        </div>`;
+        
+        // जब नई छात्र संख्या (txt3) समाप्त हो, ठीक उसके बाद पुरानी सा०/पिछड़ा और पुरानी अनुसूचित जोड़े जाएं
+        if(i === 3) {
+            html += `
+            <div class="total-item">
+                <div class="total-item-label">${labels.janTxt2}</div>
+                <div class="total-item-val" id="gt_janTxt2">${grandJanTotals.janTxt2}</div>
+            </div>
+            <div class="total-item">
+                <div class="total-item-label">${labels.janTxt3}</div>
+                <div class="total-item-val" id="gt_janTxt3">${grandJanTotals.janTxt3}</div>
+            </div>`;
+        }
+    }
+
+    // Baaki remaining items (29 se 34 tak)
+    for(let i=29; i<=34; i++) {
         html += `
         <div class="total-item">
             <div class="total-item-label">${labels[i]}</div>
@@ -1278,7 +1306,6 @@ function calculateData(){
     let isJulyMonth = ["Jul", "Aug", "Sep", "Oct", "Jul/Jan"].includes(month);
     let julyStudents = (a + b); 
 
-    // Board Fee Setting check
     let savedSettings = JSON.parse(localStorage.getItem("late_board_fee_settings") || "{}");
     let c10BoardRate = (savedSettings.class10 !== undefined && savedSettings.class10 !== null) ? savedSettings.class10 : 501;
     let c12BoardRate = (savedSettings.class12 !== undefined && savedSettings.class12 !== null) ? savedSettings.class12 : 601;
@@ -1472,7 +1499,6 @@ function updateData(){
     }
 }
 
-/* SEARCH FUNCTION (Local Storage + Google Sheet Sync & Auto Save back to Local Storage) */
 function searchData(){
     let id = document.getElementById("txt1").value.trim();
     if(id === "") { msg("⚠️ kripya SEARCH ke liye ID darj karein!"); return; }
@@ -1526,7 +1552,6 @@ function searchData(){
     }
 }
 
-/* FORMAT DATE & TIME HELPER FUNCTIONS */
 function formatDateString(dateVal) {
     if(!dateVal) return "";
     let str = String(dateVal);
@@ -1600,7 +1625,6 @@ function deleteRecord(){
     }
 }
 
-/* PASSWORD PROTECTED FULL LOCAL STORAGE CLEAR (Delete Local) */
 function deleteLocalRecordOnly(){
     let pwd = prompt("पूरा Local Storage खाली करने के लिए Password (1234) दर्ज करें:");
     if(pwd === null) return;
@@ -1624,7 +1648,6 @@ function deleteLocalRecordOnly(){
     }
 }
 
-/* CLEAR FORM */
 function clearForm(){
     setVal("txt1", "");
     autoSelectCurrentMonth();
