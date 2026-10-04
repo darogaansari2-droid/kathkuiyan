@@ -188,6 +188,27 @@
             position: relative; 
             background-color: #ffffff;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden; /* वॉटरमार्क बाहर न जाए */
+        }
+
+        /* 💧 वॉटरमार्क स्टाइल */
+        .letterhead-watermark {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            opacity: 0.22; /* हल्का दिखने के लिए */
+            z-index: 1;
+            pointer-events: none;
+            object-fit: contain;
+        }
+
+        /* लैटरपैड के अंदर के कंटेंट को वॉटरमार्क के ऊपर रखने के लिए */
+        .fixed-header-container, .content-fixed, .table-resizable-wrapper {
+            position: relative;
+            z-index: 2;
         }
 
         .fixed-header-container {
@@ -242,7 +263,7 @@
         /* ↔️ टेबल कंटेनर बॉक्स */
         .table-resizable-wrapper {
             position: absolute; left: 24px; top: 300px; width: 746px; min-width: 100px; min-height: 50px;
-            border: 1px dashed #aaa; padding: 25px 12px 12px 12px; box-sizing: border-box; background: #fff; z-index: 10; resize: both; overflow: auto;
+            border: 1px dashed #aaa; padding: 25px 12px 12px 12px; box-sizing: border-box; background: rgba(255,255,255,0.95); z-index: 10; resize: both; overflow: auto;
         }
         .drag-handle {
             position: absolute; top: 2px; left: 2px; right: 2px; height: 20px; background-color: #003366; color: #fff;
@@ -255,19 +276,41 @@
         .resize-handle-right { position: absolute; right: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
         .resize-handle-left { position: absolute; left: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
 
-        /* 📄 पृथक प्रस्ताव पेपर */
+        /* 📄 पृथक प्रस्ताव पेपर (अब इसमें भी वॉटरमार्क जोड़ दिया गया है) */
         .paper {
             width: 210mm;
             min-height: 297mm;
             padding: 20mm;
             padding-top: 50px;
-            margin: 20px auto;
+            margin: 20mm auto;
             background: white;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             box-sizing: border-box;
             font-size: 16px;
             line-height: 1.7;
             font-family: 'Mangal', 'Nirmala UI', 'Arial', sans-serif;
+            position: relative; /* वॉटरमार्क के लिए आवश्यक */
+            overflow: hidden;   /* वॉटरमार्क बाहर न जाए */
+        }
+
+        /* 💧 स्टैंडअलोन प्रस्ताव पेपर का वॉटरमार्क */
+        .paper-watermark {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            opacity: 0.22;
+            z-index: 1;
+            pointer-events: none;
+            object-fit: contain;
+        }
+
+        /* प्रस्ताव के अंदर के कंटेंट को वॉटरमार्क के ऊपर रखने के लिए */
+        .paper .header-title-container, .paper .prastav-table {
+            position: relative;
+            z-index: 2;
         }
 
         .header-title-container {
@@ -298,7 +341,7 @@
                 width: 100% !important;
             }
             .editable-text:focus, .content-fixed:focus { outline: none !important; background-color: transparent !important; }
-            .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; }
+            .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; background: transparent !important; }
             .table-resizable-wrapper table { border-collapse: collapse !important; height: 100% !important; }
             .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #000 !important; }
         }
@@ -426,6 +469,17 @@
                 <label for="prastavNoInput">Prastav Sankhya:</label>
                 <input type="text" id="prastavNoInput" value="02" oninput="saveSettings(); updateContent();">
             </div>
+
+            <!-- 💧 वॉटरमार्क पोजीशन कंट्रोल -->
+            <div class="control-group">
+                <label for="watermarkTopInput">Watermark Position (Vertical %):</label>
+                <input type="number" id="watermarkTopInput" value="50" min="10" max="90" oninput="saveSettings(); updateWatermarkPosition();" title="50% मतलब बिल्कुल बीच में, कम करने पर ऊपर और बढ़ाने पर नीचे जाएगा">
+            </div>
+            
+            <div class="control-group">
+                <label for="watermarkSizeInput">Watermark Size (px):</label>
+                <input type="number" id="watermarkSizeInput" value="400" min="100" max="800" oninput="saveSettings(); updateWatermarkPosition();">
+            </div>
         </div>
 
         <div class="header-inputs-container">
@@ -456,6 +510,9 @@
 
     <!-- 🏛️ मुख्य लेटर पैड व्यू -->
     <div class="letterhead" id="main-letterhead">
+        <!-- 💧 लोगो का वॉटरमार्क (लेटर पैड के बीच में) -->
+        <img class="letterhead-watermark common-watermark" src="logo.png" alt="Watermark">
+
         <div class="fixed-header-container" id="header-container">
             <div class="header">
                 <img class="logo" src="logo.png" alt="Logo"> 
@@ -481,6 +538,9 @@
 
     <!-- 📄 अलग से प्रस्ताव प्रिंट करने वाला पेपर एरिया (Standalone Prastav Paper) -->
     <div class="paper" id="printablePaper" style="display: none;">
+        <!-- 💧 स्टैंडअलोन प्रस्ताव पेपर का वॉटरमार्क -->
+        <img class="paper-watermark common-watermark" src="logo.png" alt="Watermark">
+
         <div class="header-title-container" id="displayHeaderContainer"></div>
         <table class="prastav-table">
             <tr>
@@ -524,6 +584,7 @@
         loadSettings(); // पेज खुलते ही सेव की गई सेटिंग्स लोड करें
         renderHeaderInputs();
         applyCustomMargins();
+        updateWatermarkPosition();
         updateContent();
     };
 
@@ -542,6 +603,8 @@
             nirnayText: document.getElementById('nirnayTextInput').value,
             loadOnLh: document.getElementById('loadPrastavToLetterhead').checked,
             appMode: document.getElementById('appModeSelect').value,
+            watermarkTop: document.getElementById('watermarkTopInput').value,
+            watermarkSize: document.getElementById('watermarkSizeInput').value,
             headerLines: headerLinesData
         };
         localStorage.setItem('schoolSoftwareSettings', JSON.stringify(settings));
@@ -563,6 +626,8 @@
                 if(data.prastavNo !== undefined) document.getElementById('prastavNoInput').value = data.prastavNo;
                 if(data.prastavText !== undefined) document.getElementById('prastavTextInput').value = data.prastavText;
                 if(data.nirnayText !== undefined) document.getElementById('nirnayTextInput').value = data.nirnayText;
+                if(data.watermarkTop !== undefined) document.getElementById('watermarkTopInput').value = data.watermarkTop;
+                if(data.watermarkSize !== undefined) document.getElementById('watermarkSizeInput').value = data.watermarkSize;
                 if(data.headerLines) headerLinesData = data.headerLines;
 
                 if(data.appMode) {
@@ -578,6 +643,19 @@
                 console.error("Error loading settings", e);
             }
         }
+    }
+
+    // 💧 वॉटरमार्क पोजीशन और साइज सेट करने का फंक्शन (सभी वॉटरमार्क पर लागू होगा)
+    function updateWatermarkPosition() {
+        var wmTop = document.getElementById('watermarkTopInput').value || 50;
+        var wmSize = document.getElementById('watermarkSizeInput').value || 300;
+        var watermarkEls = document.querySelectorAll('.common-watermark');
+        
+        watermarkEls.forEach(function(el) {
+            el.style.top = wmTop + '%';
+            el.style.width = wmSize + 'px';
+            el.style.height = wmSize + 'px';
+        });
     }
 
     function switchAppMode(mode) {
@@ -928,11 +1006,10 @@
         var result = '';
         lines.forEach(function(line) {
             if(line.trim().length > 0) { 
-                // Yadi line mein 'भवदीय' ya koi signature related text hai, toh use right align karne ke liye wrap kar denge
                 if(line.trim() === 'भवदीय' || line.trim().startsWith('भवदीय')) {
                     result += '<div style="text-align: right; margin-top: 20px; font-weight: bold;">' + line.trim() + '</div>';
                 } else {
-                    result += '<p>' + line.trim() + '</p>'; 
+                    result += '<p>' + line.trim() + '<\/p>'; 
                 }
             } else {
                 result += '<br>';
