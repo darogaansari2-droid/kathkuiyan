@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>श्री कृष्ण इण्टरमीडिएट कालेज - समय सारिणी प्रबंधन</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            color: #000;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1480px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* School Header */
+        .school-header {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 2px double #000;
+            padding-bottom: 8px;
+        }
+
+        .school-header h1 {
+            font-family: 'Teko', sans-serif;
+            font-size: 30px;
+            color: #000;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .school-header h2 {
+            font-size: 15px;
+            color: #000;
+            margin-top: 2px;
+            font-weight: 600;
+        }
+
+        /* Controls & Session Input */
+        .top-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            background: #e8f4f1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .session-box label {
+            font-weight: 600;
+            color: #000;
+            font-size: 12px;
+        }
+
+        .session-box input, .print-select, .recess-select {
+            padding: 4px 6px;
+            font-size: 12px;
+            border: 1px solid #666;
+            border-radius: 4px;
+            margin-left: 3px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .setting-save-btn {
+            background-color: #2e7d32;
+            color: white;
+            border: none;
+            padding: 5px 9px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+
+        .setting-save-btn:hover {
+            background-color: #1b5e20;
+        }
+
+        .setting-reset-btn {
+            background-color: #c62828;
+            color: white;
+            border: none;
+            padding: 5px 9px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+
+        .setting-reset-btn:hover {
+            background-color: #8e0000;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            background-color: #ddd;
+            border: none;
+            padding: 6px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .timetable-section {
+            display: none;
+        }
+
+        .timetable-section.active {
+            display: block;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* Table Design */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--font-size, 11px);
+            background: #fff;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: var(--row-padding, 6px) var(--col-width-factor, 4px);
+            text-align: center;
+            vertical-align: middle;
+            color: #000;
+        }
+
+        /* Header patti ka halka rang aur black text */
+        th {
+            background-color: #dcdcdc !important;
+            color: #000 !important;
+            font-weight: 700;
+            font-size: calc(var(--font-size, 11px) + 1px);
+        }
+
+        input.editable-cell {
+            width: 100%;
+            border: none !important;
+            outline: none !important;
+            background: transparent;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: var(--font-size, 11px);
+            padding: 2px;
+            color: #000;
+            box-shadow: none !important;
+        }
+
+        input.editable-cell:focus {
+            background: #f0f0f0;
+            outline: 1px solid #000 !important;
+        }
+
+        textarea.editable-cell {
+            width: 100%;
+            border: none !important;
+            outline: none !important;
+            background: transparent;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: var(--font-size, 11px);
+            resize: none !important;
+            overflow: hidden;
+            min-height: var(--textarea-min-height, 32px);
+            line-height: 1.3;
+            color: #000;
+            box-shadow: none !important;
+        }
+
+        textarea.editable-cell:focus {
+            background: #f0f0f0;
+            outline: 1px solid #000 !important;
+        }
+
+        /* Recess Styling */
+        .break-cell {
+            background-color: #eaeaea !important;
+            font-weight: bold;
+            color: #000;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            padding: 4px !important;
+            letter-spacing: 2px;
+            font-size: var(--font-size, 11px);
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #000 !important;
+        }
+
+        /* Action Buttons */
+        .action-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 6px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-add {
+            background-color: #333;
+            color: white;
+        }
+
+        .btn-add:hover { background-color: #000; }
+
+        .btn-del {
+            background-color: #555;
+            color: white;
+            padding: 2px 5px;
+            font-size: 9px;
+        }
+
+        .btn-del:hover { background-color: #000; }
+
+        .print-btn {
+            background-color: #000;
+            color: white;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .print-btn:hover { background-color: #333; }
+
+        /* Print Settings & Clean Glitch-free Borders */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 5mm;
+            }
+
+            body {
+                background: #fff !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                color: #000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .container {
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            .top-controls, .btn-add, .print-btn, .no-print {
+                display: none !important;
+            }
+
+            .timetable-section {
+                display: none !important;
+            }
+
+            .timetable-section.print-active {
+                display: block !important;
+            }
+
+            table {
+                font-size: var(--font-size, 10px) !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+                page-break-inside: auto !important;
+            }
+
+            tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            thead {
+                display: table-header-group !important;
+            }
+
+            th, td {
+                border: 1px solid #000 !important;
+                padding: var(--row-padding, 5px) var(--col-width-factor, 3px) !important;
+                color: #000 !important;
+            }
+
+            th {
+                background-color: #dcdcdc !important;
+                color: #000 !important;
+            }
+
+            .break-cell {
+                border: 1px solid #000 !important;
+                background-color: #eaeaea !important;
+            }
+
+            input.editable-cell, textarea.editable-cell {
+                border: none !important;
+                outline: none !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                font-size: var(--font-size, 10px) !important;
+                font-weight: 600 !important;
+                color: #000 !important;
+                resize: none !important;
+                -webkit-text-fill-color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body id="bodyRoot" style="--row-padding: 6px; --col-width-factor: 4px; --textarea-min-height: 32px; --font-size: 11px;">
+
+<div class="container">
+    <!-- School Header -->
+    <div class="school-header">
+        <h1>श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा कठकुइयाँ, कुशीनगर</h1>
+        <h2>अध्यापकवार एवं कक्षावार समय सारिणी सत्र - <span id="display-session">2026-27</span></h2>
+    </div>
+
+    <!-- Top Controls & Session & Settings -->
+    <div class="top-controls">
+        <div class="session-box">
+            <label for="sessionInput">सत्र:</label>
+            <input type="text" id="sessionInput" value="2026-27" style="width: 55px;" oninput="updateSession(this.value)">
+            
+            <label for="recessAfter" style="margin-left: 3px;">मध्यान्तर:</label>
+            <select id="recessAfter" class="recess-select" onchange="renderTables()">
+                <option value="3">III बाद</option>
+                <option value="4" selected>IV बाद</option>
+                <option value="5">V बाद</option>
+                <option value="6">VI बाद</option>
+            </select>
+
+            <label for="rowPaddingInput" style="margin-left: 3px;">रो ऊंचाई:</label>
+            <input type="number" id="rowPaddingInput" value="6" min="2" max="20" style="width: 38px;" oninput="updateRowHeight(this.value)"> px
+
+            <label for="colWidthInput" style="margin-left: 3px;">कॉलम चौड़ाई:</label>
+            <input type="number" id="colWidthInput" value="4" min="2" max="20" style="width: 38px;" oninput="updateColWidth(this.value)"> px
+
+            <label for="fontSizeInput" style="margin-left: 3px;">फॉन्ट:</label>
+            <input type="number" id="fontSizeInput" value="11" min="8" max="16" style="width: 38px;" oninput="updateFontSize(this.value)"> px
+
+            <label for="printSelect" style="margin-left: 3px;">प्रिंट मोड:</label>
+            <select id="printSelect" class="print-select">
+                <option value="1">फॉर्मेट 1</option>
+                <option value="2">फॉर्मेट 2</option>
+            </select>
+
+            <button class="setting-save-btn" onclick="saveSettings()">💾 सेव</button>
+            <button class="setting-reset-btn" onclick="resetSettings()">🔄 रीसेट</button>
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" id="btn-tab-1" onclick="switchTab(1)">फॉर्मेट 1: अध्यापकवार</button>
+            <button class="tab-btn" id="btn-tab-2" onclick="switchTab(2)">फॉर्मेट 2: कक्षावार</button>
+        </div>
+    </div>
+
+    <!-- FORMAT 1: अध्यापकवार समय सारिणी -->
+    <div id="section-1" class="timetable-section active">
+        <div class="section-title">फॉर्मेट 1: अध्यापकवार समय सारिणी (Teacher-wise Timetable)</div>
+        <div class="table-responsive">
+            <table id="table-format-1">
+                <thead id="thead-f1"></thead>
+                <tbody id="tbody-f1"></tbody>
+            </table>
+        </div>
+        <div class="action-btns">
+            <button class="btn btn-add" onclick="addRowF1()">+ नया अध्यापक जोड़ें</button>
+        </div>
+    </div>
+
+    <!-- FORMAT 2: कक्षावार समय सारिणी -->
+    <div id="section-2" class="timetable-section">
+        <div class="section-title">फॉर्मेट 2: कक्षावार समय सारिणी (Class-wise Timetable)</div>
+        <div class="table-responsive">
+            <table id="table-format-2">
+                <thead id="thead-f2"></thead>
+                <tbody id="tbody-f2"></tbody>
+            </table>
+        </div>
+        <div class="action-btns">
+            <button class="btn btn-add" onclick="addRowF2()">+ नई कक्षा जोड़ें</button>
+        </div>
+    </div>
+
+    <!-- Print Control -->
+    <div style="text-align: center; margin-top: 15px;" class="top-controls">
+        <button class="print-btn" onclick="triggerPrint()">🖨️ चयनित समय सारिणी प्रिंट करें</button>
+    </div>
+</div>
+
+<script>
+    let dataF1 = [
+        {name: "श्री चन्द्र भूषण पाठक", periods: ["-", "-", "XII A\nभूगोल", "-", "XI A\nभूगोल", "-", "-", "-", "भूगोल प्रयो०\nXIIA(सो०मं०बु०)\nXIA(वृ०शु०श०)"]},
+        {name: "श्री मनोज कुमार", periods: ["XII A\nअर्थशास्त्र", "-", "VIII A\nगणित", "XI A\nअर्थशास्त्र", "-", "VII A\nगणित", "-", "-", "पी०टी०\nVIII A"]},
+        {name: "श्री रमेन्द्र नाथ तिवारी", periods: ["-", "VI A\nसंस्कृत", "-", "X A\nसंस्कृत", "-", "-", "VI A\nगृह शिल्प", "-", "-"]},
+        {name: "श्री शम्भू शरण पाण्डेय", periods: ["VIII A\nहिंदी", "-", "-", "IX A\nहिंदी", "VIII A\nविज्ञान", "-", "IX A हिंदी व्या०\n(सो० मं० बु०)", "-", "-"]},
+        {name: "श्री मनोज कुमार त्रिपाठी", periods: ["-", "-", "VII A\nसा० विषय", "-", "VI A\nसा० विषय", "VIII A\nसा० विषय", "VI A\nकृषि", "-", "पी०टी०\nVII A"]},
+        {name: "श्री अनिल कुमार सिंह", periods: ["VI A\nविज्ञान", "VII A\nविज्ञान", "-", "-", "-", "IX A\nसा० विज्ञान", "VIII A\nगृह शिल्प", "-", "नैतिक खेल\nIXD(सो०मं०), IXA(वृ०शु०)"]},
+        {name: "श्री विनय मणि त्रिपाठी", periods: ["VII A\nसंस्कृत", "IX D\nहिंदी", "-", "VIII A\nसंस्कृत", "XII A\nसंस्कृत", "-", "VIII A\nकृषि", "-", "नैतिक खेल\nXD(सो०मं०), XA(वृ०शु०)"]},
+        {name: "श्रीमती पूनम सिंह", periods: ["-", "IX A\nचित्रकला", "X A\nचित्रकला", "-", "-", "X D\nचित्रकला", "IX D\nचित्रकला", "-", "VIII A\nकला"]},
+        {name: "श्री विजय कुमार", periods: ["XI A\nअंग्रेजी", "-", "X D\nअंग्रेजी", "X A\nअंग्रेजी", "XII A\nअंग्रेजी", "-", "अंग्रेजी व्या०\nXIIA(सो०मं०)", "-", "-"]},
+        {name: "श्रीमती संगीता मिश्रा", periods: ["IX A\nगृह विज्ञान", "-", "-", "VI A\nहिंदी", "VII A\nहिंदी", "X A\nगृह विज्ञान", "VII A\nगृह शिल्प", "-", "VII A\nकला"]},
+        {name: "श्री सन्तोष कुमार", periods: ["X D\nहिंदी", "XII A\nहिंदी", "-", "VII A\nअंग्रेजी", "-", "VI A\nगणित", "हिन्दी व्या०\nXD(सो०मं०)", "-", "VI A\nकला"]},
+        {name: "श्री लाल बहादुर", periods: ["IX D\nअंग्रेजी", "XI A\nइतिहास", "XII B\nभूगोल", "-", "IX A\nअंग्रेजी", "XII A\nइतिहास", "-", "-", "भूगोल प्रयो०\nXIIB (वृ०शु०श०)"]},
+        {name: "श्री अरविन्द प्रसाद गोड़", periods: ["X A\nसा० विज्ञान", "VIII A\nअंग्रेजी", "-", "XII A\nना० शास्त्र", "-", "XI A\nना० शास्त्र", "VII A\nकृषि", "-", "पी०टी०\nVI A"]},
+        {name: "श्रीमती पुनीता उपाध्याय", periods: ["XI A\nसंस्कृत", "X A\nहिंदी", "XI A\nहिंदी", "-", "IX A\nसंस्कृत", "-", "हिन्दी व्या०\nXI A", "-", "-"]},
+        {name: "श्री ओंकारेश्वर मिश्र", periods: ["-", "-", "IX A\nविज्ञान", "-", "X A\nविज्ञान", "-", "विज्ञान प्रयो०\nIXA(सो०मं०)", "-", "-"]},
+        {name: "श्री प्रवीण कुमार पाण्डेय", periods: ["-", "-", "VI\nअंग्रेजी", "X D\nसा० विज्ञान", "IX D\nसा० विज्ञान", "-", "हिन्दी व्या०\nIXA(वृ०शु०)", "-", "भूगोल प्रयो०\nXIA(सो०मं०)"]},
+        {name: "श्री दुर्गेश पाण्डेय", periods: ["-", "X D\nगणित", "IX D\nविज्ञान", "IX D\nगणित", "X D\nविज्ञान", "-", "-", "-", "विज्ञान प्रयो०\nXD (वृ०शु०)"]}
+    ];
+
+    let dataF2 = [
+        {cls: "XII A", periods: ["अर्थशास्त्र / मनोज कुमार", "हिंदी / सन्तोष कुमार", "भूगोल / चन्द्र भूषण पाठक", "ना०शा० / अरविन्द प्रसाद", "अंग्रेजी / विजय कुमार\nसंस्कृत / विनय मणि", "इतिहास / लालबहादुर", "अंग्रेजी व्या० / विजय कुमार", "-", "भूगोल प्रयो० / चन्द्र भूषण पाठक"]},
+        {cls: "XII B", periods: ["-", "-", "भूगोल / लालबहादुर", "-", "-", "-", "-", "-", "भूगोल प्रयो० / लालबहादुर"]},
+        {cls: "XI A", periods: ["अंग्रेजी / विजय कुमार\nसंस्कृत / पुनीता", "इतिहास / लालबहादुर", "हिंदी / पुनीता उपाध्याय", "अर्थशास्त्र / मनोज कुमार", "भूगोल / चन्द्र भूषण पाठक", "ना०शा० / अरविन्द प्रसाद", "हिन्दी व्या० / पुनीता", "-", "भूगोल प्रयो० / चन्द्र भूषण\nभूगोल प्रयो० / प्रवीण"]},
+        {cls: "X A", periods: ["सा० विज्ञान / अरविन्द", "हिंदी / पुनीता उपाध्याय", "चित्रकला / पूनम सिंह", "अंग्रेजी / विजय कुमार\nसंस्कृत / रमेन्द्र नाथ", "विज्ञान / ओंकारेश्वर मिश्र", "गृह विज्ञान / संगीता मिश्रा", "-", "-", "नैतिक शिक्षा / विनय मणि"]},
+        {cls: "X D", periods: ["हिंदी / सन्तोष कुमार", "गणित / दुर्गेश पाण्डेय", "अंग्रेजी / विजय कुमार", "सा० विज्ञान / प्रवीण कुमार", "विज्ञान / दुर्गेश पाण्डेय", "चित्रकला / पूनम सिंह", "अंग्रेजी व्या० / विजय कुमार", "-", "विज्ञान प्रयो० / दुर्गेश पाण्डेय"]},
+        {cls: "IX A", periods: ["गृह विज्ञान / संगीता मिश्रा", "चित्रकला / पूनम सिंह", "विज्ञान / ओंकारेश्वर मिश्र", "हिंदी / शम्भू शरण पाण्डेय", "अंग्रेजी / लाल बहादुर\nसंस्कृत / पुनीता", "सा० विज्ञान / अनिल कुमार", "हिन्दी व्या० / शम्भूशरण", "-", "नैतिक शिक्षा / अनिल सिंह\nविज्ञान प्रयो० / ओंकारेश्वर"]},
+        {cls: "IX D", periods: ["अंग्रेजी / लालबहादुर", "हिन्दी / विनय मणि त्रिपाठी", "विज्ञान / दुर्गेश कुमार", "गणित / दुर्गेश कुमार", "सा० विज्ञान / प्रवीण कुमार", "विज्ञान प्रयो० / ओंकारेश्वर", "चित्रकला / पूनम सिंह", "-", "नैतिक शिक्षा / अनिल सिंह\nविज्ञान प्रयो० / ओंकारेश्वर"]},
+        {cls: "VIII A", periods: ["हिन्दी / शम्भूशरण पाण्डेय", "अंग्रेजी / अरविन्द प्रसाद", "गणित / मनोज कुमार", "संस्कृत / विनय मणि", "विज्ञान / शम्भूशरण पाण्डेय", "सा० विषय / मनोज कुमार", "कृषि / विनय मणि\nगृहशिल्प / अनिल", "-", "पी० टी० / मनोज कुमार"]},
+        {cls: "VII A", periods: ["संस्कृत / विनय मणि", "विज्ञान / अनिल कुमार सिंह", "सा० विषय / मनोज कुमार", "अंग्रेजी / सन्तोष कुमार", "हिंदी / संगीता मिश्रा", "गणित / मनोज कुमार", "गृह शिल्प / संगीता मिश्रा", "-", "पी० टी० / मनोज त्रिपाठी"]},
+        {cls: "VI A", periods: ["विज्ञान / अनिल कुमार सिंह", "संस्कृत / रमेन्द्र नाथ", "अंग्रेजी / प्रवीण पाण्डेय", "हिंदी / संगीता मिश्रा", "सा० विषय / मनोज कुमार", "गणित / सन्तोष कुमार", "गृह शिल्प / रामेन्द्र तिवारी", "-", "पी ० टी ० / अरविन्द प्रसाद"]}
+    ];
+
+    const periodNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+
+    function updateRowHeight(val) {
+        const root = document.getElementById('bodyRoot');
+        const num = parseInt(val) || 6;
+        root.style.setProperty('--row-padding', num + 'px');
+        root.style.setProperty('--textarea-min-height', (num * 4 + 8) + 'px');
+    }
+
+    function updateColWidth(val) {
+        const root = document.getElementById('bodyRoot');
+        const num = parseInt(val) || 4;
+        root.style.setProperty('--col-width-factor', num + 'px');
+    }
+
+    function updateFontSize(val) {
+        const root = document.getElementById('bodyRoot');
+        const num = parseInt(val) || 11;
+        root.style.setProperty('--font-size', num + 'px');
+    }
+
+    function updateSession(val) {
+        document.getElementById('display-session').innerText = val;
+    }
+
+    function saveSettings() {
+        const settings = {
+            session: document.getElementById('sessionInput').value,
+            recess: document.getElementById('recessAfter').value,
+            rowPadding: document.getElementById('rowPaddingInput').value,
+            colWidth: document.getElementById('colWidthInput').value,
+            fontSize: document.getElementById('fontSizeInput').value,
+            printMode: document.getElementById('printSelect').value
+        };
+        localStorage.setItem('skic_timetable_settings', JSON.stringify(settings));
+        alert('✅ सेटिंग्स सफलतापूर्वक सेव हो गई हैं!');
+    }
+
+    function resetSettings() {
+        localStorage.removeItem('skic_timetable_settings');
+        document.getElementById('sessionInput').value = "2026-27";
+        updateSession("2026-27");
+        document.getElementById('recessAfter').value = "4";
+        document.getElementById('rowPaddingInput').value = "6";
+        updateRowHeight(6);
+        document.getElementById('colWidthInput').value = "4";
+        updateColWidth(4);
+        document.getElementById('fontSizeInput').value = "11";
+        updateFontSize(11);
+        document.getElementById('printSelect').value = "1";
+        renderTables();
+        alert('🔄 सेटिंग्स रीसेट हो गई हैं!');
+    }
+
+    function loadSavedSettings() {
+        const saved = localStorage.getItem('skic_timetable_settings');
+        if (saved) {
+            try {
+                const settings = JSON.parse(saved);
+                if (settings.session) {
+                    document.getElementById('sessionInput').value = settings.session;
+                    updateSession(settings.session);
+                }
+                if (settings.recess) document.getElementById('recessAfter').value = settings.recess;
+                if (settings.rowPadding) {
+                    document.getElementById('rowPaddingInput').value = settings.rowPadding;
+                    updateRowHeight(settings.rowPadding);
+                }
+                if (settings.colWidth) {
+                    document.getElementById('colWidthInput').value = settings.colWidth;
+                    updateColWidth(settings.colWidth);
+                }
+                if (settings.fontSize) {
+                    document.getElementById('fontSizeInput').value = settings.fontSize;
+                    updateFontSize(settings.fontSize);
+                }
+                if (settings.printMode) document.getElementById('printSelect').value = settings.printMode;
+            } catch (e) {
+                console.error("Error loading settings", e);
+            }
+        }
+    }
+
+    function renderTables() {
+        const recessAfter = parseInt(document.getElementById('recessAfter').value);
+        
+        // --- Render Table 1 ---
+        const thead1 = document.getElementById('thead-f1');
+        let hRow1 = `<tr><th style="width: 3.5%;">क्रम सं०</th><th style="width: 12%;">कक्षाध्यापक का नाम</th>`;
+        for (let i = 0; i < 8; i++) {
+            hRow1 += `<th style="width: 9%;">${periodNames[i]}</th>`;
+            if (i + 1 === recessAfter) {
+                hRow1 += `<th style="width: 4%;">मध्यान्तर</th>`;
+            }
+        }
+        hRow1 += `<th style="width: 3.5%;" class="no-print">हटाएं</th></tr>`;
+        thead1.innerHTML = hRow1;
+
+        const tbody1 = document.getElementById('tbody-f1');
+        tbody1.innerHTML = '';
+        dataF1.forEach((row, index) => {
+            let tr = document.createElement('tr');
+            let html = `<td>${index + 1}</td><td><input type="text" class="editable-cell" value="${row.name}" onchange="dataF1[${index}].name=this.value"></td>`;
+            
+            for (let i = 0; i < 8; i++) {
+                let pVal = row.periods[i] || "-";
+                html += `<td><textarea class="editable-cell" onchange="dataF1[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
+                if (i + 1 === recessAfter) {
+                    html += `<td class="break-cell">मध्यान्तर</td>`;
+                }
+            }
+            html += `<td class="no-print"><button class="btn btn-del" onclick="deleteRowF1(${index})">X</button></td>`;
+            tr.innerHTML = html;
+            tbody1.appendChild(tr);
+        });
+
+        // --- Render Table 2 ---
+        const thead2 = document.getElementById('thead-f2');
+        let hRow2 = `<tr><th style="width: 7%;">कक्षा</th>`;
+        for (let i = 0; i < 8; i++) {
+            hRow2 += `<th style="width: 10%;">${periodNames[i]}</th>`;
+            if (i + 1 === recessAfter) {
+                hRow2 += `<th style="width: 4%;">मध्यान्तर</th>`;
+            }
+        }
+        hRow2 += `<th style="width: 3.5%;" class="no-print">हटाएं</th></tr>`;
+        thead2.innerHTML = hRow2;
+
+        const tbody2 = document.getElementById('tbody-f2');
+        tbody2.innerHTML = '';
+        dataF2.forEach((row, index) => {
+            let tr = document.createElement('tr');
+            let html = `<td><input type="text" class="editable-cell" value="${row.cls}" onchange="dataF2[${index}].cls=this.value"></td>`;
+            
+            for (let i = 0; i < 8; i++) {
+                let pVal = row.periods[i] || "-";
+                html += `<td><textarea class="editable-cell" onchange="dataF2[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
+                if (i + 1 === recessAfter) {
+                    html += `<td class="break-cell">मध्यान्तर</td>`;
+                }
+            }
+            html += `<td class="no-print"><button class="btn btn-del" onclick="deleteRowF2(${index})">X</button></td>`;
+            tr.innerHTML = html;
+            tbody2.appendChild(tr);
+        });
+    }
+
+    function addRowF1() {
+        dataF1.push({name: "नया अध्यापक", periods: ["-","-","-","-","-","-","-","-"]});
+        renderTables();
+    }
+
+    function deleteRowF1(index) {
+        dataF1.splice(index, 1);
+        renderTables();
+    }
+
+    function addRowF2() {
+        dataF2.push({cls: "कक्षा", periods: ["-","-","-","-","-","-","-","-"]});
+        renderTables();
+    }
+
+    function deleteRowF2(index) {
+        dataF2.splice(index, 1);
+        renderTables();
+    }
+
+    function switchTab(formatNum) {
+        document.querySelectorAll('.timetable-section').forEach(sec => sec.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+        document.getElementById('section-' + formatNum).classList.add('active');
+        document.getElementById('btn-tab-' + formatNum).classList.add('active');
+        document.getElementById('printSelect').value = formatNum;
+    }
+
+    function triggerPrint() {
+        const selectedVal = document.getElementById('printSelect').value;
+        
+        document.querySelectorAll('.timetable-section').forEach(sec => sec.classList.remove('print-active'));
+        document.getElementById('section-' + selectedVal).classList.add('print-active');
+        
+        window.print();
+    }
+
+    // Initialize application with saved settings if available
+    loadSavedSettings();
+    renderTables();
+</script>
+
+</body>
+</html>
