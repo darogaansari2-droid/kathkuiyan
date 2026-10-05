@@ -259,14 +259,29 @@
 
         .btn-add:hover { background-color: #000; }
 
-        .btn-del {
-            background-color: #555;
-            color: white;
-            padding: 2px 5px;
-            font-size: 9px;
+        .row-action-group {
+            display: flex;
+            gap: 2px;
+            justify-content: center;
+            align-items: center;
         }
 
-        .btn-del:hover { background-color: #000; }
+        .btn-action-mini {
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 2px 4px;
+            font-size: 9px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .btn-action-mini:hover { background-color: #000; }
+
+        .btn-del {
+            background-color: #c62828;
+        }
+        .btn-del:hover { background-color: #8e0000; }
 
         .print-btn {
             background-color: #000;
@@ -413,7 +428,7 @@
 
     <!-- FORMAT 1: अध्यापकवार समय सारिणी -->
     <div id="section-1" class="timetable-section active">
-        <div class="section-title"> अध्यापकवार समय सारिणी (Teacher-wise Timetable)</div>
+        <div class="section-title">फॉर्मेट 1: अध्यापकवार समय सारिणी (Teacher-wise Timetable)</div>
         <div class="table-responsive">
             <table id="table-format-1">
                 <thead id="thead-f1"></thead>
@@ -421,13 +436,13 @@
             </table>
         </div>
         <div class="action-btns">
-            <button class="btn btn-add" onclick="addRowF1()">+ नया अध्यापक जोड़ें</button>
+            <button class="btn btn-add" onclick="addRowF1(-1)">+ नया अध्यापक जोड़ें (अंत में)</button>
         </div>
     </div>
 
     <!-- FORMAT 2: कक्षावार समय सारिणी -->
     <div id="section-2" class="timetable-section">
-        <div class="section-title"> कक्षावार समय सारिणी (Class-wise Timetable)</div>
+        <div class="section-title">फॉर्मेट 2: कक्षावार समय सारिणी (Class-wise Timetable)</div>
         <div class="table-responsive">
             <table id="table-format-2">
                 <thead id="thead-f2"></thead>
@@ -435,13 +450,13 @@
             </table>
         </div>
         <div class="action-btns">
-            <button class="btn btn-add" onclick="addRowF2()">+ नई कक्षा जोड़ें</button>
+            <button class="btn btn-add" onclick="addRowF2(-1)">+ नई कक्षा जोड़ें (अंत में)</button>
         </div>
     </div>
 
     <!-- Print Control -->
     <div style="text-align: center; margin-top: 15px;" class="top-controls">
-        <button class="print-btn" onclick="triggerPrint()">🖨️ चयनित समय सारिणी प्रिंट करें</button>
+        <button class="print-btn" onclick="triggerPrint()">🖨️️ चयनित समय सारिणी प्रिंट करें</button>
     </div>
 </div>
 
@@ -501,7 +516,8 @@
     }
 
     function updateSession(val) {
-        document.getElementById('display-session').innerText = val;
+        const displaySession = document.getElementById('display-session');
+        if (displaySession) displaySession.innerText = val;
     }
 
     function saveSettings() {
@@ -574,7 +590,7 @@
                 hRow1 += `<th style="width: 4%;">मध्यान्तर</th>`;
             }
         }
-        hRow1 += `<th style="width: 3.5%;" class="no-print">हटाएं</th></tr>`;
+        hRow1 += `<th style="width: 6%;" class="no-print">कार्रवाई</th></tr>`;
         thead1.innerHTML = hRow1;
 
         const tbody1 = document.getElementById('tbody-f1');
@@ -590,7 +606,14 @@
                     html += `<td class="break-cell">मध्यान्तर</td>`;
                 }
             }
-            html += `<td class="no-print"><button class="btn btn-del" onclick="deleteRowF1(${index})">X</button></td>`;
+            html += `<td class="no-print">
+                        <div class="row-action-group">
+                            <button class="btn-action-mini" title="ऊपर करें" onclick="moveRowF1(${index}, -1)">⬆️</button>
+                            <button class="btn-action-mini" title="नीचे करें" onclick="moveRowF1(${index}, 1)">⬇️</button>
+                            <button class="btn-action-mini" title="यहाँ नया जोड़ें" onclick="addRowF1(${index})">➕</button>
+                            <button class="btn-action-mini btn-del" title="हटाएं" onclick="deleteRowF1(${index})">❌</button>
+                        </div>
+                     </td>`;
             tr.innerHTML = html;
             tbody1.appendChild(tr);
         });
@@ -604,7 +627,7 @@
                 hRow2 += `<th style="width: 4%;">मध्यान्तर</th>`;
             }
         }
-        hRow2 += `<th style="width: 3.5%;" class="no-print">हटाएं</th></tr>`;
+        hRow2 += `<th style="width: 6%;" class="no-print">कार्रवाई</th></tr>`;
         thead2.innerHTML = hRow2;
 
         const tbody2 = document.getElementById('tbody-f2');
@@ -620,28 +643,71 @@
                     html += `<td class="break-cell">मध्यान्तर</td>`;
                 }
             }
-            html += `<td class="no-print"><button class="btn btn-del" onclick="deleteRowF2(${index})">X</button></td>`;
+            html += `<td class="no-print">
+                        <div class="row-action-group">
+                            <button class="btn-action-mini" title="ऊपर करें" onclick="moveRowF2(${index}, -1)">⬆️</button>
+                            <button class="btn-action-mini" title="नीचे करें" onclick="moveRowF2(${index}, 1)">⬇️</button>
+                            <button class="btn-action-mini" title="यहाँ नया जोड़ें" onclick="addRowF2(${index})">➕</button>
+                            <button class="btn-action-mini btn-del" title="हटाएं" onclick="deleteRowF2(${index})">❌</button>
+                        </div>
+                     </td>`;
             tr.innerHTML = html;
             tbody2.appendChild(tr);
         });
     }
 
-    function addRowF1() {
-        dataF1.push({name: "नया अध्यापक", periods: ["-","-","-","-","-","-","-","-"]});
+    function addRowF1(index) {
+        const newRow = {name: "नया अध्यापक", periods: ["-","-","-","-","-","-","-","-"]};
+        if (index === -1) {
+            dataF1.push(newRow);
+        } else {
+            dataF1.splice(index + 1, 0, newRow);
+        }
+        renderTables();
+    }
+
+    function moveRowF1(index, direction) {
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= dataF1.length) return;
+        const temp = dataF1[index];
+        dataF1[index] = dataF1[targetIndex];
+        dataF1[targetIndex] = temp;
         renderTables();
     }
 
     function deleteRowF1(index) {
+        if (dataF1.length <= 1) {
+            alert('कम से कम एक अध्यापक होना आवश्यक है!');
+            return;
+        }
         dataF1.splice(index, 1);
         renderTables();
     }
 
-    function addRowF2() {
-        dataF2.push({cls: "कक्षा", periods: ["-","-","-","-","-","-","-","-"]});
+    function addRowF2(index) {
+        const newRow = {cls: "नयी कक्षा", periods: ["-","-","-","-","-","-","-","-"]};
+        if (index === -1) {
+            dataF2.push(newRow);
+        } else {
+            dataF2.splice(index + 1, 0, newRow);
+        }
+        renderTables();
+    }
+
+    function moveRowF2(index, direction) {
+        const targetIndex = index + direction;
+        if (targetIndex < 0 || targetIndex >= dataF2.length) return;
+        const temp = dataF2[index];
+        dataF2[index] = dataF2[targetIndex];
+        dataF2[targetIndex] = temp;
         renderTables();
     }
 
     function deleteRowF2(index) {
+        if (dataF2.length <= 1) {
+            alert('कम से कम एक कक्षा होनी आवश्यक है!');
+            return;
+        }
         dataF2.splice(index, 1);
         renderTables();
     }
@@ -664,9 +730,11 @@
         window.print();
     }
 
-    // Initialize application with saved settings if available
-    loadSavedSettings();
-    renderTables();
+    // Initialize application safely after script load
+    window.onload = function() {
+        loadSavedSettings();
+        renderTables();
+    };
 </script>
 
 </body>
