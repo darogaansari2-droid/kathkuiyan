@@ -98,20 +98,17 @@ center h2 {
     font-size: 15px;
     font-weight: bold;
     flex: 1;
-    min-width: 0; /* Ise yahan jodne se marquee ki width ki samasya thik ho jayegi */
-}
+    min-width: 0;
 }
 .btn-logout {
     background: #d93025;
     color: white;
     border: none;
-    padding: 6px 12px;
+    padding: 8px 16px;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 14px;
     cursor: pointer;
-    border-radius: 3px;
-    margin-right: 5px;
-    white-space: nowrap;
+    border-radius: 5px;
 }
 .btn-logout:hover {
     background: #a50e0e;
@@ -153,7 +150,7 @@ label {
     margin-bottom: 3px;
     color: #333;
 }
-input {
+input, select {
     height: 35px;
     padding: 5px 8px;
     border: 1px solid #999;
@@ -162,7 +159,7 @@ input {
     font-size: 14px;
     background-color: #fafafa;
 }
-input:focus {
+input:focus, select:focus {
     border-color: #0b57d0;
     outline: none;
     background-color: #fff;
@@ -192,6 +189,108 @@ button:hover {
 .hide-value {
     color: transparent;
     background-color: #e9ecef;
+}
+
+/* Print Header - Hidden on Screen, Visible on Print */
+.print-college-header {
+    display: none;
+}
+.print-only-container {
+    display: none;
+}
+
+/* Print Specific A4 Design - Larger Fonts, Spanning Box & Clear Visibility */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 10mm;
+    }
+    body {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+    #loginModal, .marq-container, .button-group, center h2, .form-box > h2, #myForm > .row, #myForm > .print-group-title {
+        display: none !important;
+    }
+    #mainAppContainer {
+        display: flex !important;
+        width: 100% !important;
+    }
+    .form-box {
+        box-shadow: none !important;
+        border: 3px solid #1a0dab !important;
+        padding: 20px 25px !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        background: #fff !important;
+        min-height: 94vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+    }
+    .print-only-container {
+        display: block !important;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+    }
+    .print-college-header {
+        display: block !important;
+        text-align: center;
+        font-size: 22px !important;
+        font-weight: bold;
+        color: #1a0dab;
+        margin-bottom: 12px;
+        border-bottom: 3px solid #1a0dab;
+        padding-bottom: 8px;
+        text-transform: uppercase;
+    }
+    .print-section-title {
+        font-size: 15px !important;
+        font-weight: bold;
+        color: #0b57d0;
+        background: #f0f4f8;
+        padding: 6px 10px;
+        margin-top: 10px;
+        margin-bottom: 8px;
+        border-left: 4px solid #0b57d0;
+    }
+    .print-grid-2 {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 20px;
+    }
+    .print-field {
+        width: calc(50% - 10px);
+        display: flex;
+        flex-direction: column;
+    }
+    .print-field.full-width {
+        width: 100%;
+    }
+    .print-field label {
+        font-size: 13.5px !important;
+        font-weight: bold !important;
+        color: #222 !important;
+        margin-bottom: 3px !important;
+    }
+    .print-field input {
+        border: none !important;
+        border-bottom: 2px solid #333 !important;
+        background: transparent !important;
+        font-size: 15px !important;
+        height: 32px !important;
+        padding: 2px 5px !important;
+        font-weight: bold;
+        color: #000 !important;
+    }
+    .print-hidden {
+        display: none !important;
+    }
 }
 
 /* Mobile Responsiveness Rules */
@@ -235,66 +334,123 @@ button:hover {
         <marquee class="marq" direction="left" scrollamount="12">
         Anas Akhtar &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Shree Krishn Inter College Semra Kathkuiyan &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Faizan Computer Center
         </marquee>
-        <button class="btn-logout" onclick="handleLogout()">Log Out</button>
     </div>
 
     <div class="form-box">
     <h2>Anas Akhtar Penshan Getiuty Data Entry Form</h2>
 
+    <!-- Print Only Two-Group Layout with Larger Fonts & Expanded Box -->
+    <div class="print-only-container">
+        <div>
+            <div class="print-college-header">Shri Krishn Inter College Semra Kathkuiyan - Kushinagar</div>
+            
+            <div class="print-section-title">कर्मचारी एवं सेवा विवरण (Employee & Service Details)</div>
+            <div class="print-grid-2">
+                <div class="print-field full-width"><label>आईडी</label><input type="text" id="p_id"></div>
+                <div class="print-field"><label>नाम कर्मचारी:- </label><input type="text" id="p_combo1"></div>
+                <div class="print-field"><label>पदनाम:- </label><input type="text" id="p_combo2"></div>
+                <div class="print-field"><label>जन्मतिथि:-</label><input type="text" id="p_t1"></div>
+                <div class="print-field"><label>सेवा तिथि:-</label><input type="text" id="p_t2"></div>
+                <div class="print-field" id="p_f_t3"><label>सेवा निवृत्ति तिथि:- </label><input type="text" id="p_t3"></div>
+                <div class="print-field"><label>एज रेट:-</label><input type="text" id="p_t4"></div>
+                <div class="print-field"><label>छमाही / वर्ष:-</label><input type="text" id="p_t5"></div>
+                <div class="print-field"><label>मूल वेतन:-</label><input type="text" id="p_t6"></div>
+                <div class="print-field"><label> महंगाई दर %</label><input type="text" id="p_t7"></div>
+                <div class="print-field"><label>महंगाई:-</label><input type="text" id="p_t8"></div>
+                <div class="print-field"><label>योग:-</label><input type="text" id="p_t9"></div>
+            </div>
+        </div>
+
+        <div>
+            <div class="print-section-title">पेंशन एवं ग्रेच्युटी गणना (Pension & Gratuity Calculation)</div>
+            <div class="print-grid-2">
+                <div class="print-field"><label>पेंशन::-</label><input type="text" id="p_t10"></div>
+                <div class="print-field" id="p_f_t11"><label>महंगाई:-</label><input type="text" id="p_t11"></div>
+                <div class="print-field" id="p_f_t12"><label>कम्यूट वैल्यू:-</label><input type="text" id="p_t12"></div>
+                <div class="print-field" id="p_f_t13"><label>कम्यूट योग:-</label><input type="text" id="p_t13"></div>
+                <div class="print-field" id="p_f_t14"><label>कुल पेंशन:-</label><input type="text" id="p_t14"></div>
+                <div class="print-field" id="p_f_t15"><label>ग्रेच्युटी:-</label><input type="text" id="p_t15"></div>
+                <div class="print-field" id="p_rowFamily1"><label>पारिवारिक पेंशन:-</label><input type="text" id="p_t16"></div>
+                <div class="print-field" id="p_rowFamily2"><label>महंगाई::-</label><input type="text" id="p_t17"></div>
+                <div class="print-field" id="p_rowFamily3"><label>योग:-</label><input type="text" id="p_t18"></div>
+                <div class="print-field" id="p_rowDeath1"><label>मृत्यु तिथि:-</label><input type="text" id="p_t19"></div>
+                <div class="print-field" id="p_rowDeath2"><label>मृत्यु ग्रेच्युटी:-</label><input type="text" id="p_t20"></div>
+                <div class="print-field" id="p_rowDeath3"><label>मृत्यु की स्थिती में पारिवारिक पेंशन</label><input type="text" id="p_t21"></div>
+            </div>
+        </div>
+    </div>
+
     <form id="myForm">
+    <!-- Commutation Setting Row -->
+    <div class="row" style="background: #e8f0fe; padding: 8px; border-radius: 4px; margin-bottom: 5px;">
+        <div class="field" style="flex: 2;">
+            <label style="color: #1a0dab;">कम्यूटेशन वर्ष सेटिंग (Commutation Years Setting):-</label>
+        </div>
+        <div class="field" style="flex: 1;">
+            <select id="commuteSetting" onchange="saveCommuteSetting(); calculateAll();">
+                <option value="select">-- Select --</option>
+                <option value="15">15 वर्ष</option>
+                <option value="12">12 वर्ष</option>
+                <option value="10">10 वर्ष</option>
+            </select>
+        </div>
+    </div>
+
     <div class="row">
         <div class="field"><label>आईडी</label><input type="text" id="id"></div>
-        <div class="field"><label>नाम</label><input type="text" id="combo1"></div>
-        <div class="field"><label>पद</label><input type="text" id="combo2" oninput="setAgeRate();setRetirementDate();calculateAll();"></div>
+        <div class="field"><label>नाम कर्मचारी:- </label><input type="text" id="combo1"></div>
+        <div class="field"><label>पदनाम:- </label><input type="text" id="combo2" oninput="setAgeRate();setRetirementDate();calculateAll();"></div>
     </div>
 
     <div class="row">
-        <div class="field"><label>जन्मतिथि</label><input type="text" id="t1" placeholder="DD-MM-YYYY" onkeyup="setRetirementDate();calculateAll();"></div>
-        <div class="field"><label>सेवा तिथि</label><input type="text" id="t2" placeholder="DD-MM-YYYY" onkeyup="calculateAll();"></div>
-        <div class="field"><label>सेवा निवृत्ति</label><input type="text" id="t3"></div>
+        <div class="field"><label>जन्मतिथि:-</label><input type="text" id="t1" placeholder="DD-MM-YYYY" onkeyup="setRetirementDate();calculateAll();"></div>
+        <div class="field"><label>सेवा तिथि:-</label><input type="text" id="t2" placeholder="DD-MM-YYYY" onkeyup="calculateAll();"></div>
+        <div class="field"><label>सेवा निवृत्ति:-</label><input type="text" id="t3"></div>
     </div>
 
     <div class="row">
-        <div class="field"><label>एज रेट</label><input type="text" id="t4"></div>
-        <div class="field"><label>छमाही / वर्ष</label><input type="text" id="t5"></div>
-        <div class="field"><label>मूल वेतन</label><input type="text" id="t6" onkeyup="calculateAll();"></div>
+        <div class="field"><label>एज रेट:-</label><input type="text" id="t4"></div>
+        <div class="field"><label>छमाही:- </ वर्ष</label><input type="text" id="t5"></div>
+        <div class="field"><label>मूल वेतन:-</label><input type="text" id="t6" onkeyup="calculateAll();"></div>
     </div>
 
     <div class="row">
-        <div class="field"><label>रेट %</label><input type="text" id="t7" onkeyup="calculateAll();"></div>
-        <div class="field"><label>महंगाई</label><input type="text" id="t8"></div>
-        <div class="field"><label>योग</label><input type="text" id="t9"></div>
+        <div class="field"><label>महंगाई दर %</label><input type="text" id="t7" onkeyup="calculateAll();"></div>
+        <div class="field"><label>महंगाई:-</label><input type="text" id="t8"></div>
+        <div class="field"><label>योग:-</label><input type="text" id="t9"></div>
     </div>
 
     <div class="row">
-        <div class="field"><label>पेंशन</label><input type="text" id="t10"></div>
-        <div class="field"><label>महंगाई</label><input type="text" id="t11"></div>
-        <div class="field"><label>कम्यूट वैल्यू</label><input type="text" id="t12"></div>
+        <div class="field"><label>पेंशन:-</label><input type="text" id="t10"></div>
+        <div class="field"><label>महंगाई:-</label><input type="text" id="t11"></div>
+        <div class="field"><label>कम्यूट वैल्यू:-</label><input type="text" id="t12"></div>
     </div>
 
     <div class="row">
-        <div class="field"><label>कम्यूट योग</label><input type="text" id="t13"></div>
-        <div class="field"><label>कुल पेंशन</label><input type="text" id="t14"></div>
-        <div class="field"><label>ग्रेच्युटी</label><input type="text" id="t15"></div>
+        <div class="field"><label>कम्यूट योग:-</label><input type="text" id="t13"></div>
+        <div class="field"><label>कुल पेंशन:-</label><input type="text" id="t14"></div>
+        <div class="field"><label>ग्रेच्युटी:-</label><input type="text" id="t15"></div>
     </div>
 
-    <div class="row">
-        <div class="field"><label>पारिवारिक पेंशन</label><input type="text" id="t16"></div>
-        <div class="field"><label>महंगाई</label><input type="text" id="t17"></div>
-        <div class="field"><label>योग</label><input type="text" id="t18"></div>
+    <div class="row" id="rowFamilyPension">
+        <div class="field"><label>पारिवारिक पेंशन:-</label><input type="text" id="t16"></div>
+        <div class="field"><label>महंगाई:-</label><input type="text" id="t17"></div>
+        <div class="field"><label>योग:-</label><input type="text" id="t18"></div>
     </div>
 
-    <div class="row">
-        <div class="field"><label>मृत्यु तिथि</label><input type="text" id="t19" placeholder="DD-MM-YYYY" onkeyup="calculateAll();"></div>
-        <div class="field"><label>मृत्यु ग्रेच्युटी</label><input type="text" id="t20"></div>
-        <div class="field"><label>मृत्यु पेंशन</label><input type="text" id="t21"></div>
+    <div class="row" id="rowDeathDetails">
+        <div class="field"><label>मृत्यु तिथि:-</label><input type="text" id="t19" placeholder="DD-MM-YYYY" onkeyup="calculateAll();"></div>
+        <div class="field"><label>मृत्यु ग्रेच्युटी:-</label><input type="text" id="t20"></div>
+        <div class="field"><label>मृत्यु की स्थिती में पारिवारिक पेंशन</label><input type="text" id="t21"></div>
     </div>
 
     <div class="button-group">
         <button type="button" onclick="saveData()">Save</button>
-        <button type="reset">Clear</button>
+        <button type="reset" onclick="setTimeout(syncPrintForm, 100)">Clear</button>
         <button type="button" onclick="updateData()">Update</button>
         <button type="button" onclick="searchData()">Search</button>
+        <button type="button" onclick="printForm()">Print</button>
+        <button type="button" class="btn-logout" onclick="handleLogout()">Log Out</button>
     </div>
     </form>
     </div>
@@ -303,12 +459,69 @@ button:hover {
 <script>
 // Authentication Logic
 const AUTH_KEY = "PENSHANA_LOGGED_IN";
+const COMMUTE_SETTING_KEY = "PENSHANA_COMMUTE_SETTING";
 
 document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem(AUTH_KEY) === 'true') {
         showMainApp();
     }
+    
+    // Load saved commute setting
+    let savedSetting = localStorage.getItem(COMMUTE_SETTING_KEY);
+    if(savedSetting) {
+        document.getElementById("commuteSetting").value = savedSetting;
+    }
+
+    const allInputs = ['id', 'combo1', 'combo2', 't1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 't10', 't11', 't12', 't13', 't14', 't15', 't16', 't17', 't18', 't19', 't20', 't21'];
+    allInputs.forEach(id => {
+        let el = document.getElementById(id);
+        if(el) {
+            el.addEventListener('input', syncPrintForm);
+            el.addEventListener('change', syncPrintForm);
+        }
+    });
 });
+
+function saveCommuteSetting() {
+    let val = document.getElementById("commuteSetting").value;
+    localStorage.setItem(COMMUTE_SETTING_KEY, val);
+}
+
+function syncPrintForm() {
+    const map = {
+        'id': 'p_id',
+        'combo1': 'p_combo1',
+        'combo2': 'p_combo2',
+        't1': 'p_t1',
+        't2': 'p_t2',
+        't3': 'p_t3',
+        't4': 'p_t4',
+        't5': 'p_t5',
+        't6': 'p_t6',
+        't7': 'p_t7',
+        't8': 'p_t8',
+        't9': 'p_t9',
+        't10': 'p_t10',
+        't11': 'p_t11',
+        't12': 'p_t12',
+        't13': 'p_t13',
+        't14': 'p_t14',
+        't15': 'p_t15',
+        't16': 'p_t16',
+        't17': 'p_t17',
+        't18': 'p_t18',
+        't19': 'p_t19',
+        't20': 'p_t20',
+        't21': 'p_t21'
+    };
+    for(let k in map) {
+        let src = document.getElementById(k);
+        let dst = document.getElementById(map[k]);
+        if(src && dst) {
+            dst.value = src.value;
+        }
+    }
+}
 
 function handleLogin() {
     const user = document.getElementById("loginIdInput").value.trim();
@@ -344,6 +557,7 @@ const scriptURL = "https://script.google.com/macros/s/AKfycbzVmo8BBfo0t2vbjXkHVo
 function setAgeRate(){
     let p=document.getElementById("combo2").value.trim();
     document.getElementById("t4").value = (p==="प्रधानाचार्य" || p==="प्रवक्ता" || p==="स० अ०") ? "7.982" : "8.194";
+    syncPrintForm();
 }
 
 function setRetirementDate(){
@@ -367,6 +581,7 @@ function setRetirementDate(){
         else r=new Date(ry,m,0);
     }
     document.getElementById("t3").value= String(r.getDate()).padStart(2,"0")+"-"+String(r.getMonth()+1).padStart(2,"0")+"-"+r.getFullYear();
+    syncPrintForm();
 }
 
 function parseDate(v){
@@ -378,6 +593,8 @@ function parseDate(v){
 }
 
 function calculateAll(){
+    let commuteValSetting = document.getElementById("commuteSetting").value;
+
     let j=parseDate(document.getElementById("t2").value);
     let r=parseDate(document.getElementById("t3").value);
     let d=parseDate(document.getElementById("t19").value);
@@ -405,12 +622,22 @@ function calculateAll(){
     document.getElementById("t10").value=Math.round(t10);
     let t11=(t10*v7)/100;
     document.getElementById("t11").value=Math.round(t11);
-    let t12=t10*0.20;
-    document.getElementById("t12").value=Math.round(t12);
-    let v4=parseFloat(document.getElementById("t4").value)||0;
-    document.getElementById("t13").value=Math.round(v4*t12*12);
-    let t14=t10-t12+t11;
-    document.getElementById("t14").value=Math.round(t14);
+
+    // Agar setting 'select' hai toh commute aur related values ki koi ganana nahi hogi
+    if(commuteValSetting === "select") {
+        document.getElementById("t12").value = "";
+        document.getElementById("t13").value = "";
+        document.getElementById("t14").value = "";
+    } else {
+        let multiplierYears = parseInt(commuteValSetting) || 12; // Default 12 varsh ya setting anusaar
+        let t12=t10*0.20;
+        document.getElementById("t12").value=Math.round(t12);
+        let v4=parseFloat(document.getElementById("t4").value)||0;
+        document.getElementById("t13").value=Math.round(v4*t12*multiplierYears);
+        let t14=t10-t12+t11;
+        document.getElementById("t14").value=Math.round(t14);
+    }
+
     let t15 = (showT5 * v9) / 4;
     t15 = Math.min(t15, 2500000);
     document.getElementById("t15").value = Math.round(t15);
@@ -433,8 +660,62 @@ function calculateAll(){
         let t20 = v9 * v5;
         if (t20 > 2500000) t20 = 2500000;
         document.getElementById("t20").value = Math.round(t20);
-        document.getElementById("t21").value = Math.round(t12+t14);
+        let t12_val = parseFloat(document.getElementById("t12").value) || 0;
+        let t14_val = parseFloat(document.getElementById("t14").value) || 0;
+        document.getElementById("t21").value = Math.round(t12_val + t14_val);
     }
+    syncPrintForm();
+}
+
+function printForm() {
+    syncPrintForm();
+    let deathDate = document.getElementById("t19").value.trim();
+    
+    let ft3 = document.getElementById("p_f_t3");
+    let ft11 = document.getElementById("p_f_t11");
+    let ft12 = document.getElementById("p_f_t12");
+    let ft13 = document.getElementById("p_f_t13");
+    let ft14 = document.getElementById("p_f_t14");
+    let ft15 = document.getElementById("p_f_t15");
+    
+    let rf1 = document.getElementById("p_rowFamily1");
+    let rf2 = document.getElementById("p_rowFamily2");
+    let rf3 = document.getElementById("p_rowFamily3");
+    let rd1 = document.getElementById("p_rowDeath1");
+    let rd2 = document.getElementById("p_rowDeath2");
+    let rd3 = document.getElementById("p_rowDeath3");
+
+    if (deathDate) {
+        if(ft3) ft3.style.display = "none";
+        if(ft11) ft11.style.display = "none";
+        if(ft12) ft12.style.display = "none";
+        if(ft13) ft13.style.display = "none";
+        if(ft14) ft14.style.display = "none";
+        if(ft15) ft15.style.display = "none";
+
+        if(rf1) rf1.style.display = "flex";
+        if(rf2) rf2.style.display = "flex";
+        if(rf3) rf3.style.display = "flex";
+        if(rd1) rd1.style.display = "flex";
+        if(rd2) rd2.style.display = "flex";
+        if(rd3) rd3.style.display = "flex";
+    } else {
+        if(ft3) ft3.style.display = "flex";
+        if(ft11) ft11.style.display = "flex";
+        if(ft12) ft12.style.display = "flex";
+        if(ft13) ft13.style.display = "flex";
+        if(ft14) ft14.style.display = "flex";
+        if(ft15) ft15.style.display = "flex";
+
+        if(rf1) rf1.style.display = "none";
+        if(rf2) rf2.style.display = "none";
+        if(rf3) rf3.style.display = "none";
+        if(rd1) rd1.style.display = "none";
+        if(rd2) rd2.style.display = "none";
+        if(rd3) rd3.style.display = "none";
+    }
+
+    window.print();
 }
 
 function prepareFormData() {
@@ -477,6 +758,7 @@ function saveData(){
     .then(response=>{
         alert("Data Saved Successfully");
         document.getElementById("myForm").reset();
+        syncPrintForm();
     })
     .catch(error=>{
         alert("Error Saving Data");
@@ -515,6 +797,7 @@ function searchData() {
                 document.getElementById("t20").value = data.deathGratuity || "";
                 document.getElementById("t21").value = data.deathPension || "";
             }
+            syncPrintForm();
 
             alert("Data Search Successful");
         }
