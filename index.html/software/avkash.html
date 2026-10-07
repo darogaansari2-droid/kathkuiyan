@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>आकस्मिक अवकाश प्रार्थना पत्र जेनरेटर</title>
+    <style>
+        :root {
+            --primary-color: #003366;
+            --bg-color: #f4f6f9;
+            --border-color: #ccc;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nirmala UI', 'Mangal', Arial, sans-serif;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 20px;
+        }
+        @media(max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .control-panel {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .control-panel h2 {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 4px;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: #444;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 7px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .line-adjuster {
+            background: #f9f9f9;
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px dashed #bbb;
+        }
+        .line-adjuster label {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 2px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .slider-row span {
+            font-size: 11px;
+            color: #666;
+            min-width: 35px;
+        }
+        input[type="range"] {
+            flex: 1;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-action {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-save {
+            background: #28a745;
+            color: #fff;
+        }
+        .btn-save:hover {
+            background: #218838;
+        }
+        .btn-reset {
+            background: #dc3545;
+            color: #fff;
+        }
+        .btn-reset:hover {
+            background: #c82333;
+        }
+        .preview-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            background: #fff;
+            padding: 10mm 20mm 20mm 20mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+            position: relative;
+            font-size: 15px;
+            line-height: 1.8;
+            color: #000;
+        }
+        .letter-line {
+            position: relative;
+            outline: none;
+            transition: transform 0.1s ease;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+        }
+        .letter-line:focus {
+            background: #fffde7;
+            box-shadow: 0 0 3px rgba(0,0,255,0.3);
+        }
+        .btn-print {
+            margin-top: 20px;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+        }
+        .btn-print:hover {
+            background: #002244;
+        }
+
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .control-panel, .btn-print, h2 {
+                display: none !important;
+            }
+            .container {
+                display: block;
+            }
+            .preview-container {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+            }
+            .a4-page {
+                box-shadow: none;
+                padding: 10mm 20mm 20mm 20mm;
+                width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- नियंत्रण पैनल -->
+    <div class="control-panel">
+        <h2>वैश्विक सेटिंग्स (Global Settings)</h2>
+        <div class="form-group">
+            <label>फॉन्ट साइज (Font Size):</label>
+            <select id="globalFontSize" onchange="applyGlobalStyle()">
+                <option value="13px">छोटा (13px)</option>
+                <option value="15px" selected>सामान्य (15px)</option>
+                <option value="17px">बड़ा (17px)</option>
+                <option value="19px">बहुत बड़ा (19px)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>फॉन्ट स्टाइल (Font Weight):</label>
+            <select id="globalFontWeight" onchange="applyGlobalStyle()">
+                <option value="normal" selected>सामान्य (Normal)</option>
+                <option value="bold">बोल्ड (Bold)</option>
+            </select>
+        </div>
+
+        <h2>आकस्मिक अवकाश विवरण</h2>
+        <div class="form-group">
+            <label>आवेदक का नाम:</label>
+            <input type="text" id="inputName" value="" oninput="updateLetter()">
+        </div>
+        <div class="form-group">
+            <label>पद:</label>
+            <input type="text" id="inputPost" value="" oninput="updateLetter()">
+        </div>
+        <div class="form-group">
+            <label>अवकाश का प्रकार:</label>
+            <input type="text" id="inputLeaveType" value="आकस्मिक अवकाश " oninput="updateLetter()">
+        </div>
+        <div class="form-group">
+            <label>कब से दिनांक:</label>
+            <input type="date" id="inputStartDate" onchange="updateLetter()">
+        </div>
+        <div class="form-group">
+            <label>कब तक दिनांक:</label>
+            <input type="date" id="inputEndDate" onchange="updateLetter()">
+        </div>
+        <div class="form-group">
+            <label>कुल दिवस संख्या:</label>
+            <input type="text" id="inputDays" value="01" oninput="updateLetter()">
+        </div>
+        <div class="form-group">
+            <label>कारण:</label>
+            <input type="text" id="inputReason" value="प्रार्थी के घर आवश्यक  कार्य आ जाने के कारण" oninput="updateLetter()">
+        </div>
+
+        <h2 style="margin-top: 15px;">पंक्ति-वार स्थिति एवं एलाइनमेंट</h2>
+        
+        <div class="line-adjuster">
+            <label>1. सेवा में, लाइन</label>
+            <select id="align_line1" onchange="updateAlignment('line1', this.value)">
+                <option value="left" selected>Left (बाएँ)</option>
+                <option value="center">Center (बीच में)</option>
+                <option value="right">Right (दाएँ)</option>
+                <option value="justify">Justify</option>
+            </select>
+            <div class="slider-row">
+                <span>Shift:</span>
+                <input type="range" id="shift_line1" min="0" max="300" value="0" oninput="updateIndent('line1', this.value)">
+                <span id="val_line1">0px</span>
+            </div>
+        </div>
+
+        <div class="line-adjuster">
+            <label>2. प्रधानाचार्य महोदय लाइन</label>
+            <select id="align_line2" onchange="updateAlignment('line2', this.value)">
+                <option value="left" selected>Left (बाएँ)</option>
+                <option value="center">Center (बीच में)</option>
+                <option value="right">Right (दाएँ)</option>
+                <option value="justify">Justify</option>
+            </select>
+            <div class="slider-row">
+                <span>Shift:</span>
+                <input type="range" id="shift_line2" min="0" max="300" value="0" oninput="updateIndent('line2', this.value)">
+                <span id="val_line2">0px</span>
+            </div>
+        </div>
+
+        <div class="line-adjuster">
+            <label>3. विद्यालय का नाम</label>
+            <select id="align_line3" onchange="updateAlignment('line3', this.value)">
+                <option value="left" selected>Left (बाएँ)</option>
+                <option value="center">Center (बीच में)</option>
+                <option value="right">Right (दाएँ)</option>
+                <option value="justify">Justify</option>
+            </select>
+            <div class="slider-row">
+                <span>Shift:</span>
+                <input type="range" id="shift_line3" min="0" max="300" value="0" oninput="updateIndent('line3', this.value)">
+                <span id="val_line3">0px</span>
+            </div>
+        </div>
+
+        <div class="line-adjuster">
+            <label>4. विषय लाइन</label>
+            <select id="align_line4" onchange="updateAlignment('line4', this.value)">
+                <option value="left" selected>Left (बाएँ)</option>
+                <option value="center">Center (बीच में)</option>
+                <option value="right">Right (दाएँ)</option>
+                <option value="justify">Justify</option>
+            </select>
+            <div class="slider-row">
+                <span>Shift:</span>
+                <input type="range" id="shift_line4" min="0" max="300" value="0" oninput="updateIndent('line4', this.value)">
+                <span id="val_line4">0px</span>
+            </div>
+        </div>
+
+        <div class="line-adjuster">
+            <label>5. महोदय लाइन</label>
+            <select id="align_line5" onchange="updateAlignment('line5', this.value)">
+                <option value="left" selected>Left (बाएँ)</option>
+                <option value="center">Center (बीच में)</option>
+                <option value="right">Right (दाएँ)</option>
+                <option value="justify">Justify</option>
+            </select>
+            <div class="slider-row">
+                <span>Shift:</span>
+                <input type="range" id="shift_line5" min="0" max="300" value="0" oninput="updateIndent('line5', this.value)">
+                <span id="val_line5">0px</span>
+            </div>
+        </div>
+
+        <div class="line-adjuster">
+            <label>6. मुख्य पैराग्राफ (दोनों लाइनें)</label>
+            <select id="align_line6" onchange="updateAlignment('line6', this.value)">
+                <option value="left">Left (बाएँ)</option>
+                <option value="center">Center (बीच में)</option>
+                <option value="right">Right (दाएँ)</option>
+                <option value="justify" selected>Justify</option>
+            </select>
+            <div class="slider-row">
+                <span>Shift:</span>
+                <input type="range" id="shift_line6" min="0" max="200" value="0" oninput="updateIndent('line6', this.value)">
+                <span id="val_line6">0px</span>
+            </div>
+        </div>
+
+        <div class="line-adjuster">
+            <label>7. प्रार्थी / हस्ताक्षर दाहिना भाग</label>
+            <select id="align_line7" onchange="updateAlignment('line7', this.value)">
+                <option value="left" selected>Left (बाएँ)</option>
+                <option value="center">Center (बीच में)</option>
+                <option value="right">Right (दाएँ)</option>
+            </select>
+            <div class="slider-row">
+                <span>Shift:</span>
+                <input type="range" id="shift_line7" min="0" max="500" value="450" oninput="updateIndent('line7', this.value)">
+                <span id="val_line7">450px</span>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-action btn-save" onclick="saveSettings()">💾 सेटिंग सेव करें</button>
+            <button class="btn-action btn-reset" onclick="resetSettings()">🔄 रीसेट करें</button>
+        </div>
+    </div>
+
+    <!-- प्रीव्यू पैनल -->
+    <div class="preview-container">
+        <div class="a4-page" id="a4Page">
+            <div class="letter-line" id="l_line1" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">सेवा में,</div>
+            <div class="letter-line" id="l_line2" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">श्रीमान् प्रधानाचार्य महोदय,</div>
+            <div class="letter-line" id="l_line3" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा कठकुइयाँ, कुशीनगर </div>
+            
+            <div class="letter-line" id="l_line4" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()"><b>विषय:-</b> <span id="p_leaveType">आकस्मिक अवकाश </span> हेतु प्रार्थना पत्र।</div>
+            
+            <div class="letter-line" id="l_line5" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">महोदय,</div>
+            
+            <div class="letter-line" id="l_line6" contenteditable="true" style="text-align: justify; text-indent: 40px; margin-left: 0px;" oninput="autoSave()">निवेदन पूर्वक अवगत कराना है कि <span id="p_reason">प्रार्थी के घर आवश्यक  कार्य आ जाने के कारण</span> आज दिनांक <span id="p_startDate">....................</span> से दिनांक <span id="p_endDate">....................</span> तक (कुल <span id="p_days">01</span> दिवस) विद्यालय में उपस्थित होना संभव नहीं है।<br><br>अतः आपसे विनम्र निवेदन है कि मुझे उपर्युक्त तिथियों का <span id="p_leaveType2">आकस्मिक अवकाश </span> प्रदान करने की कृपा करें। इसके लिए मैं आपका  आभारी रहूँगा।</div>
+            
+            <div class="letter-line" id="l_line7" contenteditable="true" style="position: absolute; left: 450px; text-align: left;" oninput="autoSave()">
+                <b>प्रार्थी-</b><br>
+                नाम:- <span id="p_name"></span><br>
+                पद:- <span id="p_post"></span><br>
+                दिनांक:- <span id="p_currentDate"></span>
+            </div>
+        </div>
+
+        <button class="btn-print" onclick="window.print()">🖨️ A4 प्रिंट करें</button>
+    </div>
+</div>
+
+<script>
+    const today = new Date().toISOString().split('T')[0];
+
+    function updateLetter() {
+        let leaveVal = document.getElementById('inputLeaveType').value;
+        document.getElementById('p_name').innerText = document.getElementById('inputName').value;
+        document.getElementById('p_post').innerText = document.getElementById('inputPost').value;
+        document.getElementById('p_leaveType').innerText = leaveVal;
+        document.getElementById('p_leaveType2').innerText = leaveVal;
+        document.getElementById('p_reason').innerText = document.getElementById('inputReason').value;
+        document.getElementById('p_days').innerText = document.getElementById('inputDays').value;
+        
+        let sDate = document.getElementById('inputStartDate').value;
+        let eDate = document.getElementById('inputEndDate').value;
+        if(sDate) document.getElementById('p_startDate').innerText = sDate.split('-').reverse().join('-');
+        if(eDate) document.getElementById('p_endDate').innerText = eDate.split('-').reverse().join('-');
+        
+        document.getElementById('p_currentDate').innerText = new Date().toLocaleDateString('hi-IN');
+        autoSave();
+    }
+
+    function updateIndent(lineId, value) {
+        let el = document.getElementById('l_' + lineId);
+        if(lineId === 'line7') {
+            el.style.left = value + 'px';
+        } else {
+            el.style.marginLeft = value + 'px';
+        }
+        document.getElementById('val_' + lineId).innerText = value + 'px';
+        autoSave();
+    }
+
+    function updateAlignment(lineId, alignValue) {
+        let el = document.getElementById('l_' + lineId);
+        el.style.textAlign = alignValue;
+        autoSave();
+    }
+
+    function applyGlobalStyle() {
+        let size = document.getElementById('globalFontSize').value;
+        let weight = document.getElementById('globalFontWeight').value;
+        let page = document.getElementById('a4Page');
+        page.style.fontSize = size;
+        page.style.fontWeight = weight;
+        autoSave();
+    }
+
+    function autoSave() {
+        const data = {
+            inputName: document.getElementById('inputName').value,
+            inputPost: document.getElementById('inputPost').value,
+            inputLeaveType: document.getElementById('inputLeaveType').value,
+            inputStartDate: document.getElementById('inputStartDate').value,
+            inputEndDate: document.getElementById('inputEndDate').value,
+            inputDays: document.getElementById('inputDays').value,
+            inputReason: document.getElementById('inputReason').value,
+            globalFontSize: document.getElementById('globalFontSize').value,
+            globalFontWeight: document.getElementById('globalFontWeight').value,
+            
+            shift1: document.getElementById('shift_line1').value,
+            shift2: document.getElementById('shift_line2').value,
+            shift3: document.getElementById('shift_line3').value,
+            shift4: document.getElementById('shift_line4').value,
+            shift5: document.getElementById('shift_line5').value,
+            shift6: document.getElementById('shift_line6').value,
+            shift7: document.getElementById('shift_line7').value,
+
+            align1: document.getElementById('align_line1').value,
+            align2: document.getElementById('align_line2').value,
+            align3: document.getElementById('align_line3').value,
+            align4: document.getElementById('align_line4').value,
+            align5: document.getElementById('align_line5').value,
+            align6: document.getElementById('align_line6').value,
+            align7: document.getElementById('align_line7').value,
+
+            html1: document.getElementById('l_line1').innerHTML,
+            html2: document.getElementById('l_line2').innerHTML,
+            html3: document.getElementById('l_line3').innerHTML,
+            html4: document.getElementById('l_line4').innerHTML,
+            html5: document.getElementById('l_line5').innerHTML,
+            html6: document.getElementById('l_line6').innerHTML,
+            html7: document.getElementById('l_line7').innerHTML
+        };
+        localStorage.setItem('avkashAppDataSecureFinalV3', JSON.stringify(data));
+    }
+
+    function saveSettings() {
+        autoSave();
+        alert('✅ Aapki sabhi settings safalpurvak save ho gayi hain!');
+    }
+
+    function loadSettings() {
+        let saved = localStorage.getItem('avkashAppDataSecureFinalV3');
+        if(saved) {
+            let data = JSON.parse(saved);
+            document.getElementById('inputName').value = data.inputName || '';
+            document.getElementById('inputPost').value = data.inputPost || '';
+            document.getElementById('inputLeaveType').value = data.inputLeaveType || 'आकस्मिक अवकाश ';
+            document.getElementById('inputStartDate').value = data.inputStartDate || today;
+            document.getElementById('inputEndDate').value = data.inputEndDate || today;
+            document.getElementById('inputDays').value = data.inputDays || '01';
+            document.getElementById('inputReason').value = data.inputReason || 'प्रार्थी के घर आवश्यक  कार्य आ जाने के कारण';
+            
+            if(data.globalFontSize) document.getElementById('globalFontSize').value = data.globalFontSize;
+            if(data.globalFontWeight) document.getElementById('globalFontWeight').value = data.globalFontWeight;
+
+            for(let i=1; i<=7; i++) {
+                let val = data['shift' + i];
+                if(val !== undefined) {
+                    document.getElementById('shift_line' + i).value = val;
+                    updateIndent('line' + i, val);
+                }
+                let al = data['align' + i];
+                if(al !== undefined) {
+                    document.getElementById('align_line' + i).value = al;
+                    updateAlignment('line' + i, al);
+                }
+            }
+
+            if(data.html1) document.getElementById('l_line1').innerHTML = data.html1;
+            if(data.html2) document.getElementById('l_line2').innerHTML = data.html2;
+            if(data.html3) document.getElementById('l_line3').innerHTML = data.html3;
+            if(data.html4) document.getElementById('l_line4').innerHTML = data.html4;
+            if(data.html5) document.getElementById('l_line5').innerHTML = data.html5;
+            if(data.html6) document.getElementById('l_line6').innerHTML = data.html6;
+            if(data.html7) document.getElementById('l_line7').innerHTML = data.html7;
+
+            applyGlobalStyle();
+        } else {
+            document.getElementById('inputStartDate').value = today;
+            document.getElementById('inputEndDate').value = today;
+            updateIndent('line7', 450);
+            applyGlobalStyle();
+        }
+        updateLetter();
+    }
+
+    function resetSettings() {
+        if(confirm('Kya aap sabhi settings ko reset karna chahte hain?')) {
+            localStorage.removeItem('avkashAppDataSecureFinalV3');
+            location.reload();
+        }
+    }
+
+    window.onload = function() {
+        loadSettings();
+    }
+</script>
+
+</body>
+</html>
