@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>आकस्मिक अवकाश प्रार्थना पत्र जेनरेटर</title>
+    <title>अवकाश प्रार्थना पत्र जेनरेटर</title>
     <style>
         :root {
             --primary-color: #003366;
@@ -214,7 +214,7 @@
             </select>
         </div>
 
-        <h2>आकस्मिक अवकाश विवरण</h2>
+        <h2> अवकाश विवरण</h2>
         <div class="form-group">
             <label>आवेदक का नाम:</label>
             <input type="text" id="inputName" value="" oninput="updateLetter()">
@@ -225,7 +225,13 @@
         </div>
         <div class="form-group">
             <label>अवकाश का प्रकार:</label>
-            <input type="text" id="inputLeaveType" value="आकस्मिक अवकाश " oninput="updateLetter()">
+            <select id="inputLeaveType" onchange="updateLetter()">
+                <option value="आकस्मिक अवकाश" selected>आकस्मिक अवकाश (Casual Leave)</option>
+                <option value="अर्जित अवकाश">अजित अवकाश (Earned Leave)</option>
+                <option value="बाल्यकाल देखभाल अवकाश">बाल्यकाल देखभाल अवकाश (Child Care Leave)</option>
+                <option value="चिकित्सा अवकाश">चिकित्सा अवकाश (Medical Leave)</option>
+                <option value="विशेष अवकाश">विशेष अवकाश (Special Leave)</option>
+            </select>
         </div>
         <div class="form-group">
             <label>कब से दिनांक:</label>
@@ -241,7 +247,7 @@
         </div>
         <div class="form-group">
             <label>कारण:</label>
-            <input type="text" id="inputReason" value="प्रार्थी के घर आवश्यक  कार्य आ जाने के कारण" oninput="updateLetter()">
+            <input type="text" id="inputReason" value="प्रार्थी के घर आवश्यक कार्य आ जाने के कारण" oninput="updateLetter()">
         </div>
 
         <h2 style="margin-top: 15px;">पंक्ति-वार स्थिति एवं एलाइनमेंट</h2>
@@ -363,11 +369,11 @@
             <div class="letter-line" id="l_line2" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">श्रीमान् प्रधानाचार्य महोदय,</div>
             <div class="letter-line" id="l_line3" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा कठकुइयाँ, कुशीनगर </div>
             
-            <div class="letter-line" id="l_line4" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()"><b>विषय:-</b> <span id="p_leaveType">आकस्मिक अवकाश </span> हेतु प्रार्थना पत्र।</div>
+            <div class="letter-line" id="l_line4" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()"><b>विषय:-</b> <span id="p_leaveType">आकस्मिक अवकाश</span> हेतु प्रार्थना पत्र।</div>
             
             <div class="letter-line" id="l_line5" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">महोदय,</div>
             
-            <div class="letter-line" id="l_line6" contenteditable="true" style="text-align: justify; text-indent: 40px; margin-left: 0px;" oninput="autoSave()">निवेदन पूर्वक अवगत कराना है कि <span id="p_reason">प्रार्थी के घर आवश्यक  कार्य आ जाने के कारण</span> आज दिनांक <span id="p_startDate">....................</span> से दिनांक <span id="p_endDate">....................</span> तक (कुल <span id="p_days">01</span> दिवस) विद्यालय में उपस्थित होना संभव नहीं है।<br><br>अतः आपसे विनम्र निवेदन है कि मुझे उपर्युक्त तिथियों का <span id="p_leaveType2">आकस्मिक अवकाश </span> प्रदान करने की कृपा करें। इसके लिए मैं आपका  आभारी रहूँगा।</div>
+            <div class="letter-line" id="l_line6" contenteditable="true" style="text-align: justify; text-indent: 40px; margin-left: 0px;" oninput="autoSave()">निवेदन पूर्वक अवगत कराना है कि <span id="p_reason">प्रार्थी के घर आवश्यक कार्य आ जाने के कारण</span> आज दिनांक <span id="p_startDate">....................</span> से दिनांक <span id="p_endDate">....................</span> तक (कुल <span id="p_days">01</span> दिवस) विद्यालय में उपस्थित होना संभव नहीं है。<br><br>अतः आपसे विनम्र निवेदन है कि मुझे उपर्युक्त तिथियों का <span id="p_leaveType2">आकस्मिक अवकाश</span> प्रदान करने की कृपा करें। इसके लिए मैं आपका आभारी रहूँगा।</div>
             
             <div class="letter-line" id="l_line7" contenteditable="true" style="position: absolute; left: 450px; text-align: left;" oninput="autoSave()">
                 <b>प्रार्थी-</b><br>
@@ -391,10 +397,23 @@
         document.getElementById('p_leaveType').innerText = leaveVal;
         document.getElementById('p_leaveType2').innerText = leaveVal;
         document.getElementById('p_reason').innerText = document.getElementById('inputReason').value;
-        document.getElementById('p_days').innerText = document.getElementById('inputDays').value;
         
         let sDate = document.getElementById('inputStartDate').value;
         let eDate = document.getElementById('inputEndDate').value;
+        
+        if(sDate && eDate) {
+            let start = new Date(sDate);
+            let end = new Date(eDate);
+            let diffTime = end - start;
+            if(diffTime >= 0) {
+                let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                let formattedDays = diffDays < 10 ? '0' + diffDays : diffDays;
+                document.getElementById('inputDays').value = formattedDays;
+            }
+        }
+
+        document.getElementById('p_days').innerText = document.getElementById('inputDays').value;
+
         if(sDate) document.getElementById('p_startDate').innerText = sDate.split('-').reverse().join('-');
         if(eDate) document.getElementById('p_endDate').innerText = eDate.split('-').reverse().join('-');
         
@@ -478,11 +497,11 @@
             let data = JSON.parse(saved);
             document.getElementById('inputName').value = data.inputName || '';
             document.getElementById('inputPost').value = data.inputPost || '';
-            document.getElementById('inputLeaveType').value = data.inputLeaveType || 'आकस्मिक अवकाश ';
+            document.getElementById('inputLeaveType').value = data.inputLeaveType || 'आकस्मिक अवकाश';
             document.getElementById('inputStartDate').value = data.inputStartDate || today;
             document.getElementById('inputEndDate').value = data.inputEndDate || today;
             document.getElementById('inputDays').value = data.inputDays || '01';
-            document.getElementById('inputReason').value = data.inputReason || 'प्रार्थी के घर आवश्यक  कार्य आ जाने के कारण';
+            document.getElementById('inputReason').value = data.inputReason || 'प्रार्थी के घर आवश्यक कार्य आ जाने के कारण';
             
             if(data.globalFontSize) document.getElementById('globalFontSize').value = data.globalFontSize;
             if(data.globalFontWeight) document.getElementById('globalFontWeight').value = data.globalFontWeight;
