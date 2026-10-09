@@ -133,6 +133,22 @@
             color: #fff;
         }
 
+        /* Quick Entry Form Styling */
+        .quick-entry-box {
+            background: #fafafa;
+            border: 1px solid #bbb;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .quick-entry-box h3 {
+            font-size: 13px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #003366;
+        }
+
         .timetable-section {
             display: none;
         }
@@ -171,7 +187,6 @@
             color: #000;
         }
 
-        /* Header patti ka halka rang aur black text */
         th {
             background-color: #dcdcdc !important;
             color: #000 !important;
@@ -215,12 +230,36 @@
             box-shadow: none !important;
         }
 
+        textarea.editable-cell.period-8-cell {
+            font-size: var(--p8-font-size, 9px) !important;
+        }
+
         textarea.editable-cell:focus {
             background: #f0f0f0;
             outline: 1px solid #000 !important;
         }
 
-        /* Recess Styling */
+        .quick-textarea {
+            width: 100%;
+            padding: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #000;
+            border: 1px solid #888;
+            border-radius: 3px;
+            font-family: 'Poppins', sans-serif;
+            resize: vertical;
+            height: 45px;
+            text-align: center;
+        }
+
+        /* Placeholder formatting for clear visibility */
+        .quick-textarea::placeholder, input::placeholder {
+            color: #555;
+            font-weight: 600;
+            opacity: 1;
+        }
+
         .break-cell {
             background-color: #eaeaea !important;
             font-weight: bold;
@@ -235,7 +274,6 @@
             border: 1px solid #000 !important;
         }
 
-        /* Action Buttons */
         .action-btns {
             display: flex;
             justify-content: space-between;
@@ -296,7 +334,6 @@
 
         .print-btn:hover { background-color: #333; }
 
-        /* Print Settings & Clean Glitch-free Borders */
         @media print {
             @page {
                 size: A4 landscape;
@@ -320,7 +357,7 @@
                 max-width: 100% !important;
             }
 
-            .top-controls, .btn-add, .print-btn, .no-print {
+            .top-controls, .btn-add, .print-btn, .no-print, .quick-entry-box {
                 display: none !important;
             }
 
@@ -330,6 +367,11 @@
 
             .timetable-section.print-active {
                 display: block !important;
+            }
+
+            #table-format-2 th:first-child,
+            #table-format-2 td:first-child {
+                display: none !important;
             }
 
             table {
@@ -375,16 +417,21 @@
                 resize: none !important;
                 -webkit-text-fill-color: #000 !important;
             }
+
+            textarea.editable-cell.period-8-cell {
+                font-size: var(--p8-font-size, 9px) !important;
+                -webkit-text-fill-color: #000 !important;
+            }
         }
     </style>
 </head>
-<body id="bodyRoot" style="--row-padding: 6px; --col-width-factor: 4px; --textarea-min-height: 32px; --font-size: 11px;">
+<body id="bodyRoot" style="--row-padding: 6px; --col-width-factor: 4px; --textarea-min-height: 32px; --font-size: 11px; --p8-font-size: 9px;">
 
 <div class="container">
     <!-- School Header -->
     <div class="school-header">
         <h1>श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा कठकुइयाँ, कुशीनगर</h1>
-        <h2>अध्यापकवार एवं कक्षावार समय सारिणी सत्र - <span id="display-session">2026-27</span></h2>
+        <h2> समय सारिणी सत्र - <span id="display-session">2026-27</span></h2>
     </div>
 
     <!-- Top Controls & Session & Settings -->
@@ -408,10 +455,13 @@
             <input type="number" id="colWidthInput" value="4" min="2" max="20" style="width: 38px;" oninput="updateColWidth(this.value)"> px
 
             <label for="fontSizeInput" style="margin-left: 3px;">फॉन्ट:</label>
-            <input type="number" id="fontSizeInput" value="11" min="8" max="16" style="width: 38px;" oninput="updateFontSize(this.value)"> px
+            <input type="number" id="fontSizeInput" value="11" min="7" max="16" style="width: 40px;" oninput="updateFontSize(this.value)"> px
+
+            <label for="p8FontSizeInput" style="margin-left: 3px;">8वी घंटी फॉन्ट:</label>
+            <input type="number" id="p8FontSizeInput" value="9" min="6" max="16" style="width: 40px;" oninput="updateP8FontSize(this.value)"> px
 
             <label for="printSelect" style="margin-left: 3px;">प्रिंट मोड:</label>
-            <select id="printSelect" class="print-select">
+            <select id="printSelect" class="print-select" onchange="onPrintSelectChange(this.value)">
                 <option value="1">फॉर्मेट 1</option>
                 <option value="2">फॉर्मेट 2</option>
             </select>
@@ -424,6 +474,64 @@
             <button class="tab-btn active" id="btn-tab-1" onclick="switchTab(1)">फॉर्मेट 1: अध्यापकवार</button>
             <button class="tab-btn" id="btn-tab-2" onclick="switchTab(2)">फॉर्मेट 2: कक्षावार</button>
         </div>
+    </div>
+
+    <!-- QUICK ENTRY FORM FOR FORMAT 1 (TEACHER) -->
+    <div id="quick-form-1" class="quick-entry-box no-print">
+        <h3>📝 त्वरित प्रविष्टि / अपडेट फॉर्म (अध्यापकवार)</h3>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: flex-end;">
+            <div style="width: 140px;">
+                <label style="font-size: 11px; font-weight: 600;">क्रम संख्या (Kramank):</label><br>
+                <input type="number" id="q1SNo" min="1" placeholder="जैसे: 1" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+            </div>
+            <div style="flex-grow: 1; min-width: 200px;">
+                <label style="font-size: 11px; font-weight: 600;">अध्यापक का नाम (Name):</label><br>
+                <input type="text" id="q1Name" placeholder="अध्यापक का पूरा नाम या नाम से खोजें" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+            </div>
+            <div>
+                <button class="setting-save-btn" onclick="searchData1()" style="padding: 6px 12px; font-size: 11px; background-color: #003366;">🔍 खोजें (Search)</button>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 10px;">
+            <div><label style="font-size: 10px; font-weight: 600;">I घंटी:</label><textarea id="q1P0" class="quick-textarea" placeholder=""></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">II घंटी:</label><textarea id="q1P1" class="quick-textarea" placeholder=""></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">III घंटी:</label><textarea id="q1P2" class="quick-textarea" placeholder=""></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">IV घंटी:</label><textarea id="q1P3" class="quick-textarea" placeholder=""></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">V घंटी:</label><textarea id="q1P4" class="quick-textarea" placeholder=""></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">VI घंटी:</label><textarea id="q1P5" class="quick-textarea" placeholder=""></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">VII घंटी:</label><textarea id="q1P6" class="quick-textarea" placeholder=""></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">VIII घंटी:</label><textarea id="q1P7" class="quick-textarea" placeholder=""></textarea></div>
+        </div>
+        <button class="setting-save-btn" onclick="applyQuickEntry1()" style="padding: 6px 14px; font-size: 12px;">✅ प्रविष्टि जोड़ें / अपडेट करें</button>
+    </div>
+
+    <!-- QUICK ENTRY FORM FOR FORMAT 2 (CLASS) -->
+    <div id="quick-form-2" class="quick-entry-box no-print" style="display: none;">
+        <h3>📝 त्वरित प्रविष्टि / अपडेट फॉर्म (कक्षावार)</h3>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: flex-end;">
+            <div style="width: 140px;">
+                <label style="font-size: 11px; font-weight: 600;">क्रम संख्या / क्रमांक:</label><br>
+                <input type="number" id="q2SNo" min="1" placeholder="जैसे: 1" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+            </div>
+            <div style="flex-grow: 1; min-width: 200px;">
+                <label style="font-size: 11px; font-weight: 600;">कक्षा का नाम (Class):</label><br>
+                <input type="text" id="q2Class" placeholder="जैसे: XII A या नाम से खोजें" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+            </div>
+            <div>
+                <button class="setting-save-btn" onclick="searchData2()" style="padding: 6px 12px; font-size: 11px; background-color: #003366;">🔍 खोजें (Search)</button>
+            </div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 10px;">
+            <div><label style="font-size: 10px; font-weight: 600;">I घंटी:</label><textarea id="q2P0" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">II घंटी:</label><textarea id="q2P1" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">III घंटी:</label><textarea id="q2P2" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">IV घंटी:</label><textarea id="q2P3" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">V घंटी:</label><textarea id="q2P4" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">VI घंटी:</label><textarea id="q2P5" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">VII घंटी:</label><textarea id="q2P6" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+            <div><label style="font-size: 10px; font-weight: 600;">VIII घंटी:</label><textarea id="q2P7" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+        </div>
+        <button class="setting-save-btn" onclick="applyQuickEntry2()" style="padding: 6px 14px; font-size: 12px;">✅ प्रविष्टि जोड़ें / अपडेट करें</button>
     </div>
 
     <!-- FORMAT 1: अध्यापकवार समय सारिणी -->
@@ -518,9 +626,145 @@
         root.style.setProperty('--font-size', num + 'px');
     }
 
+    function updateP8FontSize(val) {
+        const root = document.getElementById('bodyRoot');
+        const num = parseInt(val) || 9;
+        root.style.setProperty('--p8-font-size', num + 'px');
+    }
+
     function updateSession(val) {
         const displaySession = document.getElementById('display-session');
         if (displaySession) displaySession.innerText = val;
+    }
+
+    // Search Data for Format 1 (Teacher)
+    function searchData1() {
+        let sNo = parseInt(document.getElementById('q1SNo').value);
+        let nameQuery = document.getElementById('q1Name').value.trim().toLowerCase();
+        let foundIndex = -1;
+
+        if (!isNaN(sNo) && sNo > 0) {
+            foundIndex = sNo - 1;
+        } else if (nameQuery !== "") {
+            foundIndex = dataF1.findIndex(item => item.name.toLowerCase().includes(nameQuery));
+        }
+
+        if (foundIndex >= 0 && foundIndex < dataF1.length) {
+            let item = dataF1[foundIndex];
+            document.getElementById('q1SNo').value = foundIndex + 1;
+            document.getElementById('q1Name').value = item.name;
+            for (let i = 0; i < 8; i++) {
+                document.getElementById('q1P' + i).value = item.periods[i] === "-" ? "" : (item.periods[i] || "");
+            }
+            alert(`🔍 अध्यापक मिल गए: '${item.name}' (क्रम सं० ${foundIndex + 1}). अब आप इसे बदलकर अपडेट कर सकते हैं!`);
+        } else {
+            alert('❌ कोई रिकॉर्ड नहीं मिला! कृपया सही क्रम संख्या या नाम दर्ज करें।');
+        }
+    }
+
+    // Quick Entry Handler for Format 1 (Teacher)
+    function applyQuickEntry1() {
+        let sNo = parseInt(document.getElementById('q1SNo').value);
+        let name = document.getElementById('q1Name').value.trim();
+
+        if (!name) {
+            alert('कृपया अध्यापक का नाम दर्ज करें!');
+            return;
+        }
+
+        let periodsArr = [];
+        for (let i = 0; i < 8; i++) {
+            let val = document.getElementById('q1P' + i).value.trim();
+            periodsArr.push(val === "" ? "-" : val);
+        }
+
+        if (!isNaN(sNo) && sNo > 0) {
+            let index = sNo - 1;
+            if (index < dataF1.length) {
+                dataF1[index].name = name;
+                dataF1[index].periods = periodsArr;
+                alert(`✅ अध्यापकवार क्रम संख्या ${sNo} (${name}) सफलतापूर्वक अपडेट कर दी गई है!`);
+            } else {
+                dataF1.push({name: name, periods: periodsArr});
+                alert(`✅ नया अध्यापक '${name}' सूची में जोड़ दिया गया है!`);
+            }
+        } else {
+            dataF1.push({name: name, periods: periodsArr});
+            alert(`✅ नया अध्यापक '${name}' अंत में जोड़ दिया गया है!`);
+        }
+
+        renderTables();
+        
+        document.getElementById('q1SNo').value = '';
+        document.getElementById('q1Name').value = '';
+        for (let i = 0; i < 8; i++) {
+            document.getElementById('q1P' + i).value = '';
+        }
+    }
+
+    // Search Data for Format 2 (Class)
+    function searchData2() {
+        let sNo = parseInt(document.getElementById('q2SNo').value);
+        let clsQuery = document.getElementById('q2Class').value.trim().toLowerCase();
+        let foundIndex = -1;
+
+        if (!isNaN(sNo) && sNo > 0) {
+            foundIndex = sNo - 1;
+        } else if (clsQuery !== "") {
+            foundIndex = dataF2.findIndex(item => item.cls.toLowerCase().includes(clsQuery));
+        }
+
+        if (foundIndex >= 0 && foundIndex < dataF2.length) {
+            let item = dataF2[foundIndex];
+            document.getElementById('q2SNo').value = foundIndex + 1;
+            document.getElementById('q2Class').value = item.cls;
+            for (let i = 0; i < 8; i++) {
+                document.getElementById('q2P' + i).value = item.periods[i] === "-" ? "" : (item.periods[i] || "");
+            }
+            alert(`🔍 कक्षा मिल गई: '${item.cls}' (क्रम सं० ${foundIndex + 1}). अब आप इसे बदलकर अपडेट कर सकते हैं!`);
+        } else {
+            alert('❌ कोई रिकॉर्ड नहीं मिला! कृपया सही क्रम संख्या या कक्षा का नाम दर्ज करें।');
+        }
+    }
+
+    // Quick Entry Handler for Format 2 (Class)
+    function applyQuickEntry2() {
+        let sNo = parseInt(document.getElementById('q2SNo').value);
+        let clsName = document.getElementById('q2Class').value.trim();
+
+        if (!clsName) {
+            alert('कृपया कक्षा का नाम दर्ज करें!');
+            return;
+        }
+
+        let periodsArr = [];
+        for (let i = 0; i < 8; i++) {
+            let val = document.getElementById('q2P' + i).value.trim();
+            periodsArr.push(val === "" ? "-" : val);
+        }
+
+        if (!isNaN(sNo) && sNo > 0) {
+            let index = sNo - 1;
+            if (index < dataF2.length) {
+                dataF2[index].cls = clsName;
+                dataF2[index].periods = periodsArr;
+                alert(`✅ कक्षा '${clsName}' (क्रम ${sNo}) की समय सारिणी सफलतापूर्वक अपडेट कर दी गई है!`);
+            } else {
+                dataF2.push({cls: clsName, periods: periodsArr});
+                alert(`✅ नई कक्षा '${clsName}' सूची में जोड़ दी गई है!`);
+            }
+        } else {
+            dataF2.push({cls: clsName, periods: periodsArr});
+            alert(`✅ नई कक्षा '${clsName}' अंत में जोड़ दी गई है!`);
+        }
+
+        renderTables();
+        
+        document.getElementById('q2SNo').value = '';
+        document.getElementById('q2Class').value = '';
+        for (let i = 0; i < 8; i++) {
+            document.getElementById('q2P' + i).value = '';
+        }
     }
 
     function saveSettings() {
@@ -530,6 +774,7 @@
             rowPadding: document.getElementById('rowPaddingInput').value,
             colWidth: document.getElementById('colWidthInput').value,
             fontSize: document.getElementById('fontSizeInput').value,
+            p8FontSize: document.getElementById('p8FontSizeInput').value,
             printMode: document.getElementById('printSelect').value
         };
         localStorage.setItem('skic_timetable_settings', JSON.stringify(settings));
@@ -552,7 +797,10 @@
         updateColWidth(4);
         document.getElementById('fontSizeInput').value = "11";
         updateFontSize(11);
+        document.getElementById('p8FontSizeInput').value = "9";
+        updateP8FontSize(9);
         document.getElementById('printSelect').value = "1";
+        onPrintSelectChange("1");
         
         dataF1 = JSON.parse(JSON.stringify(defaultDataF1));
         dataF2 = JSON.parse(JSON.stringify(defaultDataF2));
@@ -583,7 +831,14 @@
                     document.getElementById('fontSizeInput').value = settings.fontSize;
                     updateFontSize(settings.fontSize);
                 }
-                if (settings.printMode) document.getElementById('printSelect').value = settings.printMode;
+                if (settings.p8FontSize) {
+                    document.getElementById('p8FontSizeInput').value = settings.p8FontSize;
+                    updateP8FontSize(settings.p8FontSize);
+                }
+                if (settings.printMode) {
+                    document.getElementById('printSelect').value = settings.printMode;
+                    onPrintSelectChange(settings.printMode);
+                }
             } catch (e) {
                 console.error("Error loading settings", e);
             }
@@ -623,7 +878,8 @@
             
             for (let i = 0; i < 8; i++) {
                 let pVal = row.periods[i] || "-";
-                html += `<td><textarea class="editable-cell" onchange="dataF1[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
+                let extraClass = (i === 7) ? " editable-cell period-8-cell" : " editable-cell";
+                html += `<td><textarea class="${extraClass}" onchange="dataF1[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
                 if (i + 1 === recessAfter) {
                     html += `<td class="break-cell">मध्यान्तर</td>`;
                 }
@@ -642,7 +898,7 @@
 
         // --- Render Table 2 ---
         const thead2 = document.getElementById('thead-f2');
-        let hRow2 = `<tr><th style="width: 7%;">कक्षा</th>`;
+        let hRow2 = `<tr><th style="width: 4%;">क्रम सं०</th><th style="width: 8%;">कक्षा</th>`;
         for (let i = 0; i < 8; i++) {
             hRow2 += `<th style="width: 10%;">${periodNames[i]}</th>`;
             if (i + 1 === recessAfter) {
@@ -656,11 +912,12 @@
         tbody2.innerHTML = '';
         dataF2.forEach((row, index) => {
             let tr = document.createElement('tr');
-            let html = `<td><input type="text" class="editable-cell" value="${row.cls}" onchange="dataF2[${index}].cls=this.value"></td>`;
+            let html = `<td>${index + 1}</td><td><input type="text" class="editable-cell" value="${row.cls}" onchange="dataF2[${index}].cls=this.value"></td>`;
             
             for (let i = 0; i < 8; i++) {
                 let pVal = row.periods[i] || "-";
-                html += `<td><textarea class="editable-cell" onchange="dataF2[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
+                let extraClass = (i === 7) ? " editable-cell period-8-cell" : " editable-cell";
+                html += `<td><textarea class="${extraClass}" onchange="dataF2[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
                 if (i + 1 === recessAfter) {
                     html += `<td class="break-cell">मध्यान्तर</td>`;
                 }
@@ -741,6 +998,18 @@
         document.getElementById('section-' + formatNum).classList.add('active');
         document.getElementById('btn-tab-' + formatNum).classList.add('active');
         document.getElementById('printSelect').value = formatNum;
+
+        if (formatNum === 1) {
+            document.getElementById('quick-form-1').style.display = 'block';
+            document.getElementById('quick-form-2').style.display = 'none';
+        } else {
+            document.getElementById('quick-form-1').style.display = 'none';
+            document.getElementById('quick-form-2').style.display = 'block';
+        }
+    }
+
+    function onPrintSelectChange(val) {
+        switchTab(parseInt(val));
     }
 
     function triggerPrint() {
@@ -752,7 +1021,6 @@
         window.print();
     }
 
-    // Initialize application safely after script load
     window.onload = function() {
         loadSavedSettings();
         renderTables();
