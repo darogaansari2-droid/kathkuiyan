@@ -187,6 +187,13 @@
             color: #000;
         }
 
+        /* Specific alignment for Format 1 Teacher Name column */
+        #table-format-1 th:nth-child(2),
+        #table-format-1 td:nth-child(2) {
+            text-align: left !important;
+            padding-left: 8px;
+        }
+
         th {
             background-color: #dcdcdc !important;
             color: #000 !important;
@@ -206,6 +213,11 @@
             padding: 2px;
             color: #000;
             box-shadow: none !important;
+        }
+
+        /* Left align name input specifically in Format 1 */
+        #table-format-1 td:nth-child(2) input.editable-cell {
+            text-align: left !important;
         }
 
         input.editable-cell:focus {
@@ -253,7 +265,6 @@
             text-align: center;
         }
 
-        /* Placeholder formatting for clear visibility */
         .quick-textarea::placeholder, input::placeholder {
             color: #555;
             font-weight: 600;
@@ -396,6 +407,12 @@
                 color: #000 !important;
             }
 
+            #table-format-1 th:nth-child(2),
+            #table-format-1 td:nth-child(2) {
+                text-align: left !important;
+                padding-left: 6px !important;
+            }
+
             th {
                 background-color: #dcdcdc !important;
                 color: #000 !important;
@@ -416,6 +433,10 @@
                 color: #000 !important;
                 resize: none !important;
                 -webkit-text-fill-color: #000 !important;
+            }
+
+            #table-format-1 td:nth-child(2) input.editable-cell {
+                text-align: left !important;
             }
 
             textarea.editable-cell.period-8-cell {
