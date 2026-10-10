@@ -607,7 +607,7 @@
         {name: "श्रीमती पुनीता उपाध्याय", periods: ["XI A\nसंस्कृत", "X A\nहिंदी", "XI A\nहिंदी", "-", "IX A\nसंस्कृत", "-", "हिन्दी व्या०\nXI A", "-", "-"]},
         {name: "श्री ओंकारेश्वर मिश्र", periods: ["-", "-", "IX A\nविज्ञान", "-", "X A\nविज्ञान", "-", "विज्ञान प्रयो०\nIXA(सो०मं०)", "-", "-"]},
         {name: "श्री प्रवीण कुमार पाण्डेय", periods: ["-", "-", "VI\nअंग्रेजी", "X D\nसा० विज्ञान", "IX D\nसा० विज्ञान", "-", "हिन्दी व्या०\nIXA(वृ०शु०)", "-", "भूगोल प्रयो०\nXIA(सो०मं०)"]},
-        {name: "श्री दुर्गेश पाण्डेय", periods: ["-", "X D\nगणित", "IX D\nविज्ञान", "IX D\nगणित", "X D\nविज्ञान", "-", "-", "-", "विज्ञान प्रयो०\nXD (वृ०शु०)"]}
+        {name: "श्री दुर्गेश पाण्डेय", periods: ["-", "X D\nगणित", "IX D\nविज्ञान", "IX D\nगणित", "X D\nविज्ञान", "-", "-", "-", "विज्ञान प्रयो०\nXD (वृ०शु0)"]}
     ];
 
     let defaultDataF2 = [
@@ -699,11 +699,19 @@
             periodsArr.push(val === "" ? "-" : val);
         }
 
+        let nextIndexToSelect = "";
+
         if (!isNaN(sNo) && sNo > 0) {
             let index = sNo - 1;
             if (index < dataF1.length) {
                 dataF1[index].name = name;
                 dataF1[index].periods = periodsArr;
+                
+                // Agla kramank tay karna
+                if ((index + 1) < dataF1.length) {
+                    nextIndexToSelect = index + 2;
+                }
+
                 alert(`✅ अध्यापकवार क्रम संख्या ${sNo} (${name}) सफलतापूर्वक अपडेट कर दी गई है!`);
             } else {
                 dataF1.push({name: name, periods: periodsArr});
@@ -716,10 +724,16 @@
 
         renderTables();
         
-        document.getElementById('q1SNo').value = '';
+        // Input fields ko clear ya next kramank par set karna
+        document.getElementById('q1SNo').value = nextIndexToSelect;
         document.getElementById('q1Name').value = '';
         for (let i = 0; i < 8; i++) {
             document.getElementById('q1P' + i).value = '';
+        }
+
+        // Yadi agla kramank maujood hai to uska data turant form me load kar dena taki aur asani ho
+        if (nextIndexToSelect !== "") {
+            searchData1();
         }
     }
 
@@ -764,11 +778,18 @@
             periodsArr.push(val === "" ? "-" : val);
         }
 
+        let nextIndexToSelect = "";
+
         if (!isNaN(sNo) && sNo > 0) {
             let index = sNo - 1;
             if (index < dataF2.length) {
                 dataF2[index].cls = clsName;
                 dataF2[index].periods = periodsArr;
+
+                if ((index + 1) < dataF2.length) {
+                    nextIndexToSelect = index + 2;
+                }
+
                 alert(`✅ कक्षा '${clsName}' (क्रम ${sNo}) की समय सारिणी सफलतापूर्वक अपडेट कर दी गई है!`);
             } else {
                 dataF2.push({cls: clsName, periods: periodsArr});
@@ -781,10 +802,14 @@
 
         renderTables();
         
-        document.getElementById('q2SNo').value = '';
+        document.getElementById('q2SNo').value = nextIndexToSelect;
         document.getElementById('q2Class').value = '';
         for (let i = 0; i < 8; i++) {
             document.getElementById('q2P' + i).value = '';
+        }
+
+        if (nextIndexToSelect !== "") {
+            searchData2();
         }
     }
 
