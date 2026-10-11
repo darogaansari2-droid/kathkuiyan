@@ -321,7 +321,7 @@
                 </div>
                 <div class="form-group">
                     <label>शैक्षणिक सत्र (Academic Session)</label>
-                    <input type="text" id="academicSession" value="2025-2026" placeholder="जैसे: 2025-2026" required>
+                    <input type="text" id="academicSession" value="2025-2026" placeholder="जैसे: 2025-26" required>
                 </div>
                 <div class="form-group">
                     <label>अनुक्रमांक (Roll No)</label>
@@ -406,7 +406,7 @@
             <div class="marksheet-header-content">
                 <h2>श्री कृष्ण इण्टरमीडिएट कालेज सेमरा कठकुइयाँ</h2>
                 <h3>प्रगति-पत्र  (Progress Report Card)</h3>
-                <p>सत्र: <span id="mSession">2025-2026</span></p>
+                <p>सत्र: <span id="mSession">2025-26</span></p>
             </div>
         </div>
         
@@ -427,13 +427,13 @@
         <div id="mNaitikBox" style="margin-top: 15px; border: 1px solid #ccc; padding: 10px; border-radius: 4px; background: #fafafa; display: none;">
             <strong id="mNaitikLabel">नैतिक खेल एवं शारीरिक शिक्षा</strong>: 
             पूर्णांक: <span style="font-weight: bold;">100</span> | 
-            प्राप्तांक: <span id="mNaitikObt" style="font-weight: bold; color: #d93025;"></span> | 
-            ग्रेड: <span id="mNaitikGrade" style="font-weight: bold; color: var(--primary-color); font-size: 15px;"></span>
+            प्राप्तांक: <span id="mNaitikObt" style="font-weight: bold; color: #d93025;"></span>
         </div>
 
         <p style="margin-top: 20px; font-size: 16px;">
             <strong>महायोग (Grand Total):</strong> <span id="mTotal"></span> / <span id="mMaxTotal"></span> | 
             <strong>प्रतिशत (Percentage):</strong> <span id="mPercent"></span>% | 
+            <strong>ग्रेड (Grade):</strong> <span id="mOverallGrade" style="font-weight: bold; color: var(--primary-color);"></span> | 
             <strong>परिणाम (Result):</strong> <span id="mResult" style="color: green; font-weight: bold;">उत्तीर्ण (Pass)</span>
         </p>
 
@@ -678,7 +678,7 @@
         const rec = records[index];
 
         document.getElementById('studentClass').value = rec.studentClass;
-        document.getElementById('academicSession').value = rec.academicSession || "2025-2026";
+        document.getElementById('academicSession').value = rec.academicSession || "2025-26";
         handleClassChange();
         document.getElementById('rollNo').value = rec.rollNo;
         document.getElementById('studentName').value = rec.studentName;
@@ -714,7 +714,7 @@
 
     function resetForm() {
         document.getElementById('studentForm').reset();
-        document.getElementById('academicSession').value = "2025-2026";
+        document.getElementById('academicSession').value = "2025-26";
         handleClassChange();
         document.getElementById('subjectsList').innerHTML = '';
         document.getElementById('editIndex').value = "";
@@ -729,7 +729,7 @@
         const { total, maxTotal } = calculateTotals(rec);
         const percentage = maxTotal > 0 ? (total / maxTotal) * 100 : 0;
 
-        document.getElementById('mSession').innerText = rec.academicSession || "2025-2026";
+        document.getElementById('mSession').innerText = rec.academicSession || "2025-26";
         document.getElementById('mRoll').innerText = rec.rollNo;
         document.getElementById('mClass').innerText = rec.studentClass;
         document.getElementById('mName').innerText = rec.studentName;
@@ -802,13 +802,15 @@
         document.getElementById('mTotal').innerText = total;
         document.getElementById('mPercent').innerText = percentage.toFixed(2);
         
+        // Overall Grade Based on Percentage
+        document.getElementById('mOverallGrade').innerText = calculateGrade(percentage);
+        
         const mNaitikBox = document.getElementById('mNaitikBox');
         if (is9_11) {
             mNaitikBox.style.display = 'block';
             document.getElementById('mNaitikLabel').innerText = rec.labelNaitik || "नैतिक खेल एवं शारीरिक शिक्षा";
             const naitikObt = rec.marksNaitikTotal || 0;
             document.getElementById('mNaitikObt').innerText = `${naitikObt}`;
-            document.getElementById('mNaitikGrade').innerText = calculateGrade(naitikObt);
         } else {
             mNaitikBox.style.display = 'none';
         }
