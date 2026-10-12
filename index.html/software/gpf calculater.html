@@ -688,7 +688,7 @@ button:active {
         
         <!-- School / Office Header -->
         <div class="text-center border-b pb-3 mb-3">
-            <h1 class="text-lg font-bold text-blue-900">Gpf Portal 2026</h1>
+            <h1 class="text-lg font-bold text-blue-900">Gpf Portal Skic</h1>
             <h2 class="text-sm font-semibold text-slate-700">सामान्य भविष्य निधि (GPF) वार्षिक लेखा विवरण</h2>
         </div>
 
@@ -859,7 +859,7 @@ function switchSoftware() {
 
 // LOGIN CHECK FUNCTIONALITY
 function checkLogin() {
-    let id = document.getElementById("loginId").value.trim();
+    let id  = document.getElementById("loginId").value.trim();
     let pass = document.getElementById("loginPassword").value.trim();
     let err = document.getElementById("loginError");
 
@@ -1132,7 +1132,7 @@ async function syncOfflineData() {
 window.addEventListener('online', syncOfflineData);
 window.addEventListener('load', syncOfflineData);
 
-// ─── SAVE DATA FUNCTION ───
+// ─── SAVE DATA FUNCTION (Updated to save all fields t1 to t84) ───
 async function saveData(){
     let acnoInput = document.getElementById("acno");
     let yearInput = document.getElementById("year");
@@ -1145,16 +1145,16 @@ async function saveData(){
         action: "save", 
         acno: acnoInput.value.trim(), 
         empname: empnameInput.value.trim(), 
-        year: yearInput.value.trim(),
-        t76: document.getElementById("t76").value, 
-        t77: document.getElementById("t77").value, 
-        t78: document.getElementById("t78").value, 
-        t79: document.getElementById("t79").value, 
-        t80: document.getElementById("t80").value, 
-        t81: totalVal, 
-        t83: document.getElementById("t83").value, 
-        t84: document.getElementById("t84").value
+        year: yearInput.value.trim()
     };
+
+    // Save all textboxes t1 to t84
+    for(let i=1; i<=84; i++){
+        let el = document.getElementById("t" + i);
+        if(el) {
+            data["t" + i] = el.value;
+        }
+    }
 
     if (!isSheetUnlocked) {
         let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
@@ -1201,7 +1201,7 @@ async function saveData(){
     }
 }
 
-// ─── SEARCH DATA FUNCTION ───
+// ─── SEARCH DATA FUNCTION (Updated to restore all fields t1 to t84) ───
 async function searchData(){
     let acnoInput = document.getElementById("acno").value.trim();
     let yearInput = document.getElementById("year").value.trim();
@@ -1225,17 +1225,19 @@ async function searchData(){
 
         if (exactMatch) {
             empnameInput.value = exactMatch.empname || "";
-            document.getElementById("t66").value = exactMatch.t76 || "";
-            document.getElementById("t76").value = exactMatch.t76 || "";
-            document.getElementById("t77").value = exactMatch.t77 || "";
-            document.getElementById("t78").value = exactMatch.t78 || "";
-            document.getElementById("t79").value = exactMatch.t79 || "";
-            document.getElementById("t80").value = exactMatch.t80 || "";
-            document.getElementById("t81").value = exactMatch.t81 || "";
-            document.getElementById("t83").value = exactMatch.t83 || "";
-            document.getElementById("t84").value = exactMatch.t84 || "";
+            document.getElementById("acno").value = exactMatch.acno || acnoInput;
+            document.getElementById("year").value = exactMatch.year || yearInput;
+
+            // Restore all t1 to t84 values
+            for(let i=1; i<=84; i++){
+                let el = document.getElementById("t" + i);
+                if(el && exactMatch["t" + i] !== undefined) {
+                    el.value = exactMatch["t" + i];
+                }
+            }
+
             isSearchMode = true;
-            alert("Local Storage से इस साल का रिकॉर्ड मिल गया!");
+            alert("Local Storage से इस साल का रिकॉर्ड मिल गया और सभी values लोड हो गई हैं!");
         } else {
             empnameInput.value = latestMatch.empname || "";
             if (latestMatch.t81) {
@@ -1263,16 +1265,13 @@ async function searchData(){
         document.getElementById("year").value = data.year || yearInput;
         isSearchMode = true; 
 
-        let bfVal = data.t76 !== undefined ? data.t76 : "";
-        document.getElementById("t66").value = bfVal;
-        document.getElementById("t76").value = bfVal; 
-        document.getElementById("t77").value = data.t77 !== undefined ? data.t77 : ""; 
-        document.getElementById("t78").value = data.t78 !== undefined ? data.t78 : ""; 
-        document.getElementById("t79").value = data.t79 !== undefined ? data.t79 : ""; 
-        document.getElementById("t80").value = data.t80 !== undefined ? data.t80 : ""; 
-        document.getElementById("t81").value = data.t81 !== undefined ? data.t81 : ""; 
-        document.getElementById("t83").value = data.t83 !== undefined ? data.t83 : ""; 
-        document.getElementById("t84").value = data.t84 !== undefined ? data.t84 : "";
+        // Restore all t1 to t84 values from Google Sheet response
+        for(let i=1; i<=84; i++){
+            let el = document.getElementById("t" + i);
+            if(el && data["t" + i] !== undefined) {
+                el.value = data["t" + i];
+            }
+        }
 
         calc();
         alert("Google Sheet से Data Successfully Load हो गया!");
@@ -1281,7 +1280,7 @@ async function searchData(){
     }
 }
 
-// ─── UPDATE DATA FUNCTION ───
+// ─── UPDATE DATA FUNCTION (Updated to update all fields t1 to t84) ───
 async function updateData(){
     if (!isSheetUnlocked) {
         alert("गूगल शीट Locked है! Local Storage के रिकॉर्ड्स को अपडेट करने के लिए फिर से Save बटन दबाएं।");
@@ -1298,16 +1297,16 @@ async function updateData(){
         action: "update", 
         acno: acnoInput.value.trim(), 
         empname: empnameInput.value.trim(), 
-        year: yearInput.value.trim(),
-        t76: document.getElementById("t76").value,
-        t77: document.getElementById("t77").value,
-        t78: document.getElementById("t78").value,
-        t79: document.getElementById("t79").value,
-        t80: document.getElementById("t80").value, 
-        t81: totalVal, 
-        t83: document.getElementById("t83").value, 
-        t84: document.getElementById("t84").value
+        year: yearInput.value.trim()
     };
+
+    // Update all textboxes t1 to t84
+    for(let i=1; i<=84; i++){
+        let el = document.getElementById("t" + i);
+        if(el) {
+            data["t" + i] = el.value;
+        }
+    }
 
     if (!navigator.onLine) {
         let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
@@ -1413,6 +1412,41 @@ function getMonthsList() {
 }
 
 function updateMonthsAndCalculate() {
+    let baseYearVal = document.getElementById("baseYear").value.trim();
+    let nextYr = Number(baseYearVal) + 1;
+    let key = `${baseYearVal}-${String(nextYr).slice(-2)}`;
+
+    if (interestRateMaster[key] !== undefined) {
+        let rateData = interestRateMaster[key];
+        let periodSelect = document.getElementById("interestPeriod");
+
+        if (typeof rateData === "object") {
+            if (key === "2011-12") {
+                periodSelect.value = "4"; 
+            } else {
+                periodSelect.value = "3"; 
+            }
+            onPeriodChange();
+            setTimeout(() => {
+                if (key === "2011-12") {
+                    if(document.getElementById("ratePart_0")) document.getElementById("ratePart_0").value = rateData.q1 || 8.0;
+                    if(document.getElementById("ratePart_1")) document.getElementById("ratePart_1").value = rateData.q2 || 8.0;
+                    if(document.getElementById("ratePart_2")) document.getElementById("ratePart_2").value = rateData.q3 || 8.6;
+                } else {
+                    if(document.getElementById("ratePart_0")) document.getElementById("ratePart_0").value = rateData.q1 || 7.1;
+                    if(document.getElementById("ratePart_1")) document.getElementById("ratePart_1").value = rateData.q2 || 7.1;
+                    if(document.getElementById("ratePart_2")) document.getElementById("ratePart_2").value = rateData.q3 || 7.1;
+                    if(document.getElementById("ratePart_3")) document.getElementById("ratePart_3").value = rateData.q4 || 7.1;
+                }
+                calculateGPF_App2();
+            }, 10);
+        } else {
+            periodSelect.value = "12";
+            onPeriodChange();
+            document.getElementById("interestRate").value = rateData;
+            calculateGPF_App2();
+        }
+    }
     renderLedgerRows();
 }
 
@@ -1478,7 +1512,7 @@ function renderLedgerRows() {
         `;
         tbody.appendChild(tr);
     });
-    onPeriodChange();
+    calculateGPF_App2();
 }
 
 function calculateGPF_App2() {
