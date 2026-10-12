@@ -668,6 +668,7 @@ button:active {
                     <th>Grand Total (t81)</th>
                     <th>Laser (t83)</th>
                     <th>Diff (t84)</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody id="localTableBody">
@@ -1072,14 +1073,14 @@ if(el82) {
     });
 }
 
-// ─── LOCAL STORAGE TABLE RENDER ───
+// ─── LOCAL STORAGE TABLE RENDER WITH EDIT & DELETE ACTIONS ───
 function renderLocalStorageTable() {
     let tbody = document.getElementById("localTableBody");
     tbody.innerHTML = "";
     let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
     
     if (localData.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='12'>Local Storage में कोई रिकॉर्ड नहीं है।</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='13'>Local Storage में कोई रिकॉर्ड नहीं है।</td></tr>";
         return;
     }
 
@@ -1098,9 +1099,53 @@ function renderLocalStorageTable() {
             <td>${row.t81 || ''}</td>
             <td>${row.t83 || ''}</td>
             <td>${row.t84 || ''}</td>
+            <td>
+                <button onclick="editLocalStorageRecord(${index})" style="background-color: #1565c0; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; margin-right: 4px;">EDIT</button>
+                <button onclick="deleteSingleLocalStorageRecord(${index})" style="background-color: #c62828; color: white; border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold;">DELETE</button>
+            </td>
         `;
         tbody.appendChild(tr);
     });
+}
+
+// ─── EDIT LOCAL STORAGE RECORD FUNCTION (Auto Search & Load) ───
+function editLocalStorageRecord(index) {
+    let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
+    if (index >= 0 && index < localData.length) {
+        let record = localData[index];
+        
+        clearCalculationData();
+        document.getElementById("acno").value = record.acno || "";
+        document.getElementById("empname").value = record.empname || "";
+        document.getElementById("year").value = record.year || "";
+
+        // Restore all t1 to t84 values
+        for (let i = 1; i <= 84; i++) {
+            let el = document.getElementById("t" + i);
+            if (el && record["t" + i] !== undefined) {
+                el.value = record["t" + i];
+            }
+        }
+
+        isSearchMode = true;
+        calc();
+        alert(`Ac No: ${record.acno} और Year: ${record.year} का डेटा एडिट के लिए लोड हो गया है। बदलाव करके SAVE बटन दबाएं।`);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// ─── DELETE SINGLE LOCAL STORAGE RECORD FUNCTION ───
+function deleteSingleLocalStorageRecord(index) {
+    let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
+    if (index >= 0 && index < localData.length) {
+        let deletedRecord = localData[index];
+        if (confirm(`क्या आप Ac No: ${deletedRecord.acno} और Year: ${deletedRecord.year} का रिकॉर्ड डिलीट करना चाहते हैं?`)) {
+            localData.splice(index, 1);
+            localStorage.setItem("gpf_local_records", JSON.stringify(localData));
+            renderLocalStorageTable();
+            alert("चयनित सत्र का रिकॉर्ड सफलतापूर्वक डिलीट कर दिया गया है।");
+        }
+    }
 }
 
 // ─── OFFLINE SYNC ───
@@ -1132,7 +1177,7 @@ async function syncOfflineData() {
 window.addEventListener('online', syncOfflineData);
 window.addEventListener('load', syncOfflineData);
 
-// ─── SAVE DATA FUNCTION (Updated to save all fields t1 to t84) ───
+// ─── SAVE / UPDATE DATA FUNCTION ───
 async function saveData(){
     let acnoInput = document.getElementById("acno");
     let yearInput = document.getElementById("year");
@@ -1158,11 +1203,23 @@ async function saveData(){
 
     if (!isSheetUnlocked) {
         let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
-        localData.push(data);
+        
+        // Find if record with same ID and Year already exists to overwrite/update it
+        let existingIndex = localData.findIndex(item => item.acno === data.acno && item.year === data.year);
+        
+        if (existingIndex !== -1) {
+            localData[existingIndex] = data; // Update existing record
+            alert("Locked Mode: Local Storage में इस रिकॉर्ड को सफलतापूर्वक अपडेट (Overwrite) कर दिया गया है।");
+        } else {
+            localData.push(data); // Add new record if not exists
+            alert("Locked Mode: डेटा सफलतापूर्वक Local Storage में नया सेव हो गया है।");
+        }
+
         localStorage.setItem("gpf_local_records", JSON.stringify(localData));
         renderLocalStorageTable();
-        alert("Locked Mode: डेटा सफलतापूर्वक Local Storage में सेव हो गया है।");
-        clearCalculationData(); 
+        
+        // Form khali karein lekin ID, Name aur Year ko waise hi chhor dein
+        clearCalculationDataOnly();
         document.getElementById("t66").value = totalVal; 
         isSearchMode = false;
         calc();
@@ -1174,7 +1231,7 @@ async function saveData(){
         offlineQueue.push(data);
         localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
         alert("Internet नहीं है! Data local storage में temporary save हो गया है।");
-        clearCalculationData(); 
+        clearCalculationDataOnly(); 
         document.getElementById("t66").value = totalVal; 
         isSearchMode = false;
         calc();
@@ -1189,7 +1246,7 @@ async function saveData(){
         });
         let result = await res.text();
         alert("Unlocked Mode: " + result);
-        clearCalculationData(); 
+        clearCalculationDataOnly(); 
         document.getElementById("t66").value = totalVal; 
         isSearchMode = false;
         calc(); 
@@ -1379,6 +1436,14 @@ function openGpfSheet() {
 }
 
 function clearCalculationData(){
+    manualEditedT53toT64 = {};
+    for(let i=1; i<=84; i++){
+        let el = document.getElementById("t"+i);
+        if(el) el.value="";
+    }
+}
+
+function clearCalculationDataOnly(){
     manualEditedT53toT64 = {};
     for(let i=1; i<=84; i++){
         let el = document.getElementById("t"+i);
