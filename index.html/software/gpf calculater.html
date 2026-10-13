@@ -137,7 +137,7 @@
 /* Header container right-aligned */
 .top-inputs-container {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     margin-bottom: 15px; 
     justify-content: flex-end; 
     width: 100%;
@@ -150,15 +150,16 @@
     flex-direction: column;
 }
 
-#acno-box { width: 160px; }
-#name-box { width: 250px; }
-#year-box { width: 130px; }
-#lock-box { width: 180px; }
+#acno-box { width: 150px; }
+#name-box { width: 220px; }
+#year-box { width: 120px; }
+#lock-box { width: 160px; }
+#fetch-box { width: 170px; }
 
 .top-inputs-container label {
     display: block;
     margin-bottom: 5px;
-    font-size: 18px; 
+    font-size: 16px; 
     text-align: left;
     color: #333;
 }
@@ -173,6 +174,24 @@
     border: 2px solid #000000;
     border-radius: 4px;
     background-color: #ffffff; 
+}
+
+/* Fetch Button Style in Header */
+.fetch-btn {
+    height: 38px;
+    padding: 0 10px;
+    background-color: #8e44ad;
+    color: white;
+    font-size: 13px;
+    font-weight: bold;
+    border: 2px solid #000;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.fetch-btn:hover {
+    background-color: #6c3483;
 }
 
 /* Lock Panel Style */
@@ -423,7 +442,7 @@ button:active {
 @media screen and (max-width: 768px) {
     body { padding: 8px; }
     .top-inputs-container { justify-content: space-between; gap: 10px; }
-    #acno-box, #name-box, #year-box, #lock-box { width: 48%; }
+    #acno-box, #name-box, #year-box, #lock-box, #fetch-box { width: 48%; }
     .container-grid { grid-template-columns: 1fr; min-width: 100%; }
     .table-wrapper { overflow-x: visible; }
 }
@@ -435,7 +454,6 @@ button:active {
     body {
         padding: 0 !important;
     }
-    /* App 2 table headers print fix - Pure Black & Clear */
     #viewApp2 table th {
         color: #000000 !important;
         background-color: #e2e8f0 !important;
@@ -502,6 +520,11 @@ button:active {
     <div class="top-input-group" id="year-box">
         <label>Year</label>
         <input type="text" id="year" placeholder="e.g. 2018-19">
+    </div>
+    <!-- TOTAL FETCH BUTTON BOX IN HEADER -->
+    <div class="top-input-group" id="fetch-box">
+        <label>Total Fetch</label>
+        <button class="fetch-btn" onclick="fetchEmployeeTotals()">TOTAL FETCH</button>
     </div>
     <!-- LOCK / UNLOCK CONTROLS -->
     <div class="top-input-group" id="lock-box">
@@ -880,7 +903,7 @@ window.addEventListener('DOMContentLoaded', () => {
     renderLedgerRows(); 
 });
 
-const API_URL = "https://script.google.com/macros/s/AKfycbwoLyWDhthJtg7eNo7bMukd-xRxg0gp-m1rvscNOrUnyZgueSL43-wz1CB7FvtyxVjQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwNw5JocPk5z4pXlZpyhwgWE4RMid0pbPh4Tq2e9P9nFJCWTgkgRW_mAl0cUMixUK8g/exec";
 
 let isSearchMode = false;
 let manualEditedT53toT64 = {}; 
@@ -1073,6 +1096,67 @@ if(el82) {
     });
 }
 
+// ─── TOTAL FETCH FUNCTION FROM GOOGLE SHEET (fetchAll) ───
+async function fetchEmployeeTotals() {
+    let acnoInput = document.getElementById("acno").value.trim();
+    let empnameInput = document.getElementById("empname");
+
+    if (!acnoInput) {
+        alert("Kripya ID / Ac No. darj karein!");
+        return;
+    }
+
+    if (!navigator.onLine) {
+        alert("Google Sheet se data fetch karne ke liye internet connection zaroori hai!");
+        return;
+    }
+
+    try {
+        let res = await fetch(API_URL + "?action=fetchAll&acno=" + encodeURIComponent(acnoInput));
+        let data = await res.json();
+
+        if (data.status !== "FOUND" || !data.records || data.records.length === 0) {
+            alert("Google Sheet me is ID ka koi record nahi mila!");
+            return;
+        }
+
+        let allRecords = data.records;
+
+        // Set employee name from first record
+        if (allRecords[0].empname) {
+            empnameInput.value = allRecords[0].empname;
+        }
+
+        // Calculate cumulative totals across all stored years from Google Sheet
+        let totalBF = Number(allRecords[0].t76) || 0; // First year BF
+        let totalCurrent = 0;
+        let totalInterest = 0;
+        let totalLoan = 0;
+
+        allRecords.forEach(rec => {
+            totalCurrent += Number(rec.t77) || 0;
+            totalInterest += Number(rec.t79) || 0;
+            totalLoan += Number(rec.t80) || 0;
+        });
+
+        let overallTotal78 = totalBF + totalCurrent;
+        let overallGrandTotal81 = overallTotal78 + totalInterest - totalLoan;
+
+        // Populate Column 7 (Total GPF boxes: t76 to t81)
+        document.getElementById("t76").value = totalBF;
+        document.getElementById("t77").value = totalCurrent;
+        document.getElementById("t78").value = overallTotal78;
+        document.getElementById("t79").value = totalInterest;
+        document.getElementById("t80").value = totalLoan;
+        document.getElementById("t81").value = overallGrandTotal81;
+
+        alert(`ID: ${acnoInput} ka jabse jama hua hai, Google Sheet se sabhi satro ka total nikal kar Column 7 me bhar diya gaya hai!\n- BF: ${totalBF}\n- Current: ${totalCurrent}\n- Total: ${overallTotal78}\n- Interest: ${totalInterest}\n- Loan: ${totalLoan}\n- Grand Total: ${overallGrandTotal81}`);
+
+    } catch (error) {
+        alert("Fetch Error: Google Sheet se data laane me samasya aayi hai.");
+    }
+}
+
 // ─── LOCAL STORAGE TABLE RENDER WITH EDIT & DELETE ACTIONS ───
 function renderLocalStorageTable() {
     let tbody = document.getElementById("localTableBody");
@@ -1108,7 +1192,6 @@ function renderLocalStorageTable() {
     });
 }
 
-// ─── EDIT LOCAL STORAGE RECORD FUNCTION (Auto Search & Load) ───
 function editLocalStorageRecord(index) {
     let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
     if (index >= 0 && index < localData.length) {
@@ -1119,7 +1202,6 @@ function editLocalStorageRecord(index) {
         document.getElementById("empname").value = record.empname || "";
         document.getElementById("year").value = record.year || "";
 
-        // Restore all t1 to t84 values
         for (let i = 1; i <= 84; i++) {
             let el = document.getElementById("t" + i);
             if (el && record["t" + i] !== undefined) {
@@ -1129,26 +1211,24 @@ function editLocalStorageRecord(index) {
 
         isSearchMode = true;
         calc();
-        alert(`Ac No: ${record.acno} और Year: ${record.year} का डेटा एडिट के लिए लोड हो गया है। बदलाव करके SAVE बटन दबाएं।`);
+        alert(`Ac No: ${record.acno} aur Year: ${record.year} ka data edit ke liye load ho gaya hai.`);
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
-// ─── DELETE SINGLE LOCAL STORAGE RECORD FUNCTION ───
 function deleteSingleLocalStorageRecord(index) {
     let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
     if (index >= 0 && index < localData.length) {
         let deletedRecord = localData[index];
-        if (confirm(`क्या आप Ac No: ${deletedRecord.acno} और Year: ${deletedRecord.year} का रिकॉर्ड डिलीट करना चाहते हैं?`)) {
+        if (confirm(`Kya aap Ac No: ${deletedRecord.acno} aur Year: ${deletedRecord.year} ka record delete karna chahte hain?`)) {
             localData.splice(index, 1);
             localStorage.setItem("gpf_local_records", JSON.stringify(localData));
             renderLocalStorageTable();
-            alert("चयनित सत्र का रिकॉर्ड सफलतापूर्वक डिलीट कर दिया गया है।");
+            alert("Record safaltapurvak delete kar diya gaya hai.");
         }
     }
 }
 
-// ─── OFFLINE SYNC ───
 async function syncOfflineData() {
     if (!navigator.onLine) return; 
     let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
@@ -1169,21 +1249,17 @@ async function syncOfflineData() {
         }
     }
     localStorage.setItem("gpf_offline_queue", JSON.stringify(remainingQueue));
-    if (remainingQueue.length === 0 && successCount > 0) {
-        alert("बधाई हो! इंटरनेट वापस आ गया है और ऑफ़लाइन सेव किया हुआ " + successCount + " डेटा गूगल शीट में सिंक हो गया है।");
-    }
 }
 
 window.addEventListener('online', syncOfflineData);
 window.addEventListener('load', syncOfflineData);
 
-// ─── SAVE / UPDATE DATA FUNCTION ───
 async function saveData(){
     let acnoInput = document.getElementById("acno");
     let yearInput = document.getElementById("year");
     let empnameInput = document.getElementById("empname");
 
-    if(!acnoInput.value || !yearInput.value) { alert("ID और Year डालना जरूरी है!"); return; }
+    if(!acnoInput.value || !yearInput.value) { alert("ID aur Year dalna zaroori hai!"); return; }
 
     let totalVal = document.getElementById("t81").value; 
     let data = { 
@@ -1193,7 +1269,6 @@ async function saveData(){
         year: yearInput.value.trim()
     };
 
-    // Save all textboxes t1 to t84
     for(let i=1; i<=84; i++){
         let el = document.getElementById("t" + i);
         if(el) {
@@ -1203,22 +1278,19 @@ async function saveData(){
 
     if (!isSheetUnlocked) {
         let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
-        
-        // Find if record with same ID and Year already exists to overwrite/update it
         let existingIndex = localData.findIndex(item => item.acno === data.acno && item.year === data.year);
         
         if (existingIndex !== -1) {
-            localData[existingIndex] = data; // Update existing record
-            alert("Locked Mode: Local Storage में इस रिकॉर्ड को सफलतापूर्वक अपडेट (Overwrite) कर दिया गया है।");
+            localData[existingIndex] = data;
+            alert("Locked Mode: Local Storage me record update kar diya gaya hai.");
         } else {
-            localData.push(data); // Add new record if not exists
-            alert("Locked Mode: डेटा सफलतापूर्वक Local Storage में नया सेव हो गया है।");
+            localData.push(data);
+            alert("Locked Mode: Data Local Storage me save ho gaya hai.");
         }
 
         localStorage.setItem("gpf_local_records", JSON.stringify(localData));
         renderLocalStorageTable();
         
-        // Form khali karein lekin ID, Name aur Year ko waise hi chhor dein
         clearCalculationDataOnly();
         document.getElementById("t66").value = totalVal; 
         isSearchMode = false;
@@ -1230,7 +1302,7 @@ async function saveData(){
         let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
         offlineQueue.push(data);
         localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
-        alert("Internet नहीं है! Data local storage में temporary save हो गया है।");
+        alert("Internet nahi hai! Data local storage me temporary save ho gaya hai.");
         clearCalculationDataOnly(); 
         document.getElementById("t66").value = totalVal; 
         isSearchMode = false;
@@ -1254,24 +1326,23 @@ async function saveData(){
         let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
         offlineQueue.push(data);
         localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
-        alert("Network Error: Data locally safe कर लिया गया है।"); 
+        alert("Network Error: Data locally safe kar liya gaya hai."); 
     }
 }
 
-// ─── SEARCH DATA FUNCTION (Updated to restore all fields t1 to t84) ───
 async function searchData(){
     let acnoInput = document.getElementById("acno").value.trim();
     let yearInput = document.getElementById("year").value.trim();
     let empnameInput = document.getElementById("empname");
 
-    if(!acnoInput) { alert("ढूंढने के लिए ID / Ac No. डालें!"); return; }
+    if(!acnoInput) { alert("Dhoondhne ke liye ID / Ac No. dalein!"); return; }
 
     if (!isSheetUnlocked) {
         let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
         let matches = localData.filter(item => item.acno === acnoInput);
         
         if (matches.length === 0) {
-            alert("Local Storage में इस ID का कोई डेटा नहीं मिला!");
+            alert("Local Storage me is ID ka koi data nahi mila!");
             return;
         }
 
@@ -1285,7 +1356,6 @@ async function searchData(){
             document.getElementById("acno").value = exactMatch.acno || acnoInput;
             document.getElementById("year").value = exactMatch.year || yearInput;
 
-            // Restore all t1 to t84 values
             for(let i=1; i<=84; i++){
                 let el = document.getElementById("t" + i);
                 if(el && exactMatch["t" + i] !== undefined) {
@@ -1294,27 +1364,27 @@ async function searchData(){
             }
 
             isSearchMode = true;
-            alert("Local Storage से इस साल का रिकॉर्ड मिल गया और सभी values लोड हो गई हैं!");
+            alert("Local Storage se record mil gaya!");
         } else {
             empnameInput.value = latestMatch.empname || "";
             if (latestMatch.t81) {
                 document.getElementById("t66").value = latestMatch.t81;
                 document.getElementById("t76").value = latestMatch.t81;
             }
-            alert(`Local Storage से पिछला Grand Total (Year: ${latestMatch.year}) का ${latestMatch.t81} अपने आप BF में भर गया है!`);
+            alert(`Pichla Grand Total BF me bhar diya gaya hai!`);
         }
         calc();
         return;
     }
 
-    if(!navigator.onLine) { alert("Google Sheet से सर्च करने के लिए इंटरनेट जरूरी है!"); return; }
-    if(!yearInput) { alert("Google Sheet में ढूंढने के लिए Year भी दर्ज करें!"); return; }
+    if(!navigator.onLine) { alert("Internet zaroori hai!"); return; }
+    if(!yearInput) { alert("Year bhi darj karein!"); return; }
 
     try {
         let res = await fetch(API_URL + "?action=search&acno=" + encodeURIComponent(acnoInput) + "&year=" + encodeURIComponent(yearInput));
         let data = await res.json();
 
-        if(data.status == "NOT_FOUND"){ alert("Google Sheet में इस ID और Year का डेटा नहीं मिला!"); return; }
+        if(data.status == "NOT_FOUND"){ alert("Google Sheet me data nahi mila!"); return; }
         
         clearCalculationData();
         empnameInput.value = data.empname || "";
@@ -1322,7 +1392,6 @@ async function searchData(){
         document.getElementById("year").value = data.year || yearInput;
         isSearchMode = true; 
 
-        // Restore all t1 to t84 values from Google Sheet response
         for(let i=1; i<=84; i++){
             let el = document.getElementById("t" + i);
             if(el && data["t" + i] !== undefined) {
@@ -1331,16 +1400,15 @@ async function searchData(){
         }
 
         calc();
-        alert("Google Sheet से Data Successfully Load हो गया!");
+        alert("Google Sheet se Data successfully load ho gaya!");
     } catch(error) { 
-        alert("Search Error: Google Sheet से डेटा नहीं आ रहा है।"); 
+        alert("Search Error"); 
     }
 }
 
-// ─── UPDATE DATA FUNCTION (Updated to update all fields t1 to t84) ───
 async function updateData(){
     if (!isSheetUnlocked) {
-        alert("गूगल शीट Locked है! Local Storage के रिकॉर्ड्स को अपडेट करने के लिए फिर से Save बटन दबाएं।");
+        alert("Google Sheet Locked hai!");
         return;
     }
 
@@ -1348,7 +1416,7 @@ async function updateData(){
     let yearInput = document.getElementById("year");
     let empnameInput = document.getElementById("empname");
 
-    if(!acnoInput.value || !yearInput.value) { alert("Update के लिए ID और Year जरूरी है!"); return; }
+    if(!acnoInput.value || !yearInput.value) { alert("ID aur Year zaroori hai!"); return; }
     let totalVal = document.getElementById("t81").value; 
     let data = { 
         action: "update", 
@@ -1357,20 +1425,11 @@ async function updateData(){
         year: yearInput.value.trim()
     };
 
-    // Update all textboxes t1 to t84
     for(let i=1; i<=84; i++){
         let el = document.getElementById("t" + i);
         if(el) {
             data["t" + i] = el.value;
         }
-    }
-
-    if (!navigator.onLine) {
-        let offlineQueue = JSON.parse(localStorage.getItem("gpf_offline_queue")) || [];
-        offlineQueue.push(data);
-        localStorage.setItem("gpf_offline_queue", JSON.stringify(offlineQueue));
-        alert("Internet नहीं है! Update Queue में save हो गया है।");
-        return;
     }
 
     try{
@@ -1387,19 +1446,18 @@ async function updateData(){
     }catch(error){ alert("Update Error"); }
 }
 
-// ─── DELETE DATA FUNCTION ───
 async function deleteData(){
     if (!isSheetUnlocked) {
-        alert("गूगल शीट Locked है! Google Sheet से डेटा डिलीट करने के लिए Unlock करें।");
+        alert("Google Sheet Locked hai!");
         return;
     }
 
     let acnoInput = document.getElementById("acno");
     let yearInput = document.getElementById("year");
 
-    if(!navigator.onLine) { alert("Data Delete करने के लिए इंटरनेट जरूरी है!"); return; }
-    if(!acnoInput.value || !yearInput.value) { alert("Delete करने के लिए ID और Year डालें!"); return; }
-    if(!confirm("क्या आप सच में गूगल शीट से यह रिकॉर्ड डिलीट करना चाहते हैं?")) return;
+    if(!navigator.onLine) { alert("Internet zaroori hai!"); return; }
+    if(!acnoInput.value || !yearInput.value) { alert("ID aur Year dalein!"); return; }
+    if(!confirm("Kya aap record delete karna chahte hain?")) return;
 
     try{
         let data = { action:"delete", acno:acnoInput.value.trim(), year:yearInput.value.trim() };
@@ -1415,21 +1473,16 @@ async function deleteData(){
 }
 
 function clearLocalStorageData() {
-    let localData = JSON.parse(localStorage.getItem("gpf_local_records")) || [];
-    if (localData.length === 0) {
-        alert("Local Storage में कोई डेटा नहीं है!");
-        return;
-    }
-    if (confirm("क्या आप सच में Local Storage का सारा डेटा डिलीट करना चाहते हैं?")) {
+    if (confirm("Kya aap Local Storage ka sara data delete karna chahte hain?")) {
         localStorage.removeItem("gpf_local_records");
         renderLocalStorageTable();
-        alert("Local Storage सफलतापूर्वक खाली कर दिया गया है।");
+        alert("Local Storage khali kar diya gaya hai.");
     }
 }
 
 function openGpfSheet() {
     if (!isSheetUnlocked) {
-        alert("गूगल शीट Locked है! देखने के लिए पहले Unlock करें।");
+        alert("Google Sheet Locked hai!");
         return;
     }
     window.open("https://drive.google.com/drive/recent", '_blank');
@@ -1533,7 +1586,7 @@ function onPeriodChange() {
         for (let p = 0; p < parts; p++) {
             let startMonthIdx = p * period;
             let endMonthIdx = startMonthIdx + period - 1;
-            let labelText = `${monthNamesHindi[startMonthIdx]} से ${monthNamesHindi[endMonthIdx]}`;
+            let labelText = `${monthNamesHindi[startMonthIdx]} se ${monthNamesHindi[endMonthIdx]}`;
             
             let div = document.createElement("div");
             div.innerHTML = `
