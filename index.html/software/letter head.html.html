@@ -10,7 +10,7 @@
         }
 
         body {
-            font-family: 'Mangal', 'Nirmala UI', 'Arial', sans-serif;
+            font-family: 'Nirmala UI', 'Mangal', 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             color: #333;
@@ -381,6 +381,11 @@
             <button class="btn-apply" onclick="applyCustomMargins()">लागू करें</button>
         </div>
 
+        <!-- <b> Bold Control Button -->
+        <div class="selector-group">
+            <button class="btn-action" style="font-weight: bold;" onclick="toggleBold()"><b>B</b> Bold</button>
+        </div>
+
         <div class="selector-group">
             <span>🔍 साइज़:</span>
             <select id="fontSizeSelector" onchange="changeSelectionFontSize(this.value)">
@@ -454,7 +459,7 @@
             <div class="control-group">
                 <label for="fontSelect">Font Family:</label>
                 <select id="fontSelect" onchange="saveSettings(); updateSettings();">
-                    <option value="'Mangal', 'Nirmala UI', sans-serif">Mangal</option>
+                    <option value="'Nirmala UI', 'Mangal', sans-serif">Mangal</option>
                     <option value="'Nirmala UI', sans-serif">Nirmala UI</option>
                     <option value="'Arial', sans-serif">Arial</option>
                 </select>
@@ -518,7 +523,7 @@
                 <img class="logo" src="logo.png" alt="Logo"> 
                 <div class="school-details">
                     <h1 class="school-name">श्री कृष्ण इण्टरमीडिएट कालेज सेमरा </h1>
-                    <p class="school-info">पत्रालय - कठकुइयाँ , जनपद - कुशीनगर  - पिन कोड - 274303</p>
+                    <p class="school-info">पत्रालय - कठकुइयाँ, जनपद - कुशीनगर - पिन कोड - 274303</p>
                 </div>
             </div>
 
@@ -546,11 +551,11 @@
             <tr>
                 <td class="left-col" id="leftCol">
                     <span class="col-header">प्रस्ताव संख्या - <span id="displayPrastavNoCol">02</span></span>
-                    <div class="content-body" id="displayPrastavText"></div>
+                    <div class="content-body" id="displayPrastavText" contenteditable="true"></div>
                 </td>
                 <td class="right-col" id="rightCol">
                     <span class="col-header">निर्णय</span>
-                    <div class="content-body" id="displayNirnayText"></div>
+                    <div class="content-body" id="displayNirnayText" contenteditable="true"></div>
                 </td>
             </tr>
         </table>
@@ -563,11 +568,11 @@
             <tr>
                 <td class="left-col" id="lh_leftCol" style="width: 45%; vertical-align: top; text-align: justify; padding-right: 25px;">
                     <span class="col-header" style="font-weight: bold; text-align: center; margin-bottom: 12px; display: block; text-decoration: underline;">प्रस्ताव संख्या - <span id="lh_displayPrastavNoCol">02</span></span>
-                    <div class="content-body" id="lh_displayPrastavText"></div>
+                    <div class="content-body" id="lh_displayPrastavText" contenteditable="true"></div>
                 </td>
                 <td class="right-col" id="lh_rightCol" style="width: 55%; vertical-align: top; text-align: justify; padding-left: 25px;">
                     <span class="col-header" style="font-weight: bold; text-align: center; margin-bottom: 12px; display: block; text-decoration: underline;">निर्णय</span>
-                    <div class="content-body" id="lh_displayNirnayText"></div>
+                    <div class="content-body" id="lh_displayNirnayText" contenteditable="true"></div>
                 </td>
             </tr>
         </table>
@@ -764,6 +769,11 @@
             }
         }
     });
+
+    // 🔴 Text Ko Bold Karne Ka Function
+    function toggleBold() {
+        document.execCommand('bold', false, null);
+    }
 
     function setTextAlignment(command) { document.execCommand(command, false, null); }
     function changeSelectionFontSize(sizeValue) { if (sizeValue) { document.execCommand('fontSize', false, sizeValue); document.getElementById('fontSizeSelector').value = ""; } }
