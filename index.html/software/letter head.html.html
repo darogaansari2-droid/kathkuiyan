@@ -173,6 +173,10 @@
         .btn-apply { background-color: #4CAF50; color: #fff; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
         .btn-apply:hover { background-color: #45a049; }
         .btn-table { background-color: #ff9900; color: #000; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-merge { background-color: #8b5cf6; color: #fff; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-merge:hover { background-color: #7c3aed; }
+        .btn-save-table { background-color: #0284c7; color: #fff; border: none; padding: 5px 10px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .btn-save-table:hover { background-color: #0369a1; }
         .btn-print { background-color: #10b981; color: #fff; border: none; padding: 6px 15px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 13px; }
         .btn-print:hover { background-color: #059669; }
         .btn-delete-action { background-color: #cc0000; color: #fff; border: none; padding: 5px 8px; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 11px; }
@@ -218,11 +222,6 @@
             box-sizing: border-box;
         }
 
-        /* 
-          💡 YAHAN SE LOGO AUR VIDYALAY KE BEECH KI GAPING CONTROL Hoti HAI:
-          - padding-left: 15px (Logo ko thoda right karne ke liye)
-          - gap: 15px (Logo aur school details ke beech ki doori kam/zyada karne ke liye)
-        */
         .header { 
             padding-bottom: 12px; 
             padding-left: 15px; 
@@ -240,7 +239,7 @@
 
         .logo { width: 100px; height: 100px; object-fit: contain; }
         .school-details { text-align: center; flex-grow: 1; }
-        .school-name { font-size: 38px; font-weight: bold; color: #003366; margin: 0; text-transform: uppercase; line-height: 1.2; }
+        .school-name { font-size: 40px; font-weight: bold; color: #003366; margin: 0; text-transform: uppercase; line-height: 1.2; }
         .school-info { font-size: 20px; margin: 8px 0 0 0; color: #003366; font-weight: bold; }
         
         .meta-info { 
@@ -291,14 +290,33 @@
             position: absolute; top: 2px; left: 2px; right: 2px; height: 20px; background-color: #003366; color: #fff;
             font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: move; border-radius: 2px; user-select: none;
         }
-        .table-resizable-wrapper table { width: 100%; height: 100%; border-collapse: collapse; font-size: 14px; text-align: left; table-layout: fixed; }
-        .table-resizable-wrapper table, .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #333; }
-        .table-resizable-wrapper th { background-color: #f2f2f2; padding: 8px; font-weight: bold; }
-        .table-resizable-wrapper td { padding: 8px; }
+        .table-resizable-wrapper table { 
+            width: 100%; 
+            height: 100%; 
+            border-collapse: collapse; 
+            font-size: 14px; 
+            text-align: left; 
+            table-layout: fixed; 
+        }
+        .table-resizable-wrapper table, .table-resizable-wrapper th, .table-resizable-wrapper td { 
+            border: 1px solid #333; 
+        }
+        .table-resizable-wrapper th { 
+            background-color: #f2f2f2; 
+            padding: 8px; 
+            font-weight: bold; 
+            overflow: hidden;
+            word-break: break-word;
+        }
+        .table-resizable-wrapper td { 
+            padding: 8px; 
+            overflow: hidden; 
+            word-break: break-word;
+        }
         .resize-handle-right { position: absolute; right: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
         .resize-handle-left { position: absolute; left: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
 
-        /* 📄 पृथक प्रस्ताव पेपर */
+        /* 📄 प्रस्ताव पेपर */
         .paper {
             width: 210mm;
             min-height: 297mm;
@@ -386,6 +404,14 @@
             </label>
         </div>
 
+        <!-- 👁️ लेटर पैड हेडर हाइड/अनहाइड टॉगल बटन -->
+        <div class="mode-selector-group" id="headerToggleContainer" style="background: #047857;">
+            <input type="checkbox" id="hideLetterheadHeader" onchange="toggleLetterheadHeader(this.checked)">
+            <label for="hideLetterheadHeader" style="color: #fff; font-weight: bold; cursor: pointer; font-size: 13px;">
+                👁️ प्रिंटेड पैड हेतु हेडर छुपाएं (Hide Header)
+            </label>
+        </div>
+
         <button class="btn-print" style="margin-left: auto;" onclick="window.print()">🖨️ प्रिंट करें</button>
     </div>
 
@@ -450,6 +476,8 @@
         </div>
 
         <button class="btn-table" onclick="insertDynamicTable()">➕ टेबल जोड़ें</button>
+        <button class="btn-merge" onclick="mergeTableCells()">🔗 सेल मर्ज करें</button>
+        <button class="btn-save-table" onclick="saveTableCustomLayout()">💾 टेबल सेटिंग सेव करें</button>
 
         <div class="selector-group" style="margin-left: auto; gap: 5px;">
             <button class="btn-delete-action" onclick="deleteCurrentRow()">❌ रो हटाएँ</button>
@@ -609,6 +637,7 @@
         applyCustomMargins();
         updateWatermarkPosition();
         updateContent();
+        loadSavedTableLayout();
     };
 
     function saveSettings() {
@@ -624,6 +653,7 @@
             prastavText: document.getElementById('prastavTextInput').value,
             nirnayText: document.getElementById('nirnayTextInput').value,
             loadOnLh: document.getElementById('loadPrastavToLetterhead').checked,
+            hideHeader: document.getElementById('hideLetterheadHeader').checked,
             appMode: document.getElementById('appModeSelect').value,
             watermarkTop: document.getElementById('watermarkTopInput').value,
             watermarkSize: document.getElementById('watermarkSizeInput').value,
@@ -651,6 +681,11 @@
                 if(data.watermarkSize !== undefined) document.getElementById('watermarkSizeInput').value = data.watermarkSize;
                 if(data.headerLines) headerLinesData = data.headerLines;
 
+                if(data.hideHeader !== undefined) {
+                    document.getElementById('hideLetterheadHeader').checked = data.hideHeader;
+                    toggleLetterheadHeader(data.hideHeader);
+                }
+
                 if(data.appMode) {
                     document.getElementById('appModeSelect').value = data.appMode;
                 }
@@ -664,6 +699,19 @@
                 console.error("Error loading settings", e);
             }
         }
+    }
+
+    function toggleLetterheadHeader(isHidden) {
+        var headerContainer = document.getElementById('header-container');
+        var headerToggleContainer = document.getElementById('headerToggleContainer');
+        if (isHidden) {
+            headerContainer.style.display = 'none';
+            headerToggleContainer.style.background = '#b91c1c';
+        } else {
+            headerContainer.style.display = 'block';
+            headerToggleContainer.style.background = '#047857';
+        }
+        saveSettings();
     }
 
     function updateWatermarkPosition() {
@@ -684,10 +732,12 @@
         var prastavPaper = document.getElementById('printablePaper');
         var prastavControl = document.getElementById('prastavControlPanel');
         var loadOnLhCheckbox = document.getElementById('loadPrastavToLetterhead');
+        var headerToggleGrp = document.getElementById('headerToggleContainer');
 
         if (mode === 'letterhead') {
             letterheadEl.style.display = 'block';
             letterheadToolbar.style.display = 'flex';
+            headerToggleGrp.style.display = 'flex';
             prastavPaper.style.display = 'none';
             
             if(loadOnLhCheckbox.checked) {
@@ -701,6 +751,7 @@
 
             letterheadEl.style.display = 'none';
             letterheadToolbar.style.display = 'none';
+            headerToggleGrp.style.display = 'none';
             prastavPaper.style.display = 'block';
             prastavControl.style.display = 'block';
         }
@@ -748,8 +799,10 @@
         var wrappers = document.querySelectorAll('.table-resizable-wrapper');
         var newWidth = (794 - leftPx - rightPx);
         wrappers.forEach(function(wrapper) {
-            wrapper.style.left = leftPx + 'px';
-            wrapper.style.width = (newWidth > 100 ? newWidth : 100) + 'px';
+            if (!wrapper.dataset.userResized) {
+                wrapper.style.left = leftPx + 'px';
+                wrapper.style.width = (newWidth > 100 ? newWidth : 100) + 'px';
+            }
         });
         saveSettings();
     }
@@ -803,6 +856,99 @@
         }
     }
 
+    function mergeTableCells() {
+        var selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            var node = selection.getRangeAt(0).startContainer;
+            var cell = null;
+            while (node && node.id !== 'main-letterhead') {
+                if (node.nodeName === 'TD' || node.nodeName === 'TH') {
+                    cell = node;
+                    break;
+                }
+                node = node.parentNode;
+            }
+            if (cell) {
+                var direction = prompt("किस दिशा में मर्ज करना है? टाइप करें: 'right' (दाएं वाले से) या 'down' (नीचे वाले से)", "right");
+                if (direction === 'right') {
+                    var nextCell = cell.nextElementSibling;
+                    if (nextCell) {
+                        var currentCols = parseInt(cell.getAttribute('colspan')) || 1;
+                        var nextCols = parseInt(nextCell.getAttribute('colspan')) || 1;
+                        cell.setAttribute('colspan', currentCols + nextCols);
+                        cell.innerHTML += "<br>" + nextCell.innerHTML;
+                        nextCell.parentNode.removeChild(nextCell);
+                    } else {
+                        alert("दाएं तरफ कोई सेल उपलब्ध नहीं है!");
+                    }
+                } else if (direction === 'down') {
+                    var rowIndex = cell.parentNode.rowIndex;
+                    var table = cell.closest('table');
+                    var cellIndex = cell.cellIndex;
+                    var nextRow = table.rows[rowIndex + 1];
+                    if (nextRow && nextRow.cells[cellIndex]) {
+                        var downCell = nextRow.cells[cellIndex];
+                        var currentRows = parseInt(cell.getAttribute('rowspan')) || 1;
+                        var downRows = parseInt(downCell.getAttribute('rowspan')) || 1;
+                        cell.setAttribute('rowspan', currentRows + downRows);
+                        cell.innerHTML += "<br>" + downCell.innerHTML;
+                        downCell.parentNode.removeChild(downCell);
+                    } else {
+                        alert("नीचे तरफ कोई सेल उपलब्ध नहीं है!");
+                    }
+                }
+            } else {
+                alert("कृपया कर्सर को उस सेल में रखें जिसे मर्ज करना है!");
+            }
+        }
+    }
+
+    // 💾 टेबल लेआउट और फिक्स सेटिंग सेव करने का फंक्शन
+    function saveTableCustomLayout() {
+        var wrappers = document.querySelectorAll('.table-resizable-wrapper');
+        var tableData = [];
+        wrappers.forEach(function(wrapper) {
+            tableData.push({
+                id: wrapper.id,
+                html: wrapper.innerHTML,
+                left: wrapper.style.left,
+                top: wrapper.style.top,
+                width: wrapper.style.width,
+                height: wrapper.style.height
+            });
+        });
+        localStorage.setItem('savedTableCustomLayout', JSON.stringify(tableData));
+        alert("टेबल की वर्तमान सेटिंग और साइज सफलतापूर्वक सेव हो गई है!");
+    }
+
+    function loadSavedTableLayout() {
+        var saved = localStorage.getItem('savedTableCustomLayout');
+        if (saved) {
+            try {
+                var tableData = JSON.parse(saved);
+                var mainLetterhead = document.getElementById('main-letterhead');
+                tableData.forEach(function(item) {
+                    // Check if table wrapper already exists, else create
+                    var existing = document.getElementById(item.id);
+                    if (!existing) {
+                        var wrapper = document.createElement('div');
+                        wrapper.id = item.id;
+                        wrapper.className = 'table-resizable-wrapper';
+                        wrapper.style.left = item.left;
+                        wrapper.style.top = item.top;
+                        wrapper.style.width = item.width;
+                        if(item.height) wrapper.style.height = item.height;
+                        wrapper.dataset.userResized = "true";
+                        wrapper.innerHTML = item.html;
+                        mainLetterhead.appendChild(wrapper);
+                    }
+                });
+            } catch(e) {
+                console.error("Error loading table layout", e);
+            }
+        }
+    }
+
     function insertDynamicTable() {
         var rows = prompt("कितनी रो (Rows) चाहिए? (उदा. 3)", "3");
         var cols = prompt("कितने कॉलम (Columns) चाहिए? (उदा. 4)", "4");
@@ -826,7 +972,7 @@
         var tableWidth = 794 - leftPx - rightPx;
         wrapper.style.width = (tableWidth > 100 ? tableWidth : 100) + 'px';
         
-        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ नंबर संस्करण)</div>' +
+        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ)</div>' +
                           '<div class="resize-handle-left" onmousedown="initResize(event, \''+wrapperId+'\', \'left\')"></div>' +
                           '<table contenteditable="true"><thead><tr>';
         
@@ -851,6 +997,7 @@
     function initDrag(e, wrapperId) {
         e.preventDefault();
         dragObj = document.getElementById(wrapperId);
+        dragObj.dataset.userResized = "true";
         var rect = dragObj.getBoundingClientRect();
         offsetX = e.clientX - rect.left;
         offsetY = e.clientY - rect.top;
@@ -883,6 +1030,7 @@
         e.preventDefault();
         e.stopPropagation(); 
         currentWrapper = document.getElementById(wrapperId);
+        currentWrapper.dataset.userResized = "true";
         resizeDirection = direction;
         startX = e.clientX;
         startWidth = parseInt(document.defaultView.getComputedStyle(currentWrapper).width, 10);
@@ -946,7 +1094,11 @@
         if (selection.rangeCount > 0) {
             var node = selection.getRangeAt(0).startContainer;
             while (node && node.id !== 'main-letterhead') {
-                if (node.classList && node.classList.contains('table-resizable-wrapper')) { node.parentNode.removeChild(node); return; }
+                if (node.classList && node.classList.contains('table-resizable-wrapper')) { 
+                    node.parentNode.removeChild(node); 
+                    localStorage.removeItem('savedTableCustomLayout');
+                    return; 
+                }
                 node = node.parentNode;
             }
             alert("कृपया कर्सर को टेबल के अंदर कहीं रखें ताकि उसे डिलीट किया जा सके!");
