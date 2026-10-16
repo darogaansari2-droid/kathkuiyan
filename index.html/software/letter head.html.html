@@ -188,7 +188,7 @@
             position: relative; 
             background-color: #ffffff;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            overflow: hidden; /* वॉटरमार्क बाहर न जाए */
+            overflow: hidden; 
         }
 
         /* 💧 वॉटरमार्क स्टाइल */
@@ -199,37 +199,49 @@
             transform: translate(-50%, -50%);
             width: 400px;
             height: 400px;
-            opacity: 0.22; /* हल्का दिखने के लिए */
+            opacity: 0.22; 
             z-index: 1;
             pointer-events: none;
             object-fit: contain;
         }
 
-        /* लैटरपैड के अंदर के कंटेंट को वॉटरमार्क के ऊपर रखने के लिए */
         .fixed-header-container, .content-fixed, .table-resizable-wrapper {
             position: relative;
             z-index: 2;
         }
 
+        /* 🔒 फिक्सड हेडर कंटेनर */
         .fixed-header-container {
-            padding-left: 24px;
-            padding-right: 24px;
+            padding-left: 15px;
+            padding-right: 30px;
             width: 100%;
             box-sizing: border-box;
-            transition: padding 0.2s ease;
         }
 
-        .header { padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        /* 
+          💡 YAHAN SE LOGO AUR VIDYALAY KE BEECH KI GAPING CONTROL Hoti HAI:
+          - padding-left: 15px (Logo ko thoda right karne ke liye)
+          - gap: 15px (Logo aur school details ke beech ki doori kam/zyada karne ke liye)
+        */
+        .header { 
+            padding-bottom: 12px; 
+            padding-left: 15px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 0px; 
+        }
+        
         .full-width-line {
             border-bottom: 5px double #003366;
             margin: 0 -24px 28px -24px; 
             display: block;
-            transition: margin 0.2s ease;
         }
-        .logo { width: 95px; height: 95px; object-fit: contain; }
+
+        .logo { width: 100px; height: 100px; object-fit: contain; }
         .school-details { text-align: center; flex-grow: 1; }
-        .school-name { font-size: 36px; font-weight: bold; color: #003366; margin: 0; text-transform: uppercase; line-height: 1.2; }
-        .school-info { font-size: 18px; margin: 8px 0 0 0; color: #003366; font-weight: bold; }
+        .school-name { font-size: 38px; font-weight: bold; color: #003366; margin: 0; text-transform: uppercase; line-height: 1.2; }
+        .school-info { font-size: 20px; margin: 8px 0 0 0; color: #003366; font-weight: bold; }
         
         .meta-info { 
             display: flex; 
@@ -239,9 +251,19 @@
             font-weight: bold; 
             color: #003366;
             width: 100%;
+            padding-left: 20px; 
+            padding-right: 20px; 
+            box-sizing: border-box;
         }
         .meta-info .date-right { text-align: right; }
-        .authority { font-weight: bold; font-size: 16px; margin-bottom: 10px; margin-left: 10px; color: #003366; }
+        
+        .authority { 
+            font-weight: bold; 
+            font-size: 16px; 
+            margin-bottom: 10px; 
+            padding-left: 20px; 
+            color: #003366; 
+        }
          
         .content-fixed {
             padding-left: 24px;   
@@ -276,12 +298,12 @@
         .resize-handle-right { position: absolute; right: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
         .resize-handle-left { position: absolute; left: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
 
-        /* 📄 पृथक प्रस्ताव पेपर (अब इसमें भी वॉटरमार्क जोड़ दिया गया है) */
+        /* 📄 पृथक प्रस्ताव पेपर */
         .paper {
             width: 210mm;
             min-height: 297mm;
             padding: 20mm;
-            padding-top: 50px;
+            padding-top: 50mm;
             margin: 20mm auto;
             background: white;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
@@ -289,11 +311,10 @@
             font-size: 16px;
             line-height: 1.7;
             font-family: 'Mangal', 'Nirmala UI', 'Arial', sans-serif;
-            position: relative; /* वॉटरमार्क के लिए आवश्यक */
-            overflow: hidden;   /* वॉटरमार्क बाहर न जाए */
+            position: relative;
+            overflow: hidden;
         }
 
-        /* 💧 स्टैंडअलोन प्रस्ताव पेपर का वॉटरमार्क */
         .paper-watermark {
             position: absolute;
             left: 50%;
@@ -307,7 +328,6 @@
             object-fit: contain;
         }
 
-        /* प्रस्ताव के अंदर के कंटेंट को वॉटरमार्क के ऊपर रखने के लिए */
         .paper .header-title-container, .paper .prastav-table {
             position: relative;
             z-index: 2;
@@ -515,7 +535,7 @@
 
     <!-- 🏛️ मुख्य लेटर पैड व्यू -->
     <div class="letterhead" id="main-letterhead">
-        <!-- 💧 लोगो का वॉटरमार्क (लेटर पैड के बीच में) -->
+        <!-- 💧 लोगो का वॉटरमार्क -->
         <img class="letterhead-watermark common-watermark" src="logo.png" alt="Watermark">
 
         <div class="fixed-header-container" id="header-container">
@@ -541,9 +561,8 @@
         <div class="content-fixed" id="letter-body" contenteditable="true"><br></div>
     </div>
 
-    <!-- 📄 अलग से प्रस्ताव प्रिंट करने वाला पेपर एरिया (Standalone Prastav Paper) -->
+    <!-- 📄 अलग से प्रस्ताव प्रिंट करने वाला पेपर एरिया -->
     <div class="paper" id="printablePaper" style="display: none;">
-        <!-- 💧 स्टैंडअलोन प्रस्ताव पेपर का वॉटरमार्क -->
         <img class="paper-watermark common-watermark" src="logo.png" alt="Watermark">
 
         <div class="header-title-container" id="displayHeaderContainer"></div>
@@ -561,7 +580,7 @@
         </table>
     </div>
 
-    <!-- 📜 टेम्पलेट डेटा कंटेनर (लेटर पैड के ऊपर प्रस्ताव लोड करने हेतु) -->
+    <!-- 📜 टेम्पलेट डेटा कंटेनर -->
     <template id="prastavTemplateInsideLetterhead">
         <div class="header-title-container" id="lh_displayHeaderContainer" style="font-weight: bold; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1.5px solid #000; line-height: 1.6;"></div>
         <table class="prastav-table" style="width:100%; border-collapse: separate; table-layout: fixed;">
@@ -579,21 +598,19 @@
     </template>
 
 <script>
-    // डिफ़ॉल्ट हेडर लाइन्स डेटा
     var headerLinesData = [
         { text: "श्री कृष्ण इण्टर कालेज सेमरा कठकुइयाँ, कुशीनगर के प्रबन्ध समिति की बैठक दिनांक 30-08-2026 के", align: "left", offset: 0 },
         { text: "प्रस्ताव संख्या-02 की सत्य प्रतिलिपि -", align: "left", offset: 0 }
     ];
 
     window.onload = function() {
-        loadSettings(); // पेज खुलते ही सेव की गई सेटिंग्स लोड करें
+        loadSettings(); 
         renderHeaderInputs();
         applyCustomMargins();
         updateWatermarkPosition();
         updateContent();
     };
 
-    // 💾 सेटिंग्स को ब्राउज़र के लोकल स्टोरेज में सेव करने का फंक्शन
     function saveSettings() {
         var settings = {
             leftMargin: document.getElementById('leftMarginInput').value,
@@ -615,7 +632,6 @@
         localStorage.setItem('schoolSoftwareSettings', JSON.stringify(settings));
     }
 
-    // 📂 सेव की गई सेटिंग्स को वापस लोड करने का फंक्शन
     function loadSettings() {
         var saved = localStorage.getItem('schoolSoftwareSettings');
         if (saved) {
@@ -650,7 +666,6 @@
         }
     }
 
-    // 💧 वॉटरमार्क पोजीशन और साइज सेट करने का फंक्शन (सभी वॉटरमार्क पर लागू होगा)
     function updateWatermarkPosition() {
         var wmTop = document.getElementById('watermarkTopInput').value || 50;
         var wmSize = document.getElementById('watermarkSizeInput').value || 300;
@@ -726,14 +741,6 @@
         var leftPx = Math.round(leftInch * 96);
         var rightPx = Math.round(rightInch * 96);
 
-        var headerContainer = document.getElementById('header-container');
-        headerContainer.style.paddingLeft = leftPx + 'px';
-        headerContainer.style.paddingRight = rightPx + 'px';
-
-        var headerLine = document.getElementById('header-line');
-        headerLine.style.marginLeft = '-' + leftPx + 'px';
-        headerLine.style.marginRight = '-' + rightPx + 'px';
-
         var letterBody = document.getElementById('letter-body');
         letterBody.style.paddingLeft = leftPx + 'px';
         letterBody.style.paddingRight = rightPx + 'px';
@@ -770,7 +777,6 @@
         }
     });
 
-    // 🔴 Text Ko Bold Karne Ka Function
     function toggleBold() {
         document.execCommand('bold', false, null);
     }
@@ -820,7 +826,7 @@
         var tableWidth = 794 - leftPx - rightPx;
         wrapper.style.width = (tableWidth > 100 ? tableWidth : 100) + 'px';
         
-        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ नंबर)</div>' +
+        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ नंबर संस्करण)</div>' +
                           '<div class="resize-handle-left" onmousedown="initResize(event, \''+wrapperId+'\', \'left\')"></div>' +
                           '<table contenteditable="true"><thead><tr>';
         
