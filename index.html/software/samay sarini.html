@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>श्री कृष्ण इण्टरमीडिएट कालेज - समय सारिणी प्रबंधन</title>
+    <title>श्री कृष्ण इण्टरमीडिएट कालेज - समेकित सॉफ्टवेयर (समय सारिणी एवं होम परीक्षा)</title>
     <style>
-        @import url('https://fonts.Nirmal UI/css2?family=Poppins:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap');
 
         * {
             box-sizing: border-box;
@@ -20,7 +20,44 @@
             padding: 10px;
         }
 
-        .container {
+        /* Master Navbar for Switching Modules */
+        .master-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            background: #111;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+
+        .master-nav-btn {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s;
+        }
+
+        .master-nav-btn.active {
+            background: #007bff;
+            color: #fff;
+        }
+
+        .module-section {
+            display: none;
+        }
+
+        .module-section.active {
+            display: block;
+        }
+
+        /* --- SAMAY SARINI STYLES --- */
+        .container-sarini {
             max-width: 1480px;
             margin: 0 auto;
             background: #fff;
@@ -29,15 +66,14 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        /* School Header */
-        .school-header {
+        .school-header-sarini {
             text-align: center;
             margin-bottom: 10px;
             border-bottom: 2px double #000;
             padding-bottom: 8px;
         }
 
-        .school-header h1 {
+        .school-header-sarini h1 {
             font-family: 'Teko', sans-serif;
             font-size: 22px;
             color: #000;
@@ -45,14 +81,13 @@
             text-transform: uppercase;
         }
 
-        .school-header h2 {
+        .school-header-sarini h2 {
             font-size: 15px;
             color: #000;
             margin-top: 2px;
             font-weight: 600;
         }
 
-        /* Controls & Session Input */
         .top-controls {
             display: flex;
             justify-content: space-between;
@@ -91,10 +126,7 @@
             cursor: pointer;
             margin-left: 4px;
         }
-
-        .setting-save-btn:hover {
-            background-color: #1b5e20;
-        }
+        .setting-save-btn:hover { background-color: #1b5e20; }
 
         .setting-reset-btn {
             background-color: #c62828;
@@ -107,10 +139,7 @@
             cursor: pointer;
             margin-left: 4px;
         }
-
-        .setting-reset-btn:hover {
-            background-color: #8e0000;
-        }
+        .setting-reset-btn:hover { background-color: #8e0000; }
 
         .tab-buttons {
             display: flex;
@@ -127,13 +156,11 @@
             border-radius: 4px;
             transition: all 0.3s;
         }
-
         .tab-btn.active {
             background-color: #000;
             color: #fff;
         }
 
-        /* Quick Entry Form Styling */
         .quick-entry-box {
             background: #fafafa;
             border: 1px solid #bbb;
@@ -141,7 +168,6 @@
             border-radius: 6px;
             margin-bottom: 15px;
         }
-
         .quick-entry-box h3 {
             font-size: 13px;
             margin-bottom: 10px;
@@ -152,7 +178,6 @@
         .timetable-section {
             display: none;
         }
-
         .timetable-section.active {
             display: block;
         }
@@ -165,21 +190,20 @@
             font-weight: 600;
         }
 
-        /* Table Design */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
             margin-bottom: 10px;
         }
 
-        table {
+        #section-sarini-root table {
             width: 100%;
             border-collapse: collapse;
             font-size: var(--font-size, 11px);
             background: #fff;
         }
 
-        th, td {
+        #section-sarini-root th, #section-sarini-root td {
             border: 1px solid #000;
             padding: var(--row-padding, 6px) var(--col-width-factor, 4px);
             text-align: center;
@@ -187,14 +211,13 @@
             color: #000;
         }
 
-        /* Specific alignment for Format 1 Teacher Name column */
         #table-format-1 th:nth-child(2),
         #table-format-1 td:nth-child(2) {
             text-align: left !important;
             padding-left: 8px;
         }
 
-        th {
+        #section-sarini-root th {
             background-color: #dcdcdc !important;
             color: #000 !important;
             font-weight: 700;
@@ -215,7 +238,6 @@
             box-shadow: none !important;
         }
 
-        /* Left align name input specifically in Format 1 */
         #table-format-1 td:nth-child(2) input.editable-cell {
             text-align: left !important;
         }
@@ -265,12 +287,6 @@
             text-align: center;
         }
 
-        .quick-textarea::placeholder, input::placeholder {
-            color: #555;
-            font-weight: 600;
-            opacity: 1;
-        }
-
         .break-cell {
             background-color: #eaeaea !important;
             font-weight: bold;
@@ -292,7 +308,9 @@
             align-items: center;
         }
 
-        .btn {
+        .btn-add {
+            background-color: #333;
+            color: white;
             padding: 5px 10px;
             font-size: 12px;
             font-weight: 600;
@@ -300,12 +318,6 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
-        .btn-add {
-            background-color: #333;
-            color: white;
-        }
-
         .btn-add:hover { background-color: #000; }
 
         .row-action-group {
@@ -324,7 +336,6 @@
             cursor: pointer;
             border-radius: 3px;
         }
-
         .btn-action-mini:hover { background-color: #000; }
 
         .btn-del {
@@ -342,17 +353,168 @@
             cursor: pointer;
             box-shadow: 0 3px 6px rgba(0,0,0,0.3);
         }
-
         .print-btn:hover { background-color: #333; }
 
+
+        /* --- HOME EXAM STYLES --- */
+        :root {
+            --exam-font-size: 13px;
+            --exam-table-padding: 6px;
+        }
+
+        .control-panel-exam {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            width: 100%;
+            max-width: 297mm;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .control-panel-exam label {
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .control-panel-exam input, .control-panel-exam button {
+            padding: 6px 12px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .control-panel-exam button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .control-panel-exam button:hover {
+            background: #0056b3;
+        }
+
+        .page-exam {
+            width: 100%;
+            max-width: 297mm;
+            min-height: 210mm;
+            padding: 15mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .school-header-exam {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .school-header-exam h1 {
+            font-size: calc(var(--exam-font-size) + 8px);
+            margin: 0 0 5px 0;
+            text-transform: uppercase;
+        }
+
+        .school-header-exam h2 {
+            font-size: calc(var(--exam-font-size) + 4px);
+            margin: 0;
+            color: #333;
+        }
+
+        .page-exam table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--exam-font-size);
+            margin-bottom: 20px;
+        }
+
+        .page-exam th, .page-exam td {
+            border: 1px solid #000;
+            padding: var(--exam-table-padding) 2px;
+            text-align: center;
+            vertical-align: middle;
+            white-space: normal;
+            word-break: break-word;
+        }
+
+        .page-exam th {
+            background-color: #f2f2f2;
+        }
+
+        .page-exam tr.date-row th,
+        .page-exam tr.day-row th {
+            font-size: calc(var(--exam-font-size) + 2px);
+            font-weight: bold;
+        }
+
+        .page-exam tr.day-row th {
+            background-color: transparent !important;
+        }
+
+        [contenteditable="true"] {
+            outline: 1px dashed transparent;
+            transition: outline 0.2s;
+        }
+        [contenteditable="true"]:hover {
+            outline: 1px dashed #007bff;
+            background: #fffdf0;
+        }
+
+        .footer-note-exam {
+            font-size: calc(var(--exam-font-size) + 3px);
+            font-weight: bold;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+
+        .principal-sign-exam {
+            float: right;
+            margin-top: 35px;
+            margin-right: 80px;
+            text-align: center;
+            font-weight: bold;
+            font-size: calc(var(--exam-font-size) + 2px);
+        }
+
+        .exam-action-bar {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .exam-action-bar button {
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #333;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .exam-action-bar button:hover {
+            background: #000;
+        }
+
+
+        /* --- PRINT MEDIA SETTINGS --- */
         @media print {
             @page {
                 size: A4 landscape;
-                margin: 5mm;
+                margin: 0;
             }
 
             body {
-                background: #fff !important;
+                background: none !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 color: #000 !important;
@@ -360,7 +522,19 @@
                 print-color-adjust: exact;
             }
 
-            .container {
+            .master-nav, .top-controls, .control-panel-exam, .btn-add, .print-btn, .quick-entry-box, .row-action-group, th.no-print, td.no-print, .exam-action-bar {
+                display: none !important;
+            }
+
+            .module-section {
+                display: none !important;
+            }
+
+            .module-section.active {
+                display: block !important;
+            }
+
+            #section-sarini-root .container-sarini {
                 box-shadow: none !important;
                 padding: 0 !important;
                 margin: 0 !important;
@@ -368,15 +542,11 @@
                 max-width: 100% !important;
             }
 
-            .top-controls, .btn-add, .print-btn, .no-print, .quick-entry-box {
+            #section-sarini-root .timetable-section {
                 display: none !important;
             }
 
-            .timetable-section {
-                display: none !important;
-            }
-
-            .timetable-section.print-active {
+            #section-sarini-root .timetable-section.active {
                 display: block !important;
             }
 
@@ -385,23 +555,23 @@
                 display: none !important;
             }
 
-            table {
+            #section-sarini-root table {
                 font-size: var(--font-size, 10px) !important;
                 width: 100% !important;
                 border-collapse: collapse !important;
                 page-break-inside: auto !important;
             }
 
-            tr {
+            #section-sarini-root tr {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
 
-            thead {
+            #section-sarini-root thead {
                 display: table-header-group !important;
             }
 
-            th, td {
+            #section-sarini-root th, #section-sarini-root td {
                 border: 1px solid #000 !important;
                 padding: var(--row-padding, 5px) var(--col-width-factor, 3px) !important;
                 color: #000 !important;
@@ -413,7 +583,7 @@
                 padding-left: 6px !important;
             }
 
-            th {
+            #section-sarini-root th {
                 background-color: #dcdcdc !important;
                 color: #000 !important;
             }
@@ -443,635 +613,767 @@
                 font-size: var(--p8-font-size, 9px) !important;
                 -webkit-text-fill-color: #000 !important;
             }
+
+            #section-exam-root.active .page-exam {
+                display: block !important;
+                box-shadow: none !important;
+                margin: 0 auto !important;
+                width: 297mm !important;
+                min-height: 210mm !important;
+                height: 100% !important;
+                padding: 15mm !important;
+            }
         }
     </style>
 </head>
-<body id="bodyRoot" style="--row-padding: 6px; --col-width-factor: 4px; --textarea-min-height: 32px; --font-size: 11px; --p8-font-size: 9px;">
+<body id="bodyRoot" style="--row-padding: 6px; --col-width-factor: 4px; --textarea-min-height: 32px; --font-size: 11px; --p8-font-size: 9px; --exam-font-size: 13px; --exam-table-padding: 6px;">
 
-<div class="container">
-    <!-- School Header -->
-    <div class="school-header">
-        <h1>श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा कठकुइयाँ, कुशीनगर</h1>
-        <h2> समय सारिणी सत्र - <span id="display-session">2026-27</span></h2>
+    <!-- Master Navigation to Switch Software Modules -->
+    <div class="master-nav no-print">
+        <button class="master-nav-btn active" id="btn-mod-sarini" onclick="switchModule('sarini')">📅 विद्यालय समय सारणी (Samay Sarini)</button>
+        <button class="master-nav-btn" id="btn-mod-exam" onclick="switchModule('exam')">🏫 होम परीक्षा समय सारणी (Home Exam)</button>
     </div>
 
-    <!-- Top Controls & Session & Settings -->
-    <div class="top-controls">
-        <div class="session-box">
-            <label for="sessionInput">सत्र:</label>
-            <input type="text" id="sessionInput" value="2026-27" style="width: 55px;" oninput="updateSession(this.value)">
-            
-            <label for="recessAfter" style="margin-left: 3px;">मध्यान्तर:</label>
-            <select id="recessAfter" class="recess-select" onchange="renderTables()">
-                <option value="3">III बाद</option>
-                <option value="4" selected>IV बाद</option>
-                <option value="5">V बाद</option>
-                <option value="6">VI बाद</option>
-            </select>
-
-            <label for="rowPaddingInput" style="margin-left: 3px;">रो ऊंचाई:</label>
-            <input type="number" id="rowPaddingInput" value="6" min="2" max="20" style="width: 38px;" oninput="updateRowHeight(this.value)"> px
-
-            <label for="colWidthInput" style="margin-left: 3px;">कॉलम चौड़ाई:</label>
-            <input type="number" id="colWidthInput" value="4" min="2" max="20" style="width: 38px;" oninput="updateColWidth(this.value)"> px
-
-            <label for="fontSizeInput" style="margin-left: 3px;">फॉन्ट:</label>
-            <input type="number" id="fontSizeInput" value="11" min="7" max="16" style="width: 40px;" oninput="updateFontSize(this.value)"> px
-
-            <label for="p8FontSizeInput" style="margin-left: 3px;">8वी घंटी फॉन्ट:</label>
-            <input type="number" id="p8FontSizeInput" value="9" min="6" max="16" style="width: 40px;" oninput="updateP8FontSize(this.value)"> px
-
-            <label for="printSelect" style="margin-left: 3px;">प्रिंट मोड:</label>
-            <select id="printSelect" class="print-select" onchange="onPrintSelectChange(this.value)">
-                <option value="1">फॉर्मेट 1</option>
-                <option value="2">फॉर्मेट 2</option>
-            </select>
-
-            <button class="setting-save-btn" onclick="saveSettings()">💾 सेव</button>
-            <button class="setting-reset-btn" onclick="resetSettings()">🔄 रीसेट</button>
-        </div>
-
-        <div class="tab-buttons">
-            <button class="tab-btn active" id="btn-tab-1" onclick="switchTab(1)">फॉर्मेट 1: अध्यापकवार</button>
-            <button class="tab-btn" id="btn-tab-2" onclick="switchTab(2)">फॉर्मेट 2: कक्षावार</button>
-        </div>
-    </div>
-
-    <!-- QUICK ENTRY FORM FOR FORMAT 1 (TEACHER) -->
-    <div id="quick-form-1" class="quick-entry-box no-print">
-        <h3>📝 त्वरित प्रविष्टि / अपडेट फॉर्म (अध्यापकवार)</h3>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: flex-end;">
-            <div style="width: 140px;">
-                <label style="font-size: 11px; font-weight: 600;">क्रम संख्या (Kramank):</label><br>
-                <input type="number" id="q1SNo" min="1" placeholder="जैसे: 1" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+    <!-------------------------------------------------------
+         MODULE 1: SAMAY SARINI SOFTWARE
+    -------------------------------------------------------->
+    <div id="section-sarini-root" class="module-section active">
+        <div class="container-sarini">
+            <!-- School Header -->
+            <div class="school-header-sarini">
+                <h1>श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा कठकुइयाँ, कुशीनगर</h1>
+                <h2> समय सारिणी सत्र - <span id="display-session">2026-27</span></h2>
             </div>
-            <div style="flex-grow: 1; min-width: 200px;">
-                <label style="font-size: 11px; font-weight: 600;">अध्यापक का नाम (Name):</label><br>
-                <input type="text" id="q1Name" placeholder="अध्यापक का पूरा नाम या नाम से खोजें" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+
+            <!-- Top Controls & Session & Settings -->
+            <div class="top-controls no-print">
+                <div class="session-box">
+                    <label for="sessionInput">सत्र:</label>
+                    <input type="text" id="sessionInput" value="2026-27" style="width: 55px;" oninput="updateSession(this.value)">
+                    
+                    <label for="recessAfter" style="margin-left: 3px;">मध्यान्तर:</label>
+                    <select id="recessAfter" class="recess-select" onchange="renderTables()">
+                        <option value="3">III बाद</option>
+                        <option value="4" selected>IV बाद</option>
+                        <option value="5">V बाद</option>
+                        <option value="6">VI बाद</option>
+                    </select>
+
+                    <label for="rowPaddingInput" style="margin-left: 3px;">रो ऊंचाई:</label>
+                    <input type="number" id="rowPaddingInput" value="6" min="2" max="20" style="width: 38px;" oninput="updateRowHeight(this.value)"> px
+
+                    <label for="colWidthInput" style="margin-left: 3px;">कॉलम चौड़ाई:</label>
+                    <input type="number" id="colWidthInput" value="4" min="2" max="20" style="width: 38px;" oninput="updateColWidth(this.value)"> px
+
+                    <label for="fontSizeInput" style="margin-left: 3px;">फॉन्ट:</label>
+                    <input type="number" id="fontSizeInput" value="11" min="7" max="16" style="width: 40px;" oninput="updateFontSize(this.value)"> px
+
+                    <label for="p8FontSizeInput" style="margin-left: 3px;">8वी घंटी फॉन्ट:</label>
+                    <input type="number" id="p8FontSizeInput" value="9" min="6" max="16" style="width: 40px;" oninput="updateP8FontSize(this.value)"> px
+
+                    <label for="printSelect" style="margin-left: 3px;">प्रिंट मोड:</label>
+                    <select id="printSelect" class="print-select" onchange="onPrintSelectChange(this.value)">
+                        <option value="1">फॉर्मेट 1</option>
+                        <option value="2">फॉर्मेट 2</option>
+                    </select>
+
+                    <button class="setting-save-btn" onclick="saveSettings()">💾 सेव</button>
+                    <button class="setting-reset-btn" onclick="resetSettings()">🔄 रीसेट</button>
+                </div>
+
+                <div class="tab-buttons">
+                    <button class="tab-btn active" id="btn-tab-1" onclick="switchTab(1)">फॉर्मेट 1: अध्यापकवार</button>
+                    <button class="tab-btn" id="btn-tab-2" onclick="switchTab(2)">फॉर्मेट 2: कक्षावार</button>
+                </div>
+            </div>
+
+            <!-- QUICK ENTRY FORM FOR FORMAT 1 (TEACHER) -->
+            <div id="quick-form-1" class="quick-entry-box no-print">
+                <h3>📝 त्वरित प्रविष्टि / अपडेट फॉर्म (अध्यापकवार)</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: flex-end;">
+                    <div style="width: 140px;">
+                        <label style="font-size: 11px; font-weight: 600;">क्रम संख्या (Kramank):</label><br>
+                        <input type="number" id="q1SNo" min="1" placeholder="जैसे: 1" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+                    </div>
+                    <div style="flex-grow: 1; min-width: 200px;">
+                        <label style="font-size: 11px; font-weight: 600;">अध्यापक का नाम (Name):</label><br>
+                        <input type="text" id="q1Name" placeholder="अध्यापक का पूरा नाम या नाम से खोजें" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+                    </div>
+                    <div>
+                        <button class="setting-save-btn" onclick="searchData1()" style="padding: 6px 12px; font-size: 11px; background-color: #003366;">🔍 खोजें (Search)</button>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 10px;">
+                    <div><label style="font-size: 10px; font-weight: 600;">I घंटी:</label><textarea id="q1P0" class="quick-textarea" placeholder=""></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">II घंटी:</label><textarea id="q1P1" class="quick-textarea" placeholder=""></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">III घंटी:</label><textarea id="q1P2" class="quick-textarea" placeholder=""></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">IV घंटी:</label><textarea id="q1P3" class="quick-textarea" placeholder=""></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">V घंटी:</label><textarea id="q1P4" class="quick-textarea" placeholder=""></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">VI घंटी:</label><textarea id="q1P5" class="quick-textarea" placeholder=""></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">VII घंटी:</label><textarea id="q1P6" class="quick-textarea" placeholder=""></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">VIII घंटी:</label><textarea id="q1P7" class="quick-textarea" placeholder=""></textarea></div>
+                </div>
+                <button class="setting-save-btn" onclick="applyQuickEntry1()" style="padding: 6px 14px; font-size: 12px;">✅ प्रविष्टि जोड़ें / अपडेट करें</button>
+            </div>
+
+            <!-- QUICK ENTRY FORM FOR FORMAT 2 (CLASS) -->
+            <div id="quick-form-2" class="quick-entry-box no-print" style="display: none;">
+                <h3>📝 त्वरित प्रविष्टि / अपडेट फॉर्म (कक्षावार)</h3>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: flex-end;">
+                    <div style="width: 140px;">
+                        <label style="font-size: 11px; font-weight: 600;">क्रम संख्या / क्रमांक:</label><br>
+                        <input type="number" id="q2SNo" min="1" placeholder="जैसे: 1" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+                    </div>
+                    <div style="flex-grow: 1; min-width: 200px;">
+                        <label style="font-size: 11px; font-weight: 600;">कक्षा का नाम (Class):</label><br>
+                        <input type="text" id="q2Class" placeholder="जैसे: XII A या नाम से खोजें" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+                    </div>
+                    <div>
+                        <button class="setting-save-btn" onclick="searchData2()" style="padding: 6px 12px; font-size: 11px; background-color: #003366;">🔍 खोजें (Search)</button>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 10px;">
+                    <div><label style="font-size: 10px; font-weight: 600;">I घंटी:</label><textarea id="q2P0" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">II घंटी:</label><textarea id="q2P1" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">III घंटी:</label><textarea id="q2P2" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">IV घंटी:</label><textarea id="q2P3" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">V घंटी:</label><textarea id="q2P4" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">VI घंटी:</label><textarea id="q2P5" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">VII घंटी:</label><textarea id="q2P6" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+                    <div><label style="font-size: 10px; font-weight: 600;">VIII घंटी:</label><textarea id="q2P7" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
+                </div>
+                <button class="setting-save-btn" onclick="applyQuickEntry2()" style="padding: 6px 14px; font-size: 12px;">✅ प्रविष्टि जोड़ें / अपडेट करें</button>
+            </div>
+
+            <!-- FORMAT 1: अध्यापकवार समय सारिणी -->
+            <div id="section-1" class="timetable-section active">
+                <div class="section-title">अध्यापकवार समय सारिणी (Teacher-wise Timetable)</div>
+                <div class="table-responsive">
+                    <table id="table-format-1">
+                        <thead id="thead-f1"></thead>
+                        <tbody id="tbody-f1"></tbody>
+                    </table>
+                </div>
+                <div class="action-btns">
+                    <button class="btn-add" onclick="addRowF1(-1)">+ नया अध्यापक जोड़ें (अंत में)</button>
+                </div>
+            </div>
+
+            <!-- FORMAT 2: कक्षावार समय सारिणी -->
+            <div id="section-2" class="timetable-section">
+                <div class="section-title">कक्षावार समय सारिणी (Class-wise Timetable)</div>
+                <div class="table-responsive">
+                    <table id="table-format-2">
+                        <thead id="thead-f2"></thead>
+                        <tbody id="tbody-f2"></tbody>
+                    </table>
+                </div>
+                <div class="action-btns">
+                    <button class="btn-add" onclick="addRowF2(-1)">+ नई कक्षा जोड़ें (अंत में)</button>
+                </div>
+            </div>
+
+            <!-- Print Control -->
+            <div style="text-align: center; margin-top: 15px;" class="top-controls no-print">
+                <button class="print-btn" onclick="triggerSariniPrint()">🖨 चयनित समय सारिणी प्रिंट करें</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-------------------------------------------------------
+         MODULE 2: HOME EXAM SOFTWARE (Dynamic Updated)
+    -------------------------------------------------------->
+    <div id="section-exam-root" class="module-section">
+        <!-- Settings & Control Panel -->
+        <div class="control-panel-exam no-print">
+            <div>
+                <label>Font Size:</label>
+                <input type="range" id="fontSizeRange" min="10" max="18" value="13" oninput="updateExamStyles()">
             </div>
             <div>
-                <button class="setting-save-btn" onclick="searchData1()" style="padding: 6px 12px; font-size: 11px; background-color: #003366;">🔍 खोजें (Search)</button>
+                <label>Table Spacing (Padding):</label>
+                <input type="range" id="paddingRange" min="4" max="12" value="6" oninput="updateExamStyles()">
             </div>
+            <button onclick="saveExamData()">Save Settings & Data</button>
+            <button onclick="resetExamData()" style="background: #dc3545;">Reset Default</button>
+            <button onclick="triggerExamPrint()" style="background: #28a745;">Print A4 Landscape</button>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 10px;">
-            <div><label style="font-size: 10px; font-weight: 600;">I घंटी:</label><textarea id="q1P0" class="quick-textarea" placeholder=""></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">II घंटी:</label><textarea id="q1P1" class="quick-textarea" placeholder=""></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">III घंटी:</label><textarea id="q1P2" class="quick-textarea" placeholder=""></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">IV घंटी:</label><textarea id="q1P3" class="quick-textarea" placeholder=""></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">V घंटी:</label><textarea id="q1P4" class="quick-textarea" placeholder=""></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">VI घंटी:</label><textarea id="q1P5" class="quick-textarea" placeholder=""></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">VII घंटी:</label><textarea id="q1P6" class="quick-textarea" placeholder=""></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">VIII घंटी:</label><textarea id="q1P7" class="quick-textarea" placeholder=""></textarea></div>
-        </div>
-        <button class="setting-save-btn" onclick="applyQuickEntry1()" style="padding: 6px 14px; font-size: 12px;">✅ प्रविष्टि जोड़ें / अपडेट करें</button>
-    </div>
 
-    <!-- QUICK ENTRY FORM FOR FORMAT 2 (CLASS) -->
-    <div id="quick-form-2" class="quick-entry-box no-print" style="display: none;">
-        <h3>📝 त्वरित प्रविष्टि / अपडेट फॉर्म (कक्षावार)</h3>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: flex-end;">
-            <div style="width: 140px;">
-                <label style="font-size: 11px; font-weight: 600;">क्रम संख्या / क्रमांक:</label><br>
-                <input type="number" id="q2SNo" min="1" placeholder="जैसे: 1" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
+        <!-- A4 Landscape Page Container -->
+        <div class="page-exam" id="examPrintArea">
+            <div class="school-header-exam">
+                <h1 contenteditable="true" id="schoolName">श्रीकृष्ण इण्टर कालेज सेमरा पोस्ट - कठकुइयाँ जि0- कुशीनगर</h1>
+                <h2 contenteditable="true" id="examTitle">समय सारणी अर्द्ध वार्षिक परीक्षा <span contenteditable="true" id="sessionYear">2026</span></h2>
             </div>
-            <div style="flex-grow: 1; min-width: 200px;">
-                <label style="font-size: 11px; font-weight: 600;">कक्षा का नाम (Class):</label><br>
-                <input type="text" id="q2Class" placeholder="जैसे: XII A या नाम से खोजें" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
-            </div>
-            <div>
-                <button class="setting-save-btn" onclick="searchData2()" style="padding: 6px 12px; font-size: 11px; background-color: #003366;">🔍 खोजें (Search)</button>
-            </div>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 10px;">
-            <div><label style="font-size: 10px; font-weight: 600;">I घंटी:</label><textarea id="q2P0" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">II घंटी:</label><textarea id="q2P1" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">III घंटी:</label><textarea id="q2P2" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">IV घंटी:</label><textarea id="q2P3" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">V घंटी:</label><textarea id="q2P4" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">VI घंटी:</label><textarea id="q2P5" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">VII घंटी:</label><textarea id="q2P6" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-            <div><label style="font-size: 10px; font-weight: 600;">VIII घंटी:</label><textarea id="q2P7" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-        </div>
-        <button class="setting-save-btn" onclick="applyQuickEntry2()" style="padding: 6px 14px; font-size: 12px;">✅ प्रविष्टि जोड़ें / अपडेट करें</button>
-    </div>
 
-    <!-- FORMAT 1: अध्यापकवार समय सारिणी -->
-    <div id="section-1" class="timetable-section active">
-        <div class="section-title">अध्यापकवार समय सारिणी (Teacher-wise Timetable)</div>
-        <div class="table-responsive">
-            <table id="table-format-1">
-                <thead id="thead-f1"></thead>
-                <tbody id="tbody-f1"></tbody>
+            <!-- Dynamic Exam Controls Bar -->
+            <div class="exam-action-bar no-print">
+                <button onclick="addExamDateColumn()">➕ नया परीक्षा दिन (Date) जोड़ें</button>
+                <button onclick="removeExamDateColumn()" style="background: #c62828;">❌ अंतिम परीक्षा दिन हटाएं</button>
+                <button onclick="addExamClassRow()">➕ नई कक्षा (Class) जोड़ें</button>
+            </div>
+
+            <table id="examTableElement">
+                <thead id="examThead">
+                    <!-- Dynamically rendered via JS -->
+                </thead>
+                <tbody id="examTbody">
+                    <!-- Dynamically rendered via JS -->
+                </tbody>
             </table>
-        </div>
-        <div class="action-btns">
-            <button class="btn btn-add" onclick="addRowF1(-1)">+ नया अध्यापक जोड़ें (अंत में)</button>
-        </div>
-    </div>
 
-    <!-- FORMAT 2: कक्षावार समय सारिणी -->
-    <div id="section-2" class="timetable-section">
-        <div class="section-title">कक्षावार समय सारिणी (Class-wise Timetable)</div>
-        <div class="table-responsive">
-            <table id="table-format-2">
-                <thead id="thead-f2"></thead>
-                <tbody id="tbody-f2"></tbody>
-            </table>
-        </div>
-        <div class="action-btns">
-            <button class="btn btn-add" onclick="addRowF2(-1)">+ नई कक्षा जोड़ें (अंत में)</button>
+            <div class="footer-note-exam" contenteditable="true" id="footerNote">
+                <b>नोट :-</b> प्रथम पाली की परीक्षा प्रातः 9:00 से 12:00 बजे तक एवं द्वितीय पाली की परीक्षा दोपहर 12:00 से 3:00 बजे तक |
+            </div>
+
+            <div class="principal-sign-exam" contenteditable="true" id="signText">
+                प्रधानाचार्य
+            </div>
         </div>
     </div>
 
-    <!-- Print Control -->
-    <div style="text-align: center; margin-top: 15px;" class="top-controls">
-        <button class="print-btn" onclick="triggerPrint()">🖨 चयनित समय सारिणी प्रिंट करें</button>
-    </div>
-</div>
 
-<script>
-    let defaultDataF1 = [
-        {name: "श्री चन्द्र भूषण पाठक", periods: ["-", "-", "XII A\nभूगोल", "-", "XI A\nभूगोल", "-", "-", "-", "भूगोल प्रयो०\nXIIA(सो०मं०बु०)\nXIA(वृ०शु०श०)"]},
-        {name: "श्री मनोज कुमार", periods: ["XII A\nअर्थशास्त्र", "-", "VIII A\nगणित", "XI A\nअर्थशास्त्र", "-", "VII A\nगणित", "-", "-", "पी०टी०\nVIII A"]},
-        {name: "श्री रमेन्द्र नाथ तिवारी", periods: ["-", "VI A\nसंस्कृत", "-", "X A\nसंस्कृत", "-", "-", "VI A\nगृह शिल्प", "-", "-"]},
-        {name: "श्री शम्भू शरण पाण्डेय", periods: ["VIII A\nहिंदी", "-", "-", "IX A\nहिंदी", "VIII A\nविज्ञान", "-", "IX A हिंदी व्या०\n(सो० मं० बु०)", "-", "-"]},
-        {name: "श्री मनोज कुमार त्रिपाठी", periods: ["-", "-", "VII A\nसा० विषय", "-", "VI A\nसा० विषय", "VIII A\nसा० विषय", "VI A\nकृषि", "-", "पी०टी०\nVII A"]},
-        {name: "श्री अनिल कुमार सिंह", periods: ["VI A\nविज्ञान", "VII A\nविज्ञान", "-", "-", "-", "IX A\nसा० विज्ञान", "VIII A\nगृह शिल्प", "-", "नैतिक खेल\nIXD(सो०मं०), IXA(वृ०शु०)"]},
-        {name: "श्री विनय मणि त्रिपाठी", periods: ["VII A\nसंस्कृत", "IX D\nहिंदी", "-", "VIII A\nसंस्कृत", "XII A\nसंस्कृत", "-", "VIII A\nकृषि", "-", "नैतिक खेल\nXD(सो०मं०), XA(वृ०शु०)"]},
-        {name: "श्रीमती पूनम सिंह", periods: ["-", "IX A\nचित्रकला", "X A\nचित्रकला", "-", "-", "X D\nचित्रकला", "IX D\nचित्रकला", "-", "VIII A\nकला"]},
-        {name: "श्री विजय कुमार", periods: ["XI A\nअंग्रेजी", "-", "X D\nअंग्रेजी", "X A\nअंग्रेजी", "XII A\nअंग्रेजी", "-", "अंग्रेजी व्या०\nXIIA(सो०मं०)", "-", "-"]},
-        {name: "श्रीमती संगीता मिश्रा", periods: ["IX A\nगृह विज्ञान", "-", "-", "VI A\nहिंदी", "VII A\nहिंदी", "X A\nगृह विज्ञान", "VII A\nगृह शिल्प", "-", "VII A\nकला"]},
-        {name: "श्री सन्तोष कुमार", periods: ["X D\nहिंदी", "XII A\nहिंदी", "-", "VII A\nअंग्रेजी", "-", "VI A\nगणित", "हिन्दी व्या०\nXD(सो०मं०)", "-", "VI A\nकला"]},
-        {name: "श्री लाल बहादुर", periods: ["IX D\nअंग्रेजी", "XI A\nइतिहास", "XII B\nभूगोल", "-", "IX A\nअंग्रेजी", "XII A\nइतिहास", "-", "-", "भूगोल प्रयो०\nXIIB (वृ०शु०श०)"]},
-        {name: "श्री अरविन्द प्रसाद गोड़", periods: ["X A\nसा० विज्ञान", "VIII A\nअंग्रेजी", "-", "XII A\nना० शास्त्र", "-", "XI A\nना० शास्त्र", "VII A\nकृषि", "-", "पी०टी०\nVI A"]},
-        {name: "श्रीमती पुनीता उपाध्याय", periods: ["XI A\nसंस्कृत", "X A\nहिंदी", "XI A\nहिंदी", "-", "IX A\nसंस्कृत", "-", "हिन्दी व्या०\nXI A", "-", "-"]},
-        {name: "श्री ओंकारेश्वर मिश्र", periods: ["-", "-", "IX A\nविज्ञान", "-", "X A\nविज्ञान", "-", "विज्ञान प्रयो०\nIXA(सो०मं०)", "-", "-"]},
-        {name: "श्री प्रवीण कुमार पाण्डेय", periods: ["-", "-", "VI\nअंग्रेजी", "X D\nसा० विज्ञान", "IX D\nसा० विज्ञान", "-", "हिन्दी व्या०\nIXA(वृ०शु०)", "-", "भूगोल प्रयो०\nXIA(सो०मं०)"]},
-        {name: "श्री दुर्गेश पाण्डेय", periods: ["-", "X D\nगणित", "IX D\nविज्ञान", "IX D\nगणित", "X D\nविज्ञान", "-", "-", "-", "विज्ञान प्रयो०\nXD (वृ०शु0)"]}
-    ];
+    <!-- SCRIPT LOGIC -->
+    <script>
+        function switchModule(mod) {
+            document.getElementById('section-sarini-root').classList.remove('active');
+            document.getElementById('section-exam-root').classList.remove('active');
+            document.getElementById('btn-mod-sarini').classList.remove('active');
+            document.getElementById('btn-mod-exam').classList.remove('active');
 
-    let defaultDataF2 = [
-        {cls: "XII A", periods: ["अर्थशास्त्र / मनोज कुमार", "हिंदी / सन्तोष कुमार", "भूगोल / चन्द्र भूषण पाठक", "ना०शा० / अरविन्द प्रसाद", "अंग्रेजी / विजय कुमार\nसंस्कृत / विनय मणि", "इतिहास / लालबहादुर", "अंग्रेजी व्या० / विजय कुमार", "-", "भूगोल प्रयो० / चन्द्र भूषण पाठक"]},
-        {cls: "XII B", periods: ["-", "-", "भूगोल / लालबहादुर", "-", "-", "-", "-", "-", "भूगोल प्रयो० / लालबहादुर"]},
-        {cls: "XI A", periods: ["अंग्रेजी / विजय कुमार\nसंस्कृत / पुनीता", "इतिहास / लालबहादुर", "हिंदी / पुनीता उपाध्याय", "अर्थशास्त्र / मनोज कुमार", "भूगोल / चन्द्र भूषण पाठक", "ना०शा० / अरविन्द प्रसाद", "हिन्दी व्या० / पुनीता", "-", "भूगोल प्रयो० / चन्द्र भूषण\nभूगोल प्रयो० / प्रवीण"]},
-        {cls: "X A", periods: ["सा० विज्ञान / अरविन्द", "हिंदी / पुनीता उपाध्याय", "चित्रकला / पूनम सिंह", "अंग्रेजी / विजय कुमार\nसंस्कृत / रमेन्द्र नाथ", "विज्ञान / ओंकारेश्वर मिश्र", "गृह विज्ञान / संगीता मिश्रा", "-", "-", "नैतिक शिक्षा / विनय मणि"]},
-        {cls: "X D", periods: ["हिंदी / सन्तोष कुमार", "गणित / दुर्गेश पाण्डेय", "अंग्रेजी / विजय कुमार", "सा० विज्ञान / प्रवीण कुमार", "विज्ञान / दुर्गेश पाण्डेय", "चित्रकला / पूनम सिंह", "अंग्रेजी व्या० / विजय कुमार", "-", "विज्ञान प्रयो० / दुर्गेश पाण्डेय"]},
-        {cls: "IX A", periods: ["गृह विज्ञान / संगीता मिश्रा", "चित्रकला / पूनम सिंह", "विज्ञान / ओंकारेश्वर मिश्र", "हिंदी / शम्भू शरण पाण्डेय", "अंग्रेजी / लाल बहादुर\nसंस्कृत / पुनीता", "सा० विज्ञान / अनिल कुमार", "हिन्दी व्या० / शम्भूशरण", "-", "नैतिक शिक्षा / अनिल सिंह\nविज्ञान प्रयो० / ओंकारेश्वर"]},
-        {cls: "IX D", periods: ["अंग्रेजी / लालबहादुर", "हिन्दी / विनय मणि त्रिपाठी", "विज्ञान / दुर्गेश कुमार", "गणित / दुर्गेश कुमार", "सा० विज्ञान / प्रवीण कुमार", "विज्ञान प्रयो० / ओंकारेश्वर", "चित्रकला / पूनम सिंह", "-", "नैतिक शिक्षा / अनिल सिंह\nविज्ञान प्रयो० / ओंकारेश्वर"]},
-        {cls: "VIII A", periods: ["हिन्दी / शम्भूशरण पाण्डेय", "अंग्रेजी / अरविन्द प्रसाद", "गणित / मनोज कुमार", "संस्कृत / विनय मणि", "विज्ञान / शम्भूशरण पाण्डेय", "सा० विषय / मनोज कुमार", "कृषि / विनय मणि\nगृहशिल्प / अनिल", "-", "पी० टी० / मनोज कुमार"]},
-        {cls: "VII A", periods: ["संस्कृत / विनय मणि", "विज्ञान / अनिल कुमार सिंह", "सा० विषय / मनोज कुमार", "अंग्रेजी / सन्तोष कुमार", "हिंदी / संगीता मिश्रा", "गणित / मनोज कुमार", "गृह शिल्प / संगीता मिश्रा", "-", "पी० टी० / मनोज त्रिपाठी"]},
-        {cls: "VI A", periods: ["विज्ञान / अनिल कुमार सिंह", "संस्कृत / रमेन्द्र नाथ", "अंग्रेजी / प्रवीण पाण्डेय", "हिंदी / संगीता मिश्रा", "सा० विषय / मनोज कुमार", "गणित / सन्तोष कुमार", "गृह शिल्प / रामेन्द्र तिवारी", "-", "पी ० टी ० / अरविन्द प्रसाद"]}
-    ];
-
-    let dataF1 = JSON.parse(JSON.stringify(defaultDataF1));
-    let dataF2 = JSON.parse(JSON.stringify(defaultDataF2));
-
-    const periodNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
-
-    function updateRowHeight(val) {
-        const root = document.getElementById('bodyRoot');
-        const num = parseInt(val) || 6;
-        root.style.setProperty('--row-padding', num + 'px');
-        root.style.setProperty('--textarea-min-height', (num * 4 + 8) + 'px');
-    }
-
-    function updateColWidth(val) {
-        const root = document.getElementById('bodyRoot');
-        const num = parseInt(val) || 4;
-        root.style.setProperty('--col-width-factor', num + 'px');
-    }
-
-    function updateFontSize(val) {
-        const root = document.getElementById('bodyRoot');
-        const num = parseInt(val) || 11;
-        root.style.setProperty('--font-size', num + 'px');
-    }
-
-    function updateP8FontSize(val) {
-        const root = document.getElementById('bodyRoot');
-        const num = parseInt(val) || 9;
-        root.style.setProperty('--p8-font-size', num + 'px');
-    }
-
-    function updateSession(val) {
-        const displaySession = document.getElementById('display-session');
-        if (displaySession) displaySession.innerText = val;
-    }
-
-    // Search Data for Format 1 (Teacher)
-    function searchData1() {
-        let sNo = parseInt(document.getElementById('q1SNo').value);
-        let nameQuery = document.getElementById('q1Name').value.trim().toLowerCase();
-        let foundIndex = -1;
-
-        if (!isNaN(sNo) && sNo > 0) {
-            foundIndex = sNo - 1;
-        } else if (nameQuery !== "") {
-            foundIndex = dataF1.findIndex(item => item.name.toLowerCase().includes(nameQuery));
-        }
-
-        if (foundIndex >= 0 && foundIndex < dataF1.length) {
-            let item = dataF1[foundIndex];
-            document.getElementById('q1SNo').value = foundIndex + 1;
-            document.getElementById('q1Name').value = item.name;
-            for (let i = 0; i < 8; i++) {
-                document.getElementById('q1P' + i).value = item.periods[i] === "-" ? "" : (item.periods[i] || "");
+            if (mod === 'sarini') {
+                document.getElementById('section-sarini-root').classList.add('active');
+                document.getElementById('btn-mod-sarini').classList.add('active');
+            } else {
+                document.getElementById('section-exam-root').classList.add('active');
+                document.getElementById('btn-mod-exam').classList.add('active');
             }
-            alert(`🔍 अध्यापक मिल गए: '${item.name}' (क्रम सं० ${foundIndex + 1}). अब आप इसे बदलकर अपडेट कर सकते हैं!`);
-        } else {
-            alert('❌ कोई रिकॉर्ड नहीं मिला! कृपया सही क्रम संख्या या नाम दर्ज करें।');
-        }
-    }
-
-    // Quick Entry Handler for Format 1 (Teacher)
-    function applyQuickEntry1() {
-        let sNo = parseInt(document.getElementById('q1SNo').value);
-        let name = document.getElementById('q1Name').value.trim();
-
-        if (!name) {
-            alert('कृपया अध्यापक का नाम दर्ज करें!');
-            return;
         }
 
-        let periodsArr = [];
-        for (let i = 0; i < 8; i++) {
-            let val = document.getElementById('q1P' + i).value.trim();
-            periodsArr.push(val === "" ? "-" : val);
+        let defaultDataF1 = [
+            {name: "श्री चन्द्र भूषण पाठक", periods: ["-", "-", "XII A\nभूगोल", "-", "XI A\nभूगोल", "-", "-", "-", "भूगोल प्रयो०\nXIIA(सो०मं०बु०)\nXIA(वृ०शु०श०)"]},
+            {name: "श्री मनोज कुमार", periods: ["XII A\nअर्थशास्त्र", "-", "VIII A\nगणित", "XI A\nअर्थशास्त्र", "-", "VII A\nगणित", "-", "-", "पी०टी०\nVIII A"]},
+            {name: "श्री रमेन्द्र नाथ तिवारी", periods: ["-", "VI A\nसंस्कृत", "-", "X A\nसंस्कृत", "-", "-", "VI A\nगृह शिल्प", "-", "-"]},
+            {name: "श्री शम्भू शरण पाण्डेय", periods: ["VIII A\nहिंदी", "-", "-", "IX A\nहिंदी", "VIII A\nविज्ञान", "-", "IX A हिंदी व्या०\n(सो० मं० बु०)", "-", "-"]},
+            {name: "श्री मनोज कुमार त्रिपाठी", periods: ["-", "-", "VII A\nसा० विषय", "-", "VI A\nसा० विषय", "VIII A\nसा० विषय", "VI A\nकृषि", "-", "पी०टी०\nVII A"]},
+            {name: "श्री अनिल कुमार सिंह", periods: ["VI A\nविज्ञान", "VII A\nविज्ञान", "-", "-", "-", "IX A\nसा० विज्ञान", "VIII A\nगृह शिल्प", "-", "नैतिक खेल\nIXD(सो०मं०), IXA(वृ०शु०)"]},
+            {name: "श्री विनय मणि त्रिपाठी", periods: ["VII A\nसंस्कृत", "IX D\nहिंदी", "-", "VIII A\nसंस्कृत", "XII A\nसंस्कृत", "-", "VIII A\nकृषि", "-", "नैतिक खेल\nXD(सो०मं०), XA(वृ०शु०)"]},
+            {name: "श्रीमती पूनम सिंह", periods: ["-", "IX A\nचित्रकला", "X A\nचित्रकला", "-", "-", "X D\nचित्रकला", "IX D\nचित्रकला", "-", "VIII A\nकला"]},
+            {name: "श्री विजय कुमार", periods: ["XI A\nअंग्रेजी", "-", "X D\nअंग्रेजी", "X A\nअंग्रेजी", "XII A\nअंग्रेजी", "-", "अंग्रेजी व्या०\nXIIA(सो०मं०)", "-", "-"]},
+            {name: "श्रीमती संगीता मिश्रा", periods: ["-", "IX A\nगृह विज्ञान", "-", "VI A\nहिंदी", "VII A\nहिंदी", "X A\nगृह विज्ञान", "VII A\nगृह शिल्प", "-", "VII A\nकला"]},
+            {name: "श्री सन्तोष कुमार", periods: ["X D\nहिंदी", "XII A\nहिंदी", "-", "VII A\nअंग्रेजी", "-", "VI A\nगणित", "हिन्दी व्या०\nXD(सो०मं०)", "-", "VI A\nकला"]},
+            {name: "श्री लाल बहादुर", periods: ["IX D\nअंग्रेजी", "XI A\nइतिहास", "XII B\nभूगोल", "-", "IX A\nअंग्रेजी", "XII A\nइतिहास", "-", "-", "भूगोल प्रयो०\nXIIB (वृ०शु०श०)"]},
+            {name: "श्री अरविन्द प्रसाद गोड़", periods: ["X A\nसा० विज्ञान", "VIII A\nअंग्रेजी", "-", "XII A\nना० शास्त्र", "-", "XI A\nना० शास्त्र", "VII A\nकृषि", "-", "पी०टी०\nVI A"]},
+            {name: "श्रीमती पुनीता उपाध्याय", periods: ["XI A\nसंस्कृत", "X A\nहिंदी", "XI A\nहिंदी", "-", "IX A\nसंस्कृत", "-", "हिन्दी व्या०\nXI A", "-", "-"]},
+            {name: "श्री ओंकारेश्वर मिश्र", periods: ["-", "-", "IX A\nविज्ञान", "-", "X A\nविज्ञान", "-", "विज्ञान प्रयो०\nIXA(सो०मं०)", "-", "-"]},
+            {name: "श्री प्रवीण कुमार पाण्डेय", periods: ["-", "-", "VI\nअंग्रेजी", "X D\nसा० विज्ञान", "IX D\nसा० विज्ञान", "-", "हिन्दी व्या०\nIXA(वृ०शु०)", "-", "भूगोल प्रयो०\nXIA(सो०मं०)"]},
+            {name: "श्री दुर्गेश पाण्डेय", periods: ["-", "X D\nगणित", "IX D\nविज्ञान", "IX D\nगणित", "X D\nविज्ञान", "-", "-", "-", "विज्ञान प्रयो०\nXD (वृ०शु0)"]}
+        ];
+
+        let defaultDataF2 = [
+            {cls: "XII A", periods: ["अर्थशास्त्र / मनोज कुमार", "हिंदी / सन्तोष कुमार", "भूगोल / चन्द्र भूषण पाठक", "ना०शा० / अरविन्द प्रसाद", "अंग्रेजी / विजय कुमार\nसंस्कृत / विनय मणि", "इतिहास / लालबहादुर", "अंग्रेजी व्या० / विजय कुमार", "-", "भूगोल प्रयो० / चन्द्र भूषण पाठक"]},
+            {cls: "XII B", periods: ["-", "-", "भूगोल / लालबहादुर", "-", "-", "-", "-", "-", "भूगोल प्रयो० / लालबहादुर"]},
+            {cls: "XI A", periods: ["अंग्रेजी / विजय कुमार\nसंस्कृत / पुनीता", "इतिहास / लालबहादुर", "हिंदी / पुनीता उपाध्याय", "अर्थशास्त्र / मनोज कुमार", "भूगोल / चन्द्र भूषण पाठक", "ना०शा० / अरविन्द प्रसाद", "हिन्दी व्या० / पुनीता", "-", "भूगोल प्रयो० / चन्द्र भूषण\nभूगोल प्रयो० / प्रवीण"]},
+            {cls: "X A", periods: ["सा० विज्ञान / अरविन्द", "हिंदी / पुनीता उपाध्याय", "चित्रकला / पूनम सिंह", "अंग्रेजी / विजय कुमार\nसंस्कृत / रमेन्द्र नाथ", "विज्ञान / ओंकारेश्वर मिश्र", "गृह विज्ञान / संगीता मिश्रा", "-", "-", "नैतिक शिक्षा / विनय मणि"]},
+            {cls: "X D", periods: ["हिंदी / सन्तोष कुमार", "गणित / दुर्गेश पाण्डेय", "अंग्रेजी / विजय कुमार", "सा० विज्ञान / प्रवीण कुमार", "विज्ञान / दुर्गेश पाण्डेय", "चित्रकला / पूनम सिंह", "अंग्रेजी व्या० / विजय कुमार", "-", "विज्ञान प्रयो० / दुर्गेश पाण्डेय"]},
+            {cls: "IX A", periods: ["गृह विज्ञान / संगीता मिश्रा", "चित्रकला / पूनम सिंह", "विज्ञान / ओंकारेश्वर मिश्र", "हिंदी / शम्भू शरण पाण्डेय", "अंग्रेजी / लाल बहादुर\nसंस्कृत / पुनीता", "सा० विज्ञान / अनिल कुमार", "हिन्दी व्या० / शम्भूशरण", "-", "नैतिक शिक्षा / अनिल सिंह\nविज्ञान प्रयो० / ओंकारेश्वर"]},
+            {cls: "IX D", periods: ["अंग्रेजी / लालबहादुर", "हिन्दी / विनय मणि त्रिपाठी", "विज्ञान / दुर्गेश कुमार", "गणित / दुर्गेश कुमार", "सा० विज्ञान / प्रवीण कुमार", "विज्ञान प्रयो० / ओंकारेश्वर", "चित्रकला / पूनम सिंह", "-", "नैतिक शिक्षा / अनिल सिंह\nविज्ञान प्रयो० / ओंकारेश्वर"]},
+            {cls: "VIII A", periods: ["हिन्दी / शम्भूशरण पाण्डेय", "अंग्रेजी / अरविन्द प्रसाद", "गणित / मनोज कुमार", "संस्कृत / विनय मणि", "विज्ञान / शम्भूशरण पाण्डेय", "सा० विषय / मनोज कुमार", "कृषि / विनय मणि\nगृहशिल्प / अनिल", "-", "पी० टी० / मनोज कुमार"]},
+            {cls: "VII A", periods: ["संस्कृत / विनय मणि", "विज्ञान / अनिल कुमार सिंह", "सा० विषय / मनोज कुमार", "अंग्रेजी / सन्तोष कुमार", "हिंदी / संगीता मिश्रा", "गणित / मनोज कुमार", "गृह शिल्प / संगीता मिश्रा", "-", "पी० टी० / मनोज त्रिपाठी"]},
+            {cls: "VI A", periods: ["विज्ञान / अनिल कुमार सिंह", "संस्कृत / रमेन्द्र नाथ", "अंग्रेजी / प्रवीण पाण्डेय", "हिंदी / संगीता मिश्रा", "सा० विषय / मनोज कुमार", "गणित / सन्तोष कुमार", "गृह शिल्प / रामेन्द्र तिवारी", "-", "पी ० टी ० / अरविन्द प्रसाद"]}
+        ];
+
+        let dataF1 = JSON.parse(JSON.stringify(defaultDataF1));
+        let dataF2 = JSON.parse(JSON.stringify(defaultDataF2));
+        const periodNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
+
+        function updateRowHeight(val) {
+            const root = document.getElementById('bodyRoot');
+            const num = parseInt(val) || 6;
+            root.style.setProperty('--row-padding', num + 'px');
+            root.style.setProperty('--textarea-min-height', (num * 4 + 8) + 'px');
         }
 
-        let nextIndexToSelect = "";
+        function updateColWidth(val) {
+            const root = document.getElementById('bodyRoot');
+            const num = parseInt(val) || 4;
+            root.style.setProperty('--col-width-factor', num + 'px');
+        }
 
-        if (!isNaN(sNo) && sNo > 0) {
-            let index = sNo - 1;
-            if (index < dataF1.length) {
-                dataF1[index].name = name;
-                dataF1[index].periods = periodsArr;
-                
-                // Agla kramank tay karna
-                if ((index + 1) < dataF1.length) {
-                    nextIndexToSelect = index + 2;
+        function updateFontSize(val) {
+            const root = document.getElementById('bodyRoot');
+            const num = parseInt(val) || 11;
+            root.style.setProperty('--font-size', num + 'px');
+        }
+
+        function updateP8FontSize(val) {
+            const root = document.getElementById('bodyRoot');
+            const num = parseInt(val) || 9;
+            root.style.setProperty('--p8-font-size', num + 'px');
+        }
+
+        function updateSession(val) {
+            const displaySession = document.getElementById('display-session');
+            if (displaySession) displaySession.innerText = val;
+        }
+
+        function searchData1() {
+            let sNo = parseInt(document.getElementById('q1SNo').value);
+            let nameQuery = document.getElementById('q1Name').value.trim().toLowerCase();
+            let foundIndex = -1;
+            if (!isNaN(sNo) && sNo > 0) {
+                foundIndex = sNo - 1;
+            } else if (nameQuery !== "") {
+                foundIndex = dataF1.findIndex(item => item.name.toLowerCase().includes(nameQuery));
+            }
+            if (foundIndex >= 0 && foundIndex < dataF1.length) {
+                let item = dataF1[foundIndex];
+                document.getElementById('q1SNo').value = foundIndex + 1;
+                document.getElementById('q1Name').value = item.name;
+                for (let i = 0; i < 8; i++) {
+                    document.getElementById('q1P' + i).value = item.periods[i] === "-" ? "" : (item.periods[i] || "");
                 }
+                alert(`🔍 अध्यापक मिल गए: '${item.name}' (क्रम सं० ${foundIndex + 1})`);
+            } else {
+                alert('❌ कोई रिकॉर्ड नहीं मिला!');
+            }
+        }
 
-                alert(`✅ अध्यापकवार क्रम संख्या ${sNo} (${name}) सफलतापूर्वक अपडेट कर दी गई है!`);
+        function applyQuickEntry1() {
+            let sNo = parseInt(document.getElementById('q1SNo').value);
+            let name = document.getElementById('q1Name').value.trim();
+            if (!name) { alert('कृपया अध्यापक का नाम दर्ज करें!'); return; }
+            let periodsArr = [];
+            for (let i = 0; i < 8; i++) {
+                let val = document.getElementById('q1P' + i).value.trim();
+                periodsArr.push(val === "" ? "-" : val);
+            }
+            if (!isNaN(sNo) && sNo > 0) {
+                let index = sNo - 1;
+                if (index < dataF1.length) {
+                    dataF1[index].name = name;
+                    dataF1[index].periods = periodsArr;
+                } else {
+                    dataF1.push({name: name, periods: periodsArr});
+                }
             } else {
                 dataF1.push({name: name, periods: periodsArr});
-                alert(`✅ नया अध्यापक '${name}' सूची में जोड़ दिया गया है!`);
             }
-        } else {
-            dataF1.push({name: name, periods: periodsArr});
-            alert(`✅ नया अध्यापक '${name}' अंत में जोड़ दिया गया है!`);
+            renderTables();
+            alert('✅ सफलतापूर्वक अपडेट हो गया!');
         }
 
-        renderTables();
-        
-        // Input fields ko clear ya next kramank par set karna
-        document.getElementById('q1SNo').value = nextIndexToSelect;
-        document.getElementById('q1Name').value = '';
-        for (let i = 0; i < 8; i++) {
-            document.getElementById('q1P' + i).value = '';
-        }
-
-        // Yadi agla kramank maujood hai to uska data turant form me load kar dena taki aur asani ho
-        if (nextIndexToSelect !== "") {
-            searchData1();
-        }
-    }
-
-    // Search Data for Format 2 (Class)
-    function searchData2() {
-        let sNo = parseInt(document.getElementById('q2SNo').value);
-        let clsQuery = document.getElementById('q2Class').value.trim().toLowerCase();
-        let foundIndex = -1;
-
-        if (!isNaN(sNo) && sNo > 0) {
-            foundIndex = sNo - 1;
-        } else if (clsQuery !== "") {
-            foundIndex = dataF2.findIndex(item => item.cls.toLowerCase().includes(clsQuery));
-        }
-
-        if (foundIndex >= 0 && foundIndex < dataF2.length) {
-            let item = dataF2[foundIndex];
-            document.getElementById('q2SNo').value = foundIndex + 1;
-            document.getElementById('q2Class').value = item.cls;
-            for (let i = 0; i < 8; i++) {
-                document.getElementById('q2P' + i).value = item.periods[i] === "-" ? "" : (item.periods[i] || "");
+        function searchData2() {
+            let sNo = parseInt(document.getElementById('q2SNo').value);
+            let clsQuery = document.getElementById('q2Class').value.trim().toLowerCase();
+            let foundIndex = -1;
+            if (!isNaN(sNo) && sNo > 0) {
+                foundIndex = sNo - 1;
+            } else if (clsQuery !== "") {
+                foundIndex = dataF2.findIndex(item => item.cls.toLowerCase().includes(clsQuery));
             }
-            alert(`🔍 कक्षा मिल गई: '${item.cls}' (क्रम सं० ${foundIndex + 1}). अब आप इसे बदलकर अपडेट कर सकते हैं!`);
-        } else {
-            alert('❌ कोई रिकॉर्ड नहीं मिला! कृपया सही क्रम संख्या या कक्षा का नाम दर्ज करें।');
-        }
-    }
-
-    // Quick Entry Handler for Format 2 (Class)
-    function applyQuickEntry2() {
-        let sNo = parseInt(document.getElementById('q2SNo').value);
-        let clsName = document.getElementById('q2Class').value.trim();
-
-        if (!clsName) {
-            alert('कृपया कक्षा का नाम दर्ज करें!');
-            return;
-        }
-
-        let periodsArr = [];
-        for (let i = 0; i < 8; i++) {
-            let val = document.getElementById('q2P' + i).value.trim();
-            periodsArr.push(val === "" ? "-" : val);
-        }
-
-        let nextIndexToSelect = "";
-
-        if (!isNaN(sNo) && sNo > 0) {
-            let index = sNo - 1;
-            if (index < dataF2.length) {
-                dataF2[index].cls = clsName;
-                dataF2[index].periods = periodsArr;
-
-                if ((index + 1) < dataF2.length) {
-                    nextIndexToSelect = index + 2;
+            if (foundIndex >= 0 && foundIndex < dataF2.length) {
+                let item = dataF2[foundIndex];
+                document.getElementById('q2SNo').value = foundIndex + 1;
+                document.getElementById('q2Class').value = item.cls;
+                for (let i = 0; i < 8; i++) {
+                    document.getElementById('q2P' + i).value = item.periods[i] === "-" ? "" : (item.periods[i] || "");
                 }
+                alert(`🔍 कक्षा मिल गई: '${item.cls}' (क्रम सं० ${foundIndex + 1})`);
+            } else {
+                alert('❌ कोई रिकॉर्ड नहीं मिला!');
+            }
+        }
 
-                alert(`✅ कक्षा '${clsName}' (क्रम ${sNo}) की समय सारिणी सफलतापूर्वक अपडेट कर दी गई है!`);
+        function applyQuickEntry2() {
+            let sNo = parseInt(document.getElementById('q2SNo').value);
+            let clsName = document.getElementById('q2Class').value.trim();
+            if (!clsName) { alert('कृपया कक्षा का नाम दर्ज करें!'); return; }
+            let periodsArr = [];
+            for (let i = 0; i < 8; i++) {
+                let val = document.getElementById('q2P' + i).value.trim();
+                periodsArr.push(val === "" ? "-" : val);
+            }
+            if (!isNaN(sNo) && sNo > 0) {
+                let index = sNo - 1;
+                if (index < dataF2.length) {
+                    dataF2[index].cls = clsName;
+                    dataF2[index].periods = periodsArr;
+                } else {
+                    dataF2.push({cls: clsName, periods: periodsArr});
+                }
             } else {
                 dataF2.push({cls: clsName, periods: periodsArr});
-                alert(`✅ नई कक्षा '${clsName}' सूची में जोड़ दी गई है!`);
             }
-        } else {
-            dataF2.push({cls: clsName, periods: periodsArr});
-            alert(`✅ नई कक्षा '${clsName}' अंत में जोड़ दी गई है!`);
+            renderTables();
+            alert('✅ सफलतापूर्वक अपडेट हो गया!');
         }
 
-        renderTables();
-        
-        document.getElementById('q2SNo').value = nextIndexToSelect;
-        document.getElementById('q2Class').value = '';
-        for (let i = 0; i < 8; i++) {
-            document.getElementById('q2P' + i).value = '';
+        function saveSettings() {
+            const settings = {
+                session: document.getElementById('sessionInput').value,
+                recess: document.getElementById('recessAfter').value,
+                rowPadding: document.getElementById('rowPaddingInput').value,
+                colWidth: document.getElementById('colWidthInput').value,
+                fontSize: document.getElementById('fontSizeInput').value,
+                p8FontSize: document.getElementById('p8FontSizeInput').value,
+                printMode: document.getElementById('printSelect').value
+            };
+            localStorage.setItem('skic_timetable_settings', JSON.stringify(settings));
+            localStorage.setItem('skic_timetable_dataF1', JSON.stringify(dataF1));
+            localStorage.setItem('skic_timetable_dataF2', JSON.stringify(dataF2));
+            alert('✅ सेटिंग्स और समय सारिणी का डेटा सेव हो गया है!');
         }
 
-        if (nextIndexToSelect !== "") {
-            searchData2();
+        function loadSavedSettings() {
+            const savedSettings = localStorage.getItem('skic_timetable_settings');
+            if (savedSettings) {
+                try {
+                    const settings = JSON.parse(savedSettings);
+                    if (settings.session) {
+                        document.getElementById('sessionInput').value = settings.session;
+                        updateSession(settings.session);
+                    }
+                    if (settings.recess) document.getElementById('recessAfter').value = settings.recess;
+                    if (settings.rowPadding) {
+                        document.getElementById('rowPaddingInput').value = settings.rowPadding;
+                        updateRowHeight(settings.rowPadding);
+                    }
+                    if (settings.colWidth) {
+                        document.getElementById('colWidthInput').value = settings.colWidth;
+                        updateColWidth(settings.colWidth);
+                    }
+                    if (settings.fontSize) {
+                        document.getElementById('fontSizeInput').value = settings.fontSize;
+                        updateFontSize(settings.fontSize);
+                    }
+                    if (settings.p8FontSize) {
+                        document.getElementById('p8FontSizeInput').value = settings.p8FontSize;
+                        updateP8FontSize(settings.p8FontSize);
+                    }
+                    if (settings.printMode) {
+                        document.getElementById('printSelect').value = settings.printMode;
+                        onPrintSelectChange(settings.printMode);
+                    }
+                } catch (e) { console.error(e); }
+            }
+            const savedF1 = localStorage.getItem('skic_timetable_dataF1');
+            if (savedF1) { try { dataF1 = JSON.parse(savedF1); } catch (e) { console.error(e); } }
+            const savedF2 = localStorage.getItem('skic_timetable_dataF2');
+            if (savedF2) { try { dataF2 = JSON.parse(savedF2); } catch (e) { console.error(e); } }
         }
-    }
 
-    function saveSettings() {
-        const settings = {
-            session: document.getElementById('sessionInput').value,
-            recess: document.getElementById('recessAfter').value,
-            rowPadding: document.getElementById('rowPaddingInput').value,
-            colWidth: document.getElementById('colWidthInput').value,
-            fontSize: document.getElementById('fontSizeInput').value,
-            p8FontSize: document.getElementById('p8FontSizeInput').value,
-            printMode: document.getElementById('printSelect').value
+        function resetSettings() {
+            if(confirm('Kya aap sabhi data reset karna chahte hain?')) {
+                localStorage.removeItem('skic_timetable_settings');
+                localStorage.removeItem('skic_timetable_dataF1');
+                localStorage.removeItem('skic_timetable_dataF2');
+                location.reload();
+            }
+        }
+
+        function renderTables() {
+            const recessAfter = parseInt(document.getElementById('recessAfter').value);
+            
+            // Table 1
+            const thead1 = document.getElementById('thead-f1');
+            let hRow1 = `<tr><th style="width: 3.5%;">क्रम सं०</th><th style="width: 12%;">कक्षाध्यापक का नाम</th>`;
+            for (let i = 0; i < 8; i++) {
+                hRow1 += `<th style="width: 9%;">${periodNames[i]}</th>`;
+                if (i + 1 === recessAfter) hRow1 += `<th style="width: 4%;">मध्यान्तर</th>`;
+            }
+            hRow1 += `<th style="width: 6%;" class="no-print">कार्रवाई</th></tr>`;
+            thead1.innerHTML = hRow1;
+
+            const tbody1 = document.getElementById('tbody-f1');
+            tbody1.innerHTML = '';
+            dataF1.forEach((row, index) => {
+                let tr = document.createElement('tr');
+                let html = `<td>${index + 1}</td><td><input type="text" class="editable-cell" value="${row.name}" onchange="dataF1[${index}].name=this.value"></td>`;
+                for (let i = 0; i < 8; i++) {
+                    let pVal = row.periods[i] || "-";
+                    let extraClass = (i === 7) ? " editable-cell period-8-cell" : " editable-cell";
+                    html += `<td><textarea class="${extraClass}" onchange="dataF1[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
+                    if (i + 1 === recessAfter) html += `<td class="break-cell">मध्यान्तर</td>`;
+                }
+                html += `<td class="no-print"><div class="row-action-group">
+                    <button class="btn-action-mini" onclick="addRowF1(${index})">➕</button>
+                    <button class="btn-action-mini" onclick="moveRowF1(${index}, -1)">⬆️</button>
+                    <button class="btn-action-mini" onclick="moveRowF1(${index}, 1)">⬇️</button>
+                    <button class="btn-action-mini btn-del" onclick="deleteRowF1(${index})">❌</button>
+                </div></td>`;
+                tr.innerHTML = html;
+                tbody1.appendChild(tr);
+            });
+
+            // Table 2
+            const thead2 = document.getElementById('thead-f2');
+            let hRow2 = `<tr><th style="width: 4%;">क्रम सं०</th><th style="width: 8%;">कक्षा</th>`;
+            for (let i = 0; i < 8; i++) {
+                hRow2 += `<th style="width: 10%;">${periodNames[i]}</th>`;
+                if (i + 1 === recessAfter) hRow2 += `<th style="width: 4%;">मध्यान्तर</th>`;
+            }
+            hRow2 += `<th style="width: 6%;" class="no-print">कार्रवाई</th></tr>`;
+            thead2.innerHTML = hRow2;
+
+            const tbody2 = document.getElementById('tbody-f2');
+            tbody2.innerHTML = '';
+            dataF2.forEach((row, index) => {
+                let tr = document.createElement('tr');
+                let html = `<td>${index + 1}</td><td><input type="text" class="editable-cell" value="${row.cls}" onchange="dataF2[${index}].cls=this.value"></td>`;
+                for (let i = 0; i < 8; i++) {
+                    let pVal = row.periods[i] || "-";
+                    let extraClass = (i === 7) ? " editable-cell period-8-cell" : " editable-cell";
+                    html += `<td><textarea class="${extraClass}" onchange="dataF2[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
+                    if (i + 1 === recessAfter) html += `<td class="break-cell">मध्यान्तर</td>`;
+                }
+                html += `<td class="no-print"><div class="row-action-group">
+                    <button class="btn-action-mini" onclick="addRowF2(${index})">➕</button>
+                    <button class="btn-action-mini" onclick="moveRowF2(${index}, -1)">⬆️</button>
+                    <button class="btn-action-mini" onclick="moveRowF2(${index}, 1)">⬇️</button>
+                    <button class="btn-action-mini btn-del" onclick="deleteRowF2(${index})">❌</button>
+                </div></td>`;
+                tr.innerHTML = html;
+                tbody2.appendChild(tr);
+            });
+        }
+
+        function addRowF1(index) {
+            const newRow = {name: "नया अध्यापक", periods: ["-","-","-","-","-","-","-","-"]};
+            if (index === -1) dataF1.push(newRow); else dataF1.splice(index + 1, 0, newRow);
+            renderTables();
+        }
+        function moveRowF1(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= dataF1.length) return;
+            const temp = dataF1[index]; dataF1[index] = dataF1[targetIndex]; dataF1[targetIndex] = temp;
+            renderTables();
+        }
+        function deleteRowF1(index) {
+            if (dataF1.length <= 1) return;
+            dataF1.splice(index, 1);
+            renderTables();
+        }
+
+        function addRowF2(index) {
+            const newRow = {cls: "नयी कक्षा", periods: ["-","-","-","-","-","-","-","-"]};
+            if (index === -1) dataF2.push(newRow); else dataF2.splice(index + 1, 0, newRow);
+            renderTables();
+        }
+        function moveRowF2(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= dataF2.length) return;
+            const temp = dataF2[index]; dataF2[index] = dataF2[targetIndex]; dataF2[targetIndex] = temp;
+            renderTables();
+        }
+        function deleteRowF2(index) {
+            if (dataF2.length <= 1) return;
+            dataF2.splice(index, 1);
+            renderTables();
+        }
+
+        function switchTab(formatNum) {
+            document.querySelectorAll('.timetable-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('section-' + formatNum).classList.add('active');
+            document.getElementById('btn-tab-' + formatNum).classList.add('active');
+            document.getElementById('printSelect').value = formatNum;
+
+            if (formatNum === 1) {
+                document.getElementById('quick-form-1').style.display = 'block';
+                document.getElementById('quick-form-2').style.display = 'none';
+            } else {
+                document.getElementById('quick-form-1').style.display = 'none';
+                document.getElementById('quick-form-2').style.display = 'block';
+            }
+        }
+
+        function onPrintSelectChange(val) { switchTab(parseInt(val)); }
+
+        function triggerSariniPrint() {
+            window.print();
+        }
+
+
+        // --- HOME EXAM DYNAMIC LOGIC ---
+        const hindiDays = ["रविवार", "सोमवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"];
+
+        let examDates = [
+            {date: "28-10-2026", day: "बुधवार"},
+            {date: "29-10-2026", day: "गुरुवार"},
+            {date: "30-10-2026", day: "शुक्रवार"},
+            {date: "02-11-2026", day: "सोमवार"},
+            {date: "03-11-2026", day: "मंगलवार"},
+            {date: "04-11-2026", day: "बुधवार"},
+            {date: "05-11-2026", day: "गुरुवार"}
+        ];
+
+        let examClasses = [
+            {cls: "VI, VII, VIII", subjects: ["हिन्दी", "-", "अंग्रेजी", "कृषि/गृह शिल्प", "विज्ञान", "स० कला", "गणित", "कला/संगीत", "सा० विषय", "-", "संस्कृत", "-", "पी०टी०", "-"]},
+            {cls: "IX", subjects: ["हिन्दी", "-", "अंग्रेजी /संस्कृत", "-", "गणित /गृह वि०", "-", "विज्ञान", "-", "सा० विज्ञान", "-", "चित्रकला/कृषि वि०", "-", "गृह वि० प्रयो०", "विज्ञान प्रयो०"]},
+            {cls: "X", subjects: ["-", "हिन्दी", "-", "अंग्रेजी /संस्कृत", "-", "गणित /गृह वि०", "-", "विज्ञान", "-", "सा० विज्ञान", "-", "चित्रकला", "गृह वि० प्रयो०", "विज्ञान प्रयो०"]},
+            {cls: "XI", subjects: ["हिन्दी", "-", "अर्थशास्त्र", "-", "अंग्रेजी /संस्कृत", "-", "ना० शास्त्र", "-", "भूगोल", "-", "इतिहास", "-", "भूगोल प्रयो०", "-"]},
+            {cls: "XII", subjects: ["-", "हिन्दी", "-", "अर्थशास्त्र", "-", "अंग्रेजी /संस्कृत", "-", "ना० शास्त्र", "-", "भूगोल", "-", "इतिहास", "भूगोल प्रयो०", "-"]}
+        ];
+
+        function renderExamTable() {
+            const thead = document.getElementById('examThead');
+            const tbody = document.getElementById('examTbody');
+
+            // 1. Date Row
+            let r1 = `<tr class="date-row"><th rowspan="2">दिनांक</th>`;
+            examDates.forEach((item, idx) => {
+                r1 += `<th colspan="2" contenteditable="true" class="date-cell" oninput="updateExamDateCell(this, ${idx})">${item.date}</th>`;
+            });
+            r1 += `</tr>`;
+
+            // 2. Day Row
+            let r2 = `<tr class="day-row">`;
+            examDates.forEach(item => {
+                r2 += `<th colspan="2" class="hindi-day">${item.day}</th>`;
+            });
+            r2 += `</tr>`;
+
+            // 3. Shifts Row
+            let r3 = `<tr><th>कक्षा \\ पाली</th>`;
+            examDates.forEach(() => {
+                r3 += `<th>प्रथम</th><th>द्वितीय</th>`;
+            });
+            r3 += `</tr>`;
+
+            thead.innerHTML = r1 + r2 + r3;
+
+            // 4. Body Rows (Classes)
+            tbody.innerHTML = '';
+            examClasses.forEach((rowObj, rIdx) => {
+                let tr = document.createElement('tr');
+                let tdHtml = `<td contenteditable="true" oninput="examClasses[${rIdx}].cls=this.innerText"><b>${rowObj.cls}</b></td>`;
+                
+                // Ensure subjects array matches columns count (2 subjects per date)
+                let totalCols = examDates.length * 2;
+                while(rowObj.subjects.length < totalCols) {
+                    rowObj.subjects.push("-");
+                }
+
+                for(let cIdx = 0; cIdx < totalCols; cIdx++) {
+                    let subVal = rowObj.subjects[cIdx] || "-";
+                    tdHtml += `<td contenteditable="true" oninput="examClasses[${rIdx}].subjects[${cIdx}]=this.innerText">${subVal}</td>`;
+                }
+
+                // Add delete button column for each row if needed, or keep clean
+                tr.innerHTML = tdHtml;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateExamDateCell(cell, index) {
+            let text = cell.innerText.trim();
+            examDates[index].date = text;
+            let parts = text.split(/[-/]/);
+            let parsedDate;
+            if (parts.length === 3) {
+                if (parts[0].length <= 2 && parts[2].length === 4) {
+                    parsedDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                } else if (parts[0].length === 4) {
+                    parsedDate = new Date(text);
+                }
+            }
+            if (parsedDate && !isNaN(parsedDate)) {
+                const dayIndex = parsedDate.getDay();
+                examDates[index].day = hindiDays[dayIndex];
+                renderExamTable();
+            }
+        }
+
+        function addExamDateColumn() {
+            examDates.push({date: "06-11-2026", day: "शुक्रवार"});
+            examClasses.forEach(cls => {
+                cls.subjects.push("-");
+                cls.subjects.push("-");
+            });
+            renderExamTable();
+        }
+
+        function removeExamDateColumn() {
+            if(examDates.length <= 1) {
+                alert('Kam se kam ek date honi chahiye!');
+                return;
+            }
+            examDates.pop();
+            examClasses.forEach(cls => {
+                cls.subjects.pop();
+                cls.subjects.pop();
+            });
+            renderExamTable();
+        }
+
+        function addExamClassRow() {
+            let totalCols = examDates.length * 2;
+            let newSubs = [];
+            for(let i=0; i<totalCols; i++) newSubs.push("-");
+            examClasses.push({cls: "नयी कक्षा", subjects: newSubs});
+            renderExamTable();
+        }
+
+        function updateExamStyles() {
+            const fontSize = document.getElementById('fontSizeRange').value + 'px';
+            const padding = document.getElementById('paddingRange').value + 'px';
+            document.getElementById('bodyRoot').style.setProperty('--exam-font-size', fontSize);
+            document.getElementById('bodyRoot').style.setProperty('--exam-table-padding', padding);
+        }
+
+        function saveExamData() {
+            const pageContent = document.getElementById('examPrintArea').innerHTML;
+            const fontSize = document.getElementById('fontSizeRange').value;
+            const padding = document.getElementById('paddingRange').value;
+            localStorage.setItem('exam_timetable_content', pageContent);
+            localStorage.setItem('exam_fontsize', fontSize);
+            localStorage.setItem('exam_padding', padding);
+            localStorage.setItem('exam_dates_data', JSON.stringify(examDates));
+            localStorage.setItem('exam_classes_data', JSON.stringify(examClasses));
+            alert('Home Exam Settings aur Data safalpurvak save ho gaye hain!');
+        }
+
+        function loadExamData() {
+            const savedDates = localStorage.getItem('exam_dates_data');
+            const savedClasses = localStorage.getItem('exam_classes_data');
+            const savedFontSize = localStorage.getItem('exam_fontsize');
+            const savedPadding = localStorage.getItem('exam_padding');
+            
+            if (savedDates && savedClasses) {
+                try {
+                    examDates = JSON.parse(savedDates);
+                    examClasses = JSON.parse(savedClasses);
+                } catch(e) { console.error(e); }
+            }
+            if (savedFontSize) document.getElementById('fontSizeRange').value = savedFontSize;
+            if (savedPadding) document.getElementById('paddingRange').value = savedPadding;
+            
+            renderExamTable();
+            updateExamStyles();
+        }
+
+        function resetExamData() {
+            if(confirm('Kya aap Home Exam data reset karna chahte hain?')) {
+                localStorage.removeItem('exam_timetable_content');
+                localStorage.removeItem('exam_fontsize');
+                localStorage.removeItem('exam_padding');
+                localStorage.removeItem('exam_dates_data');
+                localStorage.removeItem('exam_classes_data');
+                location.reload();
+            }
+        }
+
+        function triggerExamPrint() {
+            window.print();
+        }
+
+        window.onload = function() {
+            loadSavedSettings();
+            renderTables();
+            loadExamData();
         };
-        localStorage.setItem('skic_timetable_settings', JSON.stringify(settings));
-        localStorage.setItem('skic_timetable_dataF1', JSON.stringify(dataF1));
-        localStorage.setItem('skic_timetable_dataF2', JSON.stringify(dataF2));
-        alert('✅ सेटिंग्स और समय सारिणी का पूरा डेटा सफलतापूर्वक सेव हो गया है!');
-    }
-
-    function resetSettings() {
-        localStorage.removeItem('skic_timetable_settings');
-        localStorage.removeItem('skic_timetable_dataF1');
-        localStorage.removeItem('skic_timetable_dataF2');
-        
-        document.getElementById('sessionInput').value = "2026-27";
-        updateSession("2026-27");
-        document.getElementById('recessAfter').value = "4";
-        document.getElementById('rowPaddingInput').value = "6";
-        updateRowHeight(6);
-        document.getElementById('colWidthInput').value = "4";
-        updateColWidth(4);
-        document.getElementById('fontSizeInput').value = "11";
-        updateFontSize(11);
-        document.getElementById('p8FontSizeInput').value = "9";
-        updateP8FontSize(9);
-        document.getElementById('printSelect').value = "1";
-        onPrintSelectChange("1");
-        
-        dataF1 = JSON.parse(JSON.stringify(defaultDataF1));
-        dataF2 = JSON.parse(JSON.stringify(defaultDataF2));
-        
-        renderTables();
-        alert('🔄 सेटिंग्स और डेटा रीसेट हो गए हैं!');
-    }
-
-    function loadSavedSettings() {
-        const savedSettings = localStorage.getItem('skic_timetable_settings');
-        if (savedSettings) {
-            try {
-                const settings = JSON.parse(savedSettings);
-                if (settings.session) {
-                    document.getElementById('sessionInput').value = settings.session;
-                    updateSession(settings.session);
-                }
-                if (settings.recess) document.getElementById('recessAfter').value = settings.recess;
-                if (settings.rowPadding) {
-                    document.getElementById('rowPaddingInput').value = settings.rowPadding;
-                    updateRowHeight(settings.rowPadding);
-                }
-                if (settings.colWidth) {
-                    document.getElementById('colWidthInput').value = settings.colWidth;
-                    updateColWidth(settings.colWidth);
-                }
-                if (settings.fontSize) {
-                    document.getElementById('fontSizeInput').value = settings.fontSize;
-                    updateFontSize(settings.fontSize);
-                }
-                if (settings.p8FontSize) {
-                    document.getElementById('p8FontSizeInput').value = settings.p8FontSize;
-                    updateP8FontSize(settings.p8FontSize);
-                }
-                if (settings.printMode) {
-                    document.getElementById('printSelect').value = settings.printMode;
-                    onPrintSelectChange(settings.printMode);
-                }
-            } catch (e) {
-                console.error("Error loading settings", e);
-            }
-        }
-
-        const savedF1 = localStorage.getItem('skic_timetable_dataF1');
-        if (savedF1) {
-            try { dataF1 = JSON.parse(savedF1); } catch (e) { console.error(e); }
-        }
-
-        const savedF2 = localStorage.getItem('skic_timetable_dataF2');
-        if (savedF2) {
-            try { dataF2 = JSON.parse(savedF2); } catch (e) { console.error(e); }
-        }
-    }
-
-    function renderTables() {
-        const recessAfter = parseInt(document.getElementById('recessAfter').value);
-        
-        // --- Render Table 1 ---
-        const thead1 = document.getElementById('thead-f1');
-        let hRow1 = `<tr><th style="width: 3.5%;">क्रम सं०</th><th style="width: 12%;">कक्षाध्यापक का नाम</th>`;
-        for (let i = 0; i < 8; i++) {
-            hRow1 += `<th style="width: 9%;">${periodNames[i]}</th>`;
-            if (i + 1 === recessAfter) {
-                hRow1 += `<th style="width: 4%;">मध्यान्तर</th>`;
-            }
-        }
-        hRow1 += `<th style="width: 6%;" class="no-print">कार्रवाई</th></tr>`;
-        thead1.innerHTML = hRow1;
-
-        const tbody1 = document.getElementById('tbody-f1');
-        tbody1.innerHTML = '';
-        dataF1.forEach((row, index) => {
-            let tr = document.createElement('tr');
-            let html = `<td>${index + 1}</td><td><input type="text" class="editable-cell" value="${row.name}" onchange="dataF1[${index}].name=this.value"></td>`;
-            
-            for (let i = 0; i < 8; i++) {
-                let pVal = row.periods[i] || "-";
-                let extraClass = (i === 7) ? " editable-cell period-8-cell" : " editable-cell";
-                html += `<td><textarea class="${extraClass}" onchange="dataF1[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
-                if (i + 1 === recessAfter) {
-                    html += `<td class="break-cell">मध्यान्तर</td>`;
-                }
-            }
-            html += `<td class="no-print">
-                        <div class="row-action-group">
-                            <button class="btn-action-mini" title="ऊपर करें" onclick="moveRowF1(${index}, -1)">⬆️</button>
-                            <button class="btn-action-mini" title="नीचे करें" onclick="moveRowF1(${index}, 1)">⬇️</button>
-                            <button class="btn-action-mini" title="यहाँ नया जोड़ें" onclick="addRowF1(${index})">➕</button>
-                            <button class="btn-action-mini btn-del" title="हटाएं" onclick="deleteRowF1(${index})">❌</button>
-                        </div>
-                     </td>`;
-            tr.innerHTML = html;
-            tbody1.appendChild(tr);
-        });
-
-        // --- Render Table 2 ---
-        const thead2 = document.getElementById('thead-f2');
-        let hRow2 = `<tr><th style="width: 4%;">क्रम सं०</th><th style="width: 8%;">कक्षा</th>`;
-        for (let i = 0; i < 8; i++) {
-            hRow2 += `<th style="width: 10%;">${periodNames[i]}</th>`;
-            if (i + 1 === recessAfter) {
-                hRow2 += `<th style="width: 4%;">मध्यान्तर</th>`;
-            }
-        }
-        hRow2 += `<th style="width: 6%;" class="no-print">कार्रवाई</th></tr>`;
-        thead2.innerHTML = hRow2;
-
-        const tbody2 = document.getElementById('tbody-f2');
-        tbody2.innerHTML = '';
-        dataF2.forEach((row, index) => {
-            let tr = document.createElement('tr');
-            let html = `<td>${index + 1}</td><td><input type="text" class="editable-cell" value="${row.cls}" onchange="dataF2[${index}].cls=this.value"></td>`;
-            
-            for (let i = 0; i < 8; i++) {
-                let pVal = row.periods[i] || "-";
-                let extraClass = (i === 7) ? " editable-cell period-8-cell" : " editable-cell";
-                html += `<td><textarea class="${extraClass}" onchange="dataF2[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
-                if (i + 1 === recessAfter) {
-                    html += `<td class="break-cell">मध्यान्तर</td>`;
-                }
-            }
-            html += `<td class="no-print">
-                        <div class="row-action-group">
-                            <button class="btn-action-mini" title="ऊपर करें" onclick="moveRowF2(${index}, -1)">⬆️</button>
-                            <button class="btn-action-mini" title="नीचे करें" onclick="moveRowF2(${index}, 1)">⬇️</button>
-                            <button class="btn-action-mini" title="यहाँ नया जोड़ें" onclick="addRowF2(${index})">➕</button>
-                            <button class="btn-action-mini btn-del" title="हटाएं" onclick="deleteRowF2(${index})">❌</button>
-                        </div>
-                     </td>`;
-            tr.innerHTML = html;
-            tbody2.appendChild(tr);
-        });
-    }
-
-    function addRowF1(index) {
-        const newRow = {name: "नया अध्यापक", periods: ["-","-","-","-","-","-","-","-"]};
-        if (index === -1) {
-            dataF1.push(newRow);
-        } else {
-            dataF1.splice(index + 1, 0, newRow);
-        }
-        renderTables();
-    }
-
-    function moveRowF1(index, direction) {
-        const targetIndex = index + direction;
-        if (targetIndex < 0 || targetIndex >= dataF1.length) return;
-        const temp = dataF1[index];
-        dataF1[index] = dataF1[targetIndex];
-        dataF1[targetIndex] = temp;
-        renderTables();
-    }
-
-    function deleteRowF1(index) {
-        if (dataF1.length <= 1) {
-            alert('कम से कम एक अध्यापक होना आवश्यक है!');
-            return;
-        }
-        dataF1.splice(index, 1);
-        renderTables();
-    }
-
-    function addRowF2(index) {
-        const newRow = {cls: "नयी कक्षा", periods: ["-","-","-","-","-","-","-","-"]};
-        if (index === -1) {
-            dataF2.push(newRow);
-        } else {
-            dataF2.splice(index + 1, 0, newRow);
-        }
-        renderTables();
-    }
-
-    function moveRowF2(index, direction) {
-        const targetIndex = index + direction;
-        if (targetIndex < 0 || targetIndex >= dataF2.length) return;
-        const temp = dataF2[index];
-        dataF2[index] = dataF2[targetIndex];
-        dataF2[targetIndex] = temp;
-        renderTables();
-    }
-
-    function deleteRowF2(index) {
-        if (dataF2.length <= 1) {
-            alert('कम से कम एक कक्षा होनी आवश्यक है!');
-            return;
-        }
-        dataF2.splice(index, 1);
-        renderTables();
-    }
-
-    function switchTab(formatNum) {
-        document.querySelectorAll('.timetable-section').forEach(sec => sec.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-
-        document.getElementById('section-' + formatNum).classList.add('active');
-        document.getElementById('btn-tab-' + formatNum).classList.add('active');
-        document.getElementById('printSelect').value = formatNum;
-
-        if (formatNum === 1) {
-            document.getElementById('quick-form-1').style.display = 'block';
-            document.getElementById('quick-form-2').style.display = 'none';
-        } else {
-            document.getElementById('quick-form-1').style.display = 'none';
-            document.getElementById('quick-form-2').style.display = 'block';
-        }
-    }
-
-    function onPrintSelectChange(val) {
-        switchTab(parseInt(val));
-    }
-
-    function triggerPrint() {
-        const selectedVal = document.getElementById('printSelect').value;
-        
-        document.querySelectorAll('.timetable-section').forEach(sec => sec.classList.remove('print-active'));
-        document.getElementById('section-' + selectedVal).classList.add('print-active');
-        
-        window.print();
-    }
-
-    window.onload = function() {
-        loadSavedSettings();
-        renderTables();
-    };
-</script>
-
+    </script>
 </body>
 </html>
