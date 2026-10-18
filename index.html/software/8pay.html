@@ -6,6 +6,10 @@
     <title>मास्टर वेतन एवं कैलकुलेटर पोर्टल (Master Salary Portal)</title>
     <!-- SheetJS CDN for Excel Export in 8pay -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- Bootstrap 5 CSS for Chayan Vetan App -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons for Chayan Vetan App -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* मास्टर नेविगेशन बार स्टाइल */
         .master-nav-bar {
@@ -16,7 +20,7 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            font-family: Arial, sans-serif;
+            font-family: Nirmal UI, sans-serif;
         }
         .master-nav-bar label {
             font-size: 16px;
@@ -46,7 +50,7 @@
             --secondary-color: #002288;
             --bg-color: #f4f6f9;
             --border-color: #ccc;
-            font-family: Arial, sans-serif;
+            font-family: Nirmal UI, sans-serif;
             background-color: var(--bg-color);
             margin: 0;
             padding: 10px;
@@ -231,7 +235,7 @@
             --border: #cbd5e1;
             --danger: #dc2626;
             --success: #16a34a;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Nirmal UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             padding: 20px;
@@ -357,6 +361,87 @@
         #acp-app .box-title { font-weight: bold; font-size: 14px; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
         #acp-app .acp-footer { background: #f1f1f1; text-align: center; padding: 10px; font-size: 12px; color: #666; border-top: 1px solid #ddd; }
 
+        /* --- Chayan Vetan (ACP Arrears) Software Styles --- */
+        #chayan-vetan-app {
+            --primary-color: #1e3a8a;
+            --secondary-color: #0d9488;
+            --due-bg: #ecfdf5;
+            --drawn-bg: #fff1f2;
+            --diff-bg: #eff6ff;
+            font-family: 'Nirmal UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 20px;
+        }
+        #chayan-vetan-app .header-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
+        }
+        #chayan-vetan-app .card {
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            border-radius: 10px;
+            background: #fff;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        #chayan-vetan-app .table-arrear {
+            font-size: var(--table-font-size, 0.82rem) !important;
+            vertical-align: middle;
+            border-collapse: collapse !important;
+        }
+        #chayan-vetan-app .table-arrear th,
+        #chayan-vetan-app .table-arrear td,
+        #chayan-vetan-app .table-arrear input,
+        #chayan-vetan-app .table-arrear select,
+        #chayan-vetan-app .table-arrear span {
+            font-size: var(--table-font-size, 0.82rem) !important;
+            font-weight: var(--table-font-weight, normal) !important;
+        }
+        #chayan-vetan-app .table-arrear th {
+            background-color: #1e293b;
+            color: #ffffff;
+            text-align: center;
+            vertical-align: middle;
+            padding: 6px 3px;
+            border: 1px solid #334155;
+        }
+        #chayan-vetan-app .table-arrear td {
+            padding: 3px;
+            text-align: center;
+            border: 1px solid #cbd5e1;
+        }
+        #chayan-vetan-app .table-arrear input[type="number"], 
+        #chayan-vetan-app .table-arrear input[type="text"], 
+        #chayan-vetan-app .table-arrear select {
+            width: 100%;
+            padding: 3px 2px;
+            border: 1px solid #94a3b8;
+            border-radius: 4px;
+            text-align: center;
+            background-color: #ffffff;
+        }
+        #chayan-vetan-app .bg-due-col { background-color: var(--due-bg) !important; }
+        #chayan-vetan-app .bg-drawn-col { background-color: var(--drawn-bg) !important; }
+        #chayan-vetan-app .bg-diff-col { background-color: var(--diff-bg) !important; font-weight: 700; }
+        #chayan-vetan-app .form-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 2px;
+        }
+        #chayan-vetan-app .btn-inc {
+            font-size: 0.72rem;
+            padding: 1px 4px;
+            line-height: 1.2;
+            font-weight: 600;
+        }
+        #chayan-vetan-app .print-amount-words {
+            display: none;
+        }
+
         /* Print Settings */
         @media print {
             .no-print, .master-nav-bar { display: none !important; }
@@ -377,6 +462,86 @@
             #acp-app .box { font-size: 15px; border: 1px solid #000; background: #fff !important; }
             #acp-app .box-title { font-size: 16px; font-weight: bold; }
             #acp-app .acp-footer { display: none; }
+
+            /* Chayan Vetan Print Rules */
+            @page {
+                size: A4 landscape;
+                margin: 8mm 8mm 10mm 8mm;
+            }
+            #chayan-vetan-app {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+            }
+            #chayan-vetan-app .card {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+            #chayan-vetan-app .print-only {
+                display: block !important;
+            }
+            #chayan-vetan-app .print-header {
+                text-align: center;
+                margin-bottom: 8px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 6px;
+            }
+            #chayan-vetan-app .print-header h3 {
+                font-size: 15pt;
+                font-weight: bold;
+                margin-bottom: 2px;
+            }
+            #chayan-vetan-app .print-header h5 {
+                font-size: 11pt;
+                font-weight: bold;
+                margin-bottom: 6px;
+            }
+            #chayan-vetan-app .print-info-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 4px 12px;
+                text-align: left;
+                font-size: 12pt;
+                margin-top: 4px;
+            }
+            #chayan-vetan-app .table-arrear th, 
+            #chayan-vetan-app .table-arrear td {
+                border: 1px solid #000000 !important;
+                color: #000000 !important;
+                padding: 3px 2px !important;
+            }
+            #chayan-vetan-app .table-arrear th {
+                background-color: #f1f5f9 !important;
+                -webkit-print-color-adjust: exact;
+            }
+            #chayan-vetan-app .table-arrear input {
+                border: none !important;
+                background: transparent !important;
+                text-align: center;
+                width: 100% !important;
+                box-shadow: none !important;
+            }
+            #chayan-vetan-app tr.print-total-row {
+                display: table-row !important;
+            }
+            #chayan-vetan-app tfoot {
+                display: table-row-group;
+            }
+            #chayan-vetan-app .print-amount-words {
+                display: block !important;
+                margin-top: 10px;
+                font-size: 10pt;
+                font-weight: bold;
+                text-align: left;
+                border: 1px solid #000;
+                padding: 6px 10px;
+                background-color: #f8fafc !important;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+        .print-only {
+            display: none;
         }
     </style>
 </head>
@@ -393,6 +558,7 @@
                 <option value="vetan">वेतन अवशेष सॉफ्टवेयर (Arrears Salary Software)</option>
                 <option value="pay8">8th Pay Commission Calculator & Portal</option>
                 <option value="acp">ACP सत्यापन पोर्टल (ACP Verification Portal)</option>
+                <option value="chayanVetan">ACP / चयन वेतनमान अवशेष देयक (Arrears Calculator)</option>
             </select>
         </div>
     </div>
@@ -732,7 +898,7 @@
                             <option value="Lecturer">प्रवक्ता (Lecturer / L.T.)</option>
                             <option value="Teacher">सहायक अध्यापक (T.G.T.)</option>
                             <option value="HeadClerk">प्रधान लिपिक (Head Clerk)</option>
-                            <option value="AssistantClerk">सहायक लिपिक (Assi.Clerk)</option>
+                            <option value="AssistantClerk">सहायक लिपिक (Assi. Clerk)</option>
                             <option value="Peon">परिचारक / चतुर्थ श्रेणी (Peon / Class-4)</option>
                         </select>
                     </div>
@@ -825,8 +991,235 @@
             </div>
 
             <div class="acp-footer">
-                श्री कृष्ण इण्टरमीडिएट कालेज सेमरा, कठकुइयाँ, कुशीनगर - प्रशासनिक पोर्टल
+                श्री कृष्ण इण्टरमीडिएट कालेज सेमरा, कठकुइयाँ, कुशीनगर - Search ACP Portal
             </div>
+        </div>
+    </div>
+
+    <!-- 4. ACP / चयन वेतनमान अवशेष देयक (Chayan Vetan / Arrears Calculator Section) -->
+    <div id="chayan-vetan-app" class="app-section">
+        <div class="container-fluid py-3 px-3">
+
+            <!-- Header Block (No Print) -->
+            <div class="card header-card p-3 mb-3 no-print">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="mb-1 fw-bold"><i class="fa-solid fa-file-invoice-dollar me-2"></i>ACP / चयन वेतनमान अवशेष देयक कैलकुलेटर</h3>
+                        <p class="mb-0 text-light opacity-75 small">ए०४ लैंडस्केप प्रिंट (A4 Landscape), पृथक HRA, कैस्केडिंग वेतन एवं ऑटो DA (सन 2000 से आगे) के साथ</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light btn-sm fw-semibold shadow-sm text-primary" onclick="window.print()">
+                            <i class="fa-solid fa-print me-1"></i> प्रिंट (Print Landscape)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Font Control Panel (No Print) -->
+            <div class="card p-2 mb-3 no-print bg-light">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <span class="fw-bold text-secondary small"><i class="fa-solid fa-text-height me-1"></i> तालिका टेक्स्ट सेटिंग्स (Table Font Controls):</span>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="input-group input-group-sm" style="width: 180px;">
+                            <span class="input-group-text">साइज</span>
+                            <select id="fontSizeSelect" class="form-select form-select-sm" onchange="changeFontSize(this.value)">
+                                <option value="0.65rem">बहुत छोटा (X-Small)</option>
+                                <option value="0.72rem">छोटा (Small)</option>
+                                <option value="0.82rem" selected>सामान्य (Normal)</option>
+                                <option value="0.92rem">बड़ा (Large)</option>
+                                <option value="1.02rem">बहुत बड़ा (X-Large)</option>
+                            </select>
+                        </div>
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="boldToggle" onchange="toggleBoldText(this)">
+                            <label class="form-check-label small fw-semibold" for="boldToggle">टेक्स्ट बोल्ड करें (Bold Text)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parameter Inputs Form (No Print) -->
+            <div class="card p-3 mb-3 no-print">
+                <h6 class="fw-bold text-primary mb-3"><i class="fa-solid fa-sliders me-2"></i>1. कर्मचारी विवरण एवं प्रारंभिक सेटिंग्स (Initial Parameters)</h6>
+                
+                <div class="row g-2 mb-2">
+                    <div class="col-md-3">
+                        <label class="form-label">विद्यालय / कार्यालय का नाम</label>
+                        <input type="text" id="empOffice" class="form-control form-control-sm" placeholder="उदा० उ०प्रा० विद्यालय..." oninput="syncHeaderData()">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">कर्मचारी का नाम</label>
+                        <input type="text" id="empNameCV" class="form-control form-control-sm" placeholder="कर्मचारी का नाम" oninput="syncHeaderData()">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">पदनाम (Designation)</label>
+                        <input type="text" id="empDesigCV" class="form-control form-control-sm" placeholder="उदा० सहायक अध्यापक" oninput="syncHeaderData()">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">पे-मैट्रिक्स लेवल (Pay Level)</label>
+                        <input type="text" id="empPayLevel" class="form-control form-control-sm" placeholder="उदा० लेवल-7 / 4600" oninput="syncHeaderData()">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">खाता सं० / PRAN / GPF</label>
+                        <input type="text" id="empAccount" class="form-control form-control-sm" placeholder="प्राण / खाता संख्या" oninput="syncHeaderData()">
+                    </div>
+                </div>
+
+                <hr class="my-2">
+
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2">
+                        <label class="form-label">प्रारंभिक माह</label>
+                        <select id="startMonth" class="form-select form-select-sm" onchange="updateInitialDaAuto()">
+                            <option value="0">जनवरी (January)</option>
+                            <option value="1">फरवरी (February)</option>
+                            <option value="2">मार्च (March)</option>
+                            <option value="3">अप्रैल (April)</option>
+                            <option value="4">मई (May)</option>
+                            <option value="5">जून (June)</option>
+                            <option value="6" selected>जुलाई (July)</option>
+                            <option value="7">अगस्त (August)</option>
+                            <option value="8">सितंबर (September)</option>
+                            <option value="9">अक्टूबर (October)</option>
+                            <option value="10">नवंबर (November)</option>
+                            <option value="11">दिसंबर (December)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">वर्ष</label>
+                        <input type="number" id="startYear" class="form-control form-control-sm" value="2022" min="2000" max="2035" oninput="updateInitialDaAuto()">
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">कुल माह</label>
+                        <input type="number" id="totalMonths" class="form-control form-control-sm" value="12" min="1" max="120">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">नया मूल वेतन (Due Basic)</label>
+                        <input type="number" id="initDueBasic" class="form-control form-control-sm" value="47600" step="100">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">पुराना मूल वेतन (Drawn Basic)</label>
+                        <input type="number" id="initDrawnBasic" class="form-control form-control-sm" value="46200" step="100">
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">नया HRA</label>
+                        <input type="number" id="initDueHra" class="form-control form-control-sm" value="1340">
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">पुराना HRA</label>
+                        <input type="number" id="initDrawnHra" class="form-control form-control-sm" value="1340">
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">प्रारंभिक D.A. %</label>
+                        <input type="number" id="initDaRate" class="form-control form-control-sm" value="38" step="0.5">
+                    </div>
+                    <div class="col-md-1">
+                        <button class="btn btn-primary btn-sm w-100" onclick="generateSheetCV()">
+                            <i class="fa-solid fa-sync me-1"></i> जनरेट
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRINT HEADER (Appears only on printout) -->
+            <div class="print-only print-header">
+                <h3 id="pOffice">विद्यालय / कार्यालय का नाम</h3>
+                <h5 id="pTitle">ACP / चयन वेतनमान अवशेष देयक (Arrear Statement)</h5>
+                <div class="print-info-grid">
+                    <div><strong>कर्मचारी का नाम:</strong> <span id="pNameCV">-</span></div>
+                    <div><strong>पदनाम:</strong> <span id="pDesigCV">-</span></div>
+                    <div><strong>पे-मैट्रिक्स लेवल:</strong> <span id="pPayLevelCV">-</span></div>
+                    <div><strong>खाता / PRAN सं०:</strong> <span id="pAccountCV">-</span></div>
+                    <div><strong>अवधि (Period):</strong> <span id="pPeriodCV">-</span></div>
+                    <div><strong>दिनांक (Date):</strong> <span id="pDateCV">-</span></div>
+                </div>
+            </div>
+
+            <!-- MAIN ARREAR CALCULATION TABLE -->
+            <div class="card p-2 mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2 no-print">
+                    <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-table me-2"></i>2. अवशेष तालिका (Arrear Calculation Table)</h6>
+                    <div class="d-flex gap-2 align-items-center">
+                        <span class="small text-muted me-1"><i class="fa-solid fa-circle-info me-1"></i>माह/वर्ष चुनने पर DA % स्वतः फ़ाइल से सेट हो जाएगा।</span>
+                        <button class="btn btn-sm btn-outline-success" onclick="addRowCV()"><i class="fa-solid fa-plus me-1"></i> माह जोड़ें</button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-arrear" id="arrearTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="width: 3%;">क्र०</th>
+                                <th rowspan="2" style="width: 10%;">माह एवं वर्ष</th>
+                                <th colspan="4" class="bg-due-col text-dark">देय / अप्राप्त वेतन (Payable / Due)</th>
+                                <th colspan="4" class="bg-drawn-col text-dark">आहरित / प्राप्त वेतन (Drawn)</th>
+                                <th rowspan="2" style="width: 6%;">D.A. %</th>
+                                <th rowspan="2" class="bg-diff-col text-dark" style="width: 9%;">शुद्ध अवशेष (Net Arrear)</th>
+                                <th rowspan="2" style="width: 7%;" class="no-print">3% इंक्रीमेंट</th>
+                                <th rowspan="2" style="width: 4%;" class="no-print">हटाएं</th>
+                            </tr>
+                            <tr>
+                                <th class="bg-due-col text-dark" style="width: 8%;">मूल वेतन</th>
+                                <th class="bg-due-col text-dark" style="width: 7%;">D.A.</th>
+                                <th class="bg-due-col text-dark" style="width: 6%;">HRA</th>
+                                <th class="bg-due-col text-dark" style="width: 8%;">कुल देय</th>
+                                <th class="bg-drawn-col text-dark" style="width: 8%;">मूल वेतन</th>
+                                <th class="bg-drawn-col text-dark" style="width: 7%;">D.A.</th>
+                                <th class="bg-drawn-col text-dark" style="width: 6%;">HRA</th>
+                                <th class="bg-drawn-col text-dark" style="width: 8%;">कुल प्राप्त</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBodyCV">
+                        </tbody>
+                        <tfoot id="tableFootCV" class="fw-bold bg-light">
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Print-only Net Arrear in Hindi Words -->
+                <div class="print-amount-words" id="printAmountWordsBox">
+                    <strong>कुल शुद्ध अवशेष (शब्दों में):</strong> <span id="amountInWordsCV">-</span>
+                </div>
+            </div>
+
+            <!-- LOCAL STORAGE CRUD MANAGEMENT (No Print) -->
+            <div class="card p-3 no-print">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold text-primary mb-0"><i class="fa-solid fa-database me-2"></i>3. सहेजे गए देयक रिकॉर्ड प्रबंधन (Saved Records)</h6>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-success btn-sm" onclick="saveRecordCV()"><i class="fa-solid fa-floppy-disk me-1"></i> रिकॉर्ड सहेजें (Save Record)</button>
+                        <button class="btn btn-secondary btn-sm" onclick="resetFormCV()"><i class="fa-solid fa-rotate-left me-1"></i> नया फ़ॉर्म</button>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <input type="text" id="searchInputCV" class="form-control" onkeyup="searchRecordsCV()" placeholder="कर्मचारी नाम, पद या खाता से खोजें...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover table-striped align-middle border">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>कर्मचारी का नाम</th>
+                                <th>पदनाम</th>
+                                <th>खाता / PRAN</th>
+                                <th>अवधि (Period)</th>
+                                <th>कुल अवशेष (Net Arrear)</th>
+                                <th class="text-center">कार्रवाई (Actions)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="savedRecordsBodyCV">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -837,17 +1230,21 @@
             let vetanApp = document.getElementById('vetan-app');
             let pay8App = document.getElementById('pay8-app');
             let acpApp = document.getElementById('acp-app');
+            let chayanVetanApp = document.getElementById('chayan-vetan-app');
 
-            vetanApp.classList.remove('active');
-            pay8App.classList.remove('active');
-            acpApp.classList.remove('active');
+            if(vetanApp) vetanApp.classList.remove('active');
+            if(pay8App) pay8App.classList.remove('active');
+            if(acpApp) acpApp.classList.remove('active');
+            if(chayanVetanApp) chayanVetanApp.classList.remove('active');
 
             if (selectedVal === 'vetan') {
-                vetanApp.classList.add('active');
+                if(vetanApp) vetanApp.classList.add('active');
             } else if (selectedVal === 'pay8') {
-                pay8App.classList.add('active');
+                if(pay8App) pay8App.classList.add('active');
             } else if (selectedVal === 'acp') {
-                acpApp.classList.add('active');
+                if(acpApp) acpApp.classList.add('active');
+            } else if (selectedVal === 'chayanVetan') {
+                if(chayanVetanApp) chayanVetanApp.classList.add('active');
             }
         }
 
@@ -1515,6 +1912,500 @@
             document.getElementById('acpResultSection').style.display = 'block';
         }
 
+
+        /* --- Chayan Vetan (ACP Arrears) Software Logic --- */
+        const monthNamesHindiCV = [
+            "जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", 
+            "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"
+        ];
+
+        let editingRecordIdCV = null;
+
+        function updatePrintDateCV() {
+            const today = new Date();
+            document.getElementById('pDateCV').innerText = today.toLocaleDateString('hi-IN');
+        }
+
+        function convertNumberToHindiWordsCV(num) {
+            if (num === 0) return "शून्य रुपये मात्र";
+            if (num < 0) return "ऋण " + convertNumberToHindiWordsCV(Math.abs(num));
+
+            const ones = ["", "एक", "दो", "तीन", "चार", "पाँच", "छह", "सात", "आठ", "नौ", "दस", 
+                          "ग्यारह", "बारह", "तेरह", "चौदह", "पंद्रह", "सोलह", "सत्रह", "अठारह", "उन्नीस", "बीस",
+                          "इक्कीस", "बाइस", "तेईस", "चौबीस", "पच्चीस", "छब्बीस", "सत्ताईस", "अट्ठाइस", "उनतीस", "तीस",
+                          "इकतीस", "बत्तीस", "तैंतीस", "चौंतीस", "पैंतीस", "छत्तीस", "सैंतीस", "अड़तीस", "उनतालीस", "चालीस",
+                          "इकतालीस", "बयालीस", "तैंतालीस", "चौंतालीस", "पैंतालीस", "छियालीस", "सैंतालीस", "अड़तालीस", "उनचास", "पचास",
+                          "इक्यावन", "बावन", "तिरपन", "चौवन", "पचपन", "छप्पन", "सत्तावन", "अट्ठावन", "उनसठ", "साठ",
+                          "इकसठ", "बासठ", "तिरसठ", "चौसठ", "पैंसठ", "छियासठ", "सड़सठ", "अड़सठ", "उनहत्तर", "सत्तर",
+                          "इकहत्तर", "बहत्तर", "तिहत्तर", "चौहत्तर", "पचहत्तर", "छियात्तर", "सत्तर", "अठहत्तर", "उनासी", "अस्सी",
+                          "इक्यासी", "बयासी", "तिरासी", "चौरासी", "पचासी", "छियासी", "सतासी", "अट्ठासी", "नवासी", "नब्बे",
+                          "इक्यानवे", "बानवे", "तिरानवे", "चौরানवे", "पचानवे", "छियानवे", "सतानवे", "अट्ठानवे", "निन्यानवे"];
+
+            function helper(n) {
+                if (n === 0) return "";
+                if (n < 100) return ones[n];
+                if (n < 1000) {
+                    let rem = n % 100;
+                    return ones[Math.floor(n / 100)] + " सौ" + (rem > 0 ? " " + helper(rem) : "");
+                }
+                if (n < 100000) {
+                    let rem = n % 1000;
+                    return helper(Math.floor(n / 1000)) + " हजार" + (rem > 0 ? " " + helper(rem) : "");
+                }
+                if (n < 10000000) {
+                    let rem = n % 100000;
+                    return helper(Math.floor(n / 100000)) + " लाख" + (rem > 0 ? " " + helper(rem) : "");
+                }
+                let rem = n % 10000000;
+                return helper(Math.floor(n / 10000000)) + " करोड़" + (rem > 0 ? " " + helper(rem) : "");
+            }
+
+            return helper(num) + " रुपये मात्र";
+        }
+
+        function getDaForMonthYearCV(year, monthIdx) {
+            if (year === 2004 && monthIdx === 3) {
+                return daMasterRates["2004"] && daMasterRates["2004"]["अप्रैल"] !== undefined ? daMasterRates["2004"]["अप्रैल"] : 11;
+            }
+            
+            let effectiveMonthName = "जनवरी";
+            if (monthIdx >= 6) {
+                effectiveMonthName = "जुलाई";
+            }
+
+            if (daMasterRates[year] && daMasterRates[year][effectiveMonthName] !== undefined) {
+                return daMasterRates[year][effectiveMonthName];
+            }
+
+            let y = year;
+            let mName = effectiveMonthName;
+            for (let i = 0; i < 12; i++) {
+                if (mName === "जुलाई") { mName = "जनवरी"; }
+                else { mName = "जुलाई"; y -= 1; }
+                
+                if (daMasterRates[y] && daMasterRates[y][mName] !== undefined) {
+                    return daMasterRates[y][mName];
+                }
+            }
+            return 0;
+        }
+
+        function updateInitialDaAuto() {
+            const startMonth = parseInt(document.getElementById('startMonth').value);
+            const startYear = parseInt(document.getElementById('startYear').value);
+            const daRate = getDaForMonthYearCV(startYear, startMonth);
+            document.getElementById('initDaRate').value = daRate;
+        }
+
+        function changeFontSize(sizeVal) {
+            let appContainer = document.getElementById('chayan-vetan-app');
+            if (appContainer) {
+                appContainer.style.setProperty('--table-font-size', sizeVal);
+            }
+        }
+
+        function toggleBoldText(checkbox) {
+            let appContainer = document.getElementById('chayan-vetan-app');
+            if (appContainer) {
+                const weightVal = checkbox.checked ? 'bold' : 'normal';
+                appContainer.style.setProperty('--table-font-weight', weightVal);
+            }
+        }
+
+        function calculateIncrementCV(basic) {
+            return Math.round((basic * 1.03) / 100) * 100;
+        }
+
+        function generateSheetCV() {
+            const startMonth = parseInt(document.getElementById('startMonth').value);
+            let startYear = parseInt(document.getElementById('startYear').value);
+            const totalMonths = parseInt(document.getElementById('totalMonths').value);
+            
+            let dueBasic = parseFloat(document.getElementById('initDueBasic').value) || 0;
+            let drawnBasic = parseFloat(document.getElementById('initDrawnBasic').value) || 0;
+            let dueHra = parseFloat(document.getElementById('initDueHra').value) || 0;
+            let drawnHra = parseFloat(document.getElementById('initDrawnHra').value) || 0;
+
+            const tbody = document.getElementById('tableBodyCV');
+            tbody.innerHTML = '';
+
+            let currM = startMonth;
+            let currY = startYear;
+
+            for (let i = 0; i < totalMonths; i++) {
+                let autoDa = getDaForMonthYearCV(currY, currM);
+                createRowCV(i, monthNamesHindiCV[currM] + " " + currY, dueBasic, drawnBasic, dueHra, drawnHra, autoDa, currM);
+
+                currM++;
+                if (currM > 11) {
+                    currM = 0;
+                    currY++;
+                }
+            }
+
+            recalculateAllCV();
+        }
+
+        function createRowCV(index, monthYearStr, dueBasic, drawnBasic, dueHra, drawnHra, daRate, monthIdx = -1) {
+            const tbody = document.getElementById('tableBodyCV');
+            const tr = document.createElement('tr');
+            tr.className = 'arrear-row';
+            if (monthIdx !== -1) {
+                tr.dataset.monthIdx = monthIdx;
+            }
+
+            tr.innerHTML = `
+                <td class="row-num">${index + 1}</td>
+                <td>
+                    <input type="text" class="month-label fw-semibold" value="${monthYearStr}">
+                </td>
+                <!-- Due Section -->
+                <td class="bg-due-col">
+                    <input type="number" class="due-basic" value="${dueBasic}" step="100" onchange="propagateDownCV(this, '.due-basic')">
+                </td>
+                <td class="bg-due-col"><span class="due-da">0</span></td>
+                <td class="bg-due-col">
+                    <input type="number" class="due-hra" value="${dueHra}" onchange="propagateDownCV(this, '.due-hra')">
+                </td>
+                <td class="bg-due-col fw-bold"><span class="due-total">0</span></td>
+                
+                <!-- Drawn Section -->
+                <td class="bg-drawn-col">
+                    <input type="number" class="drawn-basic" value="${drawnBasic}" step="100" onchange="propagateDownCV(this, '.drawn-basic')">
+                </td>
+                <td class="bg-drawn-col"><span class="drawn-da">0</span></td>
+                <td class="bg-drawn-col">
+                    <input type="number" class="drawn-hra" value="${drawnHra}" onchange="propagateDownCV(this, '.drawn-hra')">
+                </td>
+                <td class="bg-drawn-col fw-bold"><span class="drawn-total">0</span></td>
+                
+                <!-- Common DA % -->
+                <td>
+                    <input type="number" class="da-rate" value="${daRate}" step="0.5" onchange="propagateDownCV(this, '.da-rate')">
+                </td>
+                
+                <!-- Net Arrear -->
+                <td class="bg-diff-col text-primary"><span class="diff-net">0</span></td>
+                
+                <!-- Controls -->
+                <td class="no-print">
+                    <button class="btn btn-outline-primary btn-inc" title="+3% इंक्रीमेंट लगाएं" onclick="apply3PercentIncrementCV(this)">
+                        +3% Inc
+                    </button>
+                </td>
+                <td class="no-print">
+                    <button class="btn btn-outline-danger btn-inc" onclick="deleteRowCV(this)">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(tr);
+        }
+
+        function propagateDownCV(inputElem, selector) {
+            const targetRow = inputElem.closest('tr');
+            const rows = Array.from(document.querySelectorAll('#tableBodyCV tr'));
+            const targetIndex = rows.indexOf(targetRow);
+            const newValue = inputElem.value;
+
+            for (let i = targetIndex; i < rows.length; i++) {
+                rows[i].querySelector(selector).value = newValue;
+            }
+
+            recalculateAllCV();
+        }
+
+        function apply3PercentIncrementCV(btn) {
+            const targetRow = btn.closest('tr');
+            const rows = Array.from(document.querySelectorAll('#tableBodyCV tr'));
+            const targetIndex = rows.indexOf(targetRow);
+
+            let currentDueB = parseFloat(targetRow.querySelector('.due-basic').value) || 0;
+            let currentDrawnB = parseFloat(targetRow.querySelector('.drawn-basic').value) || 0;
+
+            let newDueB = calculateIncrementCV(currentDueB);
+            let newDrawnB = calculateIncrementCV(currentDrawnB);
+
+            for (let i = targetIndex; i < rows.length; i++) {
+                rows[i].querySelector('.due-basic').value = newDueB;
+                rows[i].querySelector('.drawn-basic').value = newDrawnB;
+            }
+
+            recalculateAllCV();
+        }
+
+        function addRowCV() {
+            const rows = document.querySelectorAll('#tableBodyCV tr');
+            let nextIndex = rows.length;
+            let lastMonthStr = "जनवरी 2023";
+            let lastDueB = 0, lastDrawnB = 0, lastDueHra = 0, lastDrawnHra = 0, lastDa = 0;
+
+            if (rows.length > 0) {
+                const lastRow = rows[rows.length - 1];
+                lastDueB = parseFloat(lastRow.querySelector('.due-basic').value) || 0;
+                lastDrawnB = parseFloat(lastRow.querySelector('.drawn-basic').value) || 0;
+                lastDueHra = parseFloat(lastRow.querySelector('.due-hra').value) || 0;
+                lastDrawnHra = parseFloat(lastRow.querySelector('.drawn-hra').value) || 0;
+                lastDa = parseFloat(lastRow.querySelector('.da-rate').value) || 0;
+                lastMonthStr = lastRow.querySelector('.month-label').value;
+            }
+
+            createRowCV(nextIndex, lastMonthStr, lastDueB, lastDrawnB, lastDueHra, lastDrawnHra, lastDa);
+            recalculateAllCV();
+        }
+
+        function deleteRowCV(btn) {
+            const row = btn.closest('tr');
+            row.remove();
+            updateRowNumbersCV();
+            recalculateAllCV();
+        }
+
+        function updateRowNumbersCV() {
+            const rows = document.querySelectorAll('#tableBodyCV tr');
+            rows.forEach((r, idx) => {
+                r.querySelector('.row-num').innerText = idx + 1;
+            });
+        }
+
+        function syncHeaderData() {
+            let officeVal = document.getElementById('empOffice').value || 'विद्यालय / कार्यालय का नाम';
+            let nameVal = document.getElementById('empNameCV').value || '-';
+            let desigVal = document.getElementById('empDesigCV').value || '-';
+            let levelVal = document.getElementById('empPayLevel').value || '-';
+            let accVal = document.getElementById('empAccount').value || '-';
+
+            document.getElementById('pOffice').innerText = officeVal;
+            document.getElementById('pNameCV').innerText = nameVal;
+            document.getElementById('pDesigCV').innerText = desigVal;
+            document.getElementById('pPayLevelCV').innerText = levelVal;
+            document.getElementById('pAccountCV').innerText = accVal;
+        }
+
+        function recalculateAllCV() {
+            const rows = document.querySelectorAll('#tableBodyCV tr');
+
+            let sumDueBasic = 0, sumDueDa = 0, sumDueHra = 0, sumDueTotal = 0;
+            let sumDrawnBasic = 0, sumDrawnDa = 0, sumDrawnHra = 0, sumDrawnTotal = 0;
+            let sumNetArrear = 0;
+
+            rows.forEach(row => {
+                let dueB = parseFloat(row.querySelector('.due-basic').value) || 0;
+                let dueHra = parseFloat(row.querySelector('.due-hra').value) || 0;
+                
+                let drawnB = parseFloat(row.querySelector('.drawn-basic').value) || 0;
+                let drawnHra = parseFloat(row.querySelector('.drawn-hra').value) || 0;
+                
+                let da = parseFloat(row.querySelector('.da-rate').value) || 0;
+
+                let dueDaAmt = Math.round((dueB * da) / 100);
+                let dueTotalAmt = dueB + dueDaAmt + dueHra;
+
+                let drawnDaAmt = Math.round((drawnB * da) / 100);
+                let drawnTotalAmt = drawnB + drawnDaAmt + drawnHra;
+
+                let netDiff = dueTotalAmt - drawnTotalAmt;
+
+                row.querySelector('.due-da').innerText = dueDaAmt.toLocaleString('en-IN');
+                row.querySelector('.due-total').innerText = dueTotalAmt.toLocaleString('en-IN');
+
+                row.querySelector('.drawn-da').innerText = drawnDaAmt.toLocaleString('en-IN');
+                row.querySelector('.drawn-total').innerText = drawnTotalAmt.toLocaleString('en-IN');
+
+                row.querySelector('.diff-net').innerText = netDiff.toLocaleString('en-IN');
+
+                sumDueBasic += dueB;
+                sumDueDa += dueDaAmt;
+                sumDueHra += dueHra;
+                sumDueTotal += dueTotalAmt;
+
+                sumDrawnBasic += drawnB;
+                sumDrawnDa += drawnDaAmt;
+                sumDrawnHra += drawnHra;
+                sumDrawnTotal += drawnTotalAmt;
+
+                sumNetArrear += netDiff;
+            });
+
+            const tfoot = document.getElementById('tableFootCV');
+            tfoot.innerHTML = `
+                <tr class="print-total-row">
+                    <td colspan="2" class="text-center">कुल योग (Grand Total)</td>
+                    <td>${sumDueBasic.toLocaleString('en-IN')}</td>
+                    <td>${sumDueDa.toLocaleString('en-IN')}</td>
+                    <td>${sumDueHra.toLocaleString('en-IN')}</td>
+                    <td class="text-success">${sumDueTotal.toLocaleString('en-IN')}</td>
+                    
+                    <td>${sumDrawnBasic.toLocaleString('en-IN')}</td>
+                    <td>${sumDrawnDa.toLocaleString('en-IN')}</td>
+                    <td>${sumDrawnHra.toLocaleString('en-IN')}</td>
+                    <td class="text-danger">${sumDrawnTotal.toLocaleString('en-IN')}</td>
+                    
+                    <td>-</td>
+                    <td class="bg-diff-col text-primary fs-6">${sumNetArrear.toLocaleString('en-IN')} ₹</td>
+                    <td class="no-print" colspan="2"></td>
+                </tr>
+            `;
+
+            document.getElementById('amountInWordsCV').innerText = convertNumberToHindiWordsCV(sumNetArrear);
+
+            syncHeaderData();
+
+            if (rows.length > 0) {
+                let firstM = rows[0].querySelector('.month-label').value;
+                let lastM = rows[rows.length - 1].querySelector('.month-label').value;
+                document.getElementById('pPeriodCV').innerText = `${firstM} से ${lastM}`;
+            }
+        }
+
+        function saveRecordCV() {
+            const empName = document.getElementById('empNameCV').value.trim();
+            if (!empName) {
+                alert('कृपया कर्मचारी का नाम दर्ज करें!');
+                return;
+            }
+
+            const rows = document.querySelectorAll('#tableBodyCV tr');
+            const tableData = [];
+
+            rows.forEach(row => {
+                tableData.push({
+                    mLabel: row.querySelector('.month-label').value,
+                    dueB: row.querySelector('.due-basic').value,
+                    dueHra: row.querySelector('.due-hra').value,
+                    drawnB: row.querySelector('.drawn-basic').value,
+                    drawnHra: row.querySelector('.drawn-hra').value,
+                    da: row.querySelector('.da-rate').value
+                });
+            });
+
+            const record = {
+                id: editingRecordIdCV || 'REC_' + Date.now(),
+                empOffice: document.getElementById('empOffice').value,
+                empName: empName,
+                empDesig: document.getElementById('empDesigCV').value,
+                empPayLevel: document.getElementById('empPayLevel').value,
+                empAccount: document.getElementById('empAccount').value,
+                startMonth: document.getElementById('startMonth').value,
+                startYear: document.getElementById('startYear').value,
+                totalMonths: document.getElementById('totalMonths').value,
+                initDueBasic: document.getElementById('initDueBasic').value,
+                initDrawnBasic: document.getElementById('initDrawnBasic').value,
+                initDueHra: document.getElementById('initDueHra').value,
+                initDrawnHra: document.getElementById('initDrawnHra').value,
+                initDaRate: document.getElementById('initDaRate').value,
+                periodStr: document.getElementById('pPeriodCV').innerText,
+                netArrearTotal: document.querySelector('#tableFootCV tr td:nth-child(12)').innerText,
+                tableData: tableData,
+                savedAt: new Date().toLocaleString('hi-IN')
+            };
+
+            let records = JSON.parse(localStorage.getItem('acpArrearRecords_v2') || '[]');
+
+            if (editingRecordIdCV) {
+                records = records.map(r => r.id === editingRecordIdCV ? record : r);
+                alert('रिकॉर्ड सफलतापूर्वक अपडेट हो गया!');
+            } else {
+                records.push(record);
+                alert('रिकॉर्ड सफलतापूर्वक सहेजा गया!');
+            }
+
+            localStorage.setItem('acpArrearRecords_v2', JSON.stringify(records));
+            editingRecordIdCV = null;
+            loadSavedRecordsCV();
+        }
+
+        function loadSavedRecordsCV() {
+            const records = JSON.parse(localStorage.getItem('acpArrearRecords_v2') || '[]');
+            const tbody = document.getElementById('savedRecordsBodyCV');
+            tbody.innerHTML = '';
+
+            if (records.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted">कोई सहेजा गया रिकॉर्ड नहीं मिला।</td></tr>`;
+                return;
+            }
+
+            records.forEach((rec, idx) => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td class="fw-bold">${rec.empName}</td>
+                    <td>${rec.empDesig || '-'}</td>
+                    <td>${rec.empAccount || '-'}</td>
+                    <td><small>${rec.periodStr}</small></td>
+                    <td class="fw-bold text-success">${rec.netArrearTotal}</td>
+                    <td class="text-center">
+                        <button class="btn btn-xs btn-primary me-1" onclick="editRecordCV('${rec.id}')"><i class="fa-solid fa-pen"></i> लोड / एडिट</button>
+                        <button class="btn btn-xs btn-danger" onclick="deleteRecordCV('${rec.id}')"><i class="fa-solid fa-trash"></i> हटाएं</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function editRecordCV(id) {
+            const records = JSON.parse(localStorage.getItem('acpArrearRecords_v2') || '[]');
+            const rec = records.find(r => r.id === id);
+
+            if (!rec) return;
+
+            editingRecordIdCV = rec.id;
+            document.getElementById('empOffice').value = rec.empOffice || '';
+            document.getElementById('empNameCV').value = rec.empName || '';
+            document.getElementById('empDesigCV').value = rec.empDesig || '';
+            document.getElementById('empPayLevel').value = rec.empPayLevel || '';
+            document.getElementById('empAccount').value = rec.empAccount || '';
+            document.getElementById('startMonth').value = rec.startMonth || 6;
+            document.getElementById('startYear').value = rec.startYear || 2022;
+            document.getElementById('totalMonths').value = rec.totalMonths || rec.tableData.length;
+            document.getElementById('initDueBasic').value = rec.initDueBasic || 0;
+            document.getElementById('initDrawnBasic').value = rec.initDrawnBasic || 0;
+            document.getElementById('initDueHra').value = rec.initDueHra || 0;
+            document.getElementById('initDrawnHra').value = rec.initDrawnHra || 0;
+            document.getElementById('initDaRate').value = rec.initDaRate || 0;
+
+            const tbody = document.getElementById('tableBodyCV');
+            tbody.innerHTML = '';
+
+            rec.tableData.forEach((d, idx) => {
+                createRowCV(idx, d.mLabel, d.dueB, d.drawnB, d.dueHra || 0, d.drawnHra || 0, d.da);
+            });
+
+            recalculateAllCV();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteRecordCV(id) {
+            if (confirm('क्या आप इस रिकॉर्ड को हटाना चाहते हैं?')) {
+                let records = JSON.parse(localStorage.getItem('acpArrearRecords_v2') || '[]');
+                records = records.filter(r => r.id !== id);
+                localStorage.setItem('acpArrearRecords_v2', JSON.stringify(records));
+                loadSavedRecordsCV();
+            }
+        }
+
+        function searchRecordsCV() {
+            const q = document.getElementById('searchInputCV').value.toLowerCase();
+            const rows = document.querySelectorAll('#savedRecordsBodyCV tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(q) ? '' : 'none';
+            });
+        }
+
+        function resetFormCV() {
+            editingRecordIdCV = null;
+            document.getElementById('empOffice').value = '';
+            document.getElementById('empNameCV').value = '';
+            document.getElementById('empDesigCV').value = '';
+            document.getElementById('empPayLevel').value = '';
+            document.getElementById('empAccount').value = '';
+            updateInitialDaAuto();
+            generateSheetCV();
+        }
+
         window.onload = function() {
             onPeriodChange();
             renderTable();
@@ -1530,6 +2421,12 @@
             document.getElementById('empId').value = generateNextId();
             liveCalculateAll();
             renderTable8();
+
+            // Chayan Vetan init
+            updateInitialDaAuto();
+            generateSheetCV();
+            loadSavedRecordsCV();
+            updatePrintDateCV();
         };
     </script>
 </body>
