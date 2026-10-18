@@ -432,12 +432,6 @@
             color: #334155;
             margin-bottom: 2px;
         }
-        #chayan-vetan-app .btn-inc {
-            font-size: 0.72rem;
-            padding: 1px 4px;
-            line-height: 1.2;
-            font-weight: 600;
-        }
         #chayan-vetan-app .print-amount-words {
             display: none;
         }
@@ -1026,8 +1020,8 @@
                                 <option value="0.65rem">बहुत छोटा (X-Small)</option>
                                 <option value="0.72rem">छोटा (Small)</option>
                                 <option value="0.82rem" selected>सामान्य (Normal)</option>
-                                <option value="0.92rem">बड़ा (Large)</option>
-                                <option value="1.02rem">बहुत बड़ा (X-Large)</option>
+                                <option value="0.92rem">बड़ा (Large)</option>
+                                <option value="1.02rem">बहुत बड़ा (X-Large)</option>
                             </select>
                         </div>
                         <div class="form-check form-switch mb-0">
@@ -1113,6 +1107,23 @@
                         <label class="form-label">प्रारंभिक D.A. %</label>
                         <input type="number" id="initDaRate" class="form-control form-control-sm" value="38" step="0.5">
                     </div>
+                    <div class="col-md-2">
+                        <label class="form-label text-primary fw-bold">वेतनवृद्धि माह (Increment Month)</label>
+                        <select id="incrementMonthCV" class="form-select form-select-sm border-primary">
+                            <option value="0">जनवरी (January)</option>
+                            <option value="1">फरवरी (February)</option>
+                            <option value="2">मार्च (March)</option>
+                            <option value="3">अप्रैल (April)</option>
+                            <option value="4">मई (May)</option>
+                            <option value="5">जून (June)</option>
+                            <option value="6" selected>जुलाई (July)</option>
+                            <option value="7">अगस्त (August)</option>
+                            <option value="8">सितंबर (September)</option>
+                            <option value="9">अक्टूबर (October)</option>
+                            <option value="10">नवंबर (November)</option>
+                            <option value="11">दिसंबर (December)</option>
+                        </select>
+                    </div>
                     <div class="col-md-1">
                         <button class="btn btn-primary btn-sm w-100" onclick="generateSheetCV()">
                             <i class="fa-solid fa-sync me-1"></i> जनरेट
@@ -1140,8 +1151,8 @@
                 <div class="d-flex justify-content-between align-items-center mb-2 no-print">
                     <h6 class="fw-bold text-dark mb-0"><i class="fa-solid fa-table me-2"></i>2. अवशेष तालिका (Arrear Calculation Table)</h6>
                     <div class="d-flex gap-2 align-items-center">
-                        <span class="small text-muted me-1"><i class="fa-solid fa-circle-info me-1"></i>माह/वर्ष चुनने पर DA % स्वतः फ़ाइल से सेट हो जाएगा।</span>
-                        <button class="btn btn-sm btn-outline-success" onclick="addRowCV()"><i class="fa-solid fa-plus me-1"></i> माह जोड़ें</button>
+                        <span class="small text-muted me-1"><i class="fa-solid fa-circle-info me-1"></i>चयनित माह आने पर ऑटो इंक्रीमेंट लागू हो जाता है।</span>
+                        <button class="btn btn-sm btn-outline-success" onclick="addRowCV()"><i class="fa-solid fa-plus me-1"></i> माह जोड़ें</button>
                     </div>
                 </div>
 
@@ -1150,13 +1161,12 @@
                         <thead>
                             <tr>
                                 <th rowspan="2" style="width: 3%;">क्र०</th>
-                                <th rowspan="2" style="width: 10%;">माह एवं वर्ष</th>
+                                <th rowspan="2" style="width: 11%;">माह एवं वर्ष</th>
                                 <th colspan="4" class="bg-due-col text-dark">देय / अप्राप्त वेतन (Payable / Due)</th>
                                 <th colspan="4" class="bg-drawn-col text-dark">आहरित / प्राप्त वेतन (Drawn)</th>
                                 <th rowspan="2" style="width: 6%;">D.A. %</th>
-                                <th rowspan="2" class="bg-diff-col text-dark" style="width: 9%;">शुद्ध अवशेष (Net Arrear)</th>
-                                <th rowspan="2" style="width: 7%;" class="no-print">3% इंक्रीमेंट</th>
-                                <th rowspan="2" style="width: 4%;" class="no-print">हटाएं</th>
+                                <th rowspan="2" class="bg-diff-col text-dark" style="width: 10%;">शुद्ध अवशेष (Net Arrear)</th>
+                                <th rowspan="2" style="width: 5%;" class="no-print">हटाएं</th>
                             </tr>
                             <tr>
                                 <th class="bg-due-col text-dark" style="width: 8%;">मूल वेतन</th>
@@ -1188,7 +1198,7 @@
                     <h6 class="fw-bold text-primary mb-0"><i class="fa-solid fa-database me-2"></i>3. सहेजे गए देयक रिकॉर्ड प्रबंधन (Saved Records)</h6>
                     <div class="d-flex gap-2">
                         <button class="btn btn-success btn-sm" onclick="saveRecordCV()"><i class="fa-solid fa-floppy-disk me-1"></i> रिकॉर्ड सहेजें (Save Record)</button>
-                        <button class="btn btn-secondary btn-sm" onclick="resetFormCV()"><i class="fa-solid fa-rotate-left me-1"></i> नया फ़ॉर्म</button>
+                        <button class="btn btn-secondary btn-sm" onclick="resetFormCV()"><i class="fa-solid fa-rotate-left me-1"></i> नया फ़ॉर्म</button>
                     </div>
                 </div>
 
@@ -2020,6 +2030,7 @@
             const startMonth = parseInt(document.getElementById('startMonth').value);
             let startYear = parseInt(document.getElementById('startYear').value);
             const totalMonths = parseInt(document.getElementById('totalMonths').value);
+            const incMonthIdx = parseInt(document.getElementById('incrementMonthCV').value);
             
             let dueBasic = parseFloat(document.getElementById('initDueBasic').value) || 0;
             let drawnBasic = parseFloat(document.getElementById('initDrawnBasic').value) || 0;
@@ -2033,6 +2044,11 @@
             let currY = startYear;
 
             for (let i = 0; i < totalMonths; i++) {
+                if (i > 0 && currM === incMonthIdx) {
+                    dueBasic = calculateIncrementCV(dueBasic);
+                    drawnBasic = calculateIncrementCV(drawnBasic);
+                }
+
                 let autoDa = getDaForMonthYearCV(currY, currM);
                 createRowCV(i, monthNamesHindiCV[currM] + " " + currY, dueBasic, drawnBasic, dueHra, drawnHra, autoDa, currM);
 
@@ -2089,11 +2105,6 @@
                 
                 <!-- Controls -->
                 <td class="no-print">
-                    <button class="btn btn-outline-primary btn-inc" title="+3% इंक्रीमेंट लगाएं" onclick="apply3PercentIncrementCV(this)">
-                        +3% Inc
-                    </button>
-                </td>
-                <td class="no-print">
                     <button class="btn btn-outline-danger btn-inc" onclick="deleteRowCV(this)">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -2116,30 +2127,13 @@
             recalculateAllCV();
         }
 
-        function apply3PercentIncrementCV(btn) {
-            const targetRow = btn.closest('tr');
-            const rows = Array.from(document.querySelectorAll('#tableBodyCV tr'));
-            const targetIndex = rows.indexOf(targetRow);
-
-            let currentDueB = parseFloat(targetRow.querySelector('.due-basic').value) || 0;
-            let currentDrawnB = parseFloat(targetRow.querySelector('.drawn-basic').value) || 0;
-
-            let newDueB = calculateIncrementCV(currentDueB);
-            let newDrawnB = calculateIncrementCV(currentDrawnB);
-
-            for (let i = targetIndex; i < rows.length; i++) {
-                rows[i].querySelector('.due-basic').value = newDueB;
-                rows[i].querySelector('.drawn-basic').value = newDrawnB;
-            }
-
-            recalculateAllCV();
-        }
-
         function addRowCV() {
             const rows = document.querySelectorAll('#tableBodyCV tr');
             let nextIndex = rows.length;
             let lastMonthStr = "जनवरी 2023";
             let lastDueB = 0, lastDrawnB = 0, lastDueHra = 0, lastDrawnHra = 0, lastDa = 0;
+            let nextMonthIdx = 0;
+            let nextYear = 2022;
 
             if (rows.length > 0) {
                 const lastRow = rows[rows.length - 1];
@@ -2148,7 +2142,31 @@
                 lastDueHra = parseFloat(lastRow.querySelector('.due-hra').value) || 0;
                 lastDrawnHra = parseFloat(lastRow.querySelector('.drawn-hra').value) || 0;
                 lastDa = parseFloat(lastRow.querySelector('.da-rate').value) || 0;
-                lastMonthStr = lastRow.querySelector('.month-label').value;
+                
+                let lastMonthLabel = lastRow.querySelector('.month-label').value.trim();
+                let parts = lastMonthLabel.split(' ');
+                if (parts.length >= 2) {
+                    let mName = parts[0];
+                    let yNum = parseInt(parts[1]) || 2022;
+                    let mIdx = monthNamesHindiCV.indexOf(mName);
+                    if (mIdx !== -1) {
+                        nextMonthIdx = mIdx + 1;
+                        nextYear = yNum;
+                        if (nextMonthIdx > 11) {
+                            nextMonthIdx = 0;
+                            nextYear++;
+                        }
+                    }
+                }
+
+                const incMonthIdx = parseInt(document.getElementById('incrementMonthCV').value);
+                if (nextMonthIdx === incMonthIdx) {
+                    lastDueB = calculateIncrementCV(lastDueB);
+                    lastDrawnB = calculateIncrementCV(lastDrawnB);
+                }
+
+                lastDa = getDaForMonthYearCV(nextYear, nextMonthIdx);
+                lastMonthStr = monthNamesHindiCV[nextMonthIdx] + " " + nextYear;
             }
 
             createRowCV(nextIndex, lastMonthStr, lastDueB, lastDrawnB, lastDueHra, lastDrawnHra, lastDa);
@@ -2244,7 +2262,7 @@
                     
                     <td>-</td>
                     <td class="bg-diff-col text-primary fs-6">${sumNetArrear.toLocaleString('en-IN')} ₹</td>
-                    <td class="no-print" colspan="2"></td>
+                    <td class="no-print" colspan="1"></td>
                 </tr>
             `;
 
@@ -2295,6 +2313,7 @@
                 initDueHra: document.getElementById('initDueHra').value,
                 initDrawnHra: document.getElementById('initDrawnHra').value,
                 initDaRate: document.getElementById('initDaRate').value,
+                incrementMonthCV: document.getElementById('incrementMonthCV').value,
                 periodStr: document.getElementById('pPeriodCV').innerText,
                 netArrearTotal: document.querySelector('#tableFootCV tr td:nth-child(12)').innerText,
                 tableData: tableData,
@@ -2364,6 +2383,9 @@
             document.getElementById('initDueHra').value = rec.initDueHra || 0;
             document.getElementById('initDrawnHra').value = rec.initDrawnHra || 0;
             document.getElementById('initDaRate').value = rec.initDaRate || 0;
+            if(rec.incrementMonthCV !== undefined) {
+                document.getElementById('incrementMonthCV').value = rec.incrementMonthCV;
+            }
 
             const tbody = document.getElementById('tableBodyCV');
             tbody.innerHTML = '';
