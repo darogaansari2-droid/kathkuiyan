@@ -55,6 +55,15 @@
             font-size: 14px;
             box-sizing: border-box;
         }
+
+        /* सत्यापान टैब के सभी input, textarea और select के लिए ब्लैक और बोल्ड स्टाइल */
+        #satyapanTab textarea, 
+        #satyapanTab input:not([type="range"]), 
+        #satyapanTab select {
+            color: #000000 !important;
+            font-weight: bold !important;
+        }
+
         .form-group {
             margin-bottom: 10px;
         }
@@ -155,6 +164,12 @@
                 padding-right: var(--print-right, 0.5in) !important;
                 box-sizing: border-box;
             }
+            /* प्रिंट में भवदीय ब्लॉक की स्थिति सुरक्षित रखने के लिए */
+            #prevBhavdiyaBox {
+                display: block !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
         }
     </style>
 </head>
@@ -197,6 +212,48 @@
         <div class="form-group">
          <textarea id="inputPara" rows="6" oninput="updateLetter()" onkeydown="handleTabKey(event)">महोदय,
 		आपकी नियुक्ति उ०प्र० मा० शिक्षा सेवा चयन बोर्ड प्रयागराज के पत्र पत्रांक शि० से० आयोग / 2011- 2077 ( 5 ) / 2026-27 दिनांक 11/09/2026 द्वारा प्रशिक्षित स्नातक शिक्षक गणित के पद पर हुआ है I जिसके क्रम में जि० वि० नि० कुशीनगर ने अपने पत्र दिनांक 19/09/2026 पत्रांक 6636-43 / 2026-27 द्वारा पैनल / आदेश जारी किया गया है I बड़े हर्ष के साथ आपको सूचित किया जा रहा है कि आपकी नियुक्ति इस विद्यालय में स० अ० गणित के पद पर कर ली गयी है I पत्र प्राप्ति के एक सप्ताह के अन्दर किसी भी कार्य दिवस में विद्यालय पर आकर अपना कार्य भार ग्रहण करें I</textarea>
+        </div>
+
+        <!-- भवदीय एवं मुहर जैसी पोजीशन और स्टाइलिंग सेटिंग्स -->
+        <h4 style="margin-top:10px;">3. भवदीय एवं मुहर पोजीशन और स्टाइल सेटिंग्स:</h4>
+        <div class="control-panel">
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <div>
+                    <label>अलाइनमेंट (Alignment):</label>
+                    <select id="selectBhavdiyaAlign" onchange="updateSpacing()">
+                        <option value="right" selected>दाहिनी ओर (Right)</option>
+                        <option value="center">बीच में (Center)</option>
+                        <option value="left">बाईं ओर (Left)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>फोंट साइज (Font Size):</label>
+                    <select id="selectBhavdiyaFontSize" onchange="updateSpacing()">
+                        <option value="14px">14 px</option>
+                        <option value="15px">15 px</option>
+                        <option value="16px" selected>16 px (Normal)</option>
+                        <option value="17px">17 px</option>
+                        <option value="18px">18 px</option>
+                        <option value="20px">20 px</option>
+                    </select>
+                </div>
+                <div>
+                    <label>टेक्स्ट बोल्ड (Font Weight):</label>
+                    <select id="selectBhavdiyaBold" onchange="updateSpacing()">
+                        <option value="normal" selected>सामान्य (Normal)</option>
+                        <option value="bold">बोल्ड (Bold)</option>
+                    </select>
+                </div>
+                <div style="flex-basis: 100%;">
+                    <label>भवदीय एवं मुहर का विवरण (प्रधानाचार्य, विद्यालय, पता):</label>
+                    <textarea id="inputBhavdiyaText" rows="4" oninput="updateLetter()">भवदीय,
+
+
+प्रधानाचार्य
+श्री कृष्ण इण्टरमीडिएट कालेज
+सेमरा कठकुइयाँ, कुशीनगर</textarea>
+                </div>
+            </div>
         </div>
 
         <h4 style="margin-top:20px;">Margin, Spacing & Font Controls:</h4>
@@ -425,6 +482,13 @@
                             <label class="block font-semibold text-slate-700 mb-1">वाटरमार्क वर्टिकल स्थिति (Top Offset): <span id="wmPosVal" class="font-bold text-indigo-900">50px</span></label>
                             <input type="range" id="wmPosRange" min="0" max="500" value="50" oninput="app.updateWatermarkPos(this.value)" class="w-full">
                         </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">प्रिंट टेक्स्ट बोल्ड करें (Bold Print Text):</label>
+                            <select id="selectPrintBold" onchange="app.updatePrintBold(this.value)" class="w-full bg-white font-bold">
+                                <option value="normal">सामान्य (Normal)</option>
+                                <option value="bold" selected>बोल्ड (Bold)</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="flex gap-3 pt-2">
@@ -468,55 +532,66 @@
 महोदय,
 		आपकी नियुक्ति उ०प्र० मा० शिक्षा सेवा चयन बोर्ड प्रयागराज के पत्र पत्रांक: शि० से० आयोग / 2011- 2077 ( 5 ) / 2026-27 दिनांक 11/09/2026 द्वारा प्रशिक्षित स्नातक शिक्षक गणित के पद पर हुआ है I जिसके क्रम में जि० वि० नि० कुशीनगर ने अपने पत्र दिनांक 19/09/2026 पत्रांक/ 6636-43 / 2026-27 द्वारा पैनल/ आदेश जारी किया गया है I बड़े हर्ष के साथ आपको सूचित किया जा रहा है कि आपकी नियुक्ति इस विद्यालय में स० अ० गणित के पद पर कर ली गयी है I पत्र प्राप्ति के एक सप्ताह के अन्दर किसी भी कार्य दिवस में विद्यालय पर आकर अपना कार्य भार ग्रहण करें I
                 </div>
+                <!-- मुहर जैसे लेआउट वाला भवदीय सेक्शन (साइज और बोल्ड कंट्रोल के साथ) -->
+                <div id="prevBhavdiyaBox" style="margin-top: 15px; text-align: right;">
+                    <div style="display: inline-block; text-align: center;">
+                        <span id="bhavdiyaTextLine" style="white-space: pre-wrap; display: inline-block; font-size: 16px; font-weight: normal;">भवदीय,
+
+
+प्रधानाचार्य
+श्री कृष्ण इण्टरमीडिएट कालेज
+सेमरा कठकुइयाँ, कुशीनगर</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Satyapan Preview Area (Hidden by Default) -->
             <div id="satyapanPreviewArea" style="display: none;">
                 <div id="letterhead-space" style="padding-top: 45mm;">
-                    <div id="letterContainer" class="leading-relaxed mb-6 space-y-0.5 text-slate-900" style="font-size: 12px;">
+                    <div id="letterContainer" class="leading-relaxed mb-6 space-y-0.5 text-black font-bold" style="font-size: 12px;">
                         <p class="font-bold">सेवा में,</p>
                         <div id="sewa-box" class="transition-all duration-150">
-                            <p id="prev-targetSchool" class="font-bold text-indigo-950">[परीक्षा नियंत्रक / कुलसचिव / प्रधानाध्यापक, संस्था का नाम]</p>
-                            <p id="prev-targetAddress" class="text-slate-700 whitespace-pre-line">[संस्था का पूरा पता एवं शहर]</p>
+                            <p id="prev-targetSchool" class="font-bold text-black">[परीक्षा नियंत्रक / कुलसचिव / प्रधानाध्यापक, संस्था का नाम]</p>
+                            <p id="prev-targetAddress" class="text-black font-bold whitespace-pre-line">[संस्था का पूरा पता एवं शहर]</p>
                         </div>
                     </div>
 
-                    <div id="subjectContainer" class="mb-6 font-bold border-y-2 border-slate-800 py-2.5 text-slate-900 bg-slate-50 px-0" style="font-size: 12px;">
+                    <div id="subjectContainer" class="mb-6 font-bold border-y-2 border-black py-2.5 text-black bg-slate-50 px-0" style="font-size: 12px;">
                         <div id="vishay-box" class="transition-all duration-150">
                             <p>विषय: <span id="prev-letterSubject">नव-नियुक्त कर्मचारी के अंक-पत्र / प्रमाण-पत्र सत्यापन बाबत।</span></p>
                         </div>
                     </div>
 
-                    <div id="bodyContainer" class="text-slate-900 leading-relaxed text-justify space-y-3" style="font-size: 12px;">
+                    <div id="bodyContainer" class="text-black font-bold leading-relaxed text-justify space-y-3" style="font-size: 12px;">
                         <p class="font-bold">महोदय,</p>
                         <p><span id="mahoday-line" class="inline-block transition-all duration-150"></span><span id="prev-mahodayText">उपर्युक्त विषयांतर्गत निवेदन है कि इस कार्यालय / विद्यालय में नव-नियुक्त कर्मचारी द्वारा अपना कार्यभार ग्रहण कर लिया गया है। कर्मचारी द्वारा प्रस्तुत शैक्षणिक / प्रशिक्षण अर्हता के अंक-पत्र एवं प्रमाण-पत्र का सत्यापन आपके कार्यालय / संस्था के अभिलेखों से कराया जाना प्रशासनिक रूप से आवश्यक है। संबंधित कर्मचारी का विवरण निम्नानुसार है:</span></p>
 
-                        <div class="my-4 border border-slate-400 rounded-none overflow-hidden">
-                            <table class="w-full text-left border-collapse bg-transparent" style="font-size: inherit;">
-                                <tbody class="divide-y divide-slate-300">
+                        <div class="my-4 border border-black rounded-none overflow-hidden">
+                            <table class="w-full text-left border-collapse bg-transparent text-black font-bold" style="font-size: inherit;">
+                                <tbody class="divide-y divide-black">
                                     <tr>
-                                        <td class="p-2 font-semibold border-r border-slate-300 w-1/3">कर्मचारी का नाम</td>
-                                        <td id="prev-empName" class="p-2 font-bold text-slate-900">[कर्मचारी का नाम]</td>
+                                        <td class="p-2 font-bold border-r border-black w-1/3">कर्मचारी का नाम</td>
+                                        <td id="prev-empName" class="p-2 font-bold text-black">[कर्मचारी का नाम]</td>
                                     </tr>
                                     <tr>
-                                        <td class="p-2 font-semibold border-r border-slate-300">पिता का नाम</td>
-                                        <td id="prev-fatherName" class="p-2 font-bold text-slate-800">[पिता का नाम]</td>
+                                        <td class="p-2 font-bold border-r border-black">पिता का नाम</td>
+                                        <td id="prev-fatherName" class="p-2 font-bold text-black">[पिता का नाम]</td>
                                     </tr>
                                     <tr>
-                                        <td class="p-2 font-semibold border-r border-slate-300">पदनाम (Designation)</td>
-                                        <td id="prev-designation" class="p-2 font-bold text-slate-800">[कर्मचारी का पद]</td>
+                                        <td class="p-2 font-bold border-r border-black">पदनाम (Designation)</td>
+                                        <td id="prev-designation" class="p-2 font-bold text-black">[कर्मचारी का पद]</td>
                                     </tr>
                                     <tr>
-                                        <td class="p-2 font-semibold border-r border-slate-300">उत्तीर्ण परीक्षा का नाम</td>
-                                        <td id="prev-examName" class="p-2 font-bold text-indigo-950">[परीक्षा का नाम]</td>
+                                        <td class="p-2 font-bold border-r border-black">उत्तीर्ण परीक्षा का नाम</td>
+                                        <td id="prev-examName" class="p-2 font-bold text-black">[परीक्षा का नाम]</td>
                                     </tr>
                                     <tr>
-                                        <td class="p-2 font-semibold border-r border-slate-300">अनुक्रमांक / रोल नंबर</td>
-                                        <td id="prev-rollNumber" class="p-2 font-bold font-mono font-bold text-slate-900">[रोल नंबर]</td>
+                                        <td class="p-2 font-bold border-r border-black">अनुक्रमांक / रोल नंबर</td>
+                                        <td id="prev-rollNumber" class="p-2 font-bold font-mono text-black">[रोल नंबर]</td>
                                     </tr>
                                     <tr>
-                                        <td class="p-2 font-semibold border-r border-slate-300">उत्तीर्ण वर्ष / सत्र</td>
-                                        <td id="prev-examYear" class="p-2 font-bold text-slate-800">[वर्ष / सत्र]</td>
+                                        <td class="p-2 font-bold border-r border-black">उत्तीर्ण वर्ष / सत्र</td>
+                                        <td id="prev-examYear" class="p-2 font-bold text-black">[वर्ष / सत्र]</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -525,15 +600,15 @@
                         <p><span id="atah-line" class="inline-block transition-all duration-150"></span><span id="prev-atahText">अतः आपसे सादर अनुरोध है कि उपर्युक्त विवरण एवं संलग्न अंक-पत्र / प्रमाण-पत्र की छायाप्रति का आपके संस्थान के मूल अभिलेख/रोल रजिस्टर से मिलान एवं सत्यापन करके, सत्यापन रिपोर्ट इस कार्यालय को यथाशीघ्र भिजवाने की कृपा करें।</span></p>
                     </div>
               
-                    <div id="footerContainer" class="mt-8 pt-2 flex justify-between items-start" style="font-size: 12px;">
+                    <div id="footerContainer" class="mt-8 pt-2 flex justify-between items-start text-black font-bold" style="font-size: 12px;">
                         <div class="space-y-1">
-                            <p class="font-bold text-slate-800">संलग्नक:</p>
-                            <p id="prev-enclosedDocs" class="text-slate-700 whitespace-pre-line">1. यथोक्त अंक-पत्र / प्रमाण-पत्र की छायाप्रति</p>
+                            <p class="font-bold text-black">संलग्नक:</p>
+                            <p id="prev-enclosedDocs" class="text-black whitespace-pre-line">1. यथोक्त अंक-पत्र / प्रमाण-पत्र की छायाप्रति</p>
                         </div>
                         <div class="text-center min-w-[200px]">
-                            <p class="font-bold text-slate-900">भवदीय,</p>
-                            <p id="prev-signText" class="font-bold text-slate-900 mt-8">हस्ताक्षर एवं सील</p>
-                            <p id="prev-signTitle" class="text-slate-700 whitespace-pre-line mt-1">प्राचार्य / प्रधानाध्यापक / विभागाध्यक्ष</p>
+                            <p class="font-bold text-black">भवदीय,</p>
+                            <p id="prev-signText" class="font-bold text-black mt-8">हस्ताक्षर एवं सील</p>
+                            <p id="prev-signTitle" class="text-black whitespace-pre-line mt-1">प्राचार्य / प्रधानाध्यापक / विभागाध्यक्ष</p>
                         </div>
                     </div>
                 </div>
@@ -545,8 +620,8 @@
 <script>
     class LetterApp {
         constructor() {
-            this.storageKey = 'school_employee_verification_records_v6';
-            this.settingsKey = 'school_employee_verification_settings_v6';
+            this.storageKey = 'school_employee_verification_records_v7';
+            this.settingsKey = 'school_employee_verification_settings_v7';
             this.loadSettings();
             this.initListeners();
             this.setDefaultValues();
@@ -568,16 +643,22 @@
                 document.getElementById('wmPosRange').value = savedSettings.wmPos;
                 this.updateWatermarkPos(savedSettings.wmPos, false);
             }
+            if (savedSettings.printBold !== undefined && document.getElementById('selectPrintBold')) {
+                document.getElementById('selectPrintBold').value = savedSettings.printBold;
+                this.updatePrintBold(savedSettings.printBold, false);
+            }
         }
 
         saveSettings() {
             const topMarginEl = document.getElementById('topMarginRange');
             const fontSizeEl = document.getElementById('fontSizeRange');
             const wmPosEl = document.getElementById('wmPosRange');
+            const printBoldEl = document.getElementById('selectPrintBold');
             const settings = {
                 topMargin: topMarginEl ? topMarginEl.value : 45,
                 fontSize: fontSizeEl ? fontSizeEl.value : 12,
                 wmPos: wmPosEl ? wmPosEl.value : 50,
+                printBold: printBoldEl ? printBoldEl.value : 'bold',
                 sewaIndent: document.getElementById('sewaIndent')?.value || 0,
                 vishayIndent: document.getElementById('vishayIndent')?.value || 0,
                 mahodayIndent: document.getElementById('mahodayIndent')?.value || 0,
@@ -648,6 +729,20 @@
             if(wmContainer) {
                 wmContainer.style.top = val + 'px';
             }
+            if (save) this.saveSettings();
+        }
+
+        updatePrintBold(val, save = true) {
+            ['letterContainer', 'subjectContainer', 'bodyContainer', 'footerContainer'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    if(val === 'bold') {
+                        el.style.fontWeight = 'bold';
+                    } else {
+                        el.style.fontWeight = 'normal';
+                    }
+                }
+            });
             if (save) this.saveSettings();
         }
 
@@ -733,8 +828,8 @@
             container.innerHTML = records.map(rec => `
                 <div class="bg-slate-50 border border-slate-200 hover:border-indigo-300 rounded-lg p-2 flex justify-between items-center transition">
                     <div class="overflow-hidden pr-2">
-                        <p class="font-bold text-indigo-950 truncate">${rec.empName || 'अनाम'} <span class="text-[10px] font-normal text-slate-500">(${rec.examName || '-'})</span></p>
-                        <p class="text-[10px] text-slate-500 truncate">रोल नं: ${rec.rollNumber || '-'} | प्रेषित: ${rec.targetSchool || '-'}</p>
+                        <p class="font-bold text-black truncate">${rec.empName || 'अनाम'} <span class="text-[10px] font-normal text-slate-700">(${rec.examName || '-'})</span></p>
+                        <p class="text-[10px] text-slate-700 truncate">रोल नं: ${rec.rollNumber || '-'} | प्रेषित: ${rec.targetSchool || '-'}</p>
                     </div>
                     <div class="flex gap-1 shrink-0">
                         <button type="button" onclick="app.loadRecord(${rec.id})" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 px-2 py-1 rounded text-[10px] font-semibold transition">लोड</button>
@@ -829,6 +924,9 @@
 
         let customPrinterPara = document.getElementById('inputPara').value;
         document.getElementById('prevParaBox').innerText = customPrinterPara;
+
+        let bhavdiyaText = document.getElementById('inputBhavdiyaText').value;
+        document.getElementById('bhavdiyaTextLine').innerText = bhavdiyaText;
     }
 
     function updateSpacing() {
@@ -840,6 +938,9 @@
         let leftMarginInch = document.getElementById('selectLeftMargin').value;
         let rightMarginInch = document.getElementById('selectRightMargin').value;
         let lineHeight = document.getElementById('selectLineHeight').value;
+        let bhavdiyaAlign = document.getElementById('selectBhavdiyaAlign').value;
+        let bhavdiyaFontSize = document.getElementById('selectBhavdiyaFontSize').value;
+        let bhavdiyaBold = document.getElementById('selectBhavdiyaBold').value;
 
         let previewBox = document.getElementById('printableLetter');
         previewBox.style.paddingTop = headerTopInch;
@@ -851,6 +952,13 @@
         
         let paraBox = document.getElementById('prevParaBox');
         paraBox.style.textAlign = textAlign;
+
+        let bhavdiyaBox = document.getElementById('prevBhavdiyaBox');
+        bhavdiyaBox.style.textAlign = bhavdiyaAlign;
+
+        let bhavdiyaTextLine = document.getElementById('bhavdiyaTextLine');
+        bhavdiyaTextLine.style.fontSize = bhavdiyaFontSize;
+        bhavdiyaTextLine.style.fontWeight = bhavdiyaBold;
 
         let wmContainer = document.getElementById('watermarkContainer');
         wmContainer.style.top = watermarkPosInch;
@@ -866,6 +974,10 @@
         localStorage.setItem('savedTitle', document.getElementById('inputTitle').value);
         localStorage.setItem('savedAddress', document.getElementById('inputAddressPara').value);
         localStorage.setItem('savedPara', document.getElementById('inputPara').value);
+        localStorage.setItem('savedBhavdiyaText', document.getElementById('inputBhavdiyaText').value);
+        localStorage.setItem('savedBhavdiyaAlign', document.getElementById('selectBhavdiyaAlign').value);
+        localStorage.setItem('savedBhavdiyaFontSize', document.getElementById('selectBhavdiyaFontSize').value);
+        localStorage.setItem('savedBhavdiyaBold', document.getElementById('selectBhavdiyaBold').value);
         localStorage.setItem('savedHeaderTop', document.getElementById('selectHeaderTop').value);
         localStorage.setItem('savedBottomMargin', document.getElementById('selectBottomMargin').value);
         localStorage.setItem('savedFontSize', document.getElementById('selectFontSize').value);
@@ -883,6 +995,10 @@
             document.getElementById('inputTitle').value = localStorage.getItem('savedTitle') || "नियुक्ति - पत्र";
             document.getElementById('inputAddressPara').value = localStorage.getItem('savedAddress');
             document.getElementById('inputPara').value = localStorage.getItem('savedPara');
+            if(localStorage.getItem('savedBhavdiyaText')) document.getElementById('inputBhavdiyaText').value = localStorage.getItem('savedBhavdiyaText');
+            if(localStorage.getItem('savedBhavdiyaAlign')) document.getElementById('selectBhavdiyaAlign').value = localStorage.getItem('savedBhavdiyaAlign');
+            if(localStorage.getItem('savedBhavdiyaFontSize')) document.getElementById('selectBhavdiyaFontSize').value = localStorage.getItem('savedBhavdiyaFontSize');
+            if(localStorage.getItem('savedBhavdiyaBold')) document.getElementById('selectBhavdiyaBold').value = localStorage.getItem('savedBhavdiyaBold');
             document.getElementById('selectHeaderTop').value = localStorage.getItem('savedHeaderTop') || "1.5in";
             document.getElementById('selectBottomMargin').value = localStorage.getItem('savedBottomMargin') || "20mm";
             document.getElementById('selectFontSize').value = localStorage.getItem('savedFontSize') || "16px";
