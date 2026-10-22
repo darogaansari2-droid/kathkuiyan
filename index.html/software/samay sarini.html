@@ -231,7 +231,7 @@
             background: transparent;
             text-align: center;
             font-family: 'Poppins', sans-serif;
-            font-weight: 600;
+            font-weight: var(--cell-font-weight, 600);
             font-size: var(--font-size, 11px);
             padding: 2px;
             color: #000;
@@ -254,7 +254,7 @@
             background: transparent;
             text-align: center;
             font-family: 'Poppins', sans-serif;
-            font-weight: 600;
+            font-weight: var(--cell-font-weight, 600);
             font-size: var(--font-size, 11px);
             resize: none !important;
             overflow: hidden;
@@ -277,7 +277,7 @@
             width: 100%;
             padding: 4px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: var(--cell-font-weight, 600);
             color: #000;
             border: 1px solid #888;
             border-radius: 3px;
@@ -599,7 +599,7 @@
                 background: transparent !important;
                 box-shadow: none !important;
                 font-size: var(--font-size, 10px) !important;
-                font-weight: 600 !important;
+                font-weight: var(--cell-font-weight, 600) !important;
                 color: #000 !important;
                 resize: none !important;
                 -webkit-text-fill-color: #000 !important;
@@ -626,7 +626,7 @@
         }
     </style>
 </head>
-<body id="bodyRoot" style="--row-padding: 6px; --col-width-factor: 4px; --textarea-min-height: 32px; --font-size: 11px; --p8-font-size: 9px; --exam-font-size: 13px; --exam-table-padding: 6px;">
+<body id="bodyRoot" style="--row-padding: 6px; --col-width-factor: 4px; --textarea-min-height: 32px; --font-size: 11px; --p8-font-size: 9px; --cell-font-weight: 600; --exam-font-size: 13px; --exam-table-padding: 6px;">
 
     <!-- Master Navigation to Switch Software Modules -->
     <div class="master-nav no-print">
@@ -670,6 +670,11 @@
 
                     <label for="p8FontSizeInput" style="margin-left: 3px;">8वी घंटी फॉन्ट:</label>
                     <input type="number" id="p8FontSizeInput" value="9" min="6" max="16" style="width: 40px;" oninput="updateP8FontSize(this.value)"> px
+
+                    <label for="boldCheckbox" style="margin-left: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 2px;">
+                        <input type="checkbox" id="boldCheckbox" checked onchange="toggleBoldText(this.checked)">
+                        <b>बोल्ड</b>
+                    </label>
 
                     <label for="printSelect" style="margin-left: 3px;">प्रिंट मोड:</label>
                     <select id="printSelect" class="print-select" onchange="onPrintSelectChange(this.value)">
@@ -888,11 +893,25 @@
         let dataF2 = JSON.parse(JSON.stringify(defaultDataF2));
         const periodNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = (el.scrollHeight) + 'px';
+        }
+
+        function toggleBoldText(isBold) {
+            const root = document.getElementById('bodyRoot');
+            root.style.setProperty('--cell-font-weight', isBold ? '700' : '400');
+            setTimeout(() => {
+                document.querySelectorAll('#section-sarini-root textarea.editable-cell').forEach(el => autoResizeTextarea(el));
+            }, 50);
+        }
+
         function updateRowHeight(val) {
             const root = document.getElementById('bodyRoot');
             const num = parseInt(val) || 6;
             root.style.setProperty('--row-padding', num + 'px');
             root.style.setProperty('--textarea-min-height', (num * 4 + 8) + 'px');
+            document.querySelectorAll('#section-sarini-root textarea.editable-cell').forEach(el => autoResizeTextarea(el));
         }
 
         function updateColWidth(val) {
@@ -905,6 +924,7 @@
             const root = document.getElementById('bodyRoot');
             const num = parseInt(val) || 11;
             root.style.setProperty('--font-size', num + 'px');
+            document.querySelectorAll('#section-sarini-root textarea.editable-cell').forEach(el => autoResizeTextarea(el));
         }
 
         function updateP8FontSize(val) {
@@ -1018,6 +1038,7 @@
                 colWidth: document.getElementById('colWidthInput').value,
                 fontSize: document.getElementById('fontSizeInput').value,
                 p8FontSize: document.getElementById('p8FontSizeInput').value,
+                isBold: document.getElementById('boldCheckbox').checked,
                 printMode: document.getElementById('printSelect').value
             };
             localStorage.setItem('skic_timetable_settings', JSON.stringify(settings));
@@ -1051,6 +1072,10 @@
                     if (settings.p8FontSize) {
                         document.getElementById('p8FontSizeInput').value = settings.p8FontSize;
                         updateP8FontSize(settings.p8FontSize);
+                    }
+                    if (settings.isBold !== undefined) {
+                        document.getElementById('boldCheckbox').checked = settings.isBold;
+                        toggleBoldText(settings.isBold);
                     }
                     if (settings.printMode) {
                         document.getElementById('printSelect').value = settings.printMode;
@@ -1094,7 +1119,7 @@
                 for (let i = 0; i < 8; i++) {
                     let pVal = row.periods[i] || "-";
                     let extraClass = (i === 7) ? " editable-cell period-8-cell" : " editable-cell";
-                    html += `<td><textarea class="${extraClass}" onchange="dataF1[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
+                    html += `<td><textarea class="${extraClass}" oninput="autoResizeTextarea(this)" onchange="dataF1[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
                     if (i + 1 === recessAfter) html += `<td class="break-cell">मध्यान्तर</td>`;
                 }
                 html += `<td class="no-print"><div class="row-action-group">
@@ -1125,7 +1150,7 @@
                 for (let i = 0; i < 8; i++) {
                     let pVal = row.periods[i] || "-";
                     let extraClass = (i === 7) ? " editable-cell period-8-cell" : " editable-cell";
-                    html += `<td><textarea class="${extraClass}" onchange="dataF2[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
+                    html += `<td><textarea class="${extraClass}" oninput="autoResizeTextarea(this)" onchange="dataF2[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
                     if (i + 1 === recessAfter) html += `<td class="break-cell">मध्यान्तर</td>`;
                 }
                 html += `<td class="no-print"><div class="row-action-group">
@@ -1137,6 +1162,10 @@
                 tr.innerHTML = html;
                 tbody2.appendChild(tr);
             });
+
+            setTimeout(() => {
+                document.querySelectorAll('#section-sarini-root textarea.editable-cell').forEach(el => autoResizeTextarea(el));
+            }, 50);
         }
 
         function addRowF1(index) {
@@ -1187,6 +1216,9 @@
                 document.getElementById('quick-form-1').style.display = 'none';
                 document.getElementById('quick-form-2').style.display = 'block';
             }
+            setTimeout(() => {
+                document.querySelectorAll('#section-sarini-root textarea.editable-cell').forEach(el => autoResizeTextarea(el));
+            }, 50);
         }
 
         function onPrintSelectChange(val) { switchTab(parseInt(val)); }
@@ -1250,7 +1282,6 @@
                 let tr = document.createElement('tr');
                 let tdHtml = `<td contenteditable="true" oninput="examClasses[${rIdx}].cls=this.innerText"><b>${rowObj.cls}</b></td>`;
                 
-                // Ensure subjects array matches columns count (2 subjects per date)
                 let totalCols = examDates.length * 2;
                 while(rowObj.subjects.length < totalCols) {
                     rowObj.subjects.push("-");
@@ -1261,7 +1292,6 @@
                     tdHtml += `<td contenteditable="true" oninput="examClasses[${rIdx}].subjects[${cIdx}]=this.innerText">${subVal}</td>`;
                 }
 
-                // Add delete button column for each row if needed, or keep clean
                 tr.innerHTML = tdHtml;
                 tbody.appendChild(tr);
             });
