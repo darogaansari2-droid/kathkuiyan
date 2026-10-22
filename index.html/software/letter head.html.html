@@ -281,9 +281,9 @@
         .editable-text:focus { outline: 1px dashed #003366 !important; background-color: #fafafa; padding: 2px; }
         .editable-text { display: inline; min-width: 120px; font-weight: normal; color: #003366; cursor: text; user-select: text; }
 
-        /* ↔️ टेबल कंटेनर बॉक्स */
+        /* ↔️ टेबल कंटेनर बॉक्स (Auto-fit row & height support) */
         .table-resizable-wrapper {
-            position: absolute; left: 24px; top: 300px; width: 746px; min-width: 100px; min-height: 50px;
+            position: absolute; left: 24px; top: 300px; width: 746px; min-width: 100px; min-height: 40px;
             border: 1px dashed #aaa; padding: 25px 12px 12px 12px; box-sizing: border-box; background: rgba(255,255,255,0.95); z-index: 10; resize: both; overflow: auto;
         }
         .drag-handle {
@@ -292,26 +292,28 @@
         }
         .table-resizable-wrapper table { 
             width: 100%; 
-            height: 100%; 
+            height: auto; 
             border-collapse: collapse; 
             font-size: 14px; 
             text-align: left; 
-            table-layout: fixed; 
+            table-layout: auto; 
         }
         .table-resizable-wrapper table, .table-resizable-wrapper th, .table-resizable-wrapper td { 
             border: 1px solid #333; 
         }
         .table-resizable-wrapper th { 
             background-color: #f2f2f2; 
-            padding: 8px; 
+            padding: 4px 6px; 
             font-weight: bold; 
             overflow: hidden;
             word-break: break-word;
+            height: auto;
         }
         .table-resizable-wrapper td { 
-            padding: 8px; 
+            padding: 4px 6px; 
             overflow: hidden; 
             word-break: break-word;
+            height: auto;
         }
         .resize-handle-right { position: absolute; right: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
         .resize-handle-left { position: absolute; left: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
@@ -380,7 +382,7 @@
             }
             .editable-text:focus, .content-fixed:focus { outline: none !important; background-color: transparent !important; }
             .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; background: transparent !important; }
-            .table-resizable-wrapper table { border-collapse: collapse !important; height: 100% !important; }
+            .table-resizable-wrapper table { border-collapse: collapse !important; height: auto !important; }
             .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #000 !important; }
         }
     </style>
@@ -424,6 +426,11 @@
         <div class="selector-group">
             <span>➡️ Right (inch):</span>
             <input type="number" id="rightMarginInput" class="margin-input" value="0.25" step="0.05" min="0" max="3" oninput="saveSettings(); applyCustomMargins();">
+        </div>
+        <!-- ⬇️ Bottom Margin / Scale Control -->
+        <div class="selector-group">
+            <span>⬇️ Bottom (px):</span>
+            <input type="number" id="bottomMarginInput" class="margin-input" value="96" step="5" min="0" max="400" oninput="saveSettings(); applyCustomMargins();" style="width: 60px;" title="Page bottom padding/scale setting">
             <button class="btn-apply" onclick="applyCustomMargins()">लागू करें</button>
         </div>
 
@@ -467,11 +474,12 @@
         <div class="selector-group">
             <span>↕️ रो ऊँचाई:</span>
             <select id="tableHeightSelector" onchange="changeTableRowHeight(this.value)">
-                <option value="" selected disabled>हाइट</option>
-                <option value="2px">कम</option>
-                <option value="8px">सामान्य</option>
-                <option value="18px">ज्यादा</option>
-                <option value="30px">बहुत ज्यादा</option>
+                <option value="" selected disabled>हाइट (Height)</option>
+                <option value="0.5">बहुत कम (0.5)</option>
+                <option value="1">मानक 1.0 (1 line)</option>
+                <option value="1.5">1.5 (Medium)</option>
+                <option value="8px">सामान्य (8px)</option>
+                <option value="18px">ज्यादा (18px)</option>
             </select>
         </div>
 
@@ -644,6 +652,7 @@
         var settings = {
             leftMargin: document.getElementById('leftMarginInput').value,
             rightMargin: document.getElementById('rightMarginInput').value,
+            bottomMargin: document.getElementById('bottomMarginInput').value,
             topMargin: document.getElementById('topMarginInput').value,
             columnGap: document.getElementById('columnGapInput').value,
             indent: document.getElementById('indentInput').value,
@@ -669,6 +678,7 @@
                 var data = JSON.parse(saved);
                 if(data.leftMargin !== undefined) document.getElementById('leftMarginInput').value = data.leftMargin;
                 if(data.rightMargin !== undefined) document.getElementById('rightMarginInput').value = data.rightMargin;
+                if(data.bottomMargin !== undefined) document.getElementById('bottomMarginInput').value = data.bottomMargin;
                 if(data.topMargin !== undefined) document.getElementById('topMarginInput').value = data.topMargin;
                 if(data.columnGap !== undefined) document.getElementById('columnGapInput').value = data.columnGap;
                 if(data.indent !== undefined) document.getElementById('indentInput').value = data.indent;
@@ -788,9 +798,13 @@
     function applyCustomMargins() {
         var leftInch = parseFloat(document.getElementById('leftMarginInput').value) || 0;
         var rightInch = parseFloat(document.getElementById('rightMarginInput').value) || 0;
+        var bottomPx = parseFloat(document.getElementById('bottomMarginInput').value) || 96;
 
         var leftPx = Math.round(leftInch * 96);
         var rightPx = Math.round(rightInch * 96);
+
+        var letterheadEl = document.getElementById('main-letterhead');
+        letterheadEl.style.paddingBottom = bottomPx + 'px';
 
         var letterBody = document.getElementById('letter-body');
         letterBody.style.paddingLeft = leftPx + 'px';
@@ -838,14 +852,28 @@
     function changeSelectionFontSize(sizeValue) { if (sizeValue) { document.execCommand('fontSize', false, sizeValue); document.getElementById('fontSizeSelector').value = ""; } }
     function changeSelectionFontFamily(fontValue) { if (fontValue) { document.execCommand('fontName', false, fontValue); document.getElementById('fontFamilySelector').value = ""; } }
 
-    function changeTableRowHeight(paddingValue) {
+    function changeTableRowHeight(value) {
         var selection = window.getSelection();
         if (selection.rangeCount > 0) {
             var node = selection.getRangeAt(0).startContainer;
             while (node && node.id !== 'main-letterhead') {
                 if (node.nodeName === 'TR') {
                     var cells = node.querySelectorAll('th, td');
-                    cells.forEach(function(cell) { cell.style.padding = paddingValue; });
+                    cells.forEach(function(cell) { 
+                        if(value === '0.5') {
+                            cell.style.padding = '2px 4px';
+                            cell.style.lineHeight = '1.1';
+                        } else if(value === '1') {
+                            cell.style.padding = '3px 6px';
+                            cell.style.lineHeight = '1.2';
+                        } else if(value === '1.5') {
+                            cell.style.padding = '6px 8px';
+                            cell.style.lineHeight = '1.5';
+                        } else {
+                            cell.style.padding = value;
+                            cell.style.lineHeight = 'normal';
+                        }
+                    });
                     document.getElementById('tableHeightSelector').value = ""; 
                     return;
                 }
@@ -928,7 +956,6 @@
                 var tableData = JSON.parse(saved);
                 var mainLetterhead = document.getElementById('main-letterhead');
                 tableData.forEach(function(item) {
-                    // Check if table wrapper already exists, else create
                     var existing = document.getElementById(item.id);
                     if (!existing) {
                         var wrapper = document.createElement('div');
