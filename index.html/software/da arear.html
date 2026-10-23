@@ -287,12 +287,6 @@
         .btn-excel { background-color: #276749; }
         .btn-excel:hover { background-color: #1c4530; }
 
-        /* Pendrive Backup/Restore Button Styles */
-        .btn-pendrive-save { background-color: #d97706; }
-        .btn-pendrive-save:hover { background-color: #b45309; }
-        .btn-pendrive-load { background-color: #2563eb; }
-        .btn-pendrive-load:hover { background-color: #1d4ed8; }
-
         .btn-tbl-del {
             background-color: var(--danger-color);
             color: #fff;
@@ -805,12 +799,14 @@
 
         <div class="btn-panel">
             <button type="button" class="btn btn-save" onclick="saveDataToList()">Save Data</button>
-            <button type="button" class="btn btn-pendrive-save" onclick="exportDataToPendriveFile()">💾 पेनड्राइव में सेव करें</button>
-            <button type="button" class="btn btn-pendrive-load" onclick="document.getElementById('pendriveFileInput').click()">📥 पेनड्राइव से लोड करें</button>
             <button type="button" class="btn btn-search" onclick="searchEmployeeData()">Search</button>
             <button type="button" class="btn btn-delete-item" onclick="deleteEmployeeData()">Delete Record</button>
             <button type="button" class="btn btn-print" onclick="printLandscapeSheet()" id="btnPrintLabel">Print Sheet</button>
             
+            <!-- PENDRIVE SYNC BUTTONS -->
+            <button type="button" class="btn" style="background-color: #d97706;" onclick="exportDataToPendriveFile()">💾 पेनड्राइव में सीधे अपडेट करें</button>
+            <button type="button" class="btn" style="background-color: #2563eb;" onclick="document.getElementById('pendriveFileInput').click()">📥 पेनड्राइव से डेटा लोड करें</button>
+
             <!-- EXCEL COPY & EXPORT BUTTONS FOR NPS AND PARISHRAMIK -->
             <button type="button" class="btn btn-excel excel-btn-field" style="display: none;" id="btnCopyExcel" onclick="copyTableToClipboard()">Copy for Excel</button>
             <button type="button" class="btn btn-excel excel-btn-field" style="display: none;" id="btnExportCsv" onclick="exportToCsv()">Export Excel (.csv)</button>
@@ -866,6 +862,7 @@
 </div>
 
 <script>
+    let loadedFileHandle = null; // PenDrive File Handle for direct in-place update
     const allMonths = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
     const monthDaysList = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     const teachingStaff = ["प्रधानाचार्य", "प्रवक्ता", "सहायक अध्यापक"];
@@ -924,6 +921,96 @@
         setTimeout(() => {
             mBox.style.visibility = 'hidden';
         }, 3000);
+    }
+
+    /* --- PENDRIVE FILE DIRECT SYNC ENGINES --- */
+    async function exportDataToPendriveFile() {
+        saveToLocalStorageByMode();
+
+        const fullDataPackage = {
+            software: "DA_ARREAR_MASTER_SYSTEM",
+            version: "2026.1",
+            timestamp: new Date().toLocaleString(),
+            arrear_saved_list: JSON.parse(localStorage.getItem('arrear_saved_list') || '[]'),
+            bonus_saved_list: JSON.parse(localStorage.getItem('bonus_saved_list') || '[]'),
+            nps_format_saved_list: JSON.parse(localStorage.getItem('nps_format_saved_list') || '[]'),
+            parishramik_saved_list: JSON.parse(localStorage.getItem('parishramik_saved_list') || '[]'),
+            retirement_employees: JSON.parse(localStorage.getItem('employees') || '[]'),
+            nps_master_directory: JSON.parse(localStorage.getItem('nps_master_directory') || '[]'),
+            last_used_bank: localStorage.getItem('last_used_bank') || '',
+            last_used_ifsc: localStorage.getItem('last_used_ifsc') || ''
+        };
+
+        const jsonDataString = JSON.stringify(fullDataPackage, null, 2);
+
+        if (window.showSaveFilePicker) {
+            try {
+                if (!loadedFileHandle) {
+                    const opts = {
+                        suggestedName: 'DA_Arrear_Pendrive_Data.json',
+                        types: [{
+                            description: 'JSON Files',
+                            accept: {'application/json': ['.json']},
+                        }],
+                    };
+                    loadedFileHandle = await window.showSaveFilePicker(opts);
+                }
+                
+                const writableStream = await loadedFileHandle.createWritable();
+                await writableStream.write(jsonDataString);
+                await writableStream.close();
+                
+                triggerNotificationBox("✅ पेनड्राइव की फाइल में डेटा सीधे सफलतापूर्वक अपडेट (Save) हो गया है!", true);
+                return;
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.log("FilePicker fallback to download mode");
+                } else {
+                    return;
+                }
+            }
+        }
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonDataString);
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "DA_Arrear_Pendrive_Data.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+
+        triggerNotificationBox("📁 पेनड्राइव डेटा फाइल डाउनलोड हो गई है!", true);
+    }
+
+    function handlePendriveBackupFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const parsedData = JSON.parse(e.target.result);
+                if (parsedData.software === "DA_ARREAR_MASTER_SYSTEM" || parsedData.arrear_saved_list || parsedData.bonus_saved_list) {
+                    if (parsedData.arrear_saved_list) localStorage.setItem('arrear_saved_list', JSON.stringify(parsedData.arrear_saved_list));
+                    if (parsedData.bonus_saved_list) localStorage.setItem('bonus_saved_list', JSON.stringify(parsedData.bonus_saved_list));
+                    if (parsedData.nps_format_saved_list) localStorage.setItem('nps_format_saved_list', JSON.stringify(parsedData.nps_format_saved_list));
+                    if (parsedData.parishramik_saved_list) localStorage.setItem('parishramik_saved_list', JSON.stringify(parsedData.parishramik_saved_list));
+                    if (parsedData.retirement_employees) localStorage.setItem('employees', JSON.stringify(parsedData.retirement_employees));
+                    if (parsedData.nps_master_directory) localStorage.setItem('nps_master_directory', JSON.stringify(parsedData.nps_master_directory));
+                    if (parsedData.last_used_bank) localStorage.setItem('last_used_bank', parsedData.last_used_bank);
+                    if (parsedData.last_used_ifsc) localStorage.setItem('last_used_ifsc', parsedData.last_used_ifsc);
+
+                    loadLocalStorageData();
+                    loadMasterDirectory();
+                    triggerNotificationBox("✅ पेनड्राइव से डेटा सफलतापूर्वक लोड और रीस्टोर हो गया है!", true);
+                } else {
+                    triggerNotificationBox("❌ अमान्य बैकअप फ़ाइल! कृपया सही पेनड्राइव JSON फ़ाइल चुनें।", false);
+                }
+            } catch (err) {
+                triggerNotificationBox("❌ फ़ाइल पढ़ने में त्रुटि!", false);
+            }
+        };
+        reader.readAsText(file);
     }
 
     function calculateQuickMath() {
@@ -1605,64 +1692,6 @@
         }
 
         return words.trim() + " रुपये मात्र";
-    }
-
-    /* --- PENDRIVE BACKUP & RESTORE ENGINES --- */
-    function exportDataToPendriveFile() {
-        const fullDataPackage = {
-            software: "DA_ARREAR_MASTER_SYSTEM",
-            version: "2026.1",
-            timestamp: new Date().toLocaleString(),
-            arrear_saved_list: JSON.parse(localStorage.getItem('arrear_saved_list') || '[]'),
-            bonus_saved_list: JSON.parse(localStorage.getItem('bonus_saved_list') || '[]'),
-            nps_format_saved_list: JSON.parse(localStorage.getItem('nps_format_saved_list') || '[]'),
-            parishramik_saved_list: JSON.parse(localStorage.getItem('parishramik_saved_list') || '[]'),
-            retirement_employees: JSON.parse(localStorage.getItem('employees') || '[]'),
-            nps_master_directory: JSON.parse(localStorage.getItem('nps_master_directory') || '[]'),
-            last_used_bank: localStorage.getItem('last_used_bank') || '',
-            last_used_ifsc: localStorage.getItem('last_used_ifsc') || ''
-        };
-
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullDataPackage, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", "DA_Arrear_Pendrive_Backup.json");
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-
-        triggerNotificationBox("📁 पेनड्राइव डेटा फाइल डाउनलोड हो गई है! इसे पेनड्राइव में सेव रखें।", true);
-    }
-
-    function handlePendriveBackupFile(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const parsedData = JSON.parse(e.target.result);
-                if (parsedData.software === "DA_ARREAR_MASTER_SYSTEM") {
-                    if (parsedData.arrear_saved_list) localStorage.setItem('arrear_saved_list', JSON.stringify(parsedData.arrear_saved_list));
-                    if (parsedData.bonus_saved_list) localStorage.setItem('bonus_saved_list', JSON.stringify(parsedData.bonus_saved_list));
-                    if (parsedData.nps_format_saved_list) localStorage.setItem('nps_format_saved_list', JSON.stringify(parsedData.nps_format_saved_list));
-                    if (parsedData.parishramik_saved_list) localStorage.setItem('parishramik_saved_list', JSON.stringify(parsedData.parishramik_saved_list));
-                    if (parsedData.retirement_employees) localStorage.setItem('employees', JSON.stringify(parsedData.retirement_employees));
-                    if (parsedData.nps_master_directory) localStorage.setItem('nps_master_directory', JSON.stringify(parsedData.nps_master_directory));
-                    if (parsedData.last_used_bank) localStorage.setItem('last_used_bank', parsedData.last_used_bank);
-                    if (parsedData.last_used_ifsc) localStorage.setItem('last_used_ifsc', parsedData.last_used_ifsc);
-
-                    loadMasterDirectory();
-                    loadLocalStorageData();
-                    triggerNotificationBox("✅ पेनड्राइव से डेटा सफलतापूर्वक रीस्टोर हो गया है!", true);
-                } else {
-                    triggerNotificationBox("❌ अमान्य बैकअप फ़ाइल! सही पेनड्राइव JSON फ़ाइल चुनें।", false);
-                }
-            } catch (err) {
-                triggerNotificationBox("❌ फ़ाइल पढ़ने में त्रुटि!", false);
-            }
-        };
-        reader.readAsText(file);
     }
 
     function saveDataToList() {
