@@ -43,6 +43,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .software-mode-bar label {
@@ -73,6 +75,12 @@
         .btn-edit:hover { background-color: #d68910; }
         .btn-add { background-color: #28a745; color: white; border: none; padding: 6px 12px; cursor: pointer; font-weight: bold; border-radius: 4px; }
         .btn-remove { background-color: #dc3545; color: white; border: none; padding: 3px 8px; cursor: pointer; border-radius: 4px; font-size: 11px; }
+
+        /* Pendrive Storage Button Styles */
+        .btn-pendrive-save { background-color: #d97706; }
+        .btn-pendrive-save:hover { background-color: #b45309; }
+        .btn-pendrive-load { background-color: #2563eb; }
+        .btn-pendrive-load:hover { background-color: #1d4ed8; }
 
         /* ==================== TIME TABLE STYLES ==================== */
         .tt-header { text-align: center; border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 25px; }
@@ -299,6 +307,9 @@
 </head>
 <body>
 
+<!-- Hidden Input File Selector for Loading Pendrive Backup Data -->
+<input type="file" id="pendriveFileInput" accept=".json" style="display:none;" onchange="handlePendriveBackupFile(event)">
+
 <div class="container">
     <!-- Main Unified Form Selector -->
     <div class="software-mode-bar no-print">
@@ -312,6 +323,8 @@
                 <option value="vidyalayvar" selected>विद्यालय-वार विवरण एवं प्रबंधन (Vidyalayvar Management)</option>
             </select>
             <button class="btn" style="background-color: #27ae60; margin-left: 10px;" onclick="saveSelectedFormat()">सेटिंग सेव करें (Save Choice)</button>
+            <button class="btn btn-pendrive-save" style="margin-left: 10px;" onclick="exportDataToPendriveFile()">💾 पेनड्राइव में सेव करें</button>
+            <button class="btn btn-pendrive-load" style="margin-left: 5px;" onclick="document.getElementById('pendriveFileInput').click()">📥 पेनड्राइव से लोड करें</button>
         </div>
     </div>
 
@@ -1155,6 +1168,63 @@ window.onload = function() {
     setVidyalayTodayDates();
     switchFormat();
 };
+
+/* --- PENDRIVE BACKUP & RESTORE ENGINES --- */
+function exportDataToPendriveFile() {
+    const fullDataPackage = {
+        software: "TIMETABLE_PARIKSHA_MASTER_SYSTEM",
+        version: "2027.1",
+        timestamp: new Date().toLocaleString(),
+        selectedMasterFormat: localStorage.getItem('selectedMasterFormat') || 'vidyalayvar',
+        grid_roll_fill_mode: localStorage.getItem('grid_roll_fill_mode') || 'auto',
+        school_timetable_settings_v12: localStorage.getItem('school_timetable_settings_v12') || null,
+        upboard_v5_1_10th: localStorage.getItem('upboard_v5.1_10th') || null,
+        upboard_v5_1_12th: localStorage.getItem('upboard_v5.1_12th') || null,
+        vidyalayvar_data_v2: localStorage.getItem('vidyalayvar_data_v2') || null
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullDataPackage, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", "TimeTable_Pariksha_Pendrive_Backup.json");
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+
+    alert("📁 पेनड्राइव डेटा फ़ाइल डाउनलोड हो गई है! इसे पेनड्राइव में सुरक्षित रखें।");
+}
+
+function handlePendriveBackupFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const parsedData = JSON.parse(e.target.result);
+            if (parsedData.software === "TIMETABLE_PARIKSHA_MASTER_SYSTEM") {
+                if (parsedData.selectedMasterFormat) localStorage.setItem('selectedMasterFormat', parsedData.selectedMasterFormat);
+                if (parsedData.grid_roll_fill_mode) localStorage.setItem('grid_roll_fill_mode', parsedData.grid_roll_fill_mode);
+                if (parsedData.school_timetable_settings_v12) localStorage.setItem('school_timetable_settings_v12', parsedData.school_timetable_settings_v12);
+                if (parsedData.upboard_v5_1_10th) localStorage.setItem('upboard_v5.1_10th', parsedData.upboard_v5_1_10th);
+                if (parsedData.upboard_v5_1_12th) localStorage.setItem('upboard_v5.1_12th', parsedData.upboard_v5_1_12th);
+                if (parsedData.vidyalayvar_data_v2) localStorage.setItem('vidyalayvar_data_v2', parsedData.vidyalayvar_data_v2);
+
+                if (localStorage.getItem('selectedMasterFormat')) {
+                    document.getElementById('masterFormatSelect').value = localStorage.getItem('selectedMasterFormat');
+                }
+                loadVidyalayData();
+                switchFormat();
+                alert("✅ पेनड्राइव से सारा डेटा सफलतापूर्वक रीस्टोर हो गया है!");
+            } else {
+                alert("❌ अमान्य बैकअप फ़ाइल! सही पेनड्राइव JSON फ़ाइल चुनें।");
+            }
+        } catch (err) {
+            alert("❌ फ़ाइल पढ़ने में त्रुटि!");
+        }
+    };
+    reader.readAsText(file);
+}
 
 function setVidyalayTodayDates() {
     const today = new Date().toISOString().split('T')[0];
