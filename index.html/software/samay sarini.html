@@ -3,1407 +3,2664 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>श्री कृष्ण इण्टरमीडिएट कालेज - समेकित सॉफ्टवेयर (समय सारिणी एवं होम परीक्षा)</title>
+    <title>DA Arrear, Bonus, NPS, Remuneration & Retirement Master System</title>
     <style>
-        @import url('https://fonts.Nirmal UI/css2?family=Poppins:wght@400;500;600;700&family=Teko:wght@500;600;700&display=swap');
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2b6cb0;
+            --success-color: #2f855a;
+            --warning-color: #d69e2e;
+            --danger-color: #c53030;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+            --text-color: #2d3748;
         }
+
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0f2f5;
-            color: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
             padding: 10px;
+            color: var(--text-color);
+            line-height: 1.3;
         }
 
-        /* Master Navbar for Switching Modules */
-        .master-nav {
+        /* LOGIN SCREEN STYLES */
+        #loginOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 54, 93, 0.95);
             display: flex;
             justify-content: center;
-            gap: 15px;
-            background: #111;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 15px;
+            align-items: center;
+            z-index: 9999;
         }
 
-        .master-nav-btn {
-            background: #444;
-            color: #fff;
-            border: none;
-            padding: 8px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: 0.3s;
-        }
-
-        .master-nav-btn.active {
-            background: #007bff;
-            color: #fff;
-        }
-
-        .module-section {
-            display: none;
-        }
-
-        .module-section.active {
-            display: block;
-        }
-
-        /* --- SAMAY SARINI STYLES --- */
-        .container-sarini {
-            max-width: 1480px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 15px;
+        .login-card {
+            background: #ffffff;
+            padding: 30px 25px;
             border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
         }
 
-        .school-header-sarini {
-            text-align: center;
-            margin-bottom: 10px;
-            border-bottom: 2px double #000;
+        .login-card h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 18px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
             padding-bottom: 8px;
         }
 
-        .school-header-sarini h1 {
-            font-family: 'Teko', sans-serif;
-            font-size: 22px;
-            color: #000;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        .login-form-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            margin-bottom: 15px;
         }
 
-        .school-header-sarini h2 {
-            font-size: 15px;
-            color: #000;
-            margin-top: 2px;
+        .login-form-group label {
+            font-size: 13px;
             font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 5px;
         }
 
-        .top-controls {
+        .login-form-group input {
+            padding: 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover { background-color: var(--primary-color); }
+
+        .login-error {
+            color: var(--danger-color);
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* MAIN APP CONTAINER */
+        #mainContainer {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            background: #e8f4f1;
-            padding: 8px 12px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #ffffff;
+            padding: 10px 15px;
             border-radius: 6px;
-            flex-wrap: wrap;
-            gap: 10px;
+            margin-bottom: 8px;
         }
 
-        .session-box label {
-            font-weight: 600;
-            color: #000;
+        h1 { margin: 0; font-size: 20px; font-weight: 700; flex-grow: 1; text-align: center; }
+
+        .btn-logout {
+            background-color: var(--danger-color);
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
             font-size: 12px;
-        }
-
-        .session-box input, .print-select, .recess-select {
-            padding: 4px 6px;
-            font-size: 12px;
-            border: 1px solid #666;
-            border-radius: 4px;
-            margin-left: 3px;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .setting-save-btn {
-            background-color: #2e7d32;
-            color: white;
-            border: none;
-            padding: 5px 9px;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 4px;
+            font-weight: bold;
             cursor: pointer;
-            margin-left: 4px;
+            transition: background 0.2s;
         }
-        .setting-save-btn:hover { background-color: #1b5e20; }
 
-        .setting-reset-btn {
-            background-color: #c62828;
-            color: white;
-            border: none;
-            padding: 5px 9px;
-            font-size: 11px;
-            font-weight: 600;
+        .btn-logout:hover { background-color: #9b2c2c; }
+
+        .msg-box-container { min-height: 35px; margin-bottom: 8px; }
+        .msg-box {
+            visibility: hidden;
+            padding: 6px;
             border-radius: 4px;
-            cursor: pointer;
-            margin-left: 4px;
-        }
-        .setting-reset-btn:hover { background-color: #8e0000; }
-
-        .tab-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .tab-btn {
-            background-color: #ddd;
-            border: none;
-            padding: 6px 16px;
+            text-align: center;
+            font-weight: bold;
             font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s;
         }
-        .tab-btn.active {
-            background-color: #000;
-            color: #fff;
-        }
+        .msg-success { background-color: #c6f6d5; color: #22543d; border: 1px solid #98e6b1; }
+        .msg-error { background-color: #fed7d7; color: #742a2a; border: 1px solid #feb2b2; }
 
-        .quick-entry-box {
-            background: #fafafa;
-            border: 1px solid #bbb;
+        form { display: flex; flex-direction: column; gap: 12px; }
+
+        .panel {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
             padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-        }
-        .quick-entry-box h3 {
-            font-size: 13px;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #003366;
-        }
-
-        .timetable-section {
-            display: none;
-        }
-        .timetable-section.active {
-            display: block;
         }
 
         .section-title {
-            text-align: center;
-            font-size: 16px;
-            margin-bottom: 8px;
-            color: #000;
-            font-weight: 600;
-        }
-
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
+            font-size: 14px;
+            color: var(--primary-color);
+            margin-top: 0;
             margin-bottom: 10px;
-        }
-
-        #section-sarini-root table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: var(--font-size, 11px);
-            background: #fff;
-        }
-
-        #section-sarini-root th, #section-sarini-root td {
-            border: 1px solid #000;
-            padding: var(--row-padding, 6px) var(--col-width-factor, 4px);
-            text-align: center;
-            vertical-align: middle;
-            color: #000;
-        }
-
-        #table-format-1 th:nth-child(2),
-        #table-format-1 td:nth-child(2) {
-            text-align: left !important;
-            padding-left: 8px;
-        }
-
-        #section-sarini-root th {
-            background-color: #dcdcdc !important;
-            color: #000 !important;
+            padding-bottom: 4px;
+            border-bottom: 2px solid #e2e8f0;
             font-weight: 700;
-            font-size: calc(var(--font-size, 11px) + 1px);
         }
 
-        input.editable-cell {
-            width: 100%;
-            border: none !important;
-            outline: none !important;
-            background: transparent;
-            text-align: center;
-            font-family: 'Poppins', sans-serif;
-            font-weight: var(--cell-font-weight, 600);
-            font-size: var(--font-size, 11px);
-            padding: 2px;
-            color: #000;
-            box-shadow: none !important;
+        .grid-3-col {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
         }
 
-        #table-format-1 td:nth-child(2) input.editable-cell {
-            text-align: left !important;
+        .grid-4-col {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
         }
 
-        input.editable-cell:focus {
-            background: #f0f0f0;
-            outline: 1px solid #000 !important;
+        @media (max-width: 768px) {
+            .grid-4-col {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        textarea.editable-cell {
-            width: 100%;
-            border: none !important;
-            outline: none !important;
-            background: transparent;
-            text-align: center;
-            font-family: 'Poppins', sans-serif;
-            font-weight: var(--cell-font-weight, 600);
-            font-size: var(--font-size, 11px);
-            resize: none !important;
-            overflow: hidden;
-            min-height: var(--textarea-min-height, 32px);
-            line-height: 1.3;
-            color: #000;
-            box-shadow: none !important;
+        .flex-row-4-col {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
         }
 
-        textarea.editable-cell.period-8-cell {
-            font-size: var(--p8-font-size, 9px) !important;
+        @media (max-width: 768px) {
+            .flex-row-4-col {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
-        textarea.editable-cell:focus {
-            background: #f0f0f0;
-            outline: 1px solid #000 !important;
+        .month-grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
         }
 
-        .quick-textarea {
-            width: 100%;
-            padding: 4px;
-            font-size: 11px;
-            font-weight: var(--cell-font-weight, 600);
-            color: #000;
-            border: 1px solid #888;
-            border-radius: 3px;
-            font-family: 'Poppins', sans-serif;
-            resize: vertical;
-            height: 45px;
-            text-align: center;
-        }
+        .form-group { display: flex; flex-direction: column; position: relative; }
+        label { margin-bottom: 4px; font-weight: 600; color: #4a5568; font-size: 12px; }
 
-        .break-cell {
-            background-color: #eaeaea !important;
+        input, select {
+            padding: 7px 10px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #2d3748;
             font-weight: bold;
-            color: #000;
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            padding: 4px !important;
-            letter-spacing: 2px;
-            font-size: var(--font-size, 11px);
-            text-align: center;
-            vertical-align: middle;
-            border: 1px solid #000 !important;
         }
 
-        .action-btns {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 6px;
-            align-items: center;
+        input[type="text"] { text-transform: capitalize; }
+        input[readonly] { background-color: #edf2f7; color: #4a5568; }
+
+        /* AUTOCOMPLETE DROPDOWN STYLES */
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #cbd5e0;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            max-height: 150px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 0 0 4px 4px;
         }
 
-        .btn-add {
-            background-color: #333;
-            color: white;
-            padding: 5px 10px;
+        .autocomplete-items div {
+            padding: 8px 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #e2e8f0;
             font-size: 12px;
             font-weight: 600;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .btn-add:hover { background-color: #000; }
-
-        .row-action-group {
-            display: flex;
-            gap: 2px;
-            justify-content: center;
-            align-items: center;
+            color: #2d3748;
         }
 
-        .btn-action-mini {
-            background-color: #444;
-            color: white;
-            border: none;
-            padding: 2px 4px;
-            font-size: 9px;
-            cursor: pointer;
-            border-radius: 3px;
-        }
-        .btn-action-mini:hover { background-color: #000; }
-
-        .btn-del {
-            background-color: #c62828;
-        }
-        .btn-del:hover { background-color: #8e0000; }
-
-        .print-btn {
-            background-color: #000;
-            color: white;
-            padding: 8px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-        }
-        .print-btn:hover { background-color: #333; }
-
-
-        /* --- HOME EXAM STYLES --- */
-        :root {
-            --exam-font-size: 13px;
-            --exam-table-padding: 6px;
+        .autocomplete-items div:hover {
+            background-color: #edf2f7;
+            color: var(--primary-color);
         }
 
-        .control-panel-exam {
-            background: #fff;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            width: 100%;
-            max-width: 297mm;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .control-panel-exam label {
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        .control-panel-exam input, .control-panel-exam button {
-            padding: 6px 12px;
-            font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .control-panel-exam button {
-            background: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .control-panel-exam button:hover {
-            background: #0056b3;
-        }
-
-        .page-exam {
-            width: 100%;
-            max-width: 297mm;
-            min-height: 210mm;
-            padding: 15mm;
-            margin: 0 auto;
-            background: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.15);
-            box-sizing: border-box;
-            position: relative;
-            overflow-x: auto;
-        }
-
-        .school-header-exam {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .school-header-exam h1 {
-            font-size: calc(var(--exam-font-size) + 8px);
-            margin: 0 0 5px 0;
-            text-transform: uppercase;
-        }
-
-        .school-header-exam h2 {
-            font-size: calc(var(--exam-font-size) + 4px);
-            margin: 0;
-            color: #333;
-        }
-
-        .page-exam table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: var(--exam-font-size);
-            margin-bottom: 20px;
-        }
-
-        .page-exam th, .page-exam td {
-            border: 1px solid #000;
-            padding: var(--exam-table-padding) 2px;
-            text-align: center;
-            vertical-align: middle;
-            white-space: normal;
-            word-break: break-word;
-        }
-
-        .page-exam th {
-            background-color: #f2f2f2;
-        }
-
-        .page-exam tr.date-row th,
-        .page-exam tr.day-row th {
-            font-size: calc(var(--exam-font-size) + 2px);
-            font-weight: bold;
-        }
-
-        .page-exam tr.day-row th {
-            background-color: transparent !important;
-        }
-
-        [contenteditable="true"] {
-            outline: 1px dashed transparent;
-            transition: outline 0.2s;
-        }
-        [contenteditable="true"]:hover {
-            outline: 1px dashed #007bff;
-            background: #fffdf0;
-        }
-
-        .footer-note-exam {
-            font-size: calc(var(--exam-font-size) + 3px);
-            font-weight: bold;
-            margin-top: 15px;
-            line-height: 1.5;
-        }
-
-        .principal-sign-exam {
-            float: right;
-            margin-top: 35px;
-            margin-right: 80px;
-            text-align: center;
-            font-weight: bold;
-            font-size: calc(var(--exam-font-size) + 2px);
-        }
-
-        .exam-action-bar {
-            margin-bottom: 15px;
+        .btn-panel {
             display: flex;
             gap: 10px;
+            justify-content: center;
+            padding-top: 10px;
             flex-wrap: wrap;
         }
-        .exam-action-bar button {
-            padding: 5px 10px;
-            font-size: 12px;
-            font-weight: 600;
-            background: #333;
-            color: #fff;
+
+        .btn {
+            padding: 9px 18px;
             border: none;
             border-radius: 4px;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 13px;
             cursor: pointer;
-        }
-        .exam-action-bar button:hover {
-            background: #000;
+            transition: all 0.2s ease;
         }
 
+        .btn-save { background-color: var(--success-color); }
+        .btn-search { background-color: var(--secondary-color); }
+        .btn-delete-item { background-color: #e53e3e; }
+        .btn-delete-item:hover { background-color: #9b2c2c; }
+        .btn-clear { background-color: #dd6b20; }
+        .btn-print { background-color: #805ad5; }
+        .btn-print:hover { background-color: #6b46c1; }
+        .btn-reset-list { background-color: #718096; }
+        .btn-excel { background-color: #276749; }
+        .btn-excel:hover { background-color: #1c4530; }
 
-        /* --- PRINT MEDIA SETTINGS --- */
+        /* Pendrive Backup/Restore Button Styles */
+        .btn-pendrive-save { background-color: #d97706; }
+        .btn-pendrive-save:hover { background-color: #b45309; }
+        .btn-pendrive-load { background-color: #2563eb; }
+        .btn-pendrive-load:hover { background-color: #1d4ed8; }
+
+        .btn-tbl-del {
+            background-color: var(--danger-color);
+            color: #fff;
+            border: none;
+            padding: 3px 7px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .table-preview-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        table.preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        table.preview-table th, table.preview-table td {
+            border: 1px solid #cbd5e0;
+            padding: 6px;
+            text-align: center;
+            text-transform: capitalize;
+        }
+
+        table.preview-table th {
+            background-color: #edf2f7;
+            color: var(--primary-color);
+            text-transform: none;
+        }
+
+        .summary-verify-box {
+            margin-top: 15px;
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 6px;
+            padding: 12px 15px;
+        }
+
+        /* PRINT STYLES */
+        #printArea { display: none; }
+
         @media print {
-            @page {
-                size: A4 landscape;
-                margin: 0;
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: #fff;
+                color: #000;
+                font-family: Arial, sans-serif;
             }
 
-            body {
-                background: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                color: #000 !important;
+            .print-header {
+                text-align: center;
+                border-bottom: 2px solid #000;
+                padding-bottom: 8px;
+                margin-bottom: 12px;
+            }
+
+            .print-header h2 { margin: 0; font-size: 18px; text-transform: uppercase; }
+            .print-header h3 { margin: 4px 0; font-size: 14px; font-weight: normal; }
+
+            table.print-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 10px;
+            }
+
+            table.print-table tr {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            table.print-table tfoot { display: table-row-group; }
+
+            table.print-table th, table.print-table td {
+                border: 1px solid #000;
+                padding: 4px 5px;
+                text-align: center;
+                font-size: 11px;
+                line-height: 1.4;
+                word-break: break-word;
+                text-transform: capitalize;
+            }
+
+            table.print-table td.print-emp-name { font-size: 11px !important; font-weight: bold !important; }
+            table.print-table td.print-emp-desig { font-size: 11px !important; font-weight: 600 !important; }
+
+            table.print-table th {
+                background-color: #f2f2f2 !important;
                 -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                font-weight: bold;
+                text-transform: none;
             }
 
-            .master-nav, .top-controls, .control-panel-exam, .btn-add, .print-btn, .quick-entry-box, .row-action-group, th.no-print, td.no-print, .exam-action-bar {
-                display: none !important;
-            }
+            .no-print-col { display: none !important; }
 
-            .module-section {
-                display: none !important;
-            }
-
-            .module-section.active {
-                display: block !important;
-            }
-
-            #section-sarini-root .container-sarini {
-                box-shadow: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-
-            #section-sarini-root .timetable-section {
-                display: none !important;
-            }
-
-            #section-sarini-root .timetable-section.active {
-                display: block !important;
-            }
-
-            #table-format-2 th:first-child,
-            #table-format-2 td:first-child {
-                display: none !important;
-            }
-
-            #section-sarini-root table {
-                font-size: var(--font-size, 10px) !important;
-                width: 100% !important;
-                border-collapse: collapse !important;
-                page-break-inside: auto !important;
-            }
-
-            #section-sarini-root tr {
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
-            }
-
-            #section-sarini-root thead {
-                display: table-header-group !important;
-            }
-
-            #section-sarini-root th, #section-sarini-root td {
-                border: 1px solid #000 !important;
-                padding: var(--row-padding, 5px) var(--col-width-factor, 3px) !important;
-                color: #000 !important;
-            }
-
-            #table-format-1 th:nth-child(2),
-            #table-format-1 td:nth-child(2) {
-                text-align: left !important;
-                padding-left: 6px !important;
-            }
-
-            #section-sarini-root th {
-                background-color: #dcdcdc !important;
-                color: #000 !important;
-            }
-
-            .break-cell {
-                border: 1px solid #000 !important;
-                background-color: #eaeaea !important;
-            }
-
-            input.editable-cell, textarea.editable-cell {
-                border: none !important;
-                outline: none !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                font-size: var(--font-size, 10px) !important;
-                font-weight: var(--cell-font-weight, 600) !important;
-                color: #000 !important;
-                resize: none !important;
-                -webkit-text-fill-color: #000 !important;
-            }
-
-            #table-format-1 td:nth-child(2) input.editable-cell {
-                text-align: left !important;
-            }
-
-            textarea.editable-cell.period-8-cell {
-                font-size: var(--p8-font-size, 9px) !important;
-                -webkit-text-fill-color: #000 !important;
-            }
-
-            #section-exam-root.active .page-exam {
-                display: block !important;
-                box-shadow: none !important;
-                margin: 0 auto !important;
-                width: 297mm !important;
-                min-height: 210mm !important;
-                height: 100% !important;
-                padding: 15mm !important;
+            .print-summary-box {
+                border: 1px solid #000;
+                padding: 8px 10px;
+                margin-top: 10px;
+                font-size: 11px;
+                line-height: 1.5;
             }
         }
     </style>
 </head>
-<body id="bodyRoot" style="--row-padding: 6px; --col-width-factor: 4px; --textarea-min-height: 32px; --font-size: 11px; --p8-font-size: 9px; --cell-font-weight: 600; --exam-font-size: 13px; --exam-table-padding: 6px;">
+<body>
 
-    <!-- Master Navigation to Switch Software Modules -->
-    <div class="master-nav no-print">
-        <button class="master-nav-btn active" id="btn-mod-sarini" onclick="switchModule('sarini')">📅 विद्यालय समय सारणी (Samay Sarini)</button>
-        <button class="master-nav-btn" id="btn-mod-exam" onclick="switchModule('exam')">🏫 होम परीक्षा समय सारणी (Home Exam)</button>
+<!-- Hidden Input for Loading Pendrive Backup File -->
+<input type="file" id="pendriveFileInput" accept=".json" style="display:none;" onchange="handlePendriveBackupFile(event)">
+
+<div id="loginOverlay">
+    <div class="login-card">
+        <h2>DA Arrear / Bonus / NPS System Login</h2>
+        <div class="login-form-group">
+            <label for="usernameInput">Login ID</label>
+            <input type="password" id="usernameInput" placeholder="Login ID दर्ज करें" style="text-transform: none;">
+        </div>
+        <div class="login-form-group">
+            <label for="passwordInput">Password</label>
+            <input type="password" id="passwordInput" placeholder="Password दर्ज करें">
+        </div>
+        <button type="button" class="btn-login" onclick="validateLogin()">Login</button>
+        <div id="loginError" class="login-error">गलत Login ID या Password!</div>
+    </div>
+</div>
+
+<div id="mainContainer">
+    <div class="header-section">
+        <h1 style="margin-left: 60px;" id="mainTitleHeader">अवशेष महंगाई भत्ता (DA Arrear System)</h1>
+        <button type="button" class="btn-logout" onclick="logoutApp()">Logout</button>
     </div>
 
-    <!-------------------------------------------------------
-         MODULE 1: SAMAY SARINI SOFTWARE
-    -------------------------------------------------------->
-    <div id="section-sarini-root" class="module-section active">
-        <div class="container-sarini">
-            <!-- School Header -->
-            <div class="school-header-sarini">
-                <h1>श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा कठकुइयाँ, कुशीनगर</h1>
-                <h2> समय सारिणी सत्र - <span id="display-session">2026-27</span></h2>
-            </div>
+    <div class="msg-box-container">
+        <div id="messageBox" class="msg-box"></div>
+    </div>
 
-            <!-- Top Controls & Session & Settings -->
-            <div class="top-controls no-print">
-                <div class="session-box">
-                    <label for="sessionInput">सत्र:</label>
-                    <input type="text" id="sessionInput" value="2026-27" style="width: 55px;" oninput="updateSession(this.value)">
-                    
-                    <label for="recessAfter" style="margin-left: 3px;">मध्यान्तर:</label>
-                    <select id="recessAfter" class="recess-select" onchange="renderTables()">
-                        <option value="3">III बाद</option>
-                        <option value="4" selected>IV बाद</option>
-                        <option value="5">V बाद</option>
-                        <option value="6">VI बाद</option>
+    <form id="arrearForm" onsubmit="event.preventDefault();">
+        
+        <div class="panel" style="background-color: #fffaf0; border-color: #feebc8;">
+            <div class="section-title" style="color: #c05621;">माड्यूल सेटिंग चयन (Select Module Mode)</div>
+            <div class="grid-3-col">
+                <div class="form-group">
+                    <label for="calcMode" style="color: #c05621; font-weight: bold;">मोड चुनें (Select Mode)</label>
+                    <select id="calcMode" onchange="switchCalculationMode()" style="border: 2px solid #dd6b20;">
+                        <option value="DA">DA Arrear Setting (Landscape Print)</option>
+                        <option value="BONUS">Bonus Setting (Portrait Print)</option>
+                        <option value="NPS_FORMAT">NPS Schedule (Landscape Print)</option>
+                        <option value="PARISHRAMIK">Parishramik / Remuneration Bill (Landscape Print)</option>
+                        <option value="RETIREMENT">Retirement Calculation Sheet (Landscape Print)</option>
                     </select>
+                </div>
+            </div>
+        </div>
 
-                    <label for="rowPaddingInput" style="margin-left: 3px;">रो ऊंचाई:</label>
-                    <input type="number" id="rowPaddingInput" value="2" min="1" max="20" style="width: 38px;" oninput="updateRowHeight(this.value)"> px
+        <!-- QUICK CALCULATOR PANEL -->
+        <div class="panel" style="background-color: #f7fafc; border-color: #cbd5e0;">
+            <div class="section-title" style="color: #4a5568; display: flex; justify-content: space-between; align-items: center;">
+                <span>त्वरित कैलकुलेटर (Quick Calculator)</span>
+                <span style="font-size: 11px; font-weight: normal;">यहाँ कोई भी गणितीय कैलकुलेशन (+, -, *, /) करें</span>
+            </div>
+            <div class="grid-3-col" style="align-items: center;">
+                <div class="form-group" style="grid-column: span 2;">
+                    <input type="text" id="quickCalcInput" placeholder="उदा० 5000 + 450 + (120*2) या सीधे संख्या लिखें" style="text-transform: none; font-size: 14px;" onkeydown="if(event.key==='Enter') calculateQuickMath()">
+                </div>
+                <div class="form-group" style="flex-direction: row; gap: 5px;">
+                    <button type="button" class="btn btn-search" style="padding: 7px 12px; width: 50%;" onclick="calculateQuickMath()">गणना करें</button>
+                    <button type="button" class="btn btn-clear" style="padding: 7px 12px; width: 50%;" onclick="document.getElementById('quickCalcInput').value=''">साफ करें</button>
+                </div>
+            </div>
+        </div>
 
-                    <label for="colWidthInput" style="margin-left: 3px;">कॉलम चौड़ाई:</label>
-                    <input type="number" id="colWidthInput" value="2" min="1" max="20" style="width: 38px;" oninput="updateColWidth(this.value)"> px
+        <!-- NPS MASTER EMPLOYEE DIRECTORY SETTING PANEL -->
+        <div class="panel nps-only-field" style="display: none; background-color: #e6fffa; border-color: #b2f5ea;">
+            <div class="section-title" style="color: #234e52; display: flex; justify-content: space-between; align-items: center;">
+                <span>कर्मचारी मास्टर डायरेक्टरी (NPS Employee Directory Master)</span>
+                <button type="button" class="btn" style="background-color: #319795; padding: 4px 10px; font-size: 11px;" onclick="openEmpMasterModal()">मैनेज मास्टर सूची देखें</button>
+            </div>
+            <div style="font-size: 12px; color: #2c7a7b; margin-bottom: 6px;">
+                यहाँ कर्मचारी का नाम, PRAN नंबर और मूल वेतन सेव कर सकते हैं। NPS Schedule में क्रम संख्या या नाम से सर्च करते ही PRAN और मूल वेतन ऑटो-फिल हो जाएगा।
+            </div>
+            <div class="grid-3-col">
+                <div class="form-group">
+                    <label for="masterEmpName">मास्टर कर्मचारी नाम</label>
+                    <input type="text" id="masterEmpName" placeholder="कर्मचारी का पूरा नाम" onblur="autoCapitalize(this)">
+                </div>
+                <div class="form-group">
+                    <label for="masterPranNo">मास्टर PRAN No.</label>
+                    <input type="text" id="masterPranNo" placeholder="PRAN Number" style="text-transform: uppercase;">
+                </div>
+                <div class="form-group">
+                    <label for="masterBasicPay">मास्टर मूल वेतन (Basic Pay)</label>
+                    <div style="display: flex; gap: 5px;">
+                        <input type="number" id="masterBasicPay" placeholder="मूल वेतन">
+                        <button type="button" class="btn btn-save" style="padding: 7px 12px;" onclick="saveEmpToMasterDirectory()">Save Master</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <label for="fontSizeInput" style="margin-left: 3px;">फॉन्ट:</label>
-                    <input type="number" id="fontSizeInput" value="11" min="7" max="16" style="width: 40px;" oninput="updateFontSize(this.value)"> px
+        <div class="panel school-header-panel" style="background-color: #ebf8ff;">
+            <div class="section-title" style="color: #2b6cb0;">1. विद्यालय/संस्था एवं सत्र विवरण</div>
+            <div class="grid-3-col">
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="schoolName">विद्यालय / संस्था का नाम</label>
+                    <input type="text" id="schoolName" value="श्री कृष्ण इण्टर कालेज सेमरा कठकुइयाँ, जिला - कुशीनगर " placeholder="विद्यालय का पूरा नाम" onblur="autoCapitalize(this)">
+                </div>
+                <div class="form-group">
+                    <label for="arrearYear">वर्ष (Year)</label>
+                    <input type="text" id="arrearYear" value="2026-27" placeholder="उदा० 2026-27">
+                </div>
+            </div>
+        </div>
 
-                    <label for="p8FontSizeInput" style="margin-left: 3px;">8वी घंटी फॉन्ट:</label>
-                    <input type="number" id="p8FontSizeInput" value="9" min="6" max="16" style="width: 40px;" oninput="updateP8FontSize(this.value)"> px
-
-                    <label for="boldCheckbox" style="margin-left: 5px; cursor: pointer; display: inline-flex; align-items: center; gap: 2px;">
-                        <input type="checkbox" id="boldCheckbox" checked onchange="toggleBoldText(this.checked)">
-                        <b>बोल्ड</b>
-                    </label>
-
-                    <label for="printSelect" style="margin-left: 3px;">प्रिंट मोड:</label>
-                    <select id="printSelect" class="print-select" onchange="onPrintSelectChange(this.value)">
-                        <option value="1">फॉर्मेट 1</option>
-                        <option value="2">फॉर्मेट 2</option>
+        <!-- NPS PERSISTENT INPUTS PANEL -->
+        <div class="panel nps-only-field" style="display: none; background-color: #f0f4fe; border-color: #bee3f8;">
+            <div class="section-title" style="color: #2b6cb0;">NPS सामान्य विवरण (Persistent Details)</div>
+            <div class="grid-4-col">
+                <div class="form-group">
+                    <label for="ddoRegNo">DDO Reg.No.</label>
+                    <input type="text" id="ddoRegNo" value="sgv 182587b" placeholder="DDO Reg.No." style="text-transform: uppercase; background-color: #e2e8f0; cursor: not-allowed;" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="payMonth">Pay Month</label>
+                    <select id="payMonth" onchange="markMonthUserChanged()">
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
                     </select>
-
-                    <button class="setting-save-btn" onclick="saveSettings()">💾 सेव</button>
-                    <button class="setting-reset-btn" onclick="resetSettings()">🔄 रीसेट</button>
                 </div>
-
-                <div class="tab-buttons">
-                    <button class="tab-btn active" id="btn-tab-1" onclick="switchTab(1)">फॉर्मेट 1: अध्यापकवार</button>
-                    <button class="tab-btn" id="btn-tab-2" onclick="switchTab(2)">फॉर्मेट 2: कक्षावार</button>
+                <div class="form-group">
+                    <label for="payYear">Pay Year</label>
+                    <input type="text" id="payYear" value="2026" placeholder="2026">
                 </div>
-            </div>
-
-            <!-- QUICK ENTRY FORM FOR FORMAT 1 (TEACHER) -->
-            <div id="quick-form-1" class="quick-entry-box no-print">
-                <h3>📝 त्वरित प्रविष्टि / अपडेट फॉर्म (अध्यापकवार)</h3>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: flex-end;">
-                    <div style="width: 140px;">
-                        <label style="font-size: 11px; font-weight: 600;">क्रम संख्या (Kramank):</label><br>
-                        <input type="number" id="q1SNo" min="1" placeholder="जैसे: 1" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
-                    </div>
-                    <div style="flex-grow: 1; min-width: 200px;">
-                        <label style="font-size: 11px; font-weight: 600;">अध्यापक का नाम (Name):</label><br>
-                        <input type="text" id="q1Name" placeholder="अध्यापक का पूरा नाम या नाम से खोजें" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
-                    </div>
-                    <div>
-                        <button class="setting-save-btn" onclick="searchData1()" style="padding: 6px 12px; font-size: 11px; background-color: #003366;">🔍 खोजें (Search)</button>
-                    </div>
+                <div class="form-group">
+                    <label for="contType">Cont. Type</label>
+                    <select id="contType">
+                        <option value="Regular">Regular</option>
+                        <option value="Arrear">Arrear</option>
+                    </select>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 10px;">
-                    <div><label style="font-size: 10px; font-weight: 600;">I घंटी:</label><textarea id="q1P0" class="quick-textarea" placeholder=""></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">II घंटी:</label><textarea id="q1P1" class="quick-textarea" placeholder=""></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">III घंटी:</label><textarea id="q1P2" class="quick-textarea" placeholder=""></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">IV घंटी:</label><textarea id="q1P3" class="quick-textarea" placeholder=""></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">V घंटी:</label><textarea id="q1P4" class="quick-textarea" placeholder=""></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">VI घंटी:</label><textarea id="q1P5" class="quick-textarea" placeholder=""></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">VII घंटी:</label><textarea id="q1P6" class="quick-textarea" placeholder=""></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">VIII घंटी:</label><textarea id="q1P7" class="quick-textarea" placeholder=""></textarea></div>
-                </div>
-                <button class="setting-save-btn" onclick="applyQuickEntry1()" style="padding: 6px 14px; font-size: 12px;">✅ प्रविष्टि जोड़ें / अपडेट करें</button>
-            </div>
-
-            <!-- QUICK ENTRY FORM FOR FORMAT 2 (CLASS) -->
-            <div id="quick-form-2" class="quick-entry-box no-print" style="display: none;">
-                <h3>📝 त्वरित प्रविष्टि / अपडेट फॉर्म (कक्षावार)</h3>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; align-items: flex-end;">
-                    <div style="width: 140px;">
-                        <label style="font-size: 11px; font-weight: 600;">क्रम संख्या / क्रमांक:</label><br>
-                        <input type="number" id="q2SNo" min="1" placeholder="जैसे: 1" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
-                    </div>
-                    <div style="flex-grow: 1; min-width: 200px;">
-                        <label style="font-size: 11px; font-weight: 600;">कक्षा का नाम (Class):</label><br>
-                        <input type="text" id="q2Class" placeholder="जैसे: XII A या नाम से खोजें" style="width: 100%; padding: 5px; font-size: 11px; font-weight: 600; color: #000; border: 1px solid #888; border-radius: 3px;">
-                    </div>
-                    <div>
-                        <button class="setting-save-btn" onclick="searchData2()" style="padding: 6px 12px; font-size: 11px; background-color: #003366;">🔍 खोजें (Search)</button>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 10px;">
-                    <div><label style="font-size: 10px; font-weight: 600;">I घंटी:</label><textarea id="q2P0" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">II घंटी:</label><textarea id="q2P1" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">III घंटी:</label><textarea id="q2P2" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">IV घंटी:</label><textarea id="q2P3" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">V घंटी:</label><textarea id="q2P4" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">VI घंटी:</label><textarea id="q2P5" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">VII घंटी:</label><textarea id="q2P6" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-                    <div><label style="font-size: 10px; font-weight: 600;">VIII घंटी:</label><textarea id="q2P7" class="quick-textarea" placeholder="विषय&#10;अध्यापक"></textarea></div>
-                </div>
-                <button class="setting-save-btn" onclick="applyQuickEntry2()" style="padding: 6px 14px; font-size: 12px;">✅ प्रविष्टि जोड़ें / अपडेट करें</button>
-            </div>
-
-            <!-- FORMAT 1: अध्यापकवार समय सारिणी -->
-            <div id="section-1" class="timetable-section active">
-                <div class="section-title">अध्यापकवार समय सारिणी (Teacher-wise Timetable)</div>
-                <div class="table-responsive">
-                    <table id="table-format-1">
-                        <thead id="thead-f1"></thead>
-                        <tbody id="tbody-f1"></tbody>
-                    </table>
-                </div>
-                <div class="action-btns">
-                    <button class="btn-add" onclick="addRowF1(-1)">+ नया अध्यापक जोड़ें (अंत में)</button>
-                </div>
-            </div>
-
-            <!-- FORMAT 2: कक्षावार समय सारिणी -->
-            <div id="section-2" class="timetable-section">
-                <div class="section-title">कक्षावार समय सारिणी (Class-wise Timetable)</div>
-                <div class="table-responsive">
-                    <table id="table-format-2">
-                        <thead id="thead-f2"></thead>
-                        <tbody id="tbody-f2"></tbody>
-                    </table>
-                </div>
-                <div class="action-btns">
-                    <button class="btn-add" onclick="addRowF2(-1)">+ नई कक्षा जोड़ें (अंत में)</button>
-                </div>
-            </div>
-
-            <!-- Print Control -->
-            <div style="text-align: center; margin-top: 15px;" class="top-controls no-print">
-                <button class="print-btn" onclick="triggerSariniPrint()">🖨 चयनित समय सारिणी प्रिंट करें</button>
             </div>
         </div>
-    </div>
 
-
-    <!-------------------------------------------------------
-         MODULE 2: HOME EXAM SOFTWARE (Dynamic Updated)
-    -------------------------------------------------------->
-    <div id="section-exam-root" class="module-section">
-        <!-- Settings & Control Panel -->
-        <div class="control-panel-exam no-print">
-            <div>
-                <label>Font Size:</label>
-                <input type="range" id="fontSizeRange" min="10" max="18" value="13" oninput="updateExamStyles()">
-            </div>
-            <div>
-                <label>Table Spacing (Padding):</label>
-                <input type="range" id="paddingRange" min="4" max="12" value="6" oninput="updateExamStyles()">
-            </div>
-            <button onclick="saveExamData()">Save Settings & Data</button>
-            <button onclick="resetExamData()" style="background: #dc3545;">Reset Default</button>
-            <button onclick="triggerExamPrint()" style="background: #28a745;">Print A4 Landscape</button>
-        </div>
-
-        <!-- A4 Landscape Page Container -->
-        <div class="page-exam" id="examPrintArea">
-            <div class="school-header-exam">
-                <h1 contenteditable="true" id="schoolName">श्रीकृष्ण इण्टर कालेज सेमरा पोस्ट - कठकुइयाँ जि0- कुशीनगर</h1>
-                <h2 contenteditable="true" id="examTitle">समय सारणी अर्द्ध वार्षिक परीक्षा <span contenteditable="true" id="sessionYear">2026</span></h2>
-            </div>
-
-            <!-- Dynamic Exam Controls Bar -->
-            <div class="exam-action-bar no-print">
-                <button onclick="addExamDateColumn()">➕ नया परीक्षा दिन (Date) जोड़ें</button>
-                <button onclick="removeExamDateColumn()" style="background: #c62828;">❌ अंतिम परीक्षा दिन हटाएं</button>
-                <button onclick="addExamClassRow()">➕ नई कक्षा (Class) जोड़ें</button>
-            </div>
-
-            <table id="examTableElement">
-                <thead id="examThead">
-                    <!-- Dynamically rendered via JS -->
-                </thead>
-                <tbody id="examTbody">
-                    <!-- Dynamically rendered via JS -->
-                </tbody>
-            </table>
-
-            <div class="footer-note-exam" contenteditable="true" id="footerNote">
-                <b>नोट :-</b> प्रथम पाली की परीक्षा प्रातः 9:00 से 12:00 बजे तक एवं द्वितीय पाली की परीक्षा दोपहर 12:00 से 3:00 बजे तक |
-            </div>
-
-            <div class="principal-sign-exam" contenteditable="true" id="signText">
-                प्रधानाचार्य
-            </div>
-        </div>
-    </div>
-
-
-    <!-- SCRIPT LOGIC -->
-    <script>
-        function switchModule(mod) {
-            document.getElementById('section-sarini-root').classList.remove('active');
-            document.getElementById('section-exam-root').classList.remove('active');
-            document.getElementById('btn-mod-sarini').classList.remove('active');
-            document.getElementById('btn-mod-exam').classList.remove('active');
-
-            if (mod === 'sarini') {
-                document.getElementById('section-sarini-root').classList.add('active');
-                document.getElementById('btn-mod-sarini').classList.add('active');
-            } else {
-                document.getElementById('section-exam-root').classList.add('active');
-                document.getElementById('btn-mod-exam').classList.add('active');
-            }
-        }
-
-        let defaultDataF1 = [
-            {name: "श्री चन्द्र भूषण पाठक", periods: ["-", "-", "XII A\nभूगोल", "-", "XI A\nभूगोल", "-", "-", "-", "भूगोल प्रयो०\nXIIA(सो०मं०बु०)\nXIA(वृ०शु०श०)"]},
-            {name: "श्री मनोज कुमार", periods: ["XII A\nअर्थशास्त्र", "-", "VIII A\nगणित", "XI A\nअर्थशास्त्र", "-", "VII A\nगणित", "-", "-", "पी०टी०\nVIII A"]},
-            {name: "श्री रमेन्द्र नाथ तिवारी", periods: ["-", "VI A\nसंस्कृत", "-", "X A\nसंस्कृत", "-", "-", "VI A\nगृह शिल्प", "-", "-"]},
-            {name: "श्री शम्भू शरण पाण्डेय", periods: ["VIII A\nहिंदी", "-", "-", "IX A\nहिंदी", "VIII A\nविज्ञान", "-", "IX A हिंदी व्या०\n(सो० मं० बु०)", "-", "-"]},
-            {name: "श्री मनोज कुमार त्रिपाठी", periods: ["-", "-", "VII A\nसा० विषय", "-", "VI A\nसा० विषय", "VIII A\nसा० विषय", "VI A\nकृषि", "-", "पी०टी०\nVII A"]},
-            {name: "श्री अनिल कुमार सिंह", periods: ["VI A\nविज्ञान", "VII A\nविज्ञान", "-", "-", "-", "IX A\nसा० विज्ञान", "VIII A\nगृह शिल्प", "-", "नैतिक खेल\nIXD(सो०मं०), IXA(वृ०शु०)"]},
-            {name: "श्री विनय मणि त्रिपाठी", periods: ["VII A\nसंस्कृत", "IX D\nहिंदी", "-", "VIII A\nसंस्कृत", "XII A\nसंस्कृत", "-", "VIII A\nकृषि", "-", "नैतिक खेल\nXD(सो०मं०), XA(वृ०शु०)"]},
-            {name: "श्रीमती पूनम सिंह", periods: ["-", "IX A\nचित्रकला", "X A\nचित्रकला", "-", "-", "X D\nचित्रकला", "IX D\nचित्रकला", "-", "VIII A\nकला"]},
-            {name: "श्री विजय कुमार", periods: ["XI A\nअंग्रेजी", "-", "X D\nअंग्रेजी", "X A\nअंग्रेजी", "XII A\nअंग्रेजी", "-", "अंग्रेजी व्या०\nXIIA(सो०मं०)", "-", "-"]},
-            {name: "श्रीमती संगीता मिश्रा", periods: ["-", "IX A\nगृह विज्ञान", "-", "VI A\nहिंदी", "VII A\nहिंदी", "X A\nगृह विज्ञान", "VII A\nगृह शिल्प", "-", "VII A\nकला"]},
-            {name: "श्री सन्तोष कुमार", periods: ["X D\nहिंदी", "XII A\nहिंदी", "-", "VII A\nअंग्रेजी", "-", "VI A\nगणित", "हिन्दी व्या०\nXD(सो०मं०)", "-", "VI A\nकला"]},
-            {name: "श्री लाल बहादुर", periods: ["IX D\nअंग्रेजी", "XI A\nइतिहास", "XII B\nभूगोल", "-", "IX A\nअंग्रेजी", "XII A\nइतिहास", "-", "-", "भूगोल प्रयो०\nXIIB (वृ०शु०श०)"]},
-            {name: "श्री अरविन्द प्रसाद गोड़", periods: ["X A\nसा० विज्ञान", "VIII A\nअंग्रेजी", "-", "XII A\nना० शास्त्र", "-", "XI A\nना० शास्त्र", "VII A\nकृषि", "-", "पी०टी०\nVI A"]},
-            {name: "श्रीमती पुनीता उपाध्याय", periods: ["XI A\nसंस्कृत", "X A\nहिंदी", "XI A\nहिंदी", "-", "IX A\nसंस्कृत", "-", "हिन्दी व्या०\nXI A", "-", "-"]},
-            {name: "श्री ओंकारेश्वर मिश्र", periods: ["-", "-", "IX A\nविज्ञान", "-", "X A\nविज्ञान", "-", "विज्ञान प्रयो०\nIXA(सो०मं०)", "-", "-"]},
-            {name: "श्री प्रवीण कुमार पाण्डेय", periods: ["-", "-", "VI\nअंग्रेजी", "X D\nसा० विज्ञान", "IX D\nसा० विज्ञान", "-", "हिन्दी व्या०\nIXA(वृ०शु०)", "-", "भूगोल प्रयो०\nXIA(सो०मं०)"]},
-            {name: "श्री दुर्गेश पाण्डेय", periods: ["-", "X D\nगणित", "IX D\nविज्ञान", "IX D\nगणित", "X D\nविज्ञान", "-", "-", "-", "विज्ञान प्रयो०\nXD (वृ०शु0)"]}
-        ];
-
-        let defaultDataF2 = [
-            {cls: "XII A", periods: ["अर्थशास्त्र / मनोज कुमार", "हिंदी / सन्तोष कुमार", "भूगोल / चन्द्र भूषण पाठक", "ना०शा० / अरविन्द प्रसाद", "अंग्रेजी / विजय कुमार\nसंस्कृत / विनय मणि", "इतिहास / लालबहादुर", "अंग्रेजी व्या० / विजय कुमार", "-", "भूगोल प्रयो० / चन्द्र भूषण पाठक"]},
-            {cls: "XII B", periods: ["-", "-", "भूगोल / लालबहादुर", "-", "-", "-", "-", "-", "भूगोल प्रयो० / लालबहादुर"]},
-            {cls: "XI A", periods: ["अंग्रेजी / विजय कुमार\nसंस्कृत / पुनीता", "इतिहास / लालबहादुर", "हिंदी / पुनीता उपाध्याय", "अर्थशास्त्र / मनोज कुमार", "भूगोल / चन्द्र भूषण पाठक", "ना०शा० / अरविन्द प्रसाद", "हिन्दी व्या० / पुनीता", "-", "भूगोल प्रयो० / चन्द्र भूषण\nभूगोल प्रयो० / प्रवीण"]},
-            {cls: "X A", periods: ["सा० विज्ञान / अरविन्द", "हिंदी / पुनीता उपाध्याय", "चित्रकला / पूनम सिंह", "अंग्रेजी / विजय कुमार\nसंस्कृत / रमेन्द्र नाथ", "विज्ञान / ओंकारेश्वर मिश्र", "गृह विज्ञान / संगीता मिश्रा", "-", "-", "नैतिक शिक्षा / विनय मणि"]},
-            {cls: "X D", periods: ["हिंदी / सन्तोष कुमार", "गणित / दुर्गेश पाण्डेय", "अंग्रेजी / विजय कुमार", "सा० विज्ञान / प्रवीण कुमार", "विज्ञान / दुर्गेश पाण्डेय", "चित्रकला / पूनम सिंह", "अंग्रेजी व्या० / विजय कुमार", "-", "विज्ञान प्रयो० / दुर्गेश पाण्डेय"]},
-            {cls: "IX A", periods: ["गृह विज्ञान / संगीता मिश्रा", "चित्रकला / पूनम सिंह", "विज्ञान / ओंकारेश्वर मिश्र", "हिंदी / शम्भू शरण पाण्डेय", "अंग्रेजी / लाल बहादुर\nसंस्कृत / पुनीता", "सा० विज्ञान / अनिल कुमार", "हिन्दी व्या० / शम्भूशरण", "-", "नैतिक शिक्षा / अनिल सिंह\nविज्ञान प्रयो० / ओंकारेश्वर"]},
-            {cls: "IX D", periods: ["अंग्रेजी / लालबहादुर", "हिन्दी / विनय मणि त्रिपाठी", "विज्ञान / दुर्गेश कुमार", "गणित / दुर्गेश कुमार", "सा० विज्ञान / प्रवीण कुमार", "विज्ञान प्रयो० / ओंकारेश्वर", "चित्रकला / पूनम सिंह", "-", "नैतिक शिक्षा / अनिल सिंह\nविज्ञान प्रयो० / ओंकारेश्वर"]},
-            {cls: "VIII A", periods: ["हिन्दी / शम्भूशरण पाण्डेय", "अंग्रेजी / अरविन्द प्रसाद", "गणित / मनोज कुमार", "संस्कृत / विनय मणि", "विज्ञान / शम्भूशरण पाण्डेय", "सा० विषय / मनोज कुमार", "कृषि / विनय मणि\nगृहशिल्प / अनिल", "-", "पी० टी० / मनोज कुमार"]},
-            {cls: "VII A", periods: ["संस्कृत / विनय मणि", "विज्ञान / अनिल कुमार सिंह", "सा० विषय / मनोज कुमार", "अंग्रेजी / सन्तोष कुमार", "हिंदी / संगीता मिश्रा", "गणित / मनोज कुमार", "गृह शिल्प / संगीता मिश्रा", "-", "पी० टी० / मनोज त्रिपाठी"]},
-            {cls: "VI A", periods: ["विज्ञान / अनिल कुमार सिंह", "संस्कृत / रमेन्द्र नाथ", "अंग्रेजी / प्रवीण पाण्डेय", "हिंदी / संगीता मिश्रा", "सा० विषय / मनोज कुमार", "गणित / सन्तोष कुमार", "गृह शिल्प / रामेन्द्र तिवारी", "-", "पी ० टी ० / अरविन्द प्रसाद"]}
-        ];
-
-        let dataF1 = JSON.parse(JSON.stringify(defaultDataF1));
-        let dataF2 = JSON.parse(JSON.stringify(defaultDataF2));
-        const periodNames = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
-
-        function autoResizeTextarea(el) {
-            el.style.height = 'auto';
-            el.style.height = (el.scrollHeight) + 'px';
-        }
-
-        function toggleBoldText(isBold) {
-            const root = document.getElementById('bodyRoot');
-            root.style.setProperty('--cell-font-weight', isBold ? '700' : '400');
-            setTimeout(() => {
-                document.querySelectorAll('#section-sarini-root textarea.editable-cell').forEach(el => autoResizeTextarea(el));
-            }, 50);
-        }
-
-        function updateRowHeight(val) {
-            const root = document.getElementById('bodyRoot');
-            const num = parseInt(val) || 6;
-            root.style.setProperty('--row-padding', num + 'px');
-            root.style.setProperty('--textarea-min-height', (num * 4 + 8) + 'px');
-            document.querySelectorAll('#section-sarini-root textarea.editable-cell').forEach(el => autoResizeTextarea(el));
-        }
-
-        function updateColWidth(val) {
-            const root = document.getElementById('bodyRoot');
-            const num = parseInt(val) || 4;
-            root.style.setProperty('--col-width-factor', num + 'px');
-        }
-
-        function updateFontSize(val) {
-            const root = document.getElementById('bodyRoot');
-            const num = parseInt(val) || 11;
-            root.style.setProperty('--font-size', num + 'px');
-            document.querySelectorAll('#section-sarini-root textarea.editable-cell').forEach(el => autoResizeTextarea(el));
-        }
-
-        function updateP8FontSize(val) {
-            const root = document.getElementById('bodyRoot');
-            const num = parseInt(val) || 9;
-            root.style.setProperty('--p8-font-size', num + 'px');
-        }
-
-        function updateSession(val) {
-            const displaySession = document.getElementById('display-session');
-            if (displaySession) displaySession.innerText = val;
-        }
-
-        function searchData1() {
-            let sNo = parseInt(document.getElementById('q1SNo').value);
-            let nameQuery = document.getElementById('q1Name').value.trim().toLowerCase();
-            let foundIndex = -1;
-            if (!isNaN(sNo) && sNo > 0) {
-                foundIndex = sNo - 1;
-            } else if (nameQuery !== "") {
-                foundIndex = dataF1.findIndex(item => item.name.toLowerCase().includes(nameQuery));
-            }
-            if (foundIndex >= 0 && foundIndex < dataF1.length) {
-                let item = dataF1[foundIndex];
-                document.getElementById('q1SNo').value = foundIndex + 1;
-                document.getElementById('q1Name').value = item.name;
-                for (let i = 0; i < 8; i++) {
-                    document.getElementById('q1P' + i).value = item.periods[i] === "-" ? "" : (item.periods[i] || "");
-                }
-                alert(`🔍 अध्यापक मिल गए: '${item.name}' (क्रम सं० ${foundIndex + 1})`);
-            } else {
-                alert('❌ कोई रिकॉर्ड नहीं मिला!');
-            }
-        }
-
-        function applyQuickEntry1() {
-            let sNo = parseInt(document.getElementById('q1SNo').value);
-            let name = document.getElementById('q1Name').value.trim();
-            if (!name) { alert('कृपया अध्यापक का नाम दर्ज करें!'); return; }
-            let periodsArr = [];
-            for (let i = 0; i < 8; i++) {
-                let val = document.getElementById('q1P' + i).value.trim();
-                periodsArr.push(val === "" ? "-" : val);
-            }
-            if (!isNaN(sNo) && sNo > 0) {
-                let index = sNo - 1;
-                if (index < dataF1.length) {
-                    dataF1[index].name = name;
-                    dataF1[index].periods = periodsArr;
-                } else {
-                    dataF1.push({name: name, periods: periodsArr});
-                }
-            } else {
-                dataF1.push({name: name, periods: periodsArr});
-            }
-            renderTables();
-            alert('✅ सफलतापूर्वक अपडेट हो गया!');
-        }
-
-        function searchData2() {
-            let sNo = parseInt(document.getElementById('q2SNo').value);
-            let clsQuery = document.getElementById('q2Class').value.trim().toLowerCase();
-            let foundIndex = -1;
-            if (!isNaN(sNo) && sNo > 0) {
-                foundIndex = sNo - 1;
-            } else if (clsQuery !== "") {
-                foundIndex = dataF2.findIndex(item => item.cls.toLowerCase().includes(clsQuery));
-            }
-            if (foundIndex >= 0 && foundIndex < dataF2.length) {
-                let item = dataF2[foundIndex];
-                document.getElementById('q2SNo').value = foundIndex + 1;
-                document.getElementById('q2Class').value = item.cls;
-                for (let i = 0; i < 8; i++) {
-                    document.getElementById('q2P' + i).value = item.periods[i] === "-" ? "" : (item.periods[i] || "");
-                }
-                alert(`🔍 कक्षा मिल गई: '${item.cls}' (क्रम सं० ${foundIndex + 1})`);
-            } else {
-                alert('❌ कोई रिकॉर्ड नहीं मिला!');
-            }
-        }
-
-        function applyQuickEntry2() {
-            let sNo = parseInt(document.getElementById('q2SNo').value);
-            let clsName = document.getElementById('q2Class').value.trim();
-            if (!clsName) { alert('कृपया कक्षा का नाम दर्ज करें!'); return; }
-            let periodsArr = [];
-            for (let i = 0; i < 8; i++) {
-                let val = document.getElementById('q2P' + i).value.trim();
-                periodsArr.push(val === "" ? "-" : val);
-            }
-            if (!isNaN(sNo) && sNo > 0) {
-                let index = sNo - 1;
-                if (index < dataF2.length) {
-                    dataF2[index].cls = clsName;
-                    dataF2[index].periods = periodsArr;
-                } else {
-                    dataF2.push({cls: clsName, periods: periodsArr});
-                }
-            } else {
-                dataF2.push({cls: clsName, periods: periodsArr});
-            }
-            renderTables();
-            alert('✅ सफलतापूर्वक अपडेट हो गया!');
-        }
-
-        function saveSettings() {
-            const settings = {
-                session: document.getElementById('sessionInput').value,
-                recess: document.getElementById('recessAfter').value,
-                rowPadding: document.getElementById('rowPaddingInput').value,
-                colWidth: document.getElementById('colWidthInput').value,
-                fontSize: document.getElementById('fontSizeInput').value,
-                p8FontSize: document.getElementById('p8FontSizeInput').value,
-                isBold: document.getElementById('boldCheckbox').checked,
-                printMode: document.getElementById('printSelect').value
-            };
-            localStorage.setItem('skic_timetable_settings', JSON.stringify(settings));
-            localStorage.setItem('skic_timetable_dataF1', JSON.stringify(dataF1));
-            localStorage.setItem('skic_timetable_dataF2', JSON.stringify(dataF2));
-            alert('✅ सेटिंग्स और समय सारिणी का डेटा सेव हो गया है!');
-        }
-
-        function loadSavedSettings() {
-            const savedSettings = localStorage.getItem('skic_timetable_settings');
-            if (savedSettings) {
-                try {
-                    const settings = JSON.parse(savedSettings);
-                    if (settings.session) {
-                        document.getElementById('sessionInput').value = settings.session;
-                        updateSession(settings.session);
-                    }
-                    if (settings.recess) document.getElementById('recessAfter').value = settings.recess;
-                    if (settings.rowPadding) {
-                        document.getElementById('rowPaddingInput').value = settings.rowPadding;
-                        updateRowHeight(settings.rowPadding);
-                    }
-                    if (settings.colWidth) {
-                        document.getElementById('colWidthInput').value = settings.colWidth;
-                        updateColWidth(settings.colWidth);
-                    }
-                    if (settings.fontSize) {
-                        document.getElementById('fontSizeInput').value = settings.fontSize;
-                        updateFontSize(settings.fontSize);
-                    }
-                    if (settings.p8FontSize) {
-                        document.getElementById('p8FontSizeInput').value = settings.p8FontSize;
-                        updateP8FontSize(settings.p8FontSize);
-                    }
-                    if (settings.isBold !== undefined) {
-                        document.getElementById('boldCheckbox').checked = settings.isBold;
-                        toggleBoldText(settings.isBold);
-                    }
-                    if (settings.printMode) {
-                        document.getElementById('printSelect').value = settings.printMode;
-                        onPrintSelectChange(settings.printMode);
-                    }
-                } catch (e) { console.error(e); }
-            }
-            const savedF1 = localStorage.getItem('skic_timetable_dataF1');
-            if (savedF1) { try { dataF1 = JSON.parse(savedF1); } catch (e) { console.error(e); } }
-            const savedF2 = localStorage.getItem('skic_timetable_dataF2');
-            if (savedF2) { try { dataF2 = JSON.parse(savedF2); } catch (e) { console.error(e); } }
-        }
-
-        function resetSettings() {
-            if(confirm('Kya aap sabhi data reset karna chahte hain?')) {
-                localStorage.removeItem('skic_timetable_settings');
-                localStorage.removeItem('skic_timetable_dataF1');
-                localStorage.removeItem('skic_timetable_dataF2');
-                location.reload();
-            }
-        }
-
-        function renderTables() {
-            const recessAfter = parseInt(document.getElementById('recessAfter').value);
-            
-            // Table 1
-            const thead1 = document.getElementById('thead-f1');
-            let hRow1 = `<tr><th style="width: 3.5%;">क्रम सं०</th><th style="width: 12%;">कक्षाध्यापक का नाम</th>`;
-            for (let i = 0; i < 8; i++) {
-                hRow1 += `<th style="width: 9%;">${periodNames[i]}</th>`;
-                if (i + 1 === recessAfter) hRow1 += `<th style="width: 4%;">मध्यान्तर</th>`;
-            }
-            hRow1 += `<th style="width: 6%;" class="no-print">कार्रवाई</th></tr>`;
-            thead1.innerHTML = hRow1;
-
-            const tbody1 = document.getElementById('tbody-f1');
-            tbody1.innerHTML = '';
-            dataF1.forEach((row, index) => {
-                let tr = document.createElement('tr');
-                let html = `<td>${index + 1}</td><td><input type="text" class="editable-cell" value="${row.name}" onchange="dataF1[${index}].name=this.value"></td>`;
-                for (let i = 0; i < 8; i++) {
-                    let pVal = row.periods[i] || "-";
-                    let extraClass = (i === 7) ? " editable-cell period-8-cell" : " editable-cell";
-                    html += `<td><textarea class="${extraClass}" oninput="autoResizeTextarea(this)" onchange="dataF1[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
-                    if (i + 1 === recessAfter) html += `<td class="break-cell">मध्यान्तर</td>`;
-                }
-                html += `<td class="no-print"><div class="row-action-group">
-                    <button class="btn-action-mini" onclick="addRowF1(${index})">➕</button>
-                    <button class="btn-action-mini" onclick="moveRowF1(${index}, -1)">⬆️</button>
-                    <button class="btn-action-mini" onclick="moveRowF1(${index}, 1)">⬇️</button>
-                    <button class="btn-action-mini btn-del" onclick="deleteRowF1(${index})">❌</button>
-                </div></td>`;
-                tr.innerHTML = html;
-                tbody1.appendChild(tr);
-            });
-
-            // Table 2
-            const thead2 = document.getElementById('thead-f2');
-            let hRow2 = `<tr><th style="width: 4%;">क्रम सं०</th><th style="width: 8%;">कक्षा</th>`;
-            for (let i = 0; i < 8; i++) {
-                hRow2 += `<th style="width: 10%;">${periodNames[i]}</th>`;
-                if (i + 1 === recessAfter) hRow2 += `<th style="width: 4%;">मध्यान्तर</th>`;
-            }
-            hRow2 += `<th style="width: 6%;" class="no-print">कार्रवाई</th></tr>`;
-            thead2.innerHTML = hRow2;
-
-            const tbody2 = document.getElementById('tbody-f2');
-            tbody2.innerHTML = '';
-            dataF2.forEach((row, index) => {
-                let tr = document.createElement('tr');
-                let html = `<td>${index + 1}</td><td><input type="text" class="editable-cell" value="${row.cls}" onchange="dataF2[${index}].cls=this.value"></td>`;
-                for (let i = 0; i < 8; i++) {
-                    let pVal = row.periods[i] || "-";
-                    let extraClass = (i === 7) ? " editable-cell period-8-cell" : " editable-cell";
-                    html += `<td><textarea class="${extraClass}" oninput="autoResizeTextarea(this)" onchange="dataF2[${index}].periods[${i}]=this.value">${pVal}</textarea></td>`;
-                    if (i + 1 === recessAfter) html += `<td class="break-cell">मध्यान्तर</td>`;
-                }
-                html += `<td class="no-print"><div class="row-action-group">
-                    <button class="btn-action-mini" onclick="addRowF2(${index})">➕</button>
-                    <button class="btn-action-mini" onclick="moveRowF2(${index}, -1)">⬆️</button>
-                    <button class="btn-action-mini" onclick="moveRowF2(${index}, 1)">⬇️</button>
-                    <button class="btn-action-mini btn-del" onclick="deleteRowF2(${index})">❌</button>
-                </div></td>`;
-                tr.innerHTML = html;
-                tbody2.appendChild(tr);
-            });
-
-            setTimeout(() => {
-                document.querySelectorAll('#section-sarini-root textarea.editable-cell').forEach(el => autoResizeTextarea(el));
-            }, 50);
-        }
-
-        function addRowF1(index) {
-            const newRow = {name: "नया अध्यापक", periods: ["-","-","-","-","-","-","-","-"]};
-            if (index === -1) dataF1.push(newRow); else dataF1.splice(index + 1, 0, newRow);
-            renderTables();
-        }
-        function moveRowF1(index, direction) {
-            const targetIndex = index + direction;
-            if (targetIndex < 0 || targetIndex >= dataF1.length) return;
-            const temp = dataF1[index]; dataF1[index] = dataF1[targetIndex]; dataF1[targetIndex] = temp;
-            renderTables();
-        }
-        function deleteRowF1(index) {
-            if (dataF1.length <= 1) return;
-            dataF1.splice(index, 1);
-            renderTables();
-        }
-
-        function addRowF2(index) {
-            const newRow = {cls: "नयी कक्षा", periods: ["-","-","-","-","-","-","-","-"]};
-            if (index === -1) dataF2.push(newRow); else dataF2.splice(index + 1, 0, newRow);
-            renderTables();
-        }
-        function moveRowF2(index, direction) {
-            const targetIndex = index + direction;
-            if (targetIndex < 0 || targetIndex >= dataF2.length) return;
-            const temp = dataF2[index]; dataF2[index] = dataF2[targetIndex]; dataF2[targetIndex] = temp;
-            renderTables();
-        }
-        function deleteRowF2(index) {
-            if (dataF2.length <= 1) return;
-            dataF2.splice(index, 1);
-            renderTables();
-        }
-
-        function switchTab(formatNum) {
-            document.querySelectorAll('.timetable-section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('section-' + formatNum).classList.add('active');
-            document.getElementById('btn-tab-' + formatNum).classList.add('active');
-            document.getElementById('printSelect').value = formatNum;
-
-            if (formatNum === 1) {
-                document.getElementById('quick-form-1').style.display = 'block';
-                document.getElementById('quick-form-2').style.display = 'none';
-            } else {
-                document.getElementById('quick-form-1').style.display = 'none';
-                document.getElementById('quick-form-2').style.display = 'block';
-            }
-            setTimeout(() => {
-                document.querySelectorAll('#section-sarini-root textarea.editable-cell').forEach(el => autoResizeTextarea(el));
-            }, 50);
-        }
-
-        function onPrintSelectChange(val) { switchTab(parseInt(val)); }
-
-        function triggerSariniPrint() {
-            window.print();
-        }
-
-
-        // --- HOME EXAM DYNAMIC LOGIC ---
-        const hindiDays = ["रविवार", "सोमवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"];
-
-        let examDates = [
-            {date: "28-10-2026", day: "बुधवार"},
-            {date: "29-10-2026", day: "गुरुवार"},
-            {date: "30-10-2026", day: "शुक्रवार"},
-            {date: "02-11-2026", day: "सोमवार"},
-            {date: "03-11-2026", day: "मंगलवार"},
-            {date: "04-11-2026", day: "बुधवार"},
-            {date: "05-11-2026", day: "गुरुवार"}
-        ];
-
-        let examClasses = [
-            {cls: "VI, VII, VIII", subjects: ["हिन्दी", "-", "अंग्रेजी", "कृषि/गृह शिल्प", "विज्ञान", "स० कला", "गणित", "कला/संगीत", "सा० विषय", "-", "संस्कृत", "-", "पी०टी०", "-"]},
-            {cls: "IX", subjects: ["हिन्दी", "-", "अंग्रेजी /संस्कृत", "-", "गणित /गृह वि०", "-", "विज्ञान", "-", "सा० विज्ञान", "-", "चित्रकला/कृषि वि०", "-", "गृह वि० प्रयो०", "विज्ञान प्रयो०"]},
-            {cls: "X", subjects: ["-", "हिन्दी", "-", "अंग्रेजी /संस्कृत", "-", "गणित /गृह वि०", "-", "विज्ञान", "-", "सा० विज्ञान", "-", "चित्रकला", "गृह वि० प्रयो०", "विज्ञान प्रयो०"]},
-            {cls: "XI", subjects: ["हिन्दी", "-", "अर्थशास्त्र", "-", "अंग्रेजी /संस्कृत", "-", "ना० शास्त्र", "-", "भूगोल", "-", "इतिहास", "-", "भूगोल प्रयो०", "-"]},
-            {cls: "XII", subjects: ["-", "हिन्दी", "-", "अर्थशास्त्र", "-", "अंग्रेजी /संस्कृत", "-", "ना० शास्त्र", "-", "भूगोल", "-", "इतिहास", "भूगोल प्रयो०", "-"]}
-        ];
-
-        function renderExamTable() {
-            const thead = document.getElementById('examThead');
-            const tbody = document.getElementById('examTbody');
-
-            // 1. Date Row
-            let r1 = `<tr class="date-row"><th rowspan="2">दिनांक</th>`;
-            examDates.forEach((item, idx) => {
-                r1 += `<th colspan="2" contenteditable="true" class="date-cell" oninput="updateExamDateCell(this, ${idx})">${item.date}</th>`;
-            });
-            r1 += `</tr>`;
-
-            // 2. Day Row
-            let r2 = `<tr class="day-row">`;
-            examDates.forEach(item => {
-                r2 += `<th colspan="2" class="hindi-day">${item.day}</th>`;
-            });
-            r2 += `</tr>`;
-
-            // 3. Shifts Row
-            let r3 = `<tr><th>कक्षा \\ पाली</th>`;
-            examDates.forEach(() => {
-                r3 += `<th>प्रथम</th><th>द्वितीय</th>`;
-            });
-            r3 += `</tr>`;
-
-            thead.innerHTML = r1 + r2 + r3;
-
-            // 4. Body Rows (Classes)
-            tbody.innerHTML = '';
-            examClasses.forEach((rowObj, rIdx) => {
-                let tr = document.createElement('tr');
-                let tdHtml = `<td contenteditable="true" oninput="examClasses[${rIdx}].cls=this.innerText"><b>${rowObj.cls}</b></td>`;
+        <div class="panel">
+            <div class="section-title">2. कर्मचारी विवरण एवं सेवा जानकारी</div>
+            <div class="grid-3-col">
+                <input type="hidden" id="empId">
                 
-                let totalCols = examDates.length * 2;
-                while(rowObj.subjects.length < totalCols) {
-                    rowObj.subjects.push("-");
-                }
+                <div class="form-group">
+                    <label for="empName">कर्मचारी का नाम या क्रम संख्या (Employee Name / Sr No)</label>
+                    <input type="text" id="empName" required placeholder="नाम या क्रम संख्या दर्ज करें" onblur="autoCapitalize(this)" oninput="handleEmpNameInput(this)">
+                </div>
 
-                for(let cIdx = 0; cIdx < totalCols; cIdx++) {
-                    let subVal = rowObj.subjects[cIdx] || "-";
-                    tdHtml += `<td contenteditable="true" oninput="examClasses[${rIdx}].subjects[${cIdx}]=this.innerText">${subVal}</td>`;
-                }
+                <div class="form-group nps-only-field" style="display: none;">
+                    <label for="pranNo">PRAN No.</label>
+                    <input type="text" id="pranNo" placeholder="PRAN Number दर्ज करें" style="text-transform: uppercase;">
+                </div>
 
-                tr.innerHTML = tdHtml;
-                tbody.appendChild(tr);
-            });
+                <!-- Designation Field: Select Dropdown for Retirement, Text Input for Others -->
+                <div class="form-group da-bonus-field">
+                    <label for="designation">पदनाम (Designation)</label>
+                    <input type="text" id="designation" placeholder="पदनाम दर्ज करें" onblur="autoCapitalize(this)">
+                </div>
+                <div class="form-group retirement-only-field" style="display: none;">
+                    <label for="retDesignation">पदनाम (Designation)</label>
+                    <select id="retDesignation">
+                        <option value="">-- चुनें --</option>
+                        <option value="प्रधानाचार्य">प्रधानाचार्य</option>
+                        <option value="प्रवक्ता">प्रवक्ता</option>
+                        <option value="सहायक अध्यापक">सहायक अध्यापक</option>
+                        <option value="प्र० लि०">प्र० लि०</option>
+                        <option value="स० लि०">स० लि०</option>
+                        <option value="दफ्तरी">दफ्तरी</option>
+                        <option value="परिचारक">परिचारक</option>
+                    </select>
+                </div>
+
+                <div class="form-group retirement-only-field" style="display: none;">
+                    <label for="dob">जन्मतिथि (DOB)</label>
+                    <input type="date" id="dob">
+                </div>
+
+                <div class="form-group retirement-only-field" style="display: none;">
+                    <label for="doj">नियुक्ति तिथि (DOJ)</label>
+                    <input type="date" id="doj">
+                </div>
+
+                <div class="form-group bank-info-field" style="display: none;">
+                    <label for="bankName">बैंक का नाम (Bank Name)</label>
+                    <input type="text" id="bankName" placeholder="उदा० State Bank of India / PNB" onblur="autoCapitalize(this)" onchange="saveLastUsedBankInfo()">
+                </div>
+                <div class="form-group bank-info-field" style="display: none;">
+                    <label for="accountNo">खाता संख्या (Account No.)</label>
+                    <input type="text" id="accountNo" placeholder="खाता संख्या दर्ज करें" style="text-transform: none;">
+                </div>
+                
+                <div class="form-group parishramik-only-field" style="display: none;">
+                    <label for="ifscCode">IFSC Code</label>
+                    <input type="text" id="ifscCode" placeholder="उदा० SBIN0001234" style="text-transform: uppercase;" onchange="saveLastUsedBankInfo()">
+                </div>
+
+                <div class="form-group da-only-field">
+                    <label for="joiningDate">कार्यभार ग्रहण तिथि (Joining Date)</label>
+                    <input type="date" id="joiningDate" onchange="runMasterCalculations()">
+                </div>
+                <div class="form-group da-only-field">
+                    <label for="deathDate" style="color: var(--danger-color);">मृत्यु तिथि (यदि बीच में हुई हो)</label>
+                    <input type="date" id="deathDate" onchange="runMasterCalculations()">
+                </div>
+
+                <div class="form-group da-bonus-nps-field">
+                    <label for="basicPay" id="payLabel">मूल वेतन (Basic Pay)</label>
+                    <input type="number" id="basicPay" placeholder="मूल वेतन" oninput="runMasterCalculations()">
+                </div>
+
+                <!-- NPS DA RATE (%) FIELD -->
+                <div class="form-group nps-only-field" style="display: none;">
+                    <label for="npsDaRate">महंगाई प्रतिशत (DA %)</label>
+                    <input type="number" id="npsDaRate" value="60" step="0.01" placeholder="उदा० 60" oninput="markMonthUserChanged(); runMasterCalculations();">
+                </div>
+
+                <div class="form-group da-nps-field">
+                    <label for="daAmount">महंगाई राशि (DA Amount)</label>
+                    <input type="number" id="daAmount" placeholder="0.00" oninput="runMasterCalculations()">
+                </div>
+                <div class="form-group da-only-field">
+                    <label for="basicPlusDa">योग (मूल+DA)</label>
+                    <input type="number" id="basicPlusDa" readonly placeholder="0.00">
+                </div>
+            </div>
+        </div>
+
+        <!-- NPS CALCULATION PANEL -->
+        <div class="panel nps-only-field" style="display: none; background-color: #fffaf0; border-color: #feebc8;">
+            <div class="section-title" style="color: #c05621;">3. NPS अंशदान गणना एवं रिमार्क</div>
+            <div class="grid-4-col">
+                <div class="form-group">
+                    <label for="subsContry">Subs. Contry. (10%)</label>
+                    <input type="number" id="subsContry" placeholder="10% Contribution" oninput="handleManualNpsSubs()">
+                </div>
+                <div class="form-group">
+                    <label for="govContry">Gov. Contry. (x1.4)</label>
+                    <input type="number" id="govContry" placeholder="Gov Contribution">
+                </div>
+                <div class="form-group">
+                    <label for="arearRemark">Arear Remark</label>
+                    <input type="text" id="arearRemark" placeholder="उदा० Arrear July to Oct">
+                </div>
+                <div class="form-group">
+                    <label for="npsRemark">Remark</label>
+                    <input type="text" id="npsRemark" placeholder="टिप्पणी दर्ज करें">
+                </div>
+            </div>
+        </div>
+
+        <div class="panel parishramik-only-field" style="display: none; background-color: #f0fff4; border-color: #c6f6d5;">
+            <div class="section-title" style="color: #276749;">3. परिश्रमक बिल गणना (Days & Rate Calculation)</div>
+            <div class="flex-row-4-col">
+                <div class="form-group">
+                    <label for="noOfDays">No. of Days (कार्य दिवस)</label>
+                    <input type="number" id="noOfDays" value="0" placeholder="दिन दर्ज करें" oninput="runMasterCalculations()">
+                </div>
+                <div class="form-group">
+                    <label for="ratePerDay">Rate Per Day (दर प्रति दिन)</label>
+                    <input type="number" id="ratePerDay" value="0" step="0.01" placeholder="दर दर्ज करें" oninput="runMasterCalculations()">
+                </div>
+                <div class="form-group">
+                    <label for="parishramikTotal">Total Amount (कुल योग)</label>
+                    <input type="number" id="parishramikTotal" value="0" placeholder="कुल राशि">
+                </div>
+                <div class="form-group">
+                    <label for="otherRemark">Other (अन्य विवरण/टिप्पणी)</label>
+                    <input type="text" id="otherRemark" placeholder="अन्य रिमार्क / कोड" onblur="autoCapitalize(this)">
+                </div>
+            </div>
+        </div>
+
+        <div class="panel da-only-field" style="flex-direction: column;">
+            <div class="section-title">3. DA अंतर दर एवं महीने चुनिए</div>
+            
+            <div class="grid-4-col" style="margin-bottom: 12px;">
+                <div class="form-group">
+                    <label for="prevDaRate">पूर्व DA दर (%)</label>
+                    <input type="number" id="prevDaRate" value="58" step="0.01" oninput="runMasterCalculations()">
+                </div>
+                <div class="form-group">
+                    <label for="newDaRate">नवीन DA दर (%)</label>
+                    <input type="number" id="newDaRate" value="60" step="0.01" oninput="runMasterCalculations()">
+                </div>
+                <div class="form-group">
+                    <label for="startMonth">प्रारंभिक माह</label>
+                    <select id="startMonth" onchange="generateMonthInputs()">
+                        <option value="0">जनवरी</option>
+                        <option value="1">फरवरी</option>
+                        <option value="2">मार्च</option>
+                        <option value="3">अप्रैल</option>
+                        <option value="4">मई</option>
+                        <option value="5">जून</option>
+                        <option value="6">जुलाई</option>
+                        <option value="7">अगस्त</option>
+                        <option value="8">सितम्बर</option>
+                        <option value="9">अक्टूबर</option>
+                        <option value="10">नवम्बर</option>
+                        <option value="11">दिसम्बर</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="monthCount">कुल अवधि (महीने)</label>
+                    <select id="monthCount" onchange="generateMonthInputs()">
+                        <option value="1">1 महीना</option>
+                        <option value="2">2 महीने</option>
+                        <option value="3">3 महीने</option>
+                        <option value="4" selected>4 महीने</option>
+                        <option value="5">5 महीने</option>
+                        <option value="6">6 महीने</option>
+                        <option value="7">7 महीने</option>
+                        <option value="8">8 महीने</option>
+                        <option value="9">9 महीने</option>
+                        <option value="10">10 महीने</option>
+                        <option value="11">11 महीने</option>
+                        <option value="12">12 महीने</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="dynamicMonthGrid" class="month-grid-container" style="margin-bottom: 12px;"></div>
+
+            <div class="grid-3-col">
+                <div class="form-group">
+                    <label for="yog">मासिक पूर्ण DA अंतर राशि</label>
+                    <input type="number" id="yog" readonly placeholder="अंतर राशि">
+                </div>
+            </div>
+        </div>
+
+        <div class="panel da-bonus-field">
+            <div class="section-title" id="section4Title">4. कुल योग, खाता श्रेणी एवं भुगतान वितरण</div>
+            
+            <div class="grid-3-col bonus-only-field" style="display: none; margin-bottom: 12px;">
+                <div class="form-group">
+                    <label for="bonusAmountInput">कुल बोनस राशि (Bonus)</label>
+                    <input type="number" id="bonusAmountInput" value="6908" oninput="runMasterCalculations()">
+                </div>
+                <div class="form-group">
+                    <label for="bonusGpfDeductionInput">GPF कटौती राशि (GPF Portion)</label>
+                    <input type="number" id="bonusGpfDeductionInput" value="5181" oninput="runMasterCalculations()">
+                </div>
+            </div>
+
+            <div class="grid-3-col">
+                <div class="form-group da-only-field">
+                    <label for="total">कुल एरियर योग</label>
+                    <input type="number" id="total" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="anm" id="anmLabel">खाता श्रेणी (GPF / NPS)</label>
+                    <select id="anm" onchange="toggleDeductionMode()">
+                        <option value="GPF">जी.पी.एफ (GPF)</option>
+                        <option value="NPS">एन.पी.एस (NPS)</option>
+                        <option value="CASH" class="da-only-field">केवल नगद (No NPS/GPF - Naya Employee)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="gpfSplitSection" class="grid-3-col da-only-field" style="margin-top: 10px; background: #edf2f7; padding: 10px; border-radius: 6px;">
+                <div class="form-group">
+                    <label for="gpfMonths">GPF में जाने वाले महीने</label>
+                    <input type="number" id="gpfMonths" min="0" value="0" oninput="calculateSplitValues()">
+                </div>
+                <div class="form-group">
+                    <label for="cashMonths">नगद मिलने वाले महीने</label>
+                    <input type="number" id="cashMonths" min="0" value="0" oninput="calculateSplitValues()">
+                </div>
+            </div>
+
+            <div class="grid-3-col" style="margin-top: 10px;">
+                <div class="form-group" id="gpfGroup">
+                    <label for="gpf">जी.पी.एफ जमा (Gpf)</label>
+                    <input type="number" id="gpf" value="0" readonly>
+                </div>
+                <div class="form-group" id="npsGroup" style="display: none;">
+                    <label for="nps">एन.पी.एस (Nps)</label>
+                    <input type="number" id="nps" value="0" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="nagad">नकद भुगतान (Cash)</label>
+                    <input type="number" id="nagad" style="font-weight: bold; color: var(--success-color); background-color: #f0fff4;" oninput="handleManualNagadChange()">
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-panel">
+            <button type="button" class="btn btn-save" onclick="saveDataToList()">Save Data</button>
+            <button type="button" class="btn btn-pendrive-save" onclick="exportDataToPendriveFile()">💾 पेनड्राइव में सेव करें</button>
+            <button type="button" class="btn btn-pendrive-load" onclick="document.getElementById('pendriveFileInput').click()">📥 पेनड्राइव से लोड करें</button>
+            <button type="button" class="btn btn-search" onclick="searchEmployeeData()">Search</button>
+            <button type="button" class="btn btn-delete-item" onclick="deleteEmployeeData()">Delete Record</button>
+            <button type="button" class="btn btn-print" onclick="printLandscapeSheet()" id="btnPrintLabel">Print Sheet</button>
+            
+            <!-- EXCEL COPY & EXPORT BUTTONS FOR NPS AND PARISHRAMIK -->
+            <button type="button" class="btn btn-excel excel-btn-field" style="display: none;" id="btnCopyExcel" onclick="copyTableToClipboard()">Copy for Excel</button>
+            <button type="button" class="btn btn-excel excel-btn-field" style="display: none;" id="btnExportCsv" onclick="exportToCsv()">Export Excel (.csv)</button>
+
+            <button type="button" class="btn btn-clear" onclick="resetFormFields()">Clear Form</button>
+            <button type="button" class="btn btn-reset-list" onclick="clearLocalStorageData()">Clear Saved List</button>
+        </div>
+    </form>
+
+    <div class="panel" style="margin-top: 15px;">
+        <div class="section-title" id="previewTitle">सहेजे गए सभी कर्मचारियों की सूची (Preview)</div>
+        <div class="table-preview-container" id="previewTableContainer">
+            <table class="preview-table">
+                <thead id="previewThead"></thead>
+                <tbody id="previewTbody"></tbody>
+                <tfoot id="previewTfoot"></tfoot>
+            </table>
+        </div>
+
+        <div class="summary-verify-box" id="uiVerifyBox">
+        </div>
+    </div>
+</div>
+
+<!-- MASTER DIRECTORY VIEW MODAL -->
+<div id="masterModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:20px; border-radius:8px; width:90%; max-width:600px; max-height:80vh; overflow-y:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #e2e8f0; padding-bottom:8px; margin-bottom:12px;">
+            <h3 style="margin:0; color:var(--primary-color);">सेव किए गए मास्टर कर्मचारी (NPS Master Directory)</h3>
+            <button type="button" onclick="closeEmpMasterModal()" style="background:#c53030; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-weight:bold;">बंद करें</button>
+        </div>
+        <div id="masterEmpTableContainer"></div>
+    </div>
+</div>
+
+<div id="printArea">
+    <div class="print-header">
+        <h2 id="pSchoolName">विद्यालय का नाम</h2>
+        <h3 id="pSheetTitle">महंगाई भत्ता (DA) अवशेष देयक</h3>
+        <p style="margin: 3px 0; font-size: 12px;" id="pSubHeaderDetails">
+            <b>अवधि:</b> <span id="pArrearPeriod">वर्ष एवं माह</span> | 
+            <b>DA अंतर:</b> <span id="pDaRateDiff">0% से 0%</span>
+        </p>
+    </div>
+
+    <table class="print-table">
+        <thead id="pThead"></thead>
+        <tbody id="pTbody"></tbody>
+        <tfoot id="pTfoot"></tfoot>
+    </table>
+
+    <div class="print-summary-box" id="pSummaryBox"></div>
+</div>
+
+<script>
+    const allMonths = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
+    const monthDaysList = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const teachingStaff = ["प्रधानाचार्य", "प्रवक्ता", "सहायक अध्यापक"];
+    let savedEmployeeList = [];
+    let npsMasterDirectory = [];
+    let currentMode = 'DA';
+    let userManuallyChangedMonth = false;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        let isLoggedIn = localStorage.getItem('is_arrear_logged_in');
+        if (isLoggedIn === 'true') {
+            openAppUI();
+        }
+        loadMasterDirectory();
+    });
+
+    function validateLogin() {
+        const uInput = document.getElementById('usernameInput').value.trim();
+        const pInput = document.getElementById('passwordInput').value.trim();
+        const errDiv = document.getElementById('loginError');
+
+        if (uInput === 'arear' && pInput === '1234') {
+            localStorage.setItem('is_arrear_logged_in', 'true');
+            openAppUI();
+            errDiv.style.display = 'none';
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+        } else {
+            errDiv.style.display = 'block';
+        }
+    }
+
+    function openAppUI() {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('mainContainer').style.display = 'block';
+        switchCalculationMode();
+    }
+
+    function logoutApp() {
+        localStorage.removeItem('is_arrear_logged_in');
+        document.getElementById('mainContainer').style.display = 'none';
+        document.getElementById('loginOverlay').style.display = 'flex';
+    }
+
+    document.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && document.getElementById('loginOverlay').style.display !== 'none') {
+            validateLogin();
+        }
+    });
+
+    function triggerNotificationBox(msg, isSuccess) {
+        let mBox = document.getElementById('messageBox');
+        mBox.innerText = msg;
+        mBox.className = 'msg-box ' + (isSuccess ? 'msg-success' : 'msg-error');
+        mBox.style.visibility = 'visible';
+        setTimeout(() => {
+            mBox.style.visibility = 'hidden';
+        }, 3000);
+    }
+
+    function calculateQuickMath() {
+        let expr = document.getElementById('quickCalcInput').value.trim();
+        if (!expr) return;
+        try {
+            let sanitized = expr.replace(/[^0-9+\-*/().]/g, '');
+            let result = Function('"use strict";return (' + sanitized + ')')();
+            document.getElementById('quickCalcInput').value = `${expr} = ${result}`;
+            triggerNotificationBox(`परिणाम: ${result}`, true);
+        } catch (e) {
+            triggerNotificationBox('अमान्य गणितीय समीकरण!', false);
+        }
+    }
+
+    function saveLastUsedBankInfo() {
+        let bank = document.getElementById('bankName').value;
+        let ifsc = document.getElementById('ifscCode').value;
+        if(bank) localStorage.setItem('last_used_bank', bank);
+        if(ifsc) localStorage.setItem('last_used_ifsc', ifsc);
+    }
+
+    function loadLastUsedBankInfo() {
+        let lastBank = localStorage.getItem('last_used_bank');
+        let lastIfsc = localStorage.getItem('last_used_ifsc');
+        if(lastBank) document.getElementById('bankName').value = lastBank;
+        if(lastIfsc) document.getElementById('ifscCode').value = lastIfsc;
+    }
+
+    function markMonthUserChanged() {
+        userManuallyChangedMonth = true;
+    }
+
+    /* MASTER DIRECTORY FUNCTIONS WITH SR.NO / NAME SEARCH SUPPORT */
+    function loadMasterDirectory() {
+        let stored = localStorage.getItem('nps_master_directory');
+        if (stored) {
+            npsMasterDirectory = JSON.parse(stored);
+        } else {
+            npsMasterDirectory = [];
+        }
+    }
+
+    function saveEmpToMasterDirectory() {
+        let name = document.getElementById('masterEmpName').value.trim();
+        let pran = document.getElementById('masterPranNo').value.trim().toUpperCase();
+        let basic = parseFloat(document.getElementById('masterBasicPay').value) || 0;
+
+        if (!name) {
+            triggerNotificationBox('कृपया मास्टर कर्मचारी का नाम दर्ज करें।', false);
+            return;
         }
 
-        function updateExamDateCell(cell, index) {
-            let text = cell.innerText.trim();
-            examDates[index].date = text;
-            let parts = text.split(/[-/]/);
-            let parsedDate;
+        let existing = npsMasterDirectory.find(e => e.name.toLowerCase() === name.toLowerCase());
+        if (existing) {
+            existing.pranNo = pran;
+            existing.basicPay = basic;
+        } else {
+            npsMasterDirectory.push({ name: name, pranNo: pran, basicPay: basic });
+        }
+
+        localStorage.setItem('nps_master_directory', JSON.stringify(npsMasterDirectory));
+        triggerNotificationBox(`कर्मचारी '${name}' मास्टर डायरेक्टरी में सुरक्षित हो गया है!`, true);
+        
+        document.getElementById('masterEmpName').value = '';
+        document.getElementById('masterPranNo').value = '';
+        document.getElementById('masterBasicPay').value = '';
+    }
+
+    function handleEmpNameInput(inputElem) {
+        if (currentMode !== 'NPS_FORMAT') return;
+        
+        let val = inputElem.value.trim().toLowerCase();
+        let parentDiv = inputElem.parentNode;
+        
+        let oldList = parentDiv.querySelector('.autocomplete-items');
+        if (oldList) oldList.remove();
+
+        if (!val) return;
+
+        let matched = [];
+        if (!isNaN(val)) {
+            let index = parseInt(val) - 1;
+            if (index >= 0 && index < npsMasterDirectory.length) {
+                matched = [ { ...npsMasterDirectory[index], srNo: index + 1 } ];
+            }
+        } else {
+            matched = npsMasterDirectory
+                .map((item, idx) => ({ ...item, srNo: idx + 1 }))
+                .filter(e => e.name.toLowerCase().includes(val) || String(e.srNo) === val);
+        }
+
+        if (matched.length === 0) return;
+
+        let listDiv = document.createElement('div');
+        listDiv.setAttribute('class', 'autocomplete-items');
+        parentDiv.appendChild(listDiv);
+
+        matched.forEach(item => {
+            let itemDiv = document.createElement('div');
+            itemDiv.innerHTML = `<b>${item.srNo}. ${item.name}</b> (PRAN: ${item.pranNo || 'N/A'}, Basic: ${item.basicPay})`;
+            itemDiv.addEventListener('click', function() {
+                inputElem.value = item.name;
+                document.getElementById('pranNo').value = item.pranNo || '';
+                document.getElementById('basicPay').value = item.basicPay || '';
+                runMasterCalculations();
+                listDiv.remove();
+            });
+            listDiv.appendChild(itemDiv);
+        });
+    }
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.form-group')) {
+            document.querySelectorAll('.autocomplete-items').forEach(el => el.remove());
+        }
+    });
+
+    function openEmpMasterModal() {
+        let modal = document.getElementById('masterModal');
+        let container = document.getElementById('masterEmpTableContainer');
+        
+        if (npsMasterDirectory.length === 0) {
+            container.innerHTML = '<p>कोई मास्टर रिकॉर्ड उपलब्ध नहीं है।</p>';
+        } else {
+            let html = `<table class="preview-table"><thead><tr><th>क्र.सं. (Sr)</th><th>कर्मचारी का नाम</th><th>PRAN No.</th><th>मूल वेतन</th><th>हटाएं</th></tr></thead><tbody>`;
+            npsMasterDirectory.forEach((emp, i) => {
+                html += `<tr><td><b>${i+1}</b></td><td style="text-align:left;"><b>${emp.name}</b></td><td>${emp.pranNo || '-'}</td><td>${emp.basicPay}</td><td><button type="button" class="btn-tbl-del" onclick="deleteMasterEmp(${i})">X</button></td></tr>`;
+            });
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+        modal.style.display = 'flex';
+    }
+
+    function closeEmpMasterModal() {
+        document.getElementById('masterModal').style.display = 'none';
+    }
+
+    function deleteMasterEmp(index) {
+        if (confirm("क्या आप इस मास्टर कर्मचारी को हटाना चाहते हैं?")) {
+            npsMasterDirectory.splice(index, 1);
+            localStorage.setItem('nps_master_directory', JSON.stringify(npsMasterDirectory));
+            openEmpMasterModal();
+            triggerNotificationBox("मास्टर रिकॉर्ड हटा दिया गया।", true);
+        }
+    }
+
+    function switchCalculationMode() {
+        currentMode = document.getElementById('calcMode').value;
+        userManuallyChangedMonth = false;
+
+        const daFields = document.querySelectorAll('.da-only-field');
+        const bonusFields = document.querySelectorAll('.bonus-only-field');
+        const bankFields = document.querySelectorAll('.bank-info-field');
+        const daBonusFields = document.querySelectorAll('.da-bonus-field');
+        const daBonusNpsFields = document.querySelectorAll('.da-bonus-nps-field');
+        const daNpsFields = document.querySelectorAll('.da-nps-field');
+        const parishramikFields = document.querySelectorAll('.parishramik-only-field');
+        const npsFields = document.querySelectorAll('.nps-only-field');
+        const excelBtnFields = document.querySelectorAll('.excel-btn-field');
+        const retirementFields = document.querySelectorAll('.retirement-only-field');
+        const schoolHeaderPanel = document.querySelector('.school-header-panel');
+
+        if (currentMode === 'BONUS') {
+            document.getElementById('mainTitleHeader').innerText = "बोनस भुगतान रजिस्टर मास्टर (Bonus Master System)";
+            document.getElementById('btnPrintLabel').innerText = "Print Bonus Sheet (Portrait)";
+            document.getElementById('previewTitle').innerText = "सहेजे गए कर्मचारियों का बोनस विवरण (Bonus List)";
+            if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
+            
+            daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bonusFields.forEach(el => el.style.display = 'flex');
+            bankFields.forEach(el => el.style.display = 'flex');
+            daBonusFields.forEach(el => el.style.display = 'flex');
+            daBonusNpsFields.forEach(el => el.style.display = 'flex');
+            daNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            excelBtnFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            retirementFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+
+            let cashOpt = document.querySelector('#anm option[value="CASH"]');
+            if(cashOpt) cashOpt.style.display = 'none';
+
+        } else if (currentMode === 'NPS_FORMAT') {
+            document.getElementById('mainTitleHeader').innerText = "NPS Schedule Master System (Landscape Print)";
+            document.getElementById('btnPrintLabel').innerText = "Print NPS Schedule (Landscape)";
+            document.getElementById('previewTitle').innerText = "सहेजे गए NPS कर्मचारियों का विवरण (NPS Schedule List)";
+            if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
+
+            daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bankFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            retirementFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+
+            daBonusNpsFields.forEach(el => el.style.display = 'flex');
+            daNpsFields.forEach(el => el.style.display = 'flex');
+            npsFields.forEach(el => el.style.display = 'flex');
+
+            excelBtnFields.forEach(el => el.style.display = 'inline-block');
+            document.getElementById('btnCopyExcel').innerText = "Copy NPS for Excel";
+
+        } else if (currentMode === 'PARISHRAMIK') {
+            document.getElementById('mainTitleHeader').innerText = "परिश्रमिक बिल रजिस्टर (Remuneration Master System)";
+            document.getElementById('btnPrintLabel').innerText = "Print Remuneration Sheet (Landscape)";
+            document.getElementById('previewTitle').innerText = "सहेजे गए कर्मचारियों का परिश्रमिक विवरण (Remuneration List)";
+            if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
+
+            daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            retirementFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bankFields.forEach(el => el.style.display = 'flex');
+            parishramikFields.forEach(el => el.style.display = 'block');
+
+            excelBtnFields.forEach(el => el.style.display = 'inline-block');
+            document.getElementById('btnCopyExcel').innerText = "Copy Parishramik for Excel";
+
+        } else if (currentMode === 'RETIREMENT') {
+            document.getElementById('mainTitleHeader').innerText = "कर्मचारी सेवानिवृत्ति एवं सेवा अवधि प्रबंधन प्रणाली";
+            document.getElementById('btnPrintLabel').innerText = "A4 Landscape प्रिंट करें";
+            document.getElementById('previewTitle').innerText = "कर्मचारी सेवानिवृत्ति विवरण सूची";
+            if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'none';
+
+            daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bankFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            excelBtnFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            
+            retirementFields.forEach(el => el.style.display = 'flex');
+
+        } else {
+            document.getElementById('mainTitleHeader').innerText = "अवशेष महंगाई भत्ता (DA Arrear Master Sheet System)";
+            document.getElementById('btnPrintLabel').innerText = "Print Landscape Sheet";
+            document.getElementById('previewTitle').innerText = "सहेजे गए सभी कर्मचारियों की एरियर सूची (Preview)";
+            if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
+
+            daFields.forEach(el => el.style.display = 'flex');
+            bonusFields.forEach(el => el.style.display = 'none');
+            bankFields.forEach(el => el.style.display = 'none');
+            daBonusFields.forEach(el => el.style.display = 'flex');
+            daBonusNpsFields.forEach(el => el.style.display = 'flex');
+            daNpsFields.forEach(el => el.style.display = 'flex');
+            parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            excelBtnFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            retirementFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+
+            let cashOpt = document.querySelector('#anm option[value="CASH"]');
+            if(cashOpt) cashOpt.style.display = 'block';
+
+            generateMonthInputs();
+        }
+
+        loadLocalStorageData();
+        resetFormFields();
+    }
+
+    function updateNextAutoId() {
+        document.getElementById('empId').value = savedEmployeeList.length + 1;
+    }
+
+    function autoCapitalize(inputElem) {
+        if (!inputElem.value) return;
+        inputElem.value = inputElem.value.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    function formatDate(date) {
+        const d = new Date(date);
+        let day = ("0" + d.getDate()).slice(-2);
+        let month = ("0" + (d.getMonth() + 1)).slice(-2);
+        let year = d.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    function calculateDateDifference(startDate, endDate) {
+        let start = new Date(startDate);
+        let end = new Date(endDate);
+
+        if (end < start) {
+            return { years: 0, months: 0, days: 0 };
+        }
+
+        let years = end.getFullYear() - start.getFullYear();
+        let months = end.getMonth() - start.getMonth();
+        let days = end.getDate() - start.getDate();
+
+        if (days < 0) {
+            months--;
+            let prevMonthLastDay = new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+            days += prevMonthLastDay;
+        }
+        if (months < 0) {
+            years--;
+            months += 12;
+        }
+
+        return { years, months, days };
+    }
+
+    function calculateRetirement(dobStr, designation, dojStr) {
+        const dob = new Date(dobStr);
+        const doj = new Date(dojStr);
+        const day = dob.getDate();
+        const month = dob.getMonth() + 1;
+        const year = dob.getFullYear();
+
+        let retDate;
+        let benefitYears = 0, benefitMonths = 0, benefitDays = 0;
+
+        if (teachingStaff.includes(designation)) {
+            let baseRetYear = year + 62;
+            const lastDayOfDobMonth = new Date(baseRetYear, month, 0).getDate();
+            let normalRetDate = new Date(baseRetYear, month - 1, lastDayOfDobMonth);
+
+            if (month < 4 || (month === 4 && day === 1)) {
+                retDate = new Date(baseRetYear, 2, 31);
+            } else {
+                retDate = new Date(baseRetYear + 1, 2, 31);
+            }
+
+            if (retDate > normalRetDate) {
+                let diff = calculateDateDifference(normalRetDate, retDate);
+                benefitYears = diff.years;
+                benefitMonths = diff.months;
+                benefitDays = diff.days;
+            }
+        } else {
+            let baseRetYear = year + 60;
+
+            if (day === 1) {
+                retDate = new Date(baseRetYear, month - 1, 0);
+            } else {
+                let lastDay = new Date(baseRetYear, month, 0).getDate();
+                retDate = new Date(baseRetYear, month - 1, lastDay);
+
+                let normalRetDate = new Date(baseRetYear, month - 1, day - 1);
+                
+                if (retDate > normalRetDate) {
+                    let diff = calculateDateDifference(normalRetDate, retDate);
+                    benefitYears = diff.years;
+                    benefitMonths = diff.months;
+                    benefitDays = diff.days;
+                }
+            }
+        }
+
+        let totalService = calculateDateDifference(doj, retDate);
+
+        let today = new Date();
+        let remainingService = { years: 0, months: 0, days: 0 };
+        if (retDate > today) {
+            remainingService = calculateDateDifference(today, retDate);
+        }
+
+        return {
+            retDate: formatDate(retDate),
+            rawRetDate: retDate,
+            years: benefitYears,
+            months: benefitMonths,
+            days: benefitDays,
+            totalService: `${totalService.years} वर्ष, ${totalService.months} माह, ${totalService.days} दिन`,
+            remainingService: `${remainingService.years} वर्ष, ${remainingService.months} माह, ${remainingService.days} दिन`
+        };
+    }
+
+    function runMasterCalculations() {
+        if (currentMode === 'BONUS') {
+            calculateBonusLogic();
+            return;
+        }
+
+        if (currentMode === 'NPS_FORMAT') {
+            calculateNpsScheduleLogic();
+            return;
+        }
+
+        if (currentMode === 'PARISHRAMIK') {
+            let days = parseFloat(document.getElementById('noOfDays').value) || 0;
+            let rate = parseFloat(document.getElementById('ratePerDay').value) || 0;
+            let calcTotal = Math.round(days * rate);
+            document.getElementById('parishramikTotal').value = calcTotal;
+            return;
+        }
+
+        if (currentMode === 'RETIREMENT') return;
+
+        let prevRate = parseFloat(document.getElementById('prevDaRate').value) || 0;
+        let newRate = parseFloat(document.getElementById('newDaRate').value) || 0;
+        let diffRate = newRate - prevRate;
+
+        let basicPay = parseFloat(document.getElementById('basicPay').value) || 0;
+        let currentDaAmount = Math.round((basicPay * newRate) / 100);
+        let basicPlusDaTotal = basicPay + currentDaAmount;
+        
+        document.getElementById('daAmount').value = currentDaAmount.toFixed(2);
+        document.getElementById('basicPlusDa').value = basicPlusDaTotal.toFixed(2);
+
+        let monthlyDifference = Math.round((basicPay * diffRate) / 100);
+        document.getElementById('yog').value = monthlyDifference.toFixed(2);
+
+        updateDynamicMonthValues(monthlyDifference);
+        calculateGrandTotalOnly();
+    }
+
+    function calculateNpsScheduleLogic() {
+        let basic = parseFloat(document.getElementById('basicPay').value) || 0;
+        let daRate = parseFloat(document.getElementById('npsDaRate').value) || 0;
+        
+        let computedDa = Math.round((basic * daRate) / 100);
+        document.getElementById('daAmount').value = computedDa;
+
+        let totalBase = basic + computedDa;
+        let subs = Math.round(totalBase * 0.10);
+        let gov = Math.round(subs * 1.4);
+
+        document.getElementById('subsContry').value = subs;
+        document.getElementById('govContry').value = gov;
+    }
+
+    function handleManualNpsSubs() {
+        let subs = parseFloat(document.getElementById('subsContry').value) || 0;
+        let gov = Math.round(subs * 1.4);
+        document.getElementById('govContry').value = gov;
+    }
+
+    function calculateBonusLogic() {
+        let selection = document.getElementById('anm').value;
+        let bonusAmount = parseFloat(document.getElementById('bonusAmountInput').value) || 6908;
+        let gpfDeduction = parseFloat(document.getElementById('bonusGpfDeductionInput').value) || 5181;
+
+        let gpfGroup = document.getElementById('gpfGroup');
+        let npsGroup = document.getElementById('npsGroup');
+
+        if (selection === 'GPF') {
+            gpfGroup.style.display = 'flex';
+            npsGroup.style.display = 'none';
+
+            let cashCalc = bonusAmount - gpfDeduction;
+            if (cashCalc < 0) cashCalc = 0;
+
+            document.getElementById('gpf').value = gpfDeduction.toFixed(2);
+            document.getElementById('nps').value = "0.00";
+            document.getElementById('nagad').value = cashCalc.toFixed(2);
+        } else if (selection === 'NPS') {
+            gpfGroup.style.display = 'none';
+            npsGroup.style.display = 'flex';
+
+            document.getElementById('gpf').value = "0.00";
+            document.getElementById('nps').value = "0.00"; 
+            document.getElementById('nagad').value = bonusAmount.toFixed(2);
+        }
+    }
+
+    function generateMonthInputs() {
+        if(currentMode === 'BONUS' || currentMode === 'PARISHRAMIK' || currentMode === 'NPS_FORMAT' || currentMode === 'RETIREMENT') return;
+
+        let startIdx = parseInt(document.getElementById('startMonth').value);
+        let count = parseInt(document.getElementById('monthCount').value);
+        let container = document.getElementById('dynamicMonthGrid');
+        container.innerHTML = '';
+
+        let monthlyDiff = parseFloat(document.getElementById('yog').value) || 0;
+
+        for (let i = 0; i < count; i++) {
+            let mIndex = (startIdx + i) % 12;
+            let monthName = allMonths[mIndex];
+            let div = document.createElement('div');
+            div.className = 'form-group';
+            div.innerHTML = `
+                <label for="month_${i}">${monthName}</label>
+                <input type="number" id="month_${i}" data-month="${monthName}" data-mindex="${mIndex}" class="month-input" value="${monthlyDiff.toFixed(2)}" oninput="calculateGrandTotalOnly()">
+            `;
+            container.appendChild(div);
+        }
+
+        document.getElementById('gpfMonths').value = count;
+        document.getElementById('cashMonths').value = 0;
+        runMasterCalculations();
+    }
+
+    function updateDynamicMonthValues(fullMonthlyDiff) {
+        let monthInputs = document.querySelectorAll('.month-input');
+        if(monthInputs.length === 0) return;
+
+        let joiningDateVal = document.getElementById('joiningDate').value;
+        let deathDateVal = document.getElementById('deathDate').value;
+
+        let joinDay = 1, joinMonthIdx = -1;
+        let deathDay = 31, deathMonthIdx = 99;
+
+        if (joiningDateVal) {
+            let parts = joiningDateVal.split('-');
             if (parts.length === 3) {
-                if (parts[0].length <= 2 && parts[2].length === 4) {
-                    parsedDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
-                } else if (parts[0].length === 4) {
-                    parsedDate = new Date(text);
+                joinMonthIdx = parseInt(parts[1]) - 1;
+                joinDay = parseInt(parts[2]) || 1;
+            }
+        }
+
+        if (deathDateVal) {
+            let parts = deathDateVal.split('-');
+            if (parts.length === 3) {
+                deathMonthIdx = parseInt(parts[1]) - 1;
+                deathDay = parseInt(parts[2]) || 31;
+            }
+        }
+
+        monthInputs.forEach((input) => {
+            let mIdx = parseInt(input.getAttribute('data-mindex')) || 0;
+            let totalDaysInMonth = monthDaysList[mIdx];
+            let calculatedVal = fullMonthlyDiff;
+
+            if (mIdx > deathMonthIdx) {
+                calculatedVal = 0;
+            } 
+            else if (mIdx === deathMonthIdx) {
+                let startDayVal = (mIdx === joinMonthIdx) ? joinDay : 1;
+                let activeDays = deathDay - startDayVal + 1;
+                if (activeDays < 0) activeDays = 0;
+                if (activeDays > totalDaysInMonth) activeDays = totalDaysInMonth;
+
+                let rawProRata = (fullMonthlyDiff / totalDaysInMonth) * activeDays;
+                calculatedVal = Math.round(rawProRata);
+            } 
+            else if (mIdx === joinMonthIdx && joinDay > 1) {
+                let workingDays = (totalDaysInMonth - joinDay + 1);
+                if (workingDays < 0) workingDays = 0;
+
+                let rawProRata = (fullMonthlyDiff / totalDaysInMonth) * workingDays;
+                calculatedVal = Math.round(rawProRata);
+            }
+
+            input.value = calculatedVal.toFixed(2);
+        });
+    }
+
+    function calculateGrandTotalOnly() {
+        let monthInputs = document.querySelectorAll('.month-input');
+        let grandTotal = 0;
+        monthInputs.forEach(input => {
+            grandTotal += parseFloat(input.value) || 0;
+        });
+
+        document.getElementById('total').value = Math.round(grandTotal).toFixed(2);
+        toggleDeductionMode();
+    }
+
+    function toggleDeductionMode() {
+        if(currentMode === 'BONUS') {
+            calculateBonusLogic();
+            return;
+        }
+
+        if(currentMode === 'NPS_FORMAT' || currentMode === 'RETIREMENT') return;
+
+        let selection = document.getElementById('anm').value;
+        let gpfSection = document.getElementById('gpfSplitSection');
+        let gpfGroup = document.getElementById('gpfGroup');
+        let npsGroup = document.getElementById('npsGroup');
+        let totalArrear = parseFloat(document.getElementById('total').value) || 0;
+
+        if (selection === 'NPS') {
+            gpfSection.style.display = 'none';
+            gpfGroup.style.display = 'none';
+            npsGroup.style.display = 'flex';
+            calculateNPS();
+        } else if (selection === 'CASH') {
+            gpfSection.style.display = 'none';
+            gpfGroup.style.display = 'none';
+            npsGroup.style.display = 'none';
+            document.getElementById('gpf').value = 0;
+            document.getElementById('nps').value = 0;
+            document.getElementById('nagad').value = totalArrear.toFixed(2);
+        } else {
+            gpfSection.style.display = 'grid';
+            gpfGroup.style.display = 'flex';
+            npsGroup.style.display = 'none';
+            calculateSplitValues();
+        }
+    }
+
+    function calculateNPS() {
+        let totalArrear = parseFloat(document.getElementById('total').value) || 0;
+        let calculatedNps = Math.round(totalArrear * 0.10);
+        document.getElementById('nps').value = calculatedNps;
+        document.getElementById('gpf').value = 0;
+        document.getElementById('nagad').value = (totalArrear - calculatedNps).toFixed(2);
+    }
+
+    function calculateSplitValues() {
+        let monthInputs = document.querySelectorAll('.month-input');
+        let gpfM = parseFloat(document.getElementById('gpfMonths').value) || 0;
+        let totalArrear = parseFloat(document.getElementById('total').value) || 0;
+
+        let gpfTotal = 0;
+        monthInputs.forEach((input, idx) => {
+            if (idx < gpfM) {
+                gpfTotal += parseFloat(input.value) || 0;
+            }
+        });
+
+        gpfTotal = Math.round(gpfTotal);
+        document.getElementById('gpf').value = gpfTotal.toFixed(2);
+        document.getElementById('nagad').value = (totalArrear - gpfTotal).toFixed(2);
+        document.getElementById('nps').value = 0;
+    }
+
+    function handleManualNagadChange() {
+        if (currentMode === 'DA' && document.getElementById('anm').value === 'GPF') {
+            let total = parseFloat(document.getElementById('total').value) || 0;
+            let nagad = parseFloat(document.getElementById('nagad').value) || 0;
+            document.getElementById('gpf').value = (total - nagad) >= 0 ? (total - nagad).toFixed(2) : "0.00";
+        }
+    }
+
+    function toTitleCase(str) {
+        return str ? str.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : '';
+    }
+
+    function convertNumberToHindiWords(num) {
+        num = Math.round(num);
+        if (num === 0) return "शून्य रुपये मात्र";
+
+        const units = ["", "एक", "दो", "तीन", "चार", "पांच", "छह", "सात", "आठ", "नौ", "दस", 
+                       "ग्यारह", "बारह", "तेरह", "चौदह", "पंद्रह", "सोलह", "सत्रह", "अठारह", "उन्नीस"];
+        const tens = ["", "", "बीस", "तीस", "चालिस", "पचास", "साठ", "सत्तर", "अस्सी", "नब्बे"];
+
+        const compoundNumbers = {
+            21: "इक्कीस", 22: "बाईस", 23: "तेईस", 24: "चौबीस", 25: "पच्चीस", 26: "छब्बीस", 27: "सत्ताईस", 28: "अट्ठाईस", 29: "उनतीस",
+            30: "तीस", 31: "इकत्तीस", 32: "बत्तीस", 33: "तैंतीस", 34: "चौंतीस", 35: "पैंतीस", 36: "छत्तीस", 37: "सैंतीस", 38: "अड़तीस", 39: "उनतालीस",
+            40: "चालिस", 41: "इकतालीस", 42: "बयालीस", 43: "तैंतालीस", 44: "चौंवालीस", 45: "पैंतालीस", 46: "छियालीस", 47: "सैतालीस", 48: "अड़तालीस", 49: "उन्चास",
+            50: "पचास", 51: "इक्यावन", 52: "बावन", 53: "तिरपन", 54: "चौवन", 55: "पचपन", 56: "छप्पन", 57: "सत्तावन", 58: "अट्ठावन", 59: "उनसठ",
+            60: "साठ", 61: "इकसठ", 62: "बासठ", 63: "तिरसठ", 64: "चौंसठ", 65: "पैंसठ", 66: "छाछट", 67: "सरसठ", 68: "अड़सठ", 69: "उनहत्तर",
+            70: "सत्तर", 71: "इकहत्तर", 72: "बहत्तर", 73: "तिहत्तर", 74: "चौहत्तर", 75: "पचहत्तर", 76: "छिहत्तर", 77: "सतहत्तर", 78: "अठहत्तर", 79: "उन्यासी",
+            80: "अस्सी", 81: "इक्यासी", 82: "ब्यासी", 83: "तिरासी", 84: "चौरासी", 85: "पचासी", 86: "छियासी", 87: "सत्तासी", 88: "अट्टासी", 89: "नवासी",
+            90: "नब्बे", 91: "इक्यानवे", 92: "बानवे", 93: "तिरानवे", 94: "चौरानवे", 95: "पंचानवे", 96: "छानवे", 97: "संतानवे", 98: "अट्ठानवे", 99: "निन्यानवे"
+        };
+
+        function getTwoDigitWord(n) {
+            if (n < 20) return units[n];
+            if (compoundNumbers[n]) return compoundNumbers[n];
+            let t = Math.floor(n / 10);
+            let u = n % 10;
+            return tens[t] + (u > 0 ? " " + units[u] : "");
+        }
+
+        let words = "";
+
+        if (Math.floor(num / 100000) > 0) {
+            let lakhPart = Math.floor(num / 100000);
+            words += getTwoDigitWord(lakhPart) + " लाख ";
+            num %= 100000;
+        }
+
+        if (Math.floor(num / 1000) > 0) {
+            let thousandPart = Math.floor(num / 1000);
+            words += getTwoDigitWord(thousandPart) + " हजार ";
+            num %= 1000;
+        }
+
+        if (Math.floor(num / 100) > 0) {
+            let hundredPart = Math.floor(num / 100);
+            words += units[hundredPart] + " सौ ";
+            num %= 100;
+        }
+
+        if (num > 0) {
+            words += getTwoDigitWord(num);
+        }
+
+        return words.trim() + " रुपये मात्र";
+    }
+
+    /* --- PENDRIVE BACKUP & RESTORE ENGINES --- */
+    function exportDataToPendriveFile() {
+        const fullDataPackage = {
+            software: "DA_ARREAR_MASTER_SYSTEM",
+            version: "2026.1",
+            timestamp: new Date().toLocaleString(),
+            arrear_saved_list: JSON.parse(localStorage.getItem('arrear_saved_list') || '[]'),
+            bonus_saved_list: JSON.parse(localStorage.getItem('bonus_saved_list') || '[]'),
+            nps_format_saved_list: JSON.parse(localStorage.getItem('nps_format_saved_list') || '[]'),
+            parishramik_saved_list: JSON.parse(localStorage.getItem('parishramik_saved_list') || '[]'),
+            retirement_employees: JSON.parse(localStorage.getItem('employees') || '[]'),
+            nps_master_directory: JSON.parse(localStorage.getItem('nps_master_directory') || '[]'),
+            last_used_bank: localStorage.getItem('last_used_bank') || '',
+            last_used_ifsc: localStorage.getItem('last_used_ifsc') || ''
+        };
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullDataPackage, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "DA_Arrear_Pendrive_Backup.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+
+        triggerNotificationBox("📁 पेनड्राइव डेटा फाइल डाउनलोड हो गई है! इसे पेनड्राइव में सेव रखें।", true);
+    }
+
+    function handlePendriveBackupFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const parsedData = JSON.parse(e.target.result);
+                if (parsedData.software === "DA_ARREAR_MASTER_SYSTEM") {
+                    if (parsedData.arrear_saved_list) localStorage.setItem('arrear_saved_list', JSON.stringify(parsedData.arrear_saved_list));
+                    if (parsedData.bonus_saved_list) localStorage.setItem('bonus_saved_list', JSON.stringify(parsedData.bonus_saved_list));
+                    if (parsedData.nps_format_saved_list) localStorage.setItem('nps_format_saved_list', JSON.stringify(parsedData.nps_format_saved_list));
+                    if (parsedData.parishramik_saved_list) localStorage.setItem('parishramik_saved_list', JSON.stringify(parsedData.parishramik_saved_list));
+                    if (parsedData.retirement_employees) localStorage.setItem('employees', JSON.stringify(parsedData.retirement_employees));
+                    if (parsedData.nps_master_directory) localStorage.setItem('nps_master_directory', JSON.stringify(parsedData.nps_master_directory));
+                    if (parsedData.last_used_bank) localStorage.setItem('last_used_bank', parsedData.last_used_bank);
+                    if (parsedData.last_used_ifsc) localStorage.setItem('last_used_ifsc', parsedData.last_used_ifsc);
+
+                    loadMasterDirectory();
+                    loadLocalStorageData();
+                    triggerNotificationBox("✅ पेनड्राइव से डेटा सफलतापूर्वक रीस्टोर हो गया है!", true);
+                } else {
+                    triggerNotificationBox("❌ अमान्य बैकअप फ़ाइल! सही पेनड्राइव JSON फ़ाइल चुनें।", false);
                 }
+            } catch (err) {
+                triggerNotificationBox("❌ फ़ाइल पढ़ने में त्रुटि!", false);
             }
-            if (parsedDate && !isNaN(parsedDate)) {
-                const dayIndex = parsedDate.getDay();
-                examDates[index].day = hindiDays[dayIndex];
-                renderExamTable();
-            }
+        };
+        reader.readAsText(file);
+    }
+
+    function saveDataToList() {
+        let empId = document.getElementById('empId').value;
+        let empNameInput = document.getElementById('empName');
+        autoCapitalize(empNameInput);
+        let empName = empNameInput.value;
+
+        if (!empName) {
+            triggerNotificationBox('कृपया कर्मचारी का नाम या क्रम संख्या दर्ज करें।', false);
+            return;
         }
 
-        function addExamDateColumn() {
-            examDates.push({date: "06-11-2026", day: "शुक्रवार"});
-            examClasses.forEach(cls => {
-                cls.subjects.push("-");
-                cls.subjects.push("-");
-            });
-            renderExamTable();
-        }
+        let empObject = {};
 
-        function removeExamDateColumn() {
-            if(examDates.length <= 1) {
-                alert('Kam se kam ek date honi chahiye!');
+        if (currentMode === 'RETIREMENT') {
+            let desig = document.getElementById('retDesignation').value;
+            let dob = document.getElementById('dob').value;
+            let doj = document.getElementById('doj').value;
+
+            if (!desig || !dob || !doj) {
+                triggerNotificationBox('कृपया पदनाम, जन्मतिथि और नियुक्ति तिथि सभी भरें।', false);
                 return;
             }
-            examDates.pop();
-            examClasses.forEach(cls => {
-                cls.subjects.pop();
-                cls.subjects.pop();
+
+            let retCalc = calculateRetirement(dob, desig, doj);
+
+            empObject = {
+                id: String(empId),
+                mode: 'RETIREMENT',
+                name: toTitleCase(empName),
+                designation: desig,
+                dob: formatDate(dob),
+                doj: formatDate(doj),
+                rawDob: dob,
+                rawDoj: doj,
+                retDate: retCalc.retDate,
+                totalService: retCalc.totalService,
+                years: retCalc.years,
+                months: retCalc.months,
+                days: retCalc.days,
+                remainingService: retCalc.remainingService
+            };
+
+        } else if (currentMode === 'NPS_FORMAT') {
+            let pran = (document.getElementById('pranNo').value || '-').toUpperCase();
+
+            empObject = {
+                id: String(empId),
+                mode: 'NPS_FORMAT',
+                ddoRegNo: document.getElementById('ddoRegNo').value || '-',
+                payMonth: document.getElementById('payMonth').value,
+                payYear: document.getElementById('payYear').value,
+                contType: document.getElementById('contType').value,
+                name: toTitleCase(empName),
+                pranNo: pran,
+                basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
+                daRate: parseFloat(document.getElementById('npsDaRate').value) || 0,
+                daAmount: parseFloat(document.getElementById('daAmount').value) || 0,
+                subsContry: parseFloat(document.getElementById('subsContry').value) || 0,
+                govContry: parseFloat(document.getElementById('govContry').value) || 0,
+                arearRemark: document.getElementById('arearRemark').value || '-',
+                remark: document.getElementById('npsRemark').value || '-'
+            };
+        } else if (currentMode === 'PARISHRAMIK') {
+            let bankInput = document.getElementById('bankName');
+            autoCapitalize(bankInput);
+            let otherInput = document.getElementById('otherRemark');
+            autoCapitalize(otherInput);
+
+            saveLastUsedBankInfo();
+
+            empObject = {
+                id: String(empId),
+                mode: 'PARISHRAMIK',
+                name: toTitleCase(empName),
+                bankName: bankInput.value || '-',
+                accountNo: document.getElementById('accountNo').value || '-',
+                ifscCode: (document.getElementById('ifscCode').value || '-').toUpperCase(),
+                noOfDays: parseFloat(document.getElementById('noOfDays').value) || 0,
+                ratePerDay: parseFloat(document.getElementById('ratePerDay').value) || 0,
+                total: parseFloat(document.getElementById('parishramikTotal').value) || 0,
+                other: otherInput.value || '-'
+            };
+        } else if (currentMode === 'BONUS') {
+            let bankInput = document.getElementById('bankName');
+            autoCapitalize(bankInput);
+            let designationInput = document.getElementById('designation');
+            autoCapitalize(designationInput);
+
+            saveLastUsedBankInfo();
+
+            empObject = {
+                id: String(empId),
+                mode: 'BONUS',
+                name: toTitleCase(empName),
+                designation: toTitleCase(designationInput.value),
+                bankName: bankInput.value || '-',
+                accountNo: document.getElementById('accountNo').value || '-',
+                basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
+                bonus: parseFloat(document.getElementById('bonusAmountInput').value) || 6908,
+                gpf: parseFloat(document.getElementById('gpf').value) || 0,
+                nps: parseFloat(document.getElementById('nps').value) || 0,
+                nagad: parseFloat(document.getElementById('nagad').value) || 0,
+                total: parseFloat(document.getElementById('bonusAmountInput').value) || 6908,
+                accountType: document.getElementById('anm').value
+            };
+        } else {
+            let designationInput = document.getElementById('designation');
+            autoCapitalize(designationInput);
+            let monthInputs = document.querySelectorAll('.month-input');
+            let monthData = [];
+            monthInputs.forEach(input => {
+                monthData.push({
+                    name: input.getAttribute('data-month'),
+                    val: parseFloat(input.value) || 0
+                });
             });
-            renderExamTable();
+
+            empObject = {
+                id: String(empId),
+                mode: 'DA',
+                name: toTitleCase(empName),
+                designation: toTitleCase(designationInput.value),
+                joiningDate: document.getElementById('joiningDate').value,
+                deathDate: document.getElementById('deathDate').value,
+                basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
+                daAmount: parseFloat(document.getElementById('daAmount').value) || 0,
+                basicPlusDa: parseFloat(document.getElementById('basicPlusDa').value) || 0,
+                months: monthData,
+                total: parseFloat(document.getElementById('total').value) || 0,
+                gpf: parseFloat(document.getElementById('gpf').value) || 0,
+                nps: parseFloat(document.getElementById('nps').value) || 0,
+                nagad: parseFloat(document.getElementById('nagad').value) || 0,
+                accountType: document.getElementById('anm').value
+            };
         }
 
-        function addExamClassRow() {
-            let totalCols = examDates.length * 2;
-            let newSubs = [];
-            for(let i=0; i<totalCols; i++) newSubs.push("-");
-            examClasses.push({cls: "नयी कक्षा", subjects: newSubs});
-            renderExamTable();
+        let existingIndex = savedEmployeeList.findIndex(e => String(e.id) === String(empId));
+        if (existingIndex >= 0) {
+            savedEmployeeList[existingIndex] = empObject;
+        } else {
+            savedEmployeeList.push(empObject);
         }
 
-        function updateExamStyles() {
-            const fontSize = document.getElementById('fontSizeRange').value + 'px';
-            const padding = document.getElementById('paddingRange').value + 'px';
-            document.getElementById('bodyRoot').style.setProperty('--exam-font-size', fontSize);
-            document.getElementById('bodyRoot').style.setProperty('--exam-table-padding', padding);
-        }
+        saveToLocalStorageByMode();
+        renderMasterTable();
+        triggerNotificationBox('डेटा सफलतापूर्वक Local Storage में सेव हुआ!', true);
+        resetFormFieldsForNextEntry();
+    }
 
-        function saveExamData() {
-            const pageContent = document.getElementById('examPrintArea').innerHTML;
-            const fontSize = document.getElementById('fontSizeRange').value;
-            const padding = document.getElementById('paddingRange').value;
-            localStorage.setItem('exam_timetable_content', pageContent);
-            localStorage.setItem('exam_fontsize', fontSize);
-            localStorage.setItem('exam_padding', padding);
-            localStorage.setItem('exam_dates_data', JSON.stringify(examDates));
-            localStorage.setItem('exam_classes_data', JSON.stringify(examClasses));
-            alert('Home Exam Settings aur Data safalpurvak save ho gaye hain!');
+    function resetFormFieldsForNextEntry() {
+        document.getElementById('empId').value = savedEmployeeList.length + 1;
+        document.getElementById('empName').value = '';
+        if (currentMode === 'NPS_FORMAT') {
+            document.getElementById('pranNo').value = '';
+            document.getElementById('basicPay').value = '';
+            document.getElementById('subsContry').value = '';
+            document.getElementById('govContry').value = '';
+            document.getElementById('arearRemark').value = '';
+            document.getElementById('npsRemark').value = '';
+        } else {
+            document.getElementById('basicPay').value = '';
+            document.getElementById('daAmount').value = '';
+            document.getElementById('total').value = '';
         }
+        document.getElementById('empName').focus();
+    }
 
-        function loadExamData() {
-            const savedDates = localStorage.getItem('exam_dates_data');
-            const savedClasses = localStorage.getItem('exam_classes_data');
-            const savedFontSize = localStorage.getItem('exam_fontsize');
-            const savedPadding = localStorage.getItem('exam_padding');
+    function resetFormFields() {
+        updateNextAutoId();
+        document.getElementById('empName').value = '';
+        if (currentMode === 'NPS_FORMAT') {
+            document.getElementById('pranNo').value = '';
+            document.getElementById('basicPay').value = '';
+            document.getElementById('subsContry').value = '';
+            document.getElementById('govContry').value = '';
+            document.getElementById('arearRemark').value = '';
+            document.getElementById('npsRemark').value = '';
+        }
+    }
+
+    function saveToLocalStorageByMode() {
+        let storageKey = 'arrear_saved_list';
+        if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
+        if (currentMode === 'NPS_FORMAT') storageKey = 'nps_format_saved_list';
+        if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
+        if (currentMode === 'RETIREMENT') storageKey = 'employees';
+        localStorage.setItem(storageKey, JSON.stringify(savedEmployeeList));
+    }
+
+    function loadLocalStorageData() {
+        let storageKey = 'arrear_saved_list';
+        if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
+        if (currentMode === 'NPS_FORMAT') storageKey = 'nps_format_saved_list';
+        if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
+        if (currentMode === 'RETIREMENT') storageKey = 'employees';
+        
+        let stored = localStorage.getItem(storageKey);
+        if (stored) {
+            savedEmployeeList = JSON.parse(stored);
+        } else {
+            savedEmployeeList = [];
+        }
+        renderMasterTable();
+    }
+
+    function clearLocalStorageData() {
+        let modeText = 'एरियर';
+        if (currentMode === 'BONUS') modeText = 'बोनस';
+        if (currentMode === 'NPS_FORMAT') modeText = 'NPS Schedule';
+        if (currentMode === 'PARISHRAMIK') modeText = 'परिश्रमिक';
+        if (currentMode === 'RETIREMENT') modeText = 'सेवानिवृत्ति';
+
+        if (confirm(`क्या आप सहेजी गई पूरी ${modeText} सूची हटाना चाहते हैं?`)) {
+            let storageKey = 'arrear_saved_list';
+            if (currentMode === 'BONUS') storageKey = 'bonus_saved_list';
+            if (currentMode === 'NPS_FORMAT') storageKey = 'nps_format_saved_list';
+            if (currentMode === 'PARISHRAMIK') storageKey = 'parishramik_saved_list';
+            if (currentMode === 'RETIREMENT') storageKey = 'employees';
             
-            if (savedDates && savedClasses) {
-                try {
-                    examDates = JSON.parse(savedDates);
-                    examClasses = JSON.parse(savedClasses);
-                } catch(e) { console.error(e); }
+            localStorage.removeItem(storageKey);
+            savedEmployeeList = [];
+            renderMasterTable();
+            updateNextAutoId();
+            triggerNotificationBox(`स्थानीय ${modeText} डेटा सूची साफ कर दी गई है।`, true);
+        }
+    }
+
+    function renderMasterTable() {
+        if (currentMode === 'BONUS') {
+            renderBonusTable();
+        } else if (currentMode === 'NPS_FORMAT') {
+            renderNpsTable();
+        } else if (currentMode === 'PARISHRAMIK') {
+            renderParishramikTable();
+        } else if (currentMode === 'RETIREMENT') {
+            renderRetirementTable();
+        } else {
+            renderDaTable();
+        }
+    }
+
+    function renderRetirementTable() {
+        if (savedEmployeeList.length === 0) {
+            let emptyHTML = '<tr><td colspan="12">कोई सेवानिवृत्ति रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('previewThead').innerHTML = '';
+            document.getElementById('previewTbody').innerHTML = emptyHTML;
+            document.getElementById('previewTfoot').innerHTML = '';
+
+            document.getElementById('pThead').innerHTML = '';
+            document.getElementById('pTbody').innerHTML = emptyHTML;
+            document.getElementById('pTfoot').innerHTML = '';
+
+            document.getElementById('uiVerifyBox').innerHTML = '<b>कोई डाटा नहीं है।</b>';
+            document.getElementById('pSummaryBox').innerHTML = '';
+            return;
+        }
+
+        let headerHTML = `<tr>
+            <th>क्र.सं.</th>
+            <th style="text-align:left;">कर्मचारी नाम</th>
+            <th>पदनाम</th>
+            <th>जन्मतिथि</th>
+            <th>नियुक्ति तिथि</th>
+            <th>सेवानिवृत्ति तिथि</th>
+            <th>कुल सेवा (वर्ष-माह-दिन)</th>
+            <th>लाभ (वर्ष)</th>
+            <th>लाभ (माह)</th>
+            <th>लाभ (दिन)</th>
+            <th>शेष बची सेवा</th>`;
+
+        let headerHTMLPreview = headerHTML + `<th class="no-print-col">कार्रवाई</th></tr>`;
+        let headerHTMLPrint = headerHTML + `</tr>`;
+
+        document.getElementById('previewThead').innerHTML = headerHTMLPreview;
+        document.getElementById('pThead').innerHTML = headerHTMLPrint;
+
+        let previewBodyHTML = '';
+        let printBodyHTML = '';
+
+        savedEmployeeList.forEach((emp, idx) => {
+            let rowCells = `
+                <td>${idx + 1}</td>
+                <td style="text-align:left;" class="print-emp-name"><b>${toTitleCase(emp.name)}</b></td>
+                <td class="print-emp-desig">${emp.designation}</td>
+                <td>${emp.dob}</td>
+                <td>${emp.doj}</td>
+                <td><b>${emp.retDate}</b></td>
+                <td>${emp.totalService}</td>
+                <td>${emp.years}</td>
+                <td>${emp.months}</td>
+                <td>${emp.days}</td>
+                <td><b>${emp.remainingService}</b></td>`;
+
+            printBodyHTML += `<tr>${rowCells}</tr>`;
+            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+        });
+
+        document.getElementById('previewTbody').innerHTML = previewBodyHTML;
+        document.getElementById('pTbody').innerHTML = printBodyHTML;
+        document.getElementById('previewTfoot').innerHTML = '';
+        document.getElementById('pTfoot').innerHTML = '';
+
+        document.getElementById('uiVerifyBox').innerHTML = `<b>कुल दर्ज कर्मचारी:</b> ${savedEmployeeList.length}`;
+        document.getElementById('pSummaryBox').innerHTML = `<b>कुल दर्ज कर्मचारी:</b> ${savedEmployeeList.length}`;
+    }
+
+    function renderNpsTable() {
+        if (savedEmployeeList.length === 0) {
+            let emptyHTML = '<tr><td colspan="13">कोई NPS रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('previewThead').innerHTML = '';
+            document.getElementById('previewTbody').innerHTML = emptyHTML;
+            document.getElementById('previewTfoot').innerHTML = '';
+
+            document.getElementById('pThead').innerHTML = '';
+            document.getElementById('pTbody').innerHTML = emptyHTML;
+            document.getElementById('pTfoot').innerHTML = '';
+
+            document.getElementById('uiVerifyBox').innerHTML = '<b>कोई डाटा नहीं है।</b>';
+            document.getElementById('pSummaryBox').innerHTML = '';
+            return;
+        }
+
+        let headerHTML = `<tr>
+            <th>Sr.</th>
+            <th>DDO Reg.No.</th>
+            <th>Employee Name</th>
+            <th>PRAN No.</th>
+            <th>Basic Pay</th>
+            <th>Subs. Contry.</th>
+            <th>Gov. Contry.</th>
+            <th>Pay Month</th>
+            <th>Pay Year</th>
+            <th>Cont. Type</th>
+            <th>Arear Remark</th>
+            <th>Remark</th>`;
+
+        let headerHTMLPreview = headerHTML + `<th class="no-print-col">हटाएं</th></tr>`;
+        let headerHTMLPrint = headerHTML + `</tr>`;
+
+        document.getElementById('previewThead').innerHTML = headerHTMLPreview;
+        document.getElementById('pThead').innerHTML = headerHTMLPrint;
+
+        let previewBodyHTML = '';
+        let printBodyHTML = '';
+        let totals = { basicPay: 0, subsContry: 0, govContry: 0 };
+
+        savedEmployeeList.forEach((emp, idx) => {
+            totals.basicPay += (emp.basicPay || 0);
+            totals.subsContry += (emp.subsContry || 0);
+            totals.govContry += (emp.govContry || 0);
+
+            let rowCells = `
+                <td>${idx + 1}</td>
+                <td>${emp.ddoRegNo}</td>
+                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td style="text-transform:uppercase;">${emp.pranNo}</td>
+                <td>${emp.basicPay}</td>
+                <td><b>${emp.subsContry.toFixed(2)}</b></td>
+                <td><b>${emp.govContry.toFixed(2)}</b></td>
+                <td>${emp.payMonth}</td>
+                <td>${emp.payYear}</td>
+                <td>${emp.contType}</td>
+                <td>${emp.arearRemark || '-'}</td>
+                <td>${emp.remark || '-'}</td>`;
+
+            printBodyHTML += `<tr>${rowCells}</tr>`;
+            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+        });
+
+        document.getElementById('previewTbody').innerHTML = previewBodyHTML;
+        document.getElementById('pTbody').innerHTML = printBodyHTML;
+
+        let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="4">कुल योग (Total):</td>
+            <td>${totals.basicPay}</td>
+            <td>${totals.subsContry.toFixed(2)}</td>
+            <td>${totals.govContry.toFixed(2)}</td>
+            <td colspan="5">-</td>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTML + `<td class="no-print-col"></td></tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTML + `</tr>`;
+
+        updateNpsSummaryBox(totals.subsContry, totals.govContry);
+    }
+
+    function updateNpsSummaryBox(totalSubs, totalGov) {
+        let totalAmount = totalSubs + totalGov;
+        let wordsHindi = convertNumberToHindiWords(totalAmount);
+
+        let summaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <div style="margin-bottom: 4px;"><b>कुल NPS अंशदान (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div><b>कुल NPS अंशदान (शब्दों में):</b> <span style="color: var(--primary-color); font-weight: bold;">${wordsHindi}</span></div>
+                </div>
+                <div style="font-size: 13px; color: #4a5568; text-align: right; background: #edf2f7; padding: 6px 12px; border-radius: 4px; border: 1px solid #cbd5e0;">
+                    <div style="margin-bottom: 2px;"><b>अंशदान विवरण (Contribution Breakdown):</b></div>
+                    <div>(कर्मचारी (10%): <b>₹${totalSubs.toFixed(2)}</b> + सरकार (14%): <b>₹${totalGov.toFixed(2)}</b>) = <b style="color: var(--success-color);">₹${totalAmount.toFixed(2)}</b></div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('uiVerifyBox').innerHTML = summaryHTML;
+
+        let printSummaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="margin-bottom: 3px;"><b>कुल अंशदान (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div><b>कुल अंशदान (शब्दों में):</b> ${wordsHindi}</div>
+                </div>
+                <div style="text-align: right; border: 1px dashed #000; padding: 4px 8px;">
+                    <div style="margin-bottom: 2px;"><b>NPS विवरण:</b></div>
+                    <div>(Employee Contry: ₹${totalSubs.toFixed(2)} + Govt Contry: ₹${totalGov.toFixed(2)}) = ₹${totalAmount.toFixed(2)}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('pSummaryBox').innerHTML = printSummaryHTML;
+    }
+
+    function copyTableToClipboard() {
+        if (currentMode !== 'NPS_FORMAT' && currentMode !== 'PARISHRAMIK') {
+            triggerNotificationBox('यह मोड Excel Copy सपोर्ट नहीं करता है!', false);
+            return;
+        }
+
+        let container = document.getElementById('previewTableContainer');
+        if (!container || savedEmployeeList.length === 0) {
+            triggerNotificationBox('कॉपी करने के लिए कोई डेटा नहीं है!', false);
+            return;
+        }
+
+        let range = document.createRange();
+        range.selectNode(container);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+
+        try {
+            let successful = document.execCommand('copy');
+            if (successful) {
+                let mLabel = currentMode === 'PARISHRAMIK' ? 'परिश्रमिक' : 'NPS';
+                triggerNotificationBox(`${mLabel} डेटा कॉपी हो गया है! अब Excel में Paste (Ctrl+V) करें।`, true);
+            } else {
+                triggerNotificationBox('Copy नहीं हो सका, कृपया मैनुअल सिलेक्ट करके कॉपी करें।', false);
             }
-            if (savedFontSize) document.getElementById('fontSizeRange').value = savedFontSize;
-            if (savedPadding) document.getElementById('paddingRange').value = savedPadding;
+        } catch (err) {
+            triggerNotificationBox('ब्राउज़र कॉपी सपोर्ट नहीं कर रहा है।', false);
+        }
+
+        window.getSelection().removeAllRanges();
+    }
+
+    function exportToCsv() {
+        if (currentMode !== 'NPS_FORMAT' && currentMode !== 'PARISHRAMIK') {
+            triggerNotificationBox('यह मोड CSV Export सपोर्ट नहीं करता है!', false);
+            return;
+        }
+
+        if (savedEmployeeList.length === 0) {
+            triggerNotificationBox('डाउनलोड करने के लिए कोई डेटा नहीं है!', false);
+            return;
+        }
+
+        let csvRows = [];
+
+        if (currentMode === 'NPS_FORMAT') {
+            let headers = ["Sr", "DDO Reg No", "Employee Name", "PRAN No", "Basic Pay", "Subs Contry", "Gov Contry", "Pay Month", "Pay Year", "Cont Type", "Arear Remark", "Remark"];
+            csvRows.push(headers.join(","));
+
+            savedEmployeeList.forEach((emp, idx) => {
+                let row = [
+                    idx + 1,
+                    `"${emp.ddoRegNo || ''}"`,
+                    `"${emp.name || ''}"`,
+                    `"${emp.pranNo || ''}"`,
+                    emp.basicPay || 0,
+                    emp.subsContry || 0,
+                    emp.govContry || 0,
+                    `"${emp.payMonth || ''}"`,
+                    `"${emp.payYear || ''}"`,
+                    `"${emp.contType || ''}"`,
+                    `"${emp.arearRemark || ''}"`,
+                    `"${emp.remark || ''}"`
+                ];
+                csvRows.push(row.join(","));
+            });
+        } else if (currentMode === 'PARISHRAMIK') {
+            let headers = ["Sr No", "Emp Name", "Bank Name", "Account No", "IFSC Code", "No of Days", "Rate Per Day", "Total", "Other"];
+            csvRows.push(headers.join(","));
+
+            savedEmployeeList.forEach((emp, idx) => {
+                let row = [
+                    idx + 1,
+                    `"${emp.name || ''}"`,
+                    `"${emp.bankName || ''}"`,
+                    `"${emp.accountNo || ''}"`,
+                    `"${emp.ifscCode || ''}"`,
+                    emp.noOfDays || 0,
+                    emp.ratePerDay || 0,
+                    emp.total || 0,
+                    `"${emp.other || ''}"`
+                ];
+                csvRows.push(row.join(","));
+            });
+        }
+
+        let fileNamePrefix = currentMode === 'PARISHRAMIK' ? 'Parishramik_Bill' : 'NPS_Schedule';
+        let csvString = csvRows.join("\n");
+        let blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `${fileNamePrefix}_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        triggerNotificationBox('Excel (.CSV) फ़ाइल डाउनलोड हो गई है!', true);
+    }
+
+    function renderParishramikTable() {
+        if (savedEmployeeList.length === 0) {
+            let emptyHTML = '<tr><td colspan="10">कोई परिश्रमिक रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('previewThead').innerHTML = '';
+            document.getElementById('previewTbody').innerHTML = emptyHTML;
+            document.getElementById('previewTfoot').innerHTML = '';
+
+            document.getElementById('pThead').innerHTML = '';
+            document.getElementById('pTbody').innerHTML = emptyHTML;
+            document.getElementById('pTfoot').innerHTML = '';
+
+            document.getElementById('uiVerifyBox').innerHTML = '<b>कोई डाटा नहीं है।</b>';
+            document.getElementById('pSummaryBox').innerHTML = '';
+            return;
+        }
+
+        let headerHTML = `<tr>
+            <th>Sr. No.</th>
+            <th>Emp Name</th>
+            <th>Bank Name</th>
+            <th>Account No.</th>
+            <th>IFSC Code</th>
+            <th>No. of Days</th>
+            <th>Rate Per Day</th>
+            <th>Total</th>
+            <th>Other</th>`;
+
+        let headerHTMLPreview = headerHTML + `<th class="no-print-col">हटाएं</th></tr>`;
+        let headerHTMLPrint = headerHTML + `</tr>`;
+
+        document.getElementById('previewThead').innerHTML = headerHTMLPreview;
+        document.getElementById('pThead').innerHTML = headerHTMLPrint;
+
+        let previewBodyHTML = '';
+        let printBodyHTML = '';
+        let totals = { days: 0, totalAmount: 0, sbiTotal: 0, otherTotal: 0 };
+
+        savedEmployeeList.forEach((emp, idx) => {
+            totals.days += (emp.noOfDays || 0);
+            totals.totalAmount += (emp.total || 0);
+
+            let bankLower = (emp.bankName || '').toLowerCase();
+            let ifscLower = (emp.ifscCode || '').toLowerCase();
+            if (bankLower.includes('state bank') || bankLower.includes('sbi') || ifscLower.startsWith('sbin')) {
+                totals.sbiTotal += (emp.total || 0);
+            } else {
+                totals.otherTotal += (emp.total || 0);
+            }
+
+            let rowCells = `
+                <td>${idx + 1}</td>
+                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td>${emp.bankName}</td>
+                <td>${emp.accountNo}</td>
+                <td style="text-transform:uppercase;">${emp.ifscCode}</td>
+                <td>${emp.noOfDays}</td>
+                <td>${emp.ratePerDay.toFixed(2)}</td>
+                <td><b>${emp.total.toFixed(2)}</b></td>
+                <td>${emp.other || '-'}</td>`;
+
+            printBodyHTML += `<tr>${rowCells}</tr>`;
+            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+        });
+
+        document.getElementById('previewTbody').innerHTML = previewBodyHTML;
+        document.getElementById('pTbody').innerHTML = printBodyHTML;
+
+        let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="5">कुल योग (Total):</td>
+            <td>${totals.days}</td>
+            <td>-</td>
+            <td>${totals.totalAmount.toFixed(2)}</td>
+            <td>-</td>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTML + `<td class="no-print-col"></td></tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTML + `</tr>`;
+
+        updateParishramikSummaryBox(totals.days, totals.totalAmount, totals.sbiTotal, totals.otherTotal);
+    }
+
+    function updateParishramikSummaryBox(totalDays, totalAmount, sbiTotal, otherTotal) {
+        let wordsHindi = convertNumberToHindiWords(totalAmount);
+        let matchSum = sbiTotal + otherTotal;
+
+        let summaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <div style="margin-bottom: 4px;"><b>कुल कार्य दिवस (Total Days):</b> ${totalDays} | <b>कुल देय राशि (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div><b>कुल देय राशि (शब्दों में):</b> <span style="color: var(--primary-color); font-weight: bold;">${wordsHindi}</span></div>
+                </div>
+                <div style="font-size: 13px; color: #4a5568; text-align: right; background: #edf2f7; padding: 6px 12px; border-radius: 4px; border: 1px solid #cbd5e0;">
+                    <div style="margin-bottom: 2px;"><b>बैंक मिलान विवरण (Bank Wise Summary):</b></div>
+                    <div>(State Bank of India: <b>₹${sbiTotal.toFixed(2)}</b> + Other Banks: <b>₹${otherTotal.toFixed(2)}</b>) = <b style="color: var(--success-color);">₹${matchSum.toFixed(2)}</b></div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('uiVerifyBox').innerHTML = summaryHTML;
+
+        let printSummaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="margin-bottom: 3px;"><b>कुल कार्य दिवस:</b> ${totalDays} | <b>कुल देय राशि (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div><b>कुल देय राशि (शब्दों में):</b> ${wordsHindi}</div>
+                </div>
+                <div style="text-align: right; border: 1px dashed #000; padding: 4px 8px;">
+                    <div style="margin-bottom: 2px;"><b>बैंक मिलान विवरण:</b></div>
+                    <div>(SBI Total: ₹${sbiTotal.toFixed(2)} + Other Bank Total: ₹${otherTotal.toFixed(2)}) = ₹${matchSum.toFixed(2)}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('pSummaryBox').innerHTML = printSummaryHTML;
+    }
+
+    function renderBonusTable() {
+        if (savedEmployeeList.length === 0) {
+            let emptyHTML = '<tr><td colspan="11">कोई बोनस रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('previewThead').innerHTML = '';
+            document.getElementById('previewTbody').innerHTML = emptyHTML;
+            document.getElementById('previewTfoot').innerHTML = '';
+
+            document.getElementById('pThead').innerHTML = '';
+            document.getElementById('pTbody').innerHTML = emptyHTML;
+            document.getElementById('pTfoot').innerHTML = '';
+
+            document.getElementById('uiVerifyBox').innerHTML = '<b>कोई डाटा नहीं है।</b>';
+            document.getElementById('pSummaryBox').innerHTML = '';
+            return;
+        }
+
+        let headerHTML = `<tr>
+            <th>Sr.no</th>
+            <th>Employee Name</th>
+            <th>Designation</th>
+            <th>Bank Name</th>
+            <th>Account No.</th>
+            <th>Pay</th>
+            <th>Bonus</th>
+            <th>Gpf</th>
+            <th>Nps</th>
+            <th>Cash</th>`;
+
+        let headerHTMLPreview = headerHTML + `<th class="no-print-col">हटाएं</th></tr>`;
+        let headerHTMLPrint = headerHTML + `</tr>`;
+
+        document.getElementById('previewThead').innerHTML = headerHTMLPreview;
+        document.getElementById('pThead').innerHTML = headerHTMLPrint;
+
+        let previewBodyHTML = '';
+        let printBodyHTML = '';
+        let totals = { pay: 0, bonus: 0, gpf: 0, nps: 0, cash: 0 };
+
+        savedEmployeeList.forEach((emp, idx) => {
+            totals.pay += emp.basicPay;
+            totals.bonus += emp.bonus;
+            totals.gpf += emp.gpf;
+            totals.nps += emp.nps;
+            totals.cash += emp.nagad;
+
+            let rowCells = `
+                <td>${idx + 1}</td>
+                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
+                <td>${emp.bankName}</td>
+                <td>${emp.accountNo}</td>
+                <td>${emp.basicPay}</td>
+                <td><b>${emp.bonus.toFixed(2)}</b></td>
+                <td>${emp.gpf.toFixed(2)}</td>
+                <td>${emp.nps.toFixed(2)}</td>
+                <td><b>${emp.nagad.toFixed(2)}</b></td>`;
+
+            printBodyHTML += `<tr>${rowCells}</tr>`;
+            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+        });
+
+        document.getElementById('previewTbody').innerHTML = previewBodyHTML;
+        document.getElementById('pTbody').innerHTML = printBodyHTML;
+
+        let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="5">कुल योग (Total):</td>
+            <td>${totals.pay}</td>
+            <td>${totals.bonus.toFixed(2)}</td>
+            <td>${totals.gpf.toFixed(2)}</td>
+            <td>${totals.nps.toFixed(2)}</td>
+            <td>${totals.cash.toFixed(2)}</td>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTML + `<td class="no-print-col"></td></tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTML + `</tr>`;
+
+        updateVerificationAndWordsSummary(totals.bonus, totals.gpf, totals.nps, totals.cash);
+    }
+
+    function renderDaTable() {
+        if (savedEmployeeList.length === 0) {
+            document.getElementById('previewThead').innerHTML = '';
+            document.getElementById('previewTbody').innerHTML = '<tr><td colspan="11">कोई रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('previewTfoot').innerHTML = '';
             
-            renderExamTable();
-            updateExamStyles();
+            document.getElementById('pThead').innerHTML = '';
+            document.getElementById('pTbody').innerHTML = '<tr><td colspan="10">कोई रिकॉर्ड नहीं है।</td></tr>';
+            document.getElementById('pTfoot').innerHTML = '';
+
+            document.getElementById('uiVerifyBox').innerHTML = '<b>कोई डाटा नहीं है।</b>';
+            document.getElementById('pSummaryBox').innerHTML = '';
+            return;
         }
 
-        function resetExamData() {
-            if(confirm('Kya aap Home Exam data reset karna chahte hain?')) {
-                localStorage.removeItem('exam_timetable_content');
-                localStorage.removeItem('exam_fontsize');
-                localStorage.removeItem('exam_padding');
-                localStorage.removeItem('exam_dates_data');
-                localStorage.removeItem('exam_classes_data');
-                location.reload();
+        let activeMonthNames = [];
+        savedEmployeeList.forEach(emp => {
+            if(emp.months) {
+                emp.months.forEach(m => {
+                    if (!activeMonthNames.includes(m.name)) {
+                        activeMonthNames.push(m.name);
+                    }
+                });
             }
+        });
+
+        let headerHTMLPreview = `<tr>
+            <th>क्रम सं०</th>
+            <th>कर्मचारी का नाम</th>
+            <th>पदनाम</th>
+            <th>मूल वेतन</th>
+            <th>महंगाई</th>
+            <th>योग</th>`;
+        
+        activeMonthNames.forEach(mName => {
+            headerHTMLPreview += `<th>${mName}</th>`;
+        });
+        
+        let headerHTMLPrint = headerHTMLPreview + `<th>कुल योग</th><th>जी.पी.एफ</th><th>एन.पी.एस</th><th>नगद</th></tr>`;
+        headerHTMLPreview += `<th>कुल योग</th><th>जी.पी.एफ</th><th>एन.पी.एस</th><th>नगद</th><th class="no-print-col">हटाएं</th></tr>`;
+
+        document.getElementById('previewThead').innerHTML = headerHTMLPreview;
+        document.getElementById('pThead').innerHTML = headerHTMLPrint;
+
+        let previewBodyHTML = '';
+        let printBodyHTML = '';
+        let grandTotals = { basic: 0, da: 0, basicPlusDa: 0, totalArrear: 0, gpf: 0, nps: 0, nagad: 0 };
+        let monthTotals = Array(activeMonthNames.length).fill(0);
+
+        savedEmployeeList.forEach((emp, idx) => {
+            grandTotals.basic += emp.basicPay || 0;
+            grandTotals.da += emp.daAmount || 0;
+            grandTotals.basicPlusDa += emp.basicPlusDa || 0;
+            grandTotals.totalArrear += emp.total || 0;
+            grandTotals.gpf += emp.gpf || 0;
+            grandTotals.nps += emp.nps || 0;
+            grandTotals.nagad += emp.nagad || 0;
+
+            let displayName = toTitleCase(emp.name);
+            if(emp.deathDate) {
+                displayName += ' <span style="color:red; font-size:10px;">(दिवंगत)</span>';
+            }
+
+            let commonCells = `
+                <td>${idx + 1}</td>
+                <td style="text-align:left;" class="print-emp-name">${displayName}</td>
+                <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
+                <td>${emp.basicPay}</td>
+                <td>${(emp.daAmount || 0).toFixed(2)}</td>
+                <td>${(emp.basicPlusDa || 0).toFixed(2)}</td>`;
+
+            activeMonthNames.forEach((mName, mIdx) => {
+                let foundMonth = emp.months ? emp.months.find(m => m.name === mName) : null;
+                let val = foundMonth ? foundMonth.val : 0;
+                monthTotals[mIdx] += val;
+                commonCells += `<td>${val.toFixed(2)}</td>`;
+            });
+
+            commonCells += `<td><b>${(emp.total || 0).toFixed(2)}</b></td>
+                <td>${(emp.gpf || 0).toFixed(2)}</td>
+                <td>${(emp.nps || 0).toFixed(2)}</td>
+                <td><b>${(emp.nagad || 0).toFixed(2)}</b></td>`;
+
+            printBodyHTML += `<tr>${commonCells}</tr>`;
+            previewBodyHTML += `<tr>${commonCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+        });
+
+        document.getElementById('previewTbody').innerHTML = previewBodyHTML;
+        document.getElementById('pTbody').innerHTML = printBodyHTML;
+
+        let footHTMLPreview = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="3">कुल योग (Total):</td>
+            <td>${grandTotals.basic}</td>
+            <td>${grandTotals.da.toFixed(2)}</td>
+            <td>${grandTotals.basicPlusDa.toFixed(2)}</td>`;
+
+        monthTotals.forEach(mTot => {
+            footHTMLPreview += `<td>${mTot.toFixed(2)}</td>`;
+        });
+
+        footHTMLPreview += `<td>${grandTotals.totalArrear.toFixed(2)}</td>
+            <td>${grandTotals.gpf.toFixed(2)}</td>
+            <td>${grandTotals.nps.toFixed(2)}</td>
+            <td>${grandTotals.nagad.toFixed(2)}</td>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTMLPreview + `<td class="no-print-col"></td></tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTMLPreview + `</tr>`;
+
+        updateVerificationAndWordsSummary(grandTotals.totalArrear, grandTotals.gpf, grandTotals.nps, grandTotals.nagad);
+    }
+
+    function updateVerificationAndWordsSummary(total, gpf, nps, nagad) {
+        let wordsHindi = convertNumberToHindiWords(total);
+        let matchSum = gpf + nps + nagad;
+
+        let summaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <div style="margin-bottom: 4px;"><b>कुल योग (अंकों में):</b> ₹ ${total.toFixed(2)}</div>
+                    <div><b>कुल योग (शब्दों में):</b> <span style="color: var(--primary-color); font-weight: bold;">${wordsHindi}</span></div>
+                </div>
+                <div style="font-size: 13px; color: #4a5568; text-align: right; background: #edf2f7; padding: 6px 12px; border-radius: 4px; border: 1px solid #cbd5e0;">
+                    <div style="margin-bottom: 2px;"><b>खाता मिलान (Verification Check):</b></div>
+                    <div>(GPF: <b>₹${gpf.toFixed(2)}</b> + NPS: <b>₹${nps.toFixed(2)}</b> + Cash: <b>₹${nagad.toFixed(2)}</b>) = <b style="color: var(--success-color);">₹${matchSum.toFixed(2)}</b></div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('uiVerifyBox').innerHTML = summaryHTML;
+
+        let printSummaryHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <div style="margin-bottom: 3px;"><b>कुल योग (अंकों में):</b> ₹ ${total.toFixed(2)}</div>
+                    <div><b>कुल योग (शब्दों में):</b> ${wordsHindi}</div>
+                </div>
+                <div style="text-align: right; border: 1px dashed #000; padding: 4px 8px;">
+                    <div style="margin-bottom: 2px;"><b>वितरण मिलान:</b></div>
+                    <div>(GPF: ₹${gpf.toFixed(2)} + NPS: ₹${nps.toFixed(2)} + Cash: ₹${nagad.toFixed(2)}) = ₹${matchSum.toFixed(2)}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('pSummaryBox').innerHTML = printSummaryHTML;
+    }
+
+    function searchEmployeeData() {
+        let searchNameOrId = prompt("खोजने के लिए कर्मचारी का नाम या क्रम संख्या (Sr. No.) दर्ज करें:");
+        if (!searchNameOrId) return;
+
+        let query = searchNameOrId.trim().toLowerCase();
+        let found = savedEmployeeList.find(e => e.name.toLowerCase().includes(query) || String(e.id) === query);
+
+        if (!found) {
+            triggerNotificationBox("कोई रिकॉर्ड नहीं मिला!", false);
+            return;
         }
 
-        function triggerExamPrint() {
-            window.print();
+        document.getElementById('empId').value = found.id;
+        document.getElementById('empName').value = found.name;
+
+        if (currentMode === 'NPS_FORMAT') {
+            document.getElementById('pranNo').value = found.pranNo || '';
+            document.getElementById('basicPay').value = found.basicPay || '';
+            document.getElementById('npsDaRate').value = found.daRate || 60;
+            document.getElementById('subsContry').value = found.subsContry || '';
+            document.getElementById('govContry').value = found.govContry || '';
+            document.getElementById('arearRemark').value = found.arearRemark || '';
+            document.getElementById('npsRemark').value = found.remark || '';
+            if (!userManuallyChangedMonth && found.payMonth) {
+                document.getElementById('payMonth').value = found.payMonth;
+            }
+        } else if (currentMode === 'PARISHRAMIK') {
+            document.getElementById('bankName').value = found.bankName || '';
+            document.getElementById('accountNo').value = found.accountNo || '';
+            document.getElementById('ifscCode').value = found.ifscCode || '';
+            document.getElementById('noOfDays').value = found.noOfDays || 0;
+            document.getElementById('ratePerDay').value = found.ratePerDay || 0;
+            document.getElementById('parishramikTotal').value = found.total || 0;
+            document.getElementById('otherRemark').value = found.other || '';
+        } else if (currentMode === 'BONUS') {
+            document.getElementById('designation').value = found.designation || '';
+            document.getElementById('bankName').value = found.bankName || '';
+            document.getElementById('accountNo').value = found.accountNo || '';
+            document.getElementById('basicPay').value = found.basicPay || '';
+            document.getElementById('bonusAmountInput').value = found.bonus || 6908;
+            document.getElementById('anm').value = found.accountType || 'GPF';
+            calculateBonusLogic();
+        } else if (currentMode === 'RETIREMENT') {
+            document.getElementById('retDesignation').value = found.designation || '';
+            document.getElementById('dob').value = found.rawDob || '';
+            document.getElementById('doj').value = found.rawDoj || '';
+        } else {
+            document.getElementById('designation').value = found.designation || '';
+            document.getElementById('joiningDate').value = found.joiningDate || '';
+            document.getElementById('deathDate').value = found.deathDate || '';
+            document.getElementById('basicPay').value = found.basicPay || '';
+            document.getElementById('daAmount').value = found.daAmount || '';
+            document.getElementById('basicPlusDa').value = found.basicPlusDa || '';
+            document.getElementById('total').value = found.total || '';
+            document.getElementById('anm').value = found.accountType || 'GPF';
+            document.getElementById('gpf').value = found.gpf || 0;
+            document.getElementById('nps').value = found.nps || 0;
+            document.getElementById('nagad').value = found.nagad || 0;
+
+            if (found.months && found.months.length > 0) {
+                document.getElementById('monthCount').value = found.months.length;
+                let container = document.getElementById('dynamicMonthGrid');
+                container.innerHTML = '';
+                found.months.forEach((mObj, i) => {
+                    let div = document.createElement('div');
+                    div.className = 'form-group';
+                    div.innerHTML = `
+                        <label for="month_${i}">${mObj.name}</label>
+                        <input type="number" id="month_${i}" data-month="${mObj.name}" class="month-input" value="${mObj.val.toFixed(2)}" oninput="calculateGrandTotalOnly()">
+                    `;
+                    container.appendChild(div);
+                });
+            }
+            toggleDeductionMode();
         }
 
-        window.onload = function() {
-            loadSavedSettings();
-            renderTables();
-            loadExamData();
-        };
-    </script>
+        triggerNotificationBox(`कर्मचारी '${found.name}' का डेटा फॉर्म में लोड हो गया है।`, true);
+    }
+
+    function deleteEmployeeData() {
+        let inputIdOrName = prompt("हटाने के लिए कर्मचारी का नाम या क्रम संख्या दर्ज करें:");
+        if (!inputIdOrName) return;
+
+        let query = inputIdOrName.trim().toLowerCase();
+        let index = savedEmployeeList.findIndex(e => e.name.toLowerCase().includes(query) || String(e.id) === query);
+
+        if (index === -1) {
+            triggerNotificationBox("हटाने के लिए कोई रिकॉर्ड नहीं मिला!", false);
+            return;
+        }
+
+        let removedEmp = savedEmployeeList.splice(index, 1)[0];
+        saveToLocalStorageByMode();
+        renderMasterTable();
+        updateNextAutoId();
+        triggerNotificationBox(`कर्मचारी '${removedEmp.name}' का रिकॉर्ड हटा दिया गया।`, true);
+    }
+
+    function deleteSpecificEmpById(id) {
+        let index = savedEmployeeList.findIndex(e => String(e.id) === String(id));
+        if (index >= 0) {
+            let removedEmp = savedEmployeeList.splice(index, 1)[0];
+            saveToLocalStorageByMode();
+            renderMasterTable();
+            updateNextAutoId();
+            triggerNotificationBox(`कर्मचारी '${removedEmp.name}' हटा दिया गया।`, true);
+        }
+    }
+
+    function printLandscapeSheet() {
+        if (savedEmployeeList.length === 0) {
+            triggerNotificationBox('प्रिंट करने के लिए सूची में कोई डाटा उपलब्ध नहीं है!', false);
+            return;
+        }
+
+        let schoolNameText = document.getElementById('schoolName').value;
+        document.getElementById('pSchoolName').innerText = schoolNameText;
+
+        if (currentMode === 'BONUS') {
+            document.getElementById('pSheetTitle').innerText = "बोनस वितरण एवं भुगतान रजिस्टर";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>सत्र:</b> ${document.getElementById('arrearYear').value}`;
+        } else if (currentMode === 'NPS_FORMAT') {
+            let pMonth = document.getElementById('payMonth').value;
+            let pYear = document.getElementById('payYear').value;
+            document.getElementById('pSheetTitle').innerText = "NPS Contribution Schedule Master Bill";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>Pay Month & Year:</b> ${pMonth} ${pYear} | <b>DDO Reg.No.:</b> ${document.getElementById('ddoRegNo').value}`;
+        } else if (currentMode === 'PARISHRAMIK') {
+            document.getElementById('pSheetTitle').innerText = "परिश्रमिक देयक एवं पारिश्रमिक रजिस्टर (Remuneration Bill)";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>सत्र:</b> ${document.getElementById('arrearYear').value}`;
+        } else if (currentMode === 'RETIREMENT') {
+            document.getElementById('pSheetTitle').innerText = "कर्मचारी सेवानिवृत्ति एवं सेवा अवधि विवरण सूची";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>कुल दर्ज कर्मचारी:</b> ${savedEmployeeList.length}`;
+        } else {
+            let prevR = document.getElementById('prevDaRate').value;
+            let newR = document.getElementById('newDaRate').value;
+            document.getElementById('pSheetTitle').innerText = "महंगाई भत्ता (DA) अवशेष देयक मास्टर शीट";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>अवधि सत्र:</b> ${document.getElementById('arrearYear').value} | <b>DA अंतर:</b> ${prevR}% से ${newR}%`;
+        }
+
+        window.print();
+    }
+</script>
 </body>
 </html>
