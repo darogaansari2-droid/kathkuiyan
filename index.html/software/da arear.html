@@ -287,6 +287,12 @@
         .btn-excel { background-color: #276749; }
         .btn-excel:hover { background-color: #1c4530; }
 
+        /* Pendrive Backup/Restore Button Styles */
+        .btn-pendrive-save { background-color: #d97706; }
+        .btn-pendrive-save:hover { background-color: #b45309; }
+        .btn-pendrive-load { background-color: #2563eb; }
+        .btn-pendrive-load:hover { background-color: #1d4ed8; }
+
         .btn-tbl-del {
             background-color: var(--danger-color);
             color: #fff;
@@ -403,6 +409,9 @@
     </style>
 </head>
 <body>
+
+<!-- Hidden Input for Loading Pendrive Backup File -->
+<input type="file" id="pendriveFileInput" accept=".json" style="display:none;" onchange="handlePendriveBackupFile(event)">
 
 <div id="loginOverlay">
     <div class="login-card">
@@ -796,6 +805,8 @@
 
         <div class="btn-panel">
             <button type="button" class="btn btn-save" onclick="saveDataToList()">Save Data</button>
+            <button type="button" class="btn btn-pendrive-save" onclick="exportDataToPendriveFile()">💾 पेनड्राइव में सेव करें</button>
+            <button type="button" class="btn btn-pendrive-load" onclick="document.getElementById('pendriveFileInput').click()">📥 पेनड्राइव से लोड करें</button>
             <button type="button" class="btn btn-search" onclick="searchEmployeeData()">Search</button>
             <button type="button" class="btn btn-delete-item" onclick="deleteEmployeeData()">Delete Record</button>
             <button type="button" class="btn btn-print" onclick="printLandscapeSheet()" id="btnPrintLabel">Print Sheet</button>
@@ -919,10 +930,9 @@
         let expr = document.getElementById('quickCalcInput').value.trim();
         if (!expr) return;
         try {
-            // Safe evaluation of mathematical expression
             let sanitized = expr.replace(/[^0-9+\-*/().]/g, '');
             let result = Function('"use strict";return (' + sanitized + ')')();
-            document.getElementById('quickCalcInput5') || (document.getElementById('quickCalcInput').value = `${expr} = ${result}`);
+            document.getElementById('quickCalcInput').value = `${expr} = ${result}`;
             triggerNotificationBox(`परिणाम: ${result}`, true);
         } catch (e) {
             triggerNotificationBox('अमान्य गणितीय समीकरण!', false);
@@ -1597,6 +1607,64 @@
         return words.trim() + " रुपये मात्र";
     }
 
+    /* --- PENDRIVE BACKUP & RESTORE ENGINES --- */
+    function exportDataToPendriveFile() {
+        const fullDataPackage = {
+            software: "DA_ARREAR_MASTER_SYSTEM",
+            version: "2026.1",
+            timestamp: new Date().toLocaleString(),
+            arrear_saved_list: JSON.parse(localStorage.getItem('arrear_saved_list') || '[]'),
+            bonus_saved_list: JSON.parse(localStorage.getItem('bonus_saved_list') || '[]'),
+            nps_format_saved_list: JSON.parse(localStorage.getItem('nps_format_saved_list') || '[]'),
+            parishramik_saved_list: JSON.parse(localStorage.getItem('parishramik_saved_list') || '[]'),
+            retirement_employees: JSON.parse(localStorage.getItem('employees') || '[]'),
+            nps_master_directory: JSON.parse(localStorage.getItem('nps_master_directory') || '[]'),
+            last_used_bank: localStorage.getItem('last_used_bank') || '',
+            last_used_ifsc: localStorage.getItem('last_used_ifsc') || ''
+        };
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(fullDataPackage, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "DA_Arrear_Pendrive_Backup.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+
+        triggerNotificationBox("📁 पेनड्राइव डेटा फाइल डाउनलोड हो गई है! इसे पेनड्राइव में सेव रखें।", true);
+    }
+
+    function handlePendriveBackupFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const parsedData = JSON.parse(e.target.result);
+                if (parsedData.software === "DA_ARREAR_MASTER_SYSTEM") {
+                    if (parsedData.arrear_saved_list) localStorage.setItem('arrear_saved_list', JSON.stringify(parsedData.arrear_saved_list));
+                    if (parsedData.bonus_saved_list) localStorage.setItem('bonus_saved_list', JSON.stringify(parsedData.bonus_saved_list));
+                    if (parsedData.nps_format_saved_list) localStorage.setItem('nps_format_saved_list', JSON.stringify(parsedData.nps_format_saved_list));
+                    if (parsedData.parishramik_saved_list) localStorage.setItem('parishramik_saved_list', JSON.stringify(parsedData.parishramik_saved_list));
+                    if (parsedData.retirement_employees) localStorage.setItem('employees', JSON.stringify(parsedData.retirement_employees));
+                    if (parsedData.nps_master_directory) localStorage.setItem('nps_master_directory', JSON.stringify(parsedData.nps_master_directory));
+                    if (parsedData.last_used_bank) localStorage.setItem('last_used_bank', parsedData.last_used_bank);
+                    if (parsedData.last_used_ifsc) localStorage.setItem('last_used_ifsc', parsedData.last_used_ifsc);
+
+                    loadMasterDirectory();
+                    loadLocalStorageData();
+                    triggerNotificationBox("✅ पेनड्राइव से डेटा सफलतापूर्वक रीस्टोर हो गया है!", true);
+                } else {
+                    triggerNotificationBox("❌ अमान्य बैकअप फ़ाइल! सही पेनड्राइव JSON फ़ाइल चुनें।", false);
+                }
+            } catch (err) {
+                triggerNotificationBox("❌ फ़ाइल पढ़ने में त्रुटि!", false);
+            }
+        };
+        reader.readAsText(file);
+    }
+
     function saveDataToList() {
         let empId = document.getElementById('empId').value;
         let empNameInput = document.getElementById('empName');
@@ -1756,9 +1824,7 @@
             document.getElementById('govContry').value = '';
             document.getElementById('arearRemark').value = '';
             document.getElementById('npsRemark').value = '';
-            // Note: payMonth is intentionally preserved unless user changes it explicitly
         } else {
-            // Other fields reset logic
             document.getElementById('basicPay').value = '';
             document.getElementById('daAmount').value = '';
             document.getElementById('total').value = '';
