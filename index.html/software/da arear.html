@@ -330,10 +330,19 @@
             padding: 12px 15px;
         }
 
+        /* DYNAMIC PRINT FORMATTING CLASSES */
+        .print-style-normal td, .print-style-normal th { font-weight: normal !important; }
+        .print-style-bold td, .print-style-bold th { font-weight: bold !important; }
+
         /* PRINT STYLES */
         #printArea { display: none; }
 
         @media print {
+            @page {
+                size: auto;
+                margin: 5mm;
+            }
+
             body * { visibility: hidden; }
             #printArea, #printArea * { visibility: visible; }
             #printArea {
@@ -372,21 +381,15 @@
 
             table.print-table th, table.print-table td {
                 border: 1px solid #000;
-                padding: 4px 5px;
                 text-align: center;
-                font-size: 11px;
-                line-height: 1.4;
+                line-height: 1.2;
                 word-break: break-word;
                 text-transform: capitalize;
             }
 
-            table.print-table td.print-emp-name { font-size: 11px !important; font-weight: bold !important; }
-            table.print-table td.print-emp-desig { font-size: 11px !important; font-weight: 600 !important; }
-
             table.print-table th {
                 background-color: #f2f2f2 !important;
                 -webkit-print-color-adjust: exact;
-                font-weight: bold;
                 text-transform: none;
             }
 
@@ -396,8 +399,7 @@
                 border: 1px solid #000;
                 padding: 8px 10px;
                 margin-top: 10px;
-                font-size: 11px;
-                line-height: 1.5;
+                line-height: 1.4;
             }
         }
     </style>
@@ -446,6 +448,46 @@
                         <option value="NPS_FORMAT">NPS Schedule (Landscape Print)</option>
                         <option value="PARISHRAMIK">Parishramik / Remuneration Bill (Landscape Print)</option>
                         <option value="RETIREMENT">Retirement Calculation Sheet (Landscape Print)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRINT FORMATTING & CUSTOMIZATION SETTINGS PANEL -->
+        <div class="panel" style="background-color: #f0fdf4; border-color: #bbf7d0;">
+            <div class="section-title" style="color: #166534;">प्रिंट एवं टेबल कस्टमाइज़ेशन सेटिंग (Print & Table Layout Settings)</div>
+            <div class="grid-4-col">
+                <div class="form-group">
+                    <label for="printOrientation">प्रिंट लेआउट (Orientation)</label>
+                    <select id="printOrientation" style="border: 1px solid #166534;">
+                        <option value="landscape">Landscape (लैंडस्केप - चौड़ा)</option>
+                        <option value="portrait">Portrait (पोर्ट्रेट - लंबा)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="rowPadding">Row Height (रो पैडिंग)</label>
+                    <select id="rowPadding" style="border: 1px solid #166534;">
+                        <option value="2px 4px">कम (Very Small / Compact)</option>
+                        <option value="4px 6px" selected>सामान्य (Normal / Standard)</option>
+                        <option value="8px 10px">ज्यादा (Large / Spaced)</option>
+                        <option value="12px 14px">अधिकतम (Extra Large)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tableFontSize">Font Size (अक्षर का आकार)</label>
+                    <select id="tableFontSize" style="border: 1px solid #166534;">
+                        <option value="9px">9 px (बहुत छोटा)</option>
+                        <option value="10px">10 px (छोटा)</option>
+                        <option value="11px" selected>11 px (सामान्य)</option>
+                        <option value="12px">12 px (बड़ा)</option>
+                        <option value="13px">13 px (अधिक बड़ा)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="textWeight">Font Weight (अक्षर स्टाइल)</label>
+                    <select id="textWeight" style="border: 1px solid #166534;">
+                        <option value="normal">Normal (सामान्य)</option>
+                        <option value="bold" selected>Bold (गाढ़ा / बोल्ड)</option>
                     </select>
                 </div>
             </div>
@@ -593,7 +635,7 @@
                     <input type="date" id="doj">
                 </div>
 
-                <div class="form-group bank-info-field" style="display: none;">
+                <div class="form-group bank-name-field" style="display: none;">
                     <label for="bankName">बैंक का नाम (Bank Name)</label>
                     <input type="text" id="bankName" placeholder="उदा० State Bank of India / PNB" onblur="autoCapitalize(this)" onchange="saveLastUsedBankInfo()">
                 </div>
@@ -852,7 +894,7 @@
         </p>
     </div>
 
-    <table class="print-table">
+    <table class="print-table" id="pTable">
         <thead id="pThead"></thead>
         <tbody id="pTbody"></tbody>
         <tfoot id="pTfoot"></tfoot>
@@ -870,6 +912,18 @@
     let npsMasterDirectory = [];
     let currentMode = 'DA';
     let userManuallyChangedMonth = false;
+
+    // Helper function for print formatting: removes .00 if whole number, shows 00 if empty/zero
+    function formatPrintAmount(val) {
+        let num = parseFloat(val);
+        if (isNaN(num) || num === 0) {
+            return "00";
+        }
+        if (num % 1 === 0) {
+            return num.toFixed(0);
+        }
+        return num.toFixed(2);
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
         let isLoggedIn = localStorage.getItem('is_arrear_logged_in');
@@ -1165,6 +1219,7 @@
 
         const daFields = document.querySelectorAll('.da-only-field');
         const bonusFields = document.querySelectorAll('.bonus-only-field');
+        const bankNameFields = document.querySelectorAll('.bank-name-field');
         const bankFields = document.querySelectorAll('.bank-info-field');
         const daBonusFields = document.querySelectorAll('.da-bonus-field');
         const daBonusNpsFields = document.querySelectorAll('.da-bonus-nps-field');
@@ -1174,16 +1229,19 @@
         const excelBtnFields = document.querySelectorAll('.excel-btn-field');
         const retirementFields = document.querySelectorAll('.retirement-only-field');
         const schoolHeaderPanel = document.querySelector('.school-header-panel');
+        const printOrientSelect = document.getElementById('printOrientation');
 
         if (currentMode === 'BONUS') {
             document.getElementById('mainTitleHeader').innerText = "बोनस भुगतान रजिस्टर मास्टर (Bonus Master System)";
-            document.getElementById('btnPrintLabel').innerText = "Print Bonus Sheet (Portrait)";
+            document.getElementById('btnPrintLabel').innerText = "Print Bonus Sheet";
             document.getElementById('previewTitle').innerText = "सहेजे गए कर्मचारियों का बोनस विवरण (Bonus List)";
             if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
+            if(printOrientSelect) printOrientSelect.value = 'portrait';
             
             daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bonusFields.forEach(el => el.style.display = 'flex');
-            bankFields.forEach(el => el.style.display = 'flex');
+            bankNameFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bankFields.forEach(el => el.style.display = 'flex'); // accountNo shown
             daBonusFields.forEach(el => el.style.display = 'flex');
             daBonusNpsFields.forEach(el => el.style.display = 'flex');
             daNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
@@ -1196,14 +1254,16 @@
             if(cashOpt) cashOpt.style.display = 'none';
 
         } else if (currentMode === 'NPS_FORMAT') {
-            document.getElementById('mainTitleHeader').innerText = "NPS Schedule Master System (Landscape Print)";
-            document.getElementById('btnPrintLabel').innerText = "Print NPS Schedule (Landscape)";
+            document.getElementById('mainTitleHeader').innerText = "NPS Schedule Master System";
+            document.getElementById('btnPrintLabel').innerText = "Print NPS Schedule";
             document.getElementById('previewTitle').innerText = "सहेजे गए NPS कर्मचारियों का विवरण (NPS Schedule List)";
             if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
+            if(printOrientSelect) printOrientSelect.value = 'landscape';
 
             daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
-            daBonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            daBonusFields.forEach(el => el.style.display = 'flex');
+            bankNameFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bankFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             retirementFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
@@ -1217,9 +1277,10 @@
 
         } else if (currentMode === 'PARISHRAMIK') {
             document.getElementById('mainTitleHeader').innerText = "परिश्रमिक बिल रजिस्टर (Remuneration Master System)";
-            document.getElementById('btnPrintLabel').innerText = "Print Remuneration Sheet (Landscape)";
+            document.getElementById('btnPrintLabel').innerText = "Print Remuneration Sheet";
             document.getElementById('previewTitle').innerText = "सहेजे गए कर्मचारियों का परिश्रमिक विवरण (Remuneration List)";
             if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
+            if(printOrientSelect) printOrientSelect.value = 'landscape';
 
             daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
@@ -1228,6 +1289,7 @@
             daNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             retirementFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bankNameFields.forEach(el => el.style.display = 'flex');
             bankFields.forEach(el => el.style.display = 'flex');
             parishramikFields.forEach(el => el.style.display = 'block');
 
@@ -1236,9 +1298,10 @@
 
         } else if (currentMode === 'RETIREMENT') {
             document.getElementById('mainTitleHeader').innerText = "कर्मचारी सेवानिवृत्ति एवं सेवा अवधि प्रबंधन प्रणाली";
-            document.getElementById('btnPrintLabel').innerText = "A4 Landscape प्रिंट करें";
+            document.getElementById('btnPrintLabel').innerText = "A4 Sheet प्रिंट करें";
             document.getElementById('previewTitle').innerText = "कर्मचारी सेवानिवृत्ति विवरण सूची";
             if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'none';
+            if(printOrientSelect) printOrientSelect.value = 'landscape';
 
             daFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bonusFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
@@ -1246,6 +1309,7 @@
             daBonusNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             daNpsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             npsFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bankNameFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             bankFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             parishramikFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             excelBtnFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
@@ -1254,13 +1318,15 @@
 
         } else {
             document.getElementById('mainTitleHeader').innerText = "अवशेष महंगाई भत्ता (DA Arrear Master Sheet System)";
-            document.getElementById('btnPrintLabel').innerText = "Print Landscape Sheet";
+            document.getElementById('btnPrintLabel').innerText = "Print Master Sheet";
             document.getElementById('previewTitle').innerText = "सहेजे गए सभी कर्मचारियों की एरियर सूची (Preview)";
             if(schoolHeaderPanel) schoolHeaderPanel.style.display = 'block';
+            if(printOrientSelect) printOrientSelect.value = 'landscape';
 
             daFields.forEach(el => el.style.display = 'flex');
             bonusFields.forEach(el => el.style.display = 'none');
-            bankFields.forEach(el => el.style.display = 'none');
+            bankNameFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
+            bankFields.forEach(el => el.style.setProperty('display', 'none', 'important'));
             daBonusFields.forEach(el => el.style.display = 'flex');
             daBonusNpsFields.forEach(el => el.style.display = 'flex');
             daNpsFields.forEach(el => el.style.display = 'flex');
@@ -1449,8 +1515,17 @@
 
     function calculateBonusLogic() {
         let selection = document.getElementById('anm').value;
-        let bonusAmount = parseFloat(document.getElementById('bonusAmountInput').value) || 6908;
-        let gpfDeduction = parseFloat(document.getElementById('bonusGpfDeductionInput').value) || 5181;
+        let bonusAmountInputElem = document.getElementById('bonusAmountInput');
+        let bonusAmount = parseFloat(bonusAmountInputElem.value);
+        
+        if (isNaN(bonusAmount) || bonusAmount === 0) {
+            document.getElementById('gpf').value = "0.00";
+            document.getElementById('nps').value = "0.00";
+            document.getElementById('nagad').value = "0.00";
+            return;
+        }
+
+        let gpfDeduction = parseFloat(document.getElementById('bonusGpfDeductionInput').value) || 0;
 
         let gpfGroup = document.getElementById('gpfGroup');
         let npsGroup = document.getElementById('npsGroup');
@@ -1777,26 +1852,21 @@
                 other: otherInput.value || '-'
             };
         } else if (currentMode === 'BONUS') {
-            let bankInput = document.getElementById('bankName');
-            autoCapitalize(bankInput);
             let designationInput = document.getElementById('designation');
             autoCapitalize(designationInput);
-
-            saveLastUsedBankInfo();
 
             empObject = {
                 id: String(empId),
                 mode: 'BONUS',
                 name: toTitleCase(empName),
                 designation: toTitleCase(designationInput.value),
-                bankName: bankInput.value || '-',
                 accountNo: document.getElementById('accountNo').value || '-',
                 basicPay: parseFloat(document.getElementById('basicPay').value) || 0,
-                bonus: parseFloat(document.getElementById('bonusAmountInput').value) || 6908,
+                bonus: parseFloat(document.getElementById('bonusAmountInput').value) || 0,
                 gpf: parseFloat(document.getElementById('gpf').value) || 0,
                 nps: parseFloat(document.getElementById('nps').value) || 0,
                 nagad: parseFloat(document.getElementById('nagad').value) || 0,
-                total: parseFloat(document.getElementById('bonusAmountInput').value) || 6908,
+                total: parseFloat(document.getElementById('bonusAmountInput').value) || 0,
                 accountType: document.getElementById('anm').value
             };
         } else {
@@ -2045,7 +2115,7 @@
             totals.subsContry += (emp.subsContry || 0);
             totals.govContry += (emp.govContry || 0);
 
-            let rowCells = `
+            let rowCellsPreview = `
                 <td>${idx + 1}</td>
                 <td>${emp.ddoRegNo}</td>
                 <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
@@ -2059,22 +2129,43 @@
                 <td>${emp.arearRemark || '-'}</td>
                 <td>${emp.remark || '-'}</td>`;
 
-            printBodyHTML += `<tr>${rowCells}</tr>`;
-            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+            let rowCellsPrint = `
+                <td>${idx + 1}</td>
+                <td>${emp.ddoRegNo}</td>
+                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td style="text-transform:uppercase;">${emp.pranNo}</td>
+                <td>${formatPrintAmount(emp.basicPay)}</td>
+                <td><b>${formatPrintAmount(emp.subsContry)}</b></td>
+                <td><b>${formatPrintAmount(emp.govContry)}</b></td>
+                <td>${emp.payMonth}</td>
+                <td>${emp.payYear}</td>
+                <td>${emp.contType}</td>
+                <td>${emp.arearRemark || '-'}</td>
+                <td>${emp.remark || '-'}</td>`;
+
+            printBodyHTML += `<tr>${rowCellsPrint}</tr>`;
+            previewBodyHTML += `<tr>${rowCellsPreview}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
         });
 
         document.getElementById('previewTbody').innerHTML = previewBodyHTML;
         document.getElementById('pTbody').innerHTML = printBodyHTML;
 
-        let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
+        let footHTMLPreview = `<tr style="font-weight:bold; background:#edf2f7;">
             <td colspan="4">कुल योग (Total):</td>
             <td>${totals.basicPay}</td>
             <td>${totals.subsContry.toFixed(2)}</td>
             <td>${totals.govContry.toFixed(2)}</td>
             <td colspan="5">-</td>`;
 
-        document.getElementById('previewTfoot').innerHTML = footHTML + `<td class="no-print-col"></td></tr>`;
-        document.getElementById('pTfoot').innerHTML = footHTML + `</tr>`;
+        let footHTMLPrint = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="4">कुल योग (Total):</td>
+            <td>${formatPrintAmount(totals.basicPay)}</td>
+            <td>${formatPrintAmount(totals.subsContry)}</td>
+            <td>${formatPrintAmount(totals.govContry)}</td>
+            <td colspan="5">-</td></tr>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTMLPreview + `<td class="no-print-col"></td></tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTMLPrint;
 
         updateNpsSummaryBox(totals.subsContry, totals.govContry);
     }
@@ -2101,12 +2192,12 @@
         let printSummaryHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <div style="margin-bottom: 3px;"><b>कुल अंशदान (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div style="margin-bottom: 3px;"><b>कुल अंशदान (अंकों में):</b> ₹ ${formatPrintAmount(totalAmount)}</div>
                     <div><b>कुल अंशदान (शब्दों में):</b> ${wordsHindi}</div>
                 </div>
                 <div style="text-align: right; border: 1px dashed #000; padding: 4px 8px;">
                     <div style="margin-bottom: 2px;"><b>NPS विवरण:</b></div>
-                    <div>(Employee Contry: ₹${totalSubs.toFixed(2)} + Govt Contry: ₹${totalGov.toFixed(2)}) = ₹${totalAmount.toFixed(2)}</div>
+                    <div>(Employee Contry: ₹${formatPrintAmount(totalSubs)} + Govt Contry: ₹${formatPrintAmount(totalGov)}) = ₹${formatPrintAmount(totalAmount)}</div>
                 </div>
             </div>
         `;
@@ -2261,7 +2352,7 @@
                 totals.otherTotal += (emp.total || 0);
             }
 
-            let rowCells = `
+            let rowCellsPreview = `
                 <td>${idx + 1}</td>
                 <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
                 <td>${emp.bankName}</td>
@@ -2272,22 +2363,40 @@
                 <td><b>${emp.total.toFixed(2)}</b></td>
                 <td>${emp.other || '-'}</td>`;
 
-            printBodyHTML += `<tr>${rowCells}</tr>`;
-            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+            let rowCellsPrint = `
+                <td>${idx + 1}</td>
+                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td>${emp.bankName}</td>
+                <td>${emp.accountNo}</td>
+                <td style="text-transform:uppercase;">${emp.ifscCode}</td>
+                <td>${formatPrintAmount(emp.noOfDays)}</td>
+                <td>${formatPrintAmount(emp.ratePerDay)}</td>
+                <td><b>${formatPrintAmount(emp.total)}</b></td>
+                <td>${emp.other || '-'}</td>`;
+
+            printBodyHTML += `<tr>${rowCellsPrint}</tr>`;
+            previewBodyHTML += `<tr>${rowCellsPreview}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
         });
 
         document.getElementById('previewTbody').innerHTML = previewBodyHTML;
         document.getElementById('pTbody').innerHTML = printBodyHTML;
 
-        let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
+        let footHTMLPreview = `<tr style="font-weight:bold; background:#edf2f7;">
             <td colspan="5">कुल योग (Total):</td>
             <td>${totals.days}</td>
             <td>-</td>
             <td>${totals.totalAmount.toFixed(2)}</td>
             <td>-</td>`;
 
-        document.getElementById('previewTfoot').innerHTML = footHTML + `<td class="no-print-col"></td></tr>`;
-        document.getElementById('pTfoot').innerHTML = footHTML + `</tr>`;
+        let footHTMLPrint = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="5">कुल योग (Total):</td>
+            <td>${formatPrintAmount(totals.days)}</td>
+            <td>-</td>
+            <td>${formatPrintAmount(totals.totalAmount)}</td>
+            <td>-</td></tr>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTMLPreview + `<td class="no-print-col"></td></tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTMLPrint;
 
         updateParishramikSummaryBox(totals.days, totals.totalAmount, totals.sbiTotal, totals.otherTotal);
     }
@@ -2314,12 +2423,12 @@
         let printSummaryHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <div style="margin-bottom: 3px;"><b>कुल कार्य दिवस:</b> ${totalDays} | <b>कुल देय राशि (अंकों में):</b> ₹ ${totalAmount.toFixed(2)}</div>
+                    <div style="margin-bottom: 3px;"><b>कुल कार्य दिवस:</b> ${formatPrintAmount(totalDays)} | <b>कुल देय राशि (अंकों में):</b> ₹ ${formatPrintAmount(totalAmount)}</div>
                     <div><b>कुल देय राशि (शब्दों में):</b> ${wordsHindi}</div>
                 </div>
                 <div style="text-align: right; border: 1px dashed #000; padding: 4px 8px;">
                     <div style="margin-bottom: 2px;"><b>बैंक मिलान विवरण:</b></div>
-                    <div>(SBI Total: ₹${sbiTotal.toFixed(2)} + Other Bank Total: ₹${otherTotal.toFixed(2)}) = ₹${matchSum.toFixed(2)}</div>
+                    <div>(SBI Total: ₹${formatPrintAmount(sbiTotal)} + Other Bank Total: ₹${formatPrintAmount(otherTotal)}) = ₹${formatPrintAmount(matchSum)}</div>
                 </div>
             </div>
         `;
@@ -2328,7 +2437,7 @@
 
     function renderBonusTable() {
         if (savedEmployeeList.length === 0) {
-            let emptyHTML = '<tr><td colspan="11">कोई बोनस रिकॉर्ड नहीं है।</td></tr>';
+            let emptyHTML = '<tr><td colspan="10">कोई बोनस रिकॉर्ड नहीं है।</td></tr>';
             document.getElementById('previewThead').innerHTML = '';
             document.getElementById('previewTbody').innerHTML = emptyHTML;
             document.getElementById('previewTfoot').innerHTML = '';
@@ -2346,7 +2455,6 @@
             <th>Sr.no</th>
             <th>Employee Name</th>
             <th>Designation</th>
-            <th>Bank Name</th>
             <th>Account No.</th>
             <th>Pay</th>
             <th>Bonus</th>
@@ -2371,11 +2479,10 @@
             totals.nps += emp.nps;
             totals.cash += emp.nagad;
 
-            let rowCells = `
+            let rowCellsPreview = `
                 <td>${idx + 1}</td>
                 <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
                 <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
-                <td>${emp.bankName}</td>
                 <td>${emp.accountNo}</td>
                 <td>${emp.basicPay}</td>
                 <td><b>${emp.bonus.toFixed(2)}</b></td>
@@ -2383,23 +2490,42 @@
                 <td>${emp.nps.toFixed(2)}</td>
                 <td><b>${emp.nagad.toFixed(2)}</b></td>`;
 
-            printBodyHTML += `<tr>${rowCells}</tr>`;
-            previewBodyHTML += `<tr>${rowCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+            let rowCellsPrint = `
+                <td>${idx + 1}</td>
+                <td style="text-align:left;" class="print-emp-name">${toTitleCase(emp.name)}</td>
+                <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
+                <td>${emp.accountNo}</td>
+                <td>${formatPrintAmount(emp.basicPay)}</td>
+                <td><b>${formatPrintAmount(emp.bonus)}</b></td>
+                <td>${formatPrintAmount(emp.gpf)}</td>
+                <td>${formatPrintAmount(emp.nps)}</td>
+                <td><b>${formatPrintAmount(emp.nagad)}</b></td>`;
+
+            printBodyHTML += `<tr>${rowCellsPrint}</tr>`;
+            previewBodyHTML += `<tr>${rowCellsPreview}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
         });
 
         document.getElementById('previewTbody').innerHTML = previewBodyHTML;
         document.getElementById('pTbody').innerHTML = printBodyHTML;
 
-        let footHTML = `<tr style="font-weight:bold; background:#edf2f7;">
-            <td colspan="5">कुल योग (Total):</td>
+        let footHTMLPreview = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="4">कुल योग (Total):</td>
             <td>${totals.pay}</td>
             <td>${totals.bonus.toFixed(2)}</td>
             <td>${totals.gpf.toFixed(2)}</td>
             <td>${totals.nps.toFixed(2)}</td>
             <td>${totals.cash.toFixed(2)}</td>`;
 
-        document.getElementById('previewTfoot').innerHTML = footHTML + `<td class="no-print-col"></td></tr>`;
-        document.getElementById('pTfoot').innerHTML = footHTML + `</tr>`;
+        let footHTMLPrint = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="4">कुल योग (Total):</td>
+            <td>${formatPrintAmount(totals.pay)}</td>
+            <td>${formatPrintAmount(totals.bonus)}</td>
+            <td>${formatPrintAmount(totals.gpf)}</td>
+            <td>${formatPrintAmount(totals.nps)}</td>
+            <td>${formatPrintAmount(totals.cash)}</td></tr>`;
+
+        document.getElementById('previewTfoot').innerHTML = footHTMLPreview + `<td class="no-print-col"></td></tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTMLPrint;
 
         updateVerificationAndWordsSummary(totals.bonus, totals.gpf, totals.nps, totals.cash);
     }
@@ -2467,7 +2593,7 @@
                 displayName += ' <span style="color:red; font-size:10px;">(दिवंगत)</span>';
             }
 
-            let commonCells = `
+            let commonCellsPreview = `
                 <td>${idx + 1}</td>
                 <td style="text-align:left;" class="print-emp-name">${displayName}</td>
                 <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
@@ -2475,20 +2601,34 @@
                 <td>${(emp.daAmount || 0).toFixed(2)}</td>
                 <td>${(emp.basicPlusDa || 0).toFixed(2)}</td>`;
 
+            let commonCellsPrint = `
+                <td>${idx + 1}</td>
+                <td style="text-align:left;" class="print-emp-name">${displayName}</td>
+                <td class="print-emp-desig">${toTitleCase(emp.designation)}</td>
+                <td>${formatPrintAmount(emp.basicPay)}</td>
+                <td>${formatPrintAmount(emp.daAmount)}</td>
+                <td>${formatPrintAmount(emp.basicPlusDa)}</td>`;
+
             activeMonthNames.forEach((mName, mIdx) => {
                 let foundMonth = emp.months ? emp.months.find(m => m.name === mName) : null;
                 let val = foundMonth ? foundMonth.val : 0;
                 monthTotals[mIdx] += val;
-                commonCells += `<td>${val.toFixed(2)}</td>`;
+                commonCellsPreview += `<td>${val.toFixed(2)}</td>`;
+                commonCellsPrint += `<td>${formatPrintAmount(val)}</td>`;
             });
 
-            commonCells += `<td><b>${(emp.total || 0).toFixed(2)}</b></td>
+            commonCellsPreview += `<td><b>${(emp.total || 0).toFixed(2)}</b></td>
                 <td>${(emp.gpf || 0).toFixed(2)}</td>
                 <td>${(emp.nps || 0).toFixed(2)}</td>
                 <td><b>${(emp.nagad || 0).toFixed(2)}</b></td>`;
 
-            printBodyHTML += `<tr>${commonCells}</tr>`;
-            previewBodyHTML += `<tr>${commonCells}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
+            commonCellsPrint += `<td><b>${formatPrintAmount(emp.total)}</b></td>
+                <td>${formatPrintAmount(emp.gpf)}</td>
+                <td>${formatPrintAmount(emp.nps)}</td>
+                <td><b>${formatPrintAmount(emp.nagad)}</b></td>`;
+
+            printBodyHTML += `<tr>${commonCellsPrint}</tr>`;
+            previewBodyHTML += `<tr>${commonCellsPreview}<td class="no-print-col"><button type="button" class="btn-tbl-del" onclick="deleteSpecificEmpById('${emp.id}')">X</button></td></tr>`;
         });
 
         document.getElementById('previewTbody').innerHTML = previewBodyHTML;
@@ -2509,8 +2649,23 @@
             <td>${grandTotals.nps.toFixed(2)}</td>
             <td>${grandTotals.nagad.toFixed(2)}</td>`;
 
+        let footHTMLPrint = `<tr style="font-weight:bold; background:#edf2f7;">
+            <td colspan="3">कुल योग (Total):</td>
+            <td>${formatPrintAmount(grandTotals.basic)}</td>
+            <td>${formatPrintAmount(grandTotals.da)}</td>
+            <td>${formatPrintAmount(grandTotals.basicPlusDa)}</td>`;
+
+        monthTotals.forEach(mTot => {
+            footHTMLPrint += `<td>${formatPrintAmount(mTot)}</td>`;
+        });
+
+        footHTMLPrint += `<td>${formatPrintAmount(grandTotals.totalArrear)}</td>
+            <td>${formatPrintAmount(grandTotals.gpf)}</td>
+            <td>${formatPrintAmount(grandTotals.nps)}</td>
+            <td>${formatPrintAmount(grandTotals.nagad)}</td></tr>`;
+
         document.getElementById('previewTfoot').innerHTML = footHTMLPreview + `<td class="no-print-col"></td></tr>`;
-        document.getElementById('pTfoot').innerHTML = footHTMLPreview + `</tr>`;
+        document.getElementById('pTfoot').innerHTML = footHTMLPrint;
 
         updateVerificationAndWordsSummary(grandTotals.totalArrear, grandTotals.gpf, grandTotals.nps, grandTotals.nagad);
     }
@@ -2537,12 +2692,12 @@
         let printSummaryHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <div style="margin-bottom: 3px;"><b>कुल योग (अंकों में):</b> ₹ ${total.toFixed(2)}</div>
+                    <div style="margin-bottom: 3px;"><b>कुल योग (अंकों में):</b> ₹ ${formatPrintAmount(total)}</div>
                     <div><b>कुल योग (शब्दों में):</b> ${wordsHindi}</div>
                 </div>
                 <div style="text-align: right; border: 1px dashed #000; padding: 4px 8px;">
                     <div style="margin-bottom: 2px;"><b>वितरण मिलान:</b></div>
-                    <div>(GPF: ₹${gpf.toFixed(2)} + NPS: ₹${nps.toFixed(2)} + Cash: ₹${nagad.toFixed(2)}) = ₹${matchSum.toFixed(2)}</div>
+                    <div>(GPF: ₹${formatPrintAmount(gpf)} + NPS: ₹${formatPrintAmount(nps)} + Cash: ₹${formatPrintAmount(nagad)}) = ₹${formatPrintAmount(matchSum)}</div>
                 </div>
             </div>
         `;
@@ -2585,10 +2740,9 @@
             document.getElementById('otherRemark').value = found.other || '';
         } else if (currentMode === 'BONUS') {
             document.getElementById('designation').value = found.designation || '';
-            document.getElementById('bankName').value = found.bankName || '';
             document.getElementById('accountNo').value = found.accountNo || '';
             document.getElementById('basicPay').value = found.basicPay || '';
-            document.getElementById('bonusAmountInput').value = found.bonus || 6908;
+            document.getElementById('bonusAmountInput').value = found.bonus || 0;
             document.getElementById('anm').value = found.accountType || 'GPF';
             calculateBonusLogic();
         } else if (currentMode === 'RETIREMENT') {
@@ -2668,24 +2822,55 @@
         document.getElementById('pSchoolName').innerText = schoolNameText;
 
         if (currentMode === 'BONUS') {
-            document.getElementById('pSheetTitle').innerText = "बोनस वितरण एवं भुगतान रजिस्टर";
-            document.getElementById('pSubHeaderDetails').innerHTML = `<b>सत्र:</b> ${document.getElementById('arrearYear').value}`;
+            document.getElementById('pSheetTitle').innerText = "बोनस देयक विवरण  ";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>वित्तीय वर्ष :</b> ${document.getElementById('arrearYear').value}`;
         } else if (currentMode === 'NPS_FORMAT') {
             let pMonth = document.getElementById('payMonth').value;
             let pYear = document.getElementById('payYear').value;
-            document.getElementById('pSheetTitle').innerText = "NPS Contribution Schedule Master Bill";
+            document.getElementById('pSheetTitle').innerText = "NPS Contribution Schedule  Bill";
             document.getElementById('pSubHeaderDetails').innerHTML = `<b>Pay Month & Year:</b> ${pMonth} ${pYear} | <b>DDO Reg.No.:</b> ${document.getElementById('ddoRegNo').value}`;
         } else if (currentMode === 'PARISHRAMIK') {
-            document.getElementById('pSheetTitle').innerText = "परिश्रमिक देयक एवं पारिश्रमिक रजिस्टर (Remuneration Bill)";
-            document.getElementById('pSubHeaderDetails').innerHTML = `<b>सत्र:</b> ${document.getElementById('arrearYear').value}`;
+            document.getElementById('pSheetTitle').innerText = "परिश्रमिक देयक विवरण  (Remuneration Bill)";
+            document.getElementById('pSubHeaderDetails').innerHTML = `<b>बोर्ड परीक्षा वर्ष :</b> ${document.getElementById('arrearYear').value}`;
         } else if (currentMode === 'RETIREMENT') {
             document.getElementById('pSheetTitle').innerText = "कर्मचारी सेवानिवृत्ति एवं सेवा अवधि विवरण सूची";
             document.getElementById('pSubHeaderDetails').innerHTML = `<b>कुल दर्ज कर्मचारी:</b> ${savedEmployeeList.length}`;
         } else {
             let prevR = document.getElementById('prevDaRate').value;
             let newR = document.getElementById('newDaRate').value;
-            document.getElementById('pSheetTitle').innerText = "महंगाई भत्ता (DA) अवशेष देयक मास्टर शीट";
+            document.getElementById('pSheetTitle').innerText = "महंगाई भत्ता (DA) अवशेष देयक  विवरण";
             document.getElementById('pSubHeaderDetails').innerHTML = `<b>अवधि सत्र:</b> ${document.getElementById('arrearYear').value} | <b>DA अंतर:</b> ${prevR}% से ${newR}%`;
+        }
+
+        // Apply Dynamic Customization Settings before Print
+        let orientation = document.getElementById('printOrientation').value;
+        let paddingVal = document.getElementById('rowPadding').value;
+        let fontSizeVal = document.getElementById('tableFontSize').value;
+        let textWeightVal = document.getElementById('textWeight').value;
+
+        // Dynamic @page style insertion for orientation
+        let styleSheet = document.getElementById('dynamicPrintStyle');
+        if (!styleSheet) {
+            styleSheet = document.createElement('style');
+            styleSheet.id = 'dynamicPrintStyle';
+            document.head.appendChild(styleSheet);
+        }
+        styleSheet.innerHTML = `@media print { @page { size: ${orientation}; margin: 5mm; } }`;
+
+        // Apply Row Padding, Font Size, and Weight to Print Table
+        let printTable = document.getElementById('pTable');
+        let printSummary = document.getElementById('pSummaryBox');
+        
+        if (printTable) {
+            printTable.querySelectorAll('th, td').forEach(cell => {
+                cell.style.padding = paddingVal;
+                cell.style.fontSize = fontSizeVal;
+                cell.style.fontWeight = textWeightVal;
+            });
+        }
+
+        if (printSummary) {
+            printSummary.style.fontSize = fontSizeVal;
         }
 
         window.print();
