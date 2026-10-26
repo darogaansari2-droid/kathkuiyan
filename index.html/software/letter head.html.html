@@ -209,7 +209,7 @@
             object-fit: contain;
         }
 
-        .fixed-header-container, .content-fixed, .table-resizable-wrapper {
+        .fixed-header-container, .content-fixed, .table-resizable-wrapper, .signature-resizable-wrapper, .stamp-resizable-wrapper {
             position: relative;
             z-index: 2;
         }
@@ -318,6 +318,34 @@
         .resize-handle-right { position: absolute; right: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
         .resize-handle-left { position: absolute; left: 0; top: 22px; bottom: 0; width: 8px; background-color: #003366; cursor: col-resize; opacity: 0.4; z-index: 999; }
 
+        /* ✍️ हस्ताक्षर (Signature) कंटेनर बॉक्स स्टाइल */
+        .signature-resizable-wrapper {
+            position: absolute; left: 550px; top: 900px; width: 180px; height: auto;
+            border: 1px dashed #003366; padding: 20px 4px 4px 4px; box-sizing: border-box; background: transparent; z-index: 15; resize: both; overflow: auto;
+        }
+        .signature-resizable-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            pointer-events: none;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* 🟣 स्टाम्प / मुहर (Stamp) कंटेनर बॉक्स स्टाइल */
+        .stamp-resizable-wrapper {
+            position: absolute; left: 350px; top: 880px; width: 220px; height: auto;
+            border: 1px dashed #7c3aed; padding: 22px 6px 6px 6px; box-sizing: border-box; background: transparent; z-index: 16; resize: both; overflow: auto;
+        }
+        .stamp-content-box {
+            width: 100%;
+            outline: none;
+            word-break: break-word;
+            white-space: pre-wrap;
+            font-family: 'Mangal', 'Nirmala UI', sans-serif;
+        }
+
         /* 📄 प्रस्ताव पेपर */
         .paper {
             width: 210mm;
@@ -372,7 +400,7 @@
         /* 🖨️ प्रिंट सेटिंग्स */
         @media print {
             body { background-color: #ffffff; }
-            .master-toolbar, .control-panel, .size-selector-box, .drag-handle, .resize-handle-left, .resize-handle-right { display: none !important; }
+            .master-toolbar, .control-panel, .size-selector-box, .drag-handle, .resize-handle-left, .resize-handle-right, .signature-resizable-wrapper .drag-handle, .stamp-resizable-wrapper .drag-handle { display: none !important; }
             .letterhead, .paper { 
                 border: none !important; 
                 box-shadow: none !important; 
@@ -380,8 +408,10 @@
                 overflow: visible !important; 
                 width: 100% !important;
             }
-            .editable-text:focus, .content-fixed:focus { outline: none !important; background-color: transparent !important; }
-            .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; background: transparent !important; }
+            .editable-text:focus, .content-fixed:focus, .stamp-content-box:focus { outline: none !important; background-color: transparent !important; }
+            .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; background: transparent !important; overflow: visible !important; }
+            .signature-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; background: transparent !important; overflow: visible !important; }
+            .stamp-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; background: transparent !important; overflow: visible !important; }
             .table-resizable-wrapper table { border-collapse: collapse !important; height: auto !important; }
             .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #000 !important; }
         }
@@ -485,12 +515,22 @@
 
         <button class="btn-table" onclick="insertDynamicTable()">➕ टेबल जोड़ें</button>
         <button class="btn-merge" onclick="mergeTableCells()">🔗 सेल मर्ज करें</button>
-        <button class="btn-save-table" onclick="saveTableCustomLayout()">💾 टेबल सेटिंग सेव करें</button>
+        
+        <!-- ✍️ हस्ताक्षर (Signature) जोड़ने / हटाने का बटन और हिडन फाइल इनपुट -->
+        <input type="file" id="sigFileInput" accept="image/*" style="display:none;" onchange="uploadAndProcessSignature(event)">
+        <button class="btn-action" style="background-color: #0284c7; color: #fff;" onclick="document.getElementById('sigFileInput').click()">✍️ हस्ताक्षर जोड़ें</button>
+        <button class="btn-action" style="background-color: #e11d48; color: #fff;" onclick="removeSignature()">❌ हस्ताक्षर हटाएँ</button>
+        
+        <!-- 🟣 मुहर (Stamp) जोड़ने का बटन -->
+        <button class="btn-action" style="background-color: #7c3aed; color: #fff;" onclick="insertStampBox()">🟣 मुहर (Stamp) जोड़ें</button>
+        <button class="btn-action" style="background-color: #b91c1c; color: #fff;" onclick="removeStampBox()">❌ मुहर हटाएँ</button>
+
+        <button class="btn-save-table" onclick="saveTableCustomLayout()">💾 लेआउट सेव करें</button>
 
         <div class="selector-group" style="margin-left: auto; gap: 5px;">
             <button class="btn-delete-action" onclick="deleteCurrentRow()">❌ रो हटाएँ</button>
             <button class="btn-delete-action" onclick="deleteCurrentColumn()">❌ कॉलम हटाएँ</button>
-            <button class="btn-delete-action" style="background-color: #555;" onclick="deleteCurrentTable()">🗑️ पूरी टेबल हटाएँ</button>
+            <button class="btn-delete-action" style="background-color: #555;" onclick="deleteCurrentTable()">🗑️ टेबल हटाएँ</button>
         </div>
     </div>
 
@@ -540,6 +580,30 @@
             <div class="control-group">
                 <label for="watermarkSizeInput">Watermark Size (px):</label>
                 <input type="number" id="watermarkSizeInput" value="400" min="100" max="800" oninput="saveSettings(); updateWatermarkPosition();">
+            </div>
+        </div>
+
+        <!-- 🎛️ मुहर (Stamp) विशेष कस्टमाइज़ेशन कंट्रोल पैनल (रंग चयन के साथ) -->
+        <div class="header-inputs-container" style="border-color: #7c3aed; background: #0f172a;">
+            <div class="header-inputs-header">
+                <span style="color: #c084fc;">🟣 मुहर (Stamp) कस्टमाइज़ेशन सेटिंग्स (फॉन्ट, स्पेसिंग एवं रंग):</span>
+            </div>
+            <div class="panel-grid" style="margin-top: 8px;">
+                <div class="control-group">
+                    <label for="stampFontSizeInput">Stamp Font Size (px):</label>
+                    <input type="number" id="stampFontSizeInput" value="13" min="8" max="24" oninput="saveSettings(); updateStampStyle();">
+                </div>
+                <div class="control-group">
+                    <label for="stampLineHeightInput">Stamp Line Spacing (Line Gap):</label>
+                    <input type="number" id="stampLineHeightInput" value="1.2" step="0.1" min="0.8" max="2.5" oninput="saveSettings(); updateStampStyle();" title="लाइन के बीच की दूरी कम या ज्यादा करें">
+                </div>
+                <div class="control-group">
+                    <label for="stampColorSelect">Stamp Color (मुहर का रंग):</label>
+                    <select id="stampColorSelect" onchange="saveSettings(); updateStampStyle();">
+                        <option value="#1e3a8a">गहरा नीला (Blue)</option>
+                        <option value="#000000">काला (Black)</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -646,6 +710,8 @@
         updateWatermarkPosition();
         updateContent();
         loadSavedTableLayout();
+        loadSavedSignature();
+        loadSavedStamp();
     };
 
     function saveSettings() {
@@ -666,6 +732,9 @@
             appMode: document.getElementById('appModeSelect').value,
             watermarkTop: document.getElementById('watermarkTopInput').value,
             watermarkSize: document.getElementById('watermarkSizeInput').value,
+            stampFontSize: document.getElementById('stampFontSizeInput').value,
+            stampLineHeight: document.getElementById('stampLineHeightInput').value,
+            stampColor: document.getElementById('stampColorSelect').value,
             headerLines: headerLinesData
         };
         localStorage.setItem('schoolSoftwareSettings', JSON.stringify(settings));
@@ -689,6 +758,9 @@
                 if(data.nirnayText !== undefined) document.getElementById('nirnayTextInput').value = data.nirnayText;
                 if(data.watermarkTop !== undefined) document.getElementById('watermarkTopInput').value = data.watermarkTop;
                 if(data.watermarkSize !== undefined) document.getElementById('watermarkSizeInput').value = data.watermarkSize;
+                if(data.stampFontSize !== undefined) document.getElementById('stampFontSizeInput').value = data.stampFontSize;
+                if(data.stampLineHeight !== undefined) document.getElementById('stampLineHeightInput').value = data.stampLineHeight;
+                if(data.stampColor !== undefined) document.getElementById('stampColorSelect').value = data.stampColor;
                 if(data.headerLines) headerLinesData = data.headerLines;
 
                 if(data.hideHeader !== undefined) {
@@ -931,7 +1003,7 @@
         }
     }
 
-    // 💾 टेबल लेआउट और फिक्स सेटिंग सेव करने का फंक्शन
+    // 💾 टेबल, हस्ताक्षर और मुहर लेआउट सेव करने का फंक्शन
     function saveTableCustomLayout() {
         var wrappers = document.querySelectorAll('.table-resizable-wrapper');
         var tableData = [];
@@ -946,7 +1018,39 @@
             });
         });
         localStorage.setItem('savedTableCustomLayout', JSON.stringify(tableData));
-        alert("टेबल की वर्तमान सेटिंग और साइज सफलतापूर्वक सेव हो गई है!");
+
+        // Save Signature Layout
+        var sigWrapper = document.getElementById('signatureWrapper');
+        if (sigWrapper) {
+            var sigData = {
+                html: sigWrapper.innerHTML,
+                left: sigWrapper.style.left,
+                top: sigWrapper.style.top,
+                width: sigWrapper.style.width,
+                height: sigWrapper.style.height
+            };
+            localStorage.setItem('savedSignatureLayout', JSON.stringify(sigData));
+        } else {
+            localStorage.removeItem('savedSignatureLayout');
+        }
+
+        // Save Stamp Layout & Content
+        var stampWrapper = document.getElementById('stampWrapper');
+        if (stampWrapper) {
+            var stampBox = document.getElementById('stampEditableBox');
+            var stampData = {
+                html: stampBox ? stampBox.innerHTML : '',
+                left: stampWrapper.style.left,
+                top: stampWrapper.style.top,
+                width: stampWrapper.style.width,
+                height: stampWrapper.style.height
+            };
+            localStorage.setItem('savedStampLayout', JSON.stringify(stampData));
+        } else {
+            localStorage.removeItem('savedStampLayout');
+        }
+
+        alert("टेबल, हस्ताक्षर एवं मुहर की सेटिंग सफलतापूर्वक सेव हो गई है!");
     }
 
     function loadSavedTableLayout() {
@@ -976,6 +1080,193 @@
         }
     }
 
+    function loadSavedSignature() {
+        var savedSig = localStorage.getItem('savedSignatureLayout');
+        if (savedSig) {
+            try {
+                var item = JSON.parse(savedSig);
+                if (!document.getElementById('signatureWrapper')) {
+                    var mainLetterhead = document.getElementById('main-letterhead');
+                    var wrapper = document.createElement('div');
+                    wrapper.id = 'signatureWrapper';
+                    wrapper.className = 'signature-resizable-wrapper';
+                    wrapper.style.left = item.left;
+                    wrapper.style.top = item.top;
+                    wrapper.style.width = item.width;
+                    if(item.height) wrapper.style.height = item.height;
+                    wrapper.innerHTML = item.html;
+                    mainLetterhead.appendChild(wrapper);
+                }
+            } catch(e) {
+                console.error("Error loading signature layout", e);
+            }
+        }
+    }
+
+    function loadSavedStamp() {
+        var savedStamp = localStorage.getItem('savedStampLayout');
+        if (savedStamp) {
+            try {
+                var item = JSON.parse(savedStamp);
+                if (!document.getElementById('stampWrapper')) {
+                    var mainLetterhead = document.getElementById('main-letterhead');
+                    var wrapper = document.createElement('div');
+                    wrapper.id = 'stampWrapper';
+                    wrapper.className = 'stamp-resizable-wrapper';
+                    wrapper.style.left = item.left;
+                    wrapper.style.top = item.top;
+                    wrapper.style.width = item.width;
+                    if(item.height) wrapper.style.height = item.height;
+
+                    wrapper.innerHTML = '<div class="drag-handle" onmousedown="initDrag(event, \'stampWrapper\')">✥ Move Stamp (मुहर)</div>' +
+                                        '<div id="stampEditableBox" class="stamp-content-box" contenteditable="true">' + item.html + '</div>';
+                    mainLetterhead.appendChild(wrapper);
+                    updateStampStyle();
+                }
+            } catch(e) {
+                console.error("Error loading stamp layout", e);
+            }
+        }
+    }
+
+    // 🟣 मुहर (Stamp) जोड़ने और हटाने का फंक्शन
+    function insertStampBox() {
+        var existingStamp = document.getElementById('stampWrapper');
+        if (existingStamp) {
+            alert("मुहर पहले से ही जोड़ी जा चुकी है!");
+            return;
+        }
+
+        var wrapper = document.createElement('div');
+        wrapper.id = 'stampWrapper';
+        wrapper.className = 'stamp-resizable-wrapper';
+        wrapper.style.left = '350px';
+        wrapper.style.top = '880px';
+        wrapper.style.width = '220px';
+
+        wrapper.innerHTML = '<div class="drag-handle" onmousedown="initDrag(event, \'stampWrapper\')">✥ Move Stamp (मुहर)</div>' +
+                            '<div id="stampEditableBox" class="stamp-content-box" contenteditable="true">प्रधानाचार्य<br>श्री कृष्ण इण्टर कालेज सेमरा <br>पो०- कठकुइयाँ, जिला - कुशीनगर</div>';
+
+        document.getElementById('main-letterhead').appendChild(wrapper);
+        updateStampStyle();
+        saveTableCustomLayout();
+    }
+
+    function removeStampBox() {
+        var stampWrapper = document.getElementById('stampWrapper');
+        if (stampWrapper) {
+            stampWrapper.remove();
+            localStorage.removeItem('savedStampLayout');
+            alert("मुहर सफलतापूर्वक हटा दी गई है!");
+        } else {
+            alert("हटाने के लिए कोई मुहर मौजूद नहीं है!");
+        }
+    }
+
+    function updateStampStyle() {
+        var stampBox = document.getElementById('stampEditableBox');
+        if (stampBox) {
+            var fSize = document.getElementById('stampFontSizeInput').value || 13;
+            var lHeight = document.getElementById('stampLineHeightInput').value || 1.2;
+            var cColor = document.getElementById('stampColorSelect').value || '#1e3a8a';
+            stampBox.style.fontSize = fSize + 'px';
+            stampBox.style.lineHeight = lHeight;
+            stampBox.style.color = cColor;
+        }
+        saveSettings();
+    }
+
+    // ✍️ हस्ताक्षर हटाने का फंक्शन
+    function removeSignature() {
+        var sigWrapper = document.getElementById('signatureWrapper');
+        if (sigWrapper) {
+            sigWrapper.remove();
+            localStorage.removeItem('savedSignatureLayout');
+            alert("हस्ताक्षर सफलतापूर्वक हटा दिया गया है!");
+        } else {
+            alert("हटाने के लिए कोई हस्ताक्षर मौजूद नहीं है!");
+        }
+    }
+
+    // ✍️ हस्ताक्षर (Signature) फाइल अपलोड और ओरिजिनल कलर एनहांसमेंट फंक्शन
+    function uploadAndProcessSignature(event) {
+        var file = event.target.files[0];
+        if (!file) return;
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var img = new Image();
+            img.onload = function() {
+                var width = img.width;
+                var height = img.height;
+
+                var canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+
+                var imgData = ctx.getImageData(0, 0, width, height);
+                var data = imgData.data;
+
+                var bgCanvas = document.createElement('canvas');
+                bgCanvas.width = width;
+                bgCanvas.height = height;
+                var bgCtx = bgCanvas.getContext('2d');
+                bgCtx.drawImage(img, 0, 0);
+                
+                bgCtx.filter = 'blur(20px)';
+                bgCtx.drawImage(bgCanvas, 0, 0);
+                var bgData = bgCtx.getImageData(0, 0, width, height).data;
+
+                for (var i = 0; i < data.length; i += 4) {
+                    var r = data[i], g = data[i + 1], b = data[i + 2];
+                    var br = bgData[i], bg = bgData[i+1], bb = bgData[i+2];
+
+                    var currentIntensity = (r + g + b) / 3;
+                    var bgIntensity = (br + bg + bb) / 3;
+
+                    var diff = bgIntensity - currentIntensity;
+
+                    if (diff > 18 && currentIntensity < 240) {
+                        data[i] = Math.max(0, r - 15);
+                        data[i+1] = Math.max(0, g - 15);
+                        data[i+2] = Math.max(0, b - 15);
+                        data[i+3] = 255;
+                    } else {
+                        data[i+3] = 0;
+                    }
+                }
+
+                ctx.putImageData(imgData, 0, 0);
+                var transparentDataUrl = canvas.toDataURL('image/png');
+
+                createSignatureBox(transparentDataUrl);
+                event.target.value = '';
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function createSignatureBox(imgSrc) {
+        var existingSig = document.getElementById('signatureWrapper');
+        if (existingSig) {
+            existingSig.remove();
+        }
+
+        var wrapperId = 'signatureWrapper';
+        var wrapper = document.createElement('div');
+        wrapper.id = wrapperId;
+        wrapper.className = 'signature-resizable-wrapper';
+
+        wrapper.innerHTML = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move Signature</div>' +
+                            '<img src="' + imgSrc + '" alt="Signature">';
+
+        document.getElementById('main-letterhead').appendChild(wrapper);
+        saveTableCustomLayout();
+    }
+
     function insertDynamicTable() {
         var rows = prompt("कितनी रो (Rows) चाहिए? (उदा. 3)", "3");
         var cols = prompt("कितने कॉलम (Columns) चाहिए? (उदा. 4)", "4");
@@ -999,7 +1290,7 @@
         var tableWidth = 794 - leftPx - rightPx;
         wrapper.style.width = (tableWidth > 100 ? tableWidth : 100) + 'px';
         
-        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ)</div>' +
+        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ नंबर)</div>' +
                           '<div class="resize-handle-left" onmousedown="initResize(event, \''+wrapperId+'\', \'left\')"></div>' +
                           '<table contenteditable="true"><thead><tr>';
         
@@ -1126,9 +1417,17 @@
                     localStorage.removeItem('savedTableCustomLayout');
                     return; 
                 }
+                if (node.id === 'signatureWrapper') {
+                    removeSignature();
+                    return;
+                }
+                if (node.id === 'stampWrapper') {
+                    removeStampBox();
+                    return;
+                }
                 node = node.parentNode;
             }
-            alert("कृपया कर्सर को टेबल के अंदर कहीं रखें ताकि उसे डिलीट किया जा सके!");
+            alert("कृपया कर्सर को टेबल, हस्ताक्षर या मुहर के अंदर रखें ताकि उसे डिलीट किया जा सके!");
         }
     }
 
