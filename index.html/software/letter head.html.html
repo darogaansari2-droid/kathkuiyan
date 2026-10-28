@@ -472,21 +472,22 @@
         <div class="selector-group">
             <span>🔍 साइज़:</span>
             <select id="fontSizeSelector" onchange="changeSelectionFontSize(this.value)">
-                <option value="" selected disabled>चुनें</option>
-                <option value="1">Size 8</option>
-                <option value="2">Size 9</option>
-                <option value="3">Size 10</option>
-                <option value="4">Size 11</option>
-                <option value="5">Size 12</option>
-                <option value="6">Size 14</option>
-                <option value="7">Size 16</option>
+                <option value="" selected disabled>साइज चुनें</option>
+                <option value="16px">नार्मल (Normal - 16px)</option>
+                <option value="10px">Size 10</option>
+                <option value="12px">Size 12</option>
+                <option value="14px">Size 14</option>
+                <option value="16px">Size 16</option>
+                <option value="18px">Size 18</option>
+                <option value="20px">Size 20</option>
+                <option value="24px">Size 24</option>
             </select>
         </div>
 
         <div class="selector-group">
             <span>🔤 फॉन्ट:</span>
             <select id="fontFamilySelector" onchange="changeSelectionFontFamily(this.value)">
-                <option value="" selected disabled>चुनें</option>
+                <option value="" selected disabled>फॉन्ट चुनें</option>
                 <option value="Mangal">Mangal</option>
                 <option value="Nirmala UI">Nirmala UI</option>
                 <option value="Arial">Arial</option>
@@ -501,10 +502,23 @@
             <button class="btn-action" onclick="setTextAlignment('justifyFull')">☰ Justify</button>
         </div>
 
+        <!-- ↕️ लेटर लाइन हाइट (Line Height) कंट्रोल -->
         <div class="selector-group">
-            <span>↕️ रो ऊँचाई:</span>
+            <span>↕️ लाइन हाइट:</span>
+            <select id="letterLineHeightSelector" onchange="changeLetterLineHeight(this.value)">
+                <option value="" disabled>हाइट चुनें</option>
+                <option value="1.2">1.2 (बहुत कम)</option>
+                <option value="1.4">1.4 (कम)</option>
+                <option value="1.7" selected>1.7 (नार्मल)</option>
+                <option value="2.0">2.0 (अधिक)</option>
+                <option value="2.5">2.5 (बहुत अधिक)</option>
+            </select>
+        </div>
+
+        <div class="selector-group">
+            <span>↕️ टेबल रो ऊँचाई:</span>
             <select id="tableHeightSelector" onchange="changeTableRowHeight(this.value)">
-                <option value="" selected disabled>हाइट (Height)</option>
+                <option value="" selected disabled>रो हाइट चुनें</option>
                 <option value="0.5">बहुत कम (0.5)</option>
                 <option value="1">मानक 1.0 (1 line)</option>
                 <option value="1.5">1.5 (Medium)</option>
@@ -515,6 +529,16 @@
 
         <button class="btn-table" onclick="insertDynamicTable()">➕ टेबल जोड़ें</button>
         <button class="btn-merge" onclick="mergeTableCells()">🔗 सेल मर्ज करें</button>
+        
+        <!-- 📊 Column Text Alignment & Selection Group -->
+        <div class="selector-group">
+            <span>📐 Col Align:</span>
+            <button class="btn-action" style="background-color: #0284c7; color: white;" onclick="alignCurrentColumn('left')">⬅️ Col Left</button>
+            <button class="btn-action" style="background-color: #0284c7; color: white;" onclick="alignCurrentColumn('center')">↔️ Col Center</button>
+            <button class="btn-action" style="background-color: #0284c7; color: white;" onclick="alignCurrentColumn('right')">➡️ Col Right</button>
+            <button class="btn-action" style="background-color: #0284c7; color: white;" onclick="alignCurrentColumn('justify')">☰ Col Justify</button>
+            <button class="btn-action" style="background-color: #6366f1; color: white;" onclick="selectEntireColumn()">🎯 Column Select</button>
+        </div>
         
         <!-- ✍️ हस्ताक्षर (Signature) जोड़ने / हटाने का बटन और हिडन फाइल इनपुट -->
         <input type="file" id="sigFileInput" accept="image/*" style="display:none;" onchange="uploadAndProcessSignature(event)">
@@ -715,6 +739,7 @@
     };
 
     function saveSettings() {
+        var letterBody = document.getElementById('letter-body');
         var settings = {
             leftMargin: document.getElementById('leftMarginInput').value,
             rightMargin: document.getElementById('rightMarginInput').value,
@@ -724,6 +749,10 @@
             indent: document.getElementById('indentInput').value,
             fontSelect: document.getElementById('fontSelect').value,
             fontSize: document.getElementById('fontSizeInput').value,
+            letterLineHeight: letterBody ? letterBody.style.lineHeight : '1.7',
+            lineHeightSelectVal: document.getElementById('letterLineHeightSelector').value,
+            fontSizeSelectVal: document.getElementById('fontSizeSelector').value,
+            fontFamilySelectVal: document.getElementById('fontFamilySelector').value,
             prastavNo: document.getElementById('prastavNoInput').value,
             prastavText: document.getElementById('prastavTextInput').value,
             nirnayText: document.getElementById('nirnayTextInput').value,
@@ -753,6 +782,21 @@
                 if(data.indent !== undefined) document.getElementById('indentInput').value = data.indent;
                 if(data.fontSelect !== undefined) document.getElementById('fontSelect').value = data.fontSelect;
                 if(data.fontSize !== undefined) document.getElementById('fontSizeInput').value = data.fontSize;
+                
+                if(data.letterLineHeight !== undefined) {
+                    var letterBody = document.getElementById('letter-body');
+                    if(letterBody) letterBody.style.lineHeight = data.letterLineHeight;
+                }
+                if(data.lineHeightSelectVal !== undefined) {
+                    document.getElementById('letterLineHeightSelector').value = data.lineHeightSelectVal;
+                }
+                if(data.fontSizeSelectVal !== undefined) {
+                    document.getElementById('fontSizeSelector').value = data.fontSizeSelectVal;
+                }
+                if(data.fontFamilySelectVal !== undefined) {
+                    document.getElementById('fontFamilySelector').value = data.fontFamilySelectVal;
+                }
+
                 if(data.prastavNo !== undefined) document.getElementById('prastavNoInput').value = data.prastavNo;
                 if(data.prastavText !== undefined) document.getElementById('prastavTextInput').value = data.prastavText;
                 if(data.nirnayText !== undefined) document.getElementById('nirnayTextInput').value = data.nirnayText;
@@ -921,8 +965,59 @@
     }
 
     function setTextAlignment(command) { document.execCommand(command, false, null); }
-    function changeSelectionFontSize(sizeValue) { if (sizeValue) { document.execCommand('fontSize', false, sizeValue); document.getElementById('fontSizeSelector').value = ""; } }
-    function changeSelectionFontFamily(fontValue) { if (fontValue) { document.execCommand('fontName', false, fontValue); document.getElementById('fontFamilySelector').value = ""; } }
+    
+    function changeSelectionFontSize(sizeValue) {
+        if (!sizeValue) return;
+        var selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            var range = selection.getRangeAt(0);
+            if (!range.collapsed) {
+                var span = document.createElement("span");
+                span.style.fontSize = sizeValue;
+                try {
+                    range.surroundContents(span);
+                } catch(e) {
+                    document.execCommand('fontSize', false, "7");
+                    var fontElements = document.getElementsByTagName("font");
+                    for (var i = 0; i < fontElements.length; i++) {
+                        if (fontElements[i].getAttribute("size") === "7") {
+                            fontElements[i].removeAttribute("size");
+                            fontElements[i].style.fontSize = sizeValue;
+                        }
+                    }
+                }
+            } else {
+                var span = document.createElement("span");
+                span.style.fontSize = sizeValue;
+                span.innerHTML = "&#8203;"; 
+                range.insertNode(span);
+                
+                var newRange = document.createRange();
+                newRange.setStart(span, 1);
+                newRange.collapse(true);
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+            }
+        }
+        saveSettings();
+    }
+
+    function changeSelectionFontFamily(fontValue) { 
+        if (fontValue) { 
+            document.execCommand('fontName', false, fontValue); 
+            saveSettings();
+        } 
+    }
+
+    /* ↕️ लेटर लाइन हाइट बदलने का फंक्शन */
+    function changeLetterLineHeight(value) {
+        if (!value) return;
+        var letterBody = document.getElementById('letter-body');
+        if (letterBody) {
+            letterBody.style.lineHeight = value;
+        }
+        saveSettings();
+    }
 
     function changeTableRowHeight(value) {
         var selection = window.getSelection();
@@ -1003,7 +1098,76 @@
         }
     }
 
-    // 💾 टेबल, हस्ताक्षर और मुहर लेआउट सेव करने का फंक्शन
+    function alignCurrentColumn(alignType) {
+        var selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            var node = selection.getRangeAt(0).startContainer;
+            var cell = null;
+            
+            while (node && node.id !== 'main-letterhead') {
+                if (node.nodeName === 'TD' || node.nodeName === 'TH') {
+                    cell = node;
+                    break;
+                }
+                node = node.parentNode;
+            }
+
+            if (cell) {
+                var cellIndex = cell.cellIndex;
+                var table = cell.closest('table');
+                if (table) {
+                    var rows = table.querySelectorAll('tr');
+                    rows.forEach(function(row) {
+                        if (row.cells[cellIndex]) {
+                            row.cells[cellIndex].style.textAlign = alignType;
+                        }
+                    });
+                    return;
+                }
+            }
+            alert("कृपया कर्सर को उस कॉलम के किसी भी सेल में रखें जिसे अलाइन करना है!");
+        }
+    }
+
+    function selectEntireColumn() {
+        var selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            var node = selection.getRangeAt(0).startContainer;
+            var cell = null;
+            
+            while (node && node.id !== 'main-letterhead') {
+                if (node.nodeName === 'TD' || node.nodeName === 'TH') {
+                    cell = node;
+                    break;
+                }
+                node = node.parentNode;
+            }
+
+            if (cell) {
+                var cellIndex = cell.cellIndex;
+                var table = cell.closest('table');
+                if (table) {
+                    window.getSelection().removeAllRanges();
+                    
+                    var range = document.createRange();
+                    var rows = table.querySelectorAll('tr');
+                    
+                    if (rows.length > 0 && rows[0].cells[cellIndex]) {
+                        var firstCell = rows[0].cells[cellIndex];
+                        var lastCell = rows[rows.length - 1].cells[cellIndex];
+
+                        range.setStartBefore(firstCell);
+                        range.setEndAfter(lastCell);
+                        
+                        window.getSelection().addRange(range);
+                    }
+                    return;
+                }
+            }
+            alert("कृपया कर्सर को उस कॉलम में रखें जिसे सेलेक्ट करना है!");
+        }
+    }
+
     function saveTableCustomLayout() {
         var wrappers = document.querySelectorAll('.table-resizable-wrapper');
         var tableData = [];
@@ -1019,7 +1183,6 @@
         });
         localStorage.setItem('savedTableCustomLayout', JSON.stringify(tableData));
 
-        // Save Signature Layout
         var sigWrapper = document.getElementById('signatureWrapper');
         if (sigWrapper) {
             var sigData = {
@@ -1034,7 +1197,6 @@
             localStorage.removeItem('savedSignatureLayout');
         }
 
-        // Save Stamp Layout & Content
         var stampWrapper = document.getElementById('stampWrapper');
         if (stampWrapper) {
             var stampBox = document.getElementById('stampEditableBox');
@@ -1129,7 +1291,6 @@
         }
     }
 
-    // 🟣 मुहर (Stamp) जोड़ने और हटाने का फंक्शन
     function insertStampBox() {
         var existingStamp = document.getElementById('stampWrapper');
         if (existingStamp) {
@@ -1176,7 +1337,6 @@
         saveSettings();
     }
 
-    // ✍️ हस्ताक्षर हटाने का फंक्शन
     function removeSignature() {
         var sigWrapper = document.getElementById('signatureWrapper');
         if (sigWrapper) {
@@ -1188,7 +1348,6 @@
         }
     }
 
-    // ✍️ हस्ताक्षर (Signature) फाइल अपलोड और ओरिजिनल कलर एनहांसमेंट फंक्शन
     function uploadAndProcessSignature(event) {
         var file = event.target.files[0];
         if (!file) return;
@@ -1290,7 +1449,7 @@
         var tableWidth = 794 - leftPx - rightPx;
         wrapper.style.width = (tableWidth > 100 ? tableWidth : 100) + 'px';
         
-        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ नंबर)</div>' +
+        var htmlContent = '<div class="drag-handle" onmousedown="initDrag(event, \''+wrapperId+'\')">✥ Move (पकड़कर पूरे पेज पर कहीं भी ले जाएँ)</div>' +
                           '<div class="resize-handle-left" onmousedown="initResize(event, \''+wrapperId+'\', \'left\')"></div>' +
                           '<table contenteditable="true"><thead><tr>';
         
