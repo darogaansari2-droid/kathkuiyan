@@ -448,21 +448,29 @@
         <div class="admin-controls no-print">
             <h3 style="margin-top:0; margin-bottom:8px;">बैठक व्यवस्था सेटिंग्स (कंट्रोल पैनल)</h3>
             <div class="form-row">
-                <label>वर्ष (YYYY):</label>
-                <input type="text" id="inputYear" value="2027" style="width: 60px;" oninput="updateGridHeader()">
-                
+                <label>मुख्य शीर्षक (Main Title):</label>
+                <input type="text" id="inputMainTitle" value="यू० पी० बोर्ड परीक्षा वर्ष - 2027" style="width: 220px; font-weight: bold;" oninput="updateGridHeader()">
+
+                <label>केन्द्र का नाम:</label>
+                <input type="text" id="inputCenterName" value="श्री कृष्ण इ० का० सेमरा कठकुइयाँ , कुशीनगर" style="width: 280px; font-weight: bold;" oninput="updateGridHeader()">
+            </div>
+            <div class="form-row">
                 <label>बैठक व्यवस्था प्रकार:</label>
-                <select id="seatingTypeSelect" onchange="updateGridHeader()">
+                <select id="seatingTypeSelect" onchange="handleSeatingTypeChange()">
                     <option value="सामान्य बैठक व्यवस्था">सामान्य बैठक व्यवस्था</option>
                     <option value="स्थानान्तरित बैठक व्यवस्था">स्थानान्तरित बैठक व्यवस्था</option>
                     <option value="प्री बोर्ड परीक्षा">प्री बोर्ड परीक्षा</option>
+                    <option value="custom">अन्य परीक्षा (कस्टम दर्ज करें)</option>
                 </select>
+                <input type="text" id="customSeatingTypeInput" placeholder="जैसे: पुलिस परीक्षा" style="display: none; width: 140px; font-weight: bold;" oninput="updateGridHeader()">
 
-                <label>कक्षा:</label>
-                <select id="classSelect" onchange="updateGridHeader()">
+                <label>कक्षा / पद:</label>
+                <select id="classSelect" onchange="handleClassChange()">
                     <option value="हाई स्कूल">हाई स्कूल</option>
                     <option value="इण्टर">इण्टर</option>
+                    <option value="custom">अन्य (Custom)</option>
                 </select>
+                <input type="text" id="customClassInput" placeholder="जैसे: आरक्षी / SI" style="display: none; width: 110px; font-weight: bold;" oninput="updateGridHeader()">
 
                 <label>केंद्र संख्या:</label>
                 <input type="text" id="inputCenterCode" value="1234" style="width: 70px;" oninput="updateGridHeader()">
@@ -501,6 +509,7 @@
                 <input type="number" id="inputWidth" value="110" min="40" style="width: 55px;" oninput="generateGrid()">
 
                 <button class="btn" onclick="generateGrid()">ग्रिड बनाएँ</button>
+                <button class="btn" style="background-color: #8e44ad;" onclick="toggleSchoolTableVisibility()">👁️ विद्यालय-वार विवरण Hide/Show करें</button>
                 <button class="btn btn-print" onclick="window.print()">🖨️ प्रिंट करें</button>
             </div>
         </div>
@@ -509,14 +518,14 @@
             <div class="grid-header">
                 <div class="grid-header-top">
                     <span style="visibility: hidden;" class="room-title">कमरा नं०- 00</span>
-                    <h1 id="mainTitle">यू० पी० बोर्ड परीक्षा - 2027</h1>
+                    <h1 id="mainTitle">यू० पी० बोर्ड परीक्षा वर्ष - 2027</h1>
                     <span class="room-title">कमरा नं०- <span id="displayRoom">01</span></span>
                 </div>
                 <h2 id="displaySeatingType">सामान्य बैठक व्यवस्था</h2>
             </div>
 
             <div class="grid-school-header">
-               केन्द्र का नाम - श्री कृष्ण इ० का० सेमरा कठकुइयाँ , कुशीनगर
+               केन्द्र का नाम - <span id="displayCenterName">श्री कृष्ण इ० का० सेमरा कठकुइयाँ , कुशीनगर</span>
             </div>
 
             <div class="grid-sub-header">
@@ -532,9 +541,9 @@
             <table class="seating-grid" id="seatingGrid"></table>
         </div>
 
-        <div class="grid-summary-container">
+        <div class="grid-summary-container" id="gridSummaryContainer">
             <div class="grid-summary-header-wrapper" id="summaryHeaderWrapper">
-                <h3 style="margin: 10px 0 5px 0; font-size: 15px; text-align: left; width: 100%;">विद्यालय वार रोल नंबर विवरण</h3>
+                <h3 style="margin: 10px 0 5px 0; font-size: 15px; text-align: left; width: 100%;"> रोल नम्बर विवरण</h3>
             </div>
             <table class="school-table" id="schoolTable">
                 <thead>
@@ -565,7 +574,7 @@
                     </tr>
                 </tfoot>
             </table>
-            <div style="width: 100%; text-align: left; margin-top: 10px;">
+            <div style="width: 100%; text-align: left; margin-top: 10px;" id="addSchoolBtnDiv">
                 <button class="btn-add no-print" onclick="addSchoolGridRow()">+ नया विद्यालय जोड़ें</button>
             </div>
         </div>
@@ -1134,7 +1143,7 @@
                     </div>
 
                     <div class="result-box absent">
-                        आज इस पाली में अनुपस्थित छात्र: <span id="inter-absent-total">0</span> (बालक: <span id="inter-absent-boys">0</span> | बालिका: <span id="inter-absent-girls">0</span>)
+                        आज इस पाली में अनुपस्थित छात्र: <span id="inter-absent-total">0</span> (बालक: <span id="inter-absent-girls">0</span> | बालिका: <span id="inter-absent-girls">0</span>)
                     </div>
 
                     <div class="room-absent-section">
@@ -1533,15 +1542,59 @@ function getRollFillMode() {
     return localStorage.getItem('grid_roll_fill_mode') || 'auto';
 }
 
+function handleSeatingTypeChange() {
+    var select = document.getElementById('seatingTypeSelect');
+    var customInput = document.getElementById('customSeatingTypeInput');
+    if (select.value === 'custom') {
+        customInput.style.display = 'inline-block';
+    } else {
+        customInput.style.display = 'none';
+    }
+    updateGridHeader();
+}
+
+function handleClassChange() {
+    var select = document.getElementById('classSelect');
+    var customInput = document.getElementById('customClassInput');
+    if (select.value === 'custom') {
+        customInput.style.display = 'inline-block';
+    } else {
+        customInput.style.display = 'none';
+    }
+    updateGridHeader();
+}
+
+function toggleSchoolTableVisibility() {
+    var container = document.getElementById('gridSummaryContainer');
+    if (container.style.display === 'none') {
+        container.style.display = 'flex';
+    } else {
+        container.style.display = 'none';
+    }
+}
+
 function updateGridHeader() {
-    var year = document.getElementById('inputYear').value;
-    var seatingType = document.getElementById('seatingTypeSelect').value;
-    var cls = document.getElementById('classSelect').value;
+    var mainTitleVal = document.getElementById('inputMainTitle').value.trim() || 'बैठक व्यवस्था';
+    var centerNameVal = document.getElementById('inputCenterName').value.trim() || '';
+
+    var seatingSelect = document.getElementById('seatingTypeSelect');
+    var seatingType = seatingSelect.value;
+    if (seatingType === 'custom') {
+        seatingType = document.getElementById('customSeatingTypeInput').value.trim() || 'अन्य परीक्षा';
+    }
+
+    var classSelect = document.getElementById('classSelect');
+    var cls = classSelect.value;
+    if (cls === 'custom') {
+        cls = document.getElementById('customClassInput').value.trim() || 'परीक्षा';
+    }
+
     var centerCode = document.getElementById('inputCenterCode').value;
     var room = document.getElementById('inputRoom').value;
     var pali = document.getElementById('inputPali').value;
 
-    document.getElementById('mainTitle').innerText = (seatingType === 'प्री बोर्ड परीक्षा') ? 'वर्ष - ' + year : 'यू० पी० बोर्ड परीक्षा - ' + year;
+    document.getElementById('mainTitle').innerText = mainTitleVal;
+    document.getElementById('displayCenterName').innerText = centerNameVal;
     document.getElementById('displaySeatingType').innerText = seatingType;
     document.getElementById('displayClass').innerText = cls;
     document.getElementById('displayCenterCode').innerText = centerCode;
