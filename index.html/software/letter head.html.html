@@ -13,7 +13,7 @@
             font-family: 'Nirmala UI', 'Mangal', 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            color: #333;
+            color: #000000; /* Text color strictly black */
             background-color: #f5f5f5; 
         }
 
@@ -201,8 +201,8 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
+            width: 300px;
+            height: 300px;
             opacity: 0.22; 
             z-index: 1;
             pointer-events: none;
@@ -239,8 +239,9 @@
 
         .logo { width: 100px; height: 100px; object-fit: contain; }
         .school-details { text-align: center; flex-grow: 1; }
-        .school-name { font-size: 40px; font-weight: bold; color: #003366; margin: 0; text-transform: uppercase; line-height: 1.2; }
-        .school-info { font-size: 20px; margin: 8px 0 0 0; color: #003366; font-weight: bold; }
+        .school-name { font-size: 40px; font-weight: bold; color: #8b0000; margin: 0; text-transform: uppercase; line-height: 1.2; }
+        .school-info-address { font-size: 20px; margin: 8px 0 0 0; color: #003366; font-weight: bold; }
+        .school-info-small { font-size: 11px; margin: 4px 0 0 0; color: #003366; font-weight: bold; }
         
         .meta-info { 
             display: flex; 
@@ -269,7 +270,7 @@
             padding-right: 24px; 
             font-size: 16px; 
             line-height: 1.7;
-            color: #222;
+            color: #000000; /* Letter body text color updated to absolute black */
             cursor: text;
             user-select: text; 
             box-sizing: border-box;
@@ -279,7 +280,7 @@
             font-family: 'Mangal', 'Nirmala UI', 'Arial', sans-serif;
         }
         .editable-text:focus { outline: 1px dashed #003366 !important; background-color: #fafafa; padding: 2px; }
-        .editable-text { display: inline; min-width: 120px; font-weight: normal; color: #003366; cursor: text; user-select: text; }
+        .editable-text { display: inline; min-width: 120px; font-weight: normal; color: #000000; cursor: text; user-select: text; }
 
         /* ↔️ टेबल कंटेनर बॉक्स (Auto-fit row & height support) */
         .table-resizable-wrapper {
@@ -358,9 +359,10 @@
             box-sizing: border-box;
             font-size: 16px;
             line-height: 1.7;
-            font-family: 'Mangal', 'Nirmala UI', 'Arial', sans-serif;
+            font-family: 'Nirmala UI', 'Mangal', 'Arial', sans-serif;
             position: relative;
             overflow: hidden;
+            color: #000000;
         }
 
         .paper-watermark {
@@ -368,8 +370,8 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
+            width: 250px;
+            height: 250px;
             opacity: 0.22;
             z-index: 1;
             pointer-events: none;
@@ -399,7 +401,7 @@
 
         /* 🖨️ प्रिंट सेटिंग्स */
         @media print {
-            body { background-color: #ffffff; }
+            body { background-color: #ffffff; color: #000000; }
             .master-toolbar, .control-panel, .size-selector-box, .drag-handle, .resize-handle-left, .resize-handle-right, .signature-resizable-wrapper .drag-handle, .stamp-resizable-wrapper .drag-handle { display: none !important; }
             .letterhead, .paper { 
                 border: none !important; 
@@ -407,13 +409,14 @@
                 margin: 0 !important; 
                 overflow: visible !important; 
                 width: 100% !important;
+                color: #000000 !important;
             }
             .editable-text:focus, .content-fixed:focus, .stamp-content-box:focus { outline: none !important; background-color: transparent !important; }
             .table-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; background: transparent !important; overflow: visible !important; }
             .signature-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; background: transparent !important; overflow: visible !important; }
             .stamp-resizable-wrapper { border: none !important; padding: 0 !important; margin: 0 !important; resize: none !important; background: transparent !important; overflow: visible !important; }
             .table-resizable-wrapper table { border-collapse: collapse !important; height: auto !important; }
-            .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #000 !important; }
+            .table-resizable-wrapper th, .table-resizable-wrapper td { border: 1px solid #000 !important; color: #000000 !important; }
         }
     </style>
 </head>
@@ -666,8 +669,10 @@
             <div class="header">
                 <img class="logo" src="logo.png" alt="Logo"> 
                 <div class="school-details">
-                    <h1 class="school-name">श्री कृष्ण इण्टरमीडिएट कालेज सेमरा </h1>
-                    <p class="school-info">पत्रालय - कठकुइयाँ, जनपद - कुशीनगर - पिन कोड - 274303</p>
+                    <h1 class="school-name">श्री कृष्ण इण्टरमीडिएट कालेज सेमरा</h1>
+                    <p class="school-info-address">पत्रालय - कठकुइयाँ, जनपद - कुशीनगर - पिन कोड - 274303</p>
+                    <p class="school-info-small">(यू-डाइस कोड: 09590104807 • विद्यालय कोड: 1027 • सम्बद्ध: यूपी बोर्ड प्रयागराज)</p>
+                    <p class="school-info-small">ईमेल: cbpathak967@gmail.com | मो.: +91 6306224922</p>
                 </div>
             </div>
 
