@@ -159,7 +159,6 @@
             font-family: 'Consolas', 'Courier New', monospace, Arial; 
             font-size: 16px; 
             font-weight: 800; 
-            color: #000000;
             letter-spacing: 0.5px;
             background: transparent; 
             padding: 0; 
@@ -266,13 +265,21 @@
         .date-print-header input[type="date"] { padding: 4px 8px; font-size: 13px; font-weight: bold; border: 1px solid #ccc; border-radius: 4px; }
         .selected-subjects-display { font-size: 18px; font-weight: bold; color: #2a5298; background: #fff; padding: 4px 8px; border-radius: 4px; border: 1px solid #cbd5e0; width: 100%; margin-top: 4px; }
 
-        /* PRINT STYLES - FIXED TO PORTRAIT STRICTLY */
+        /* PRINT STYLES - FIXED TO PORTRAIT STRICTLY WITH COLOR ENFORCEMENT */
         @media print {
             @page { 
                 size: A4 portrait !important; 
                 margin: 5mm 6mm 5mm 6mm; 
             }
-            html, body { width: 100%; height: 100%; margin: 0 !important; padding: 0 !important; background: #fff !important; -webkit-print-color-adjust: exact; }
+            html, body { 
+                width: 100%; 
+                height: 100%; 
+                margin: 0 !important; 
+                padding: 0 !important; 
+                background: #fff !important; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important; 
+            }
             .container { box-shadow: none !important; max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
             .no-print, .software-mode-bar, .admin-controls, .tt-controls, .tt-settings-panel, .btn, .tt-btn, .btn-add, .btn-remove, .btn-edit, .v-tabs, .msg-box-container { display: none !important; }
             
@@ -280,13 +287,20 @@
                 border: none !important; 
                 font-size: 13px !important; 
                 font-weight: 900 !important; 
-                color: #000 !important;
                 line-height: 1.3 !important;
                 transform: scaleY(1.15);
                 display: block;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             
-            table.school-table input { border: none !important; font-size: 14px !important; font-weight: bold !important; color: #000 !important; }
+            table.school-table input { 
+                border: none !important; 
+                font-size: 14px !important; 
+                font-weight: bold !important; 
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
             table.seating-grid td.skipped-cell { background-color: #ffffff !important; }
             .print-header h1 { font-size: 16px !important; }
             .print-header h3 { font-size: 13px !important; }
@@ -299,10 +313,10 @@
             .signature-block { margin-top: auto !important; height: 0.8inch !important; padding-bottom: 2px; }
             
             /* Print for Copy Records & Vidyalayvar */
-            .section-copy, .card { border: 1px solid #000 !important; margin-bottom: 10px !important; color: #000 !important; box-shadow: none !important; }
+            .section-copy, .card { border: 1px solid #000 !important; margin-bottom: 10px !important; box-shadow: none !important; }
             table.report-table, table.exam-table { border: 2px solid #000 !important; }
-            table.report-table th, table.exam-table th { background-color: #f0f0f0 !important; color: #000 !important; font-weight: bold !important; border: 1.5px solid #000 !important; }
-            table.report-table td, table.exam-table td { color: #000 !important; font-weight: bold !important; border: 1px solid #000 !important; }
+            table.report-table th, table.exam-table th { background-color: #f0f0f0 !important; font-weight: bold !important; border: 1.5px solid #000 !important; }
+            table.report-table td, table.exam-table td { font-weight: bold !important; border: 1px solid #000 !important; }
             
             .date-print-header { background: transparent !important; border: none !important; padding: 0 !important; margin-bottom: 8px !important; }
             .date-print-header input[type="date"] { border: none !important; font-size: 14px !important; background: transparent !important; }
@@ -543,7 +557,7 @@
 
         <div class="grid-summary-container" id="gridSummaryContainer">
             <div class="grid-summary-header-wrapper" id="summaryHeaderWrapper">
-                <h3 style="margin: 10px 0 5px 0; font-size: 15px; text-align: left; width: 100%;"> रोल नम्बर विवरण</h3>
+                <h3 style="margin: 10px 0 5px 0; font-size: 15px; text-align: left; width: 100%;"> विद्यालयवार रोल नम्बर विवरण</h3>
             </div>
             <table class="school-table" id="schoolTable">
                 <thead>
@@ -559,7 +573,7 @@
                 <tbody id="schoolTableBody">
                     <tr>
                         <td>1</td>
-                        <td><input type="text" style="text-align: left;"></td>
+                        <td><input type="text" style="text-align: left;" oninput="processGridData()"></td>
                         <td><input type="text" class="from-roll" oninput="processGridData()" maxLength="12"></td>
                         <td><input type="text" class="to-roll" readonly style="background:#f9f9f9;"></td>
                         <td><input type="number" class="student-count" oninput="processGridData()" min="0"></td>
@@ -1171,7 +1185,7 @@
 <script>
 let loadedFileHandle = null; // PenDrive Direct Save File Handle
 let roomCounter = 0;
-const schoolColors = ['#002060', '#c00000', '#006600', '#000000', '#581845'];
+const schoolColors = ['#002060', '#c00000', '#006600', '#000000', '#581845', '#d35400', '#8e44ad', '#16a085', '#27ae60', '#2980b9'];
 let currentClass = '10th';
 let currentVidyalayTab = 'hs';
 
@@ -1675,7 +1689,7 @@ function addSchoolGridRow() {
     var tr = document.createElement('tr');
     tr.innerHTML = `
         <td>${tbody.rows.length + 1}</td>
-        <td><input type="text" style="text-align: left;"></td>
+        <td><input type="text" style="text-align: left;" oninput="processGridData()"></td>
         <td><input type="text" class="from-roll" oninput="processGridData()" maxLength="12"></td>
         <td><input type="text" class="to-roll" readonly style="background:#f9f9f9;"></td>
         <td><input type="number" class="student-count" oninput="processGridData()" min="0"></td>
@@ -1683,6 +1697,7 @@ function addSchoolGridRow() {
     `;
     tbody.appendChild(tr);
     updateGridSerialNumbers();
+    processGridData();
 }
 
 function removeGridRow(btn) {
@@ -1703,11 +1718,32 @@ function processGridData() {
     var schoolRollArrays = [];
     var excludedRollsList = getExcludedRollsFromInput();
 
+    var gridSchoolColorMap = {};
+    var colorIdx = 0;
+
     for (var i = 0; i < tbody.rows.length; i++) {
         var row = tbody.rows[i];
-        var fromRollStr = row.querySelector('.from-roll').value.trim();
-        var count = parseInt(row.querySelector('.student-count').value) || 0;
+        var nameInput = row.cells[1].querySelector('input');
+        var schoolName = nameInput ? nameInput.value.trim() : "";
+        var fromInput = row.querySelector('.from-roll');
+        var fromRollStr = fromInput ? fromInput.value.trim() : "";
+        var countInput = row.querySelector('.student-count');
+        var count = parseInt(countInput ? countInput.value : 0) || 0;
         var toRollInput = row.querySelector('.to-roll');
+
+        var assignedColor = '#000000';
+        if (schoolName) {
+            if (!gridSchoolColorMap[schoolName]) {
+                gridSchoolColorMap[schoolName] = schoolColors[colorIdx % schoolColors.length];
+                colorIdx++;
+            }
+            assignedColor = gridSchoolColorMap[schoolName];
+        }
+
+        if (nameInput) nameInput.style.color = assignedColor;
+        if (fromInput) fromInput.style.color = assignedColor;
+        if (toRollInput) toRollInput.style.color = assignedColor;
+        if (countInput) countInput.style.color = assignedColor;
 
         if (fromRollStr !== "" && count > 0) {
             try {
@@ -1717,10 +1753,12 @@ function processGridData() {
 
                 while (singleSchoolRolls.length < count) {
                     var rollStr = currentRoll.toString();
-                    if (!excludedRollsList.includes(rollStr)) singleSchoolRolls.push(rollStr);
+                    if (!excludedRollsList.includes(rollStr)) {
+                        singleSchoolRolls.push({ roll: rollStr, color: assignedColor });
+                    }
                     currentRoll++;
                 }
-                toRollInput.value = singleSchoolRolls[singleSchoolRolls.length - 1];
+                toRollInput.value = singleSchoolRolls[singleSchoolRolls.length - 1].roll;
                 grandTotal += count;
                 schoolRollArrays.push(singleSchoolRolls);
             } catch (e) { toRollInput.value = ""; }
@@ -1754,7 +1792,11 @@ function processGridData() {
                 var input = gridTable.rows[r].cells[c].querySelector('input');
                 var val = input ? input.value.trim().toLowerCase() : "";
                 if (val === "x" || val === "-x") manuallySkippedRollsCount++;
-                else if (val !== "-") { input.value = ""; gridTable.rows[r].cells[c].classList.remove('skipped-cell'); }
+                else if (val !== "-") { 
+                    input.value = ""; 
+                    input.style.color = "#000000";
+                    gridTable.rows[r].cells[c].classList.remove('skipped-cell'); 
+                }
             }
         }
     }
@@ -1770,7 +1812,8 @@ function processGridData() {
                 if (val === "x" || val === "-x") continue;
 
                 if (cellInput && rollIndex < finalGridRolls.length) {
-                    cellInput.value = finalGridRolls[rollIndex];
+                    cellInput.value = finalGridRolls[rollIndex].roll;
+                    cellInput.style.color = finalGridRolls[rollIndex].color;
                     rollIndex++;
                 }
             }
