@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>अवकाश प्रार्थना पत्र जेनरेटर</title>
+    <!-- html2canvas library for WhatsApp image generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
             --primary-color: #003366;
@@ -145,25 +147,67 @@
             transition: transform 0.1s ease;
             white-space: pre-wrap;
             margin-bottom: 10px;
+            z-index: 1;
         }
         .letter-line:focus {
             background: #fffde7;
             box-shadow: 0 0 3px rgba(0,0,255,0.3);
         }
-        .btn-print {
+        
+        /* 100% Transparent Signature Box Styling */
+        #draggableSignature {
+            position: absolute;
+            cursor: move;
+            display: none;
+            user-select: none;
+            z-index: 10;
+            touch-action: none;
+            background: transparent !important;
+            border: 1px dashed transparent;
+        }
+        #draggableSignature:hover {
+            border: 1px dashed #003366;
+        }
+        #draggableSignature img {
+            pointer-events: none;
+            display: block;
+            background: transparent !important;
+        }
+        .sig-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
             margin-top: 20px;
-            background: var(--primary-color);
-            color: #fff;
+        }
+        .btn-print, .btn-whatsapp {
+            flex: 1;
+            padding: 12px 15px;
+            font-size: 15px;
             border: none;
-            padding: 12px 25px;
-            font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            width: 100%;
+            color: #fff;
+            text-align: center;
+        }
+        .btn-print {
+            background: var(--primary-color);
         }
         .btn-print:hover {
             background: #002244;
+        }
+        .btn-whatsapp {
+            background: #25d366;
+        }
+        .btn-whatsapp:hover {
+            background: #128c7e;
         }
 
         @media print {
@@ -171,7 +215,7 @@
                 background: none;
                 padding: 0;
             }
-            .control-panel, .btn-print, h2 {
+            .control-panel, .action-buttons, h2 {
                 display: none !important;
             }
             .container {
@@ -187,6 +231,9 @@
                 padding: 10mm 20mm 20mm 20mm;
                 width: 100%;
                 height: auto;
+            }
+            #draggableSignature {
+                border: none !important;
             }
         }
     </style>
@@ -214,7 +261,7 @@
             </select>
         </div>
 
-        <h2> अवकाश विवरण</h2>
+        <h2>अवकाश विवरण</h2>
         <div class="form-group">
             <label>आवेदक का नाम:</label>
             <input type="text" id="inputName" value="" oninput="updateLetter()">
@@ -248,6 +295,21 @@
         <div class="form-group">
             <label>कारण:</label>
             <input type="text" id="inputReason" value="प्रार्थी के घर आवश्यक कार्य आ जाने के कारण" oninput="updateLetter()">
+        </div>
+
+        <!-- हस्ताक्षर अपलोड और कंट्रोल -->
+        <h2>हस्ताक्षर (Signature) सेटिंग</h2>
+        <div class="form-group">
+            <label>हस्ताक्षर इमेज अपलोड करें (Background Automatic Remove):</label>
+            <input type="file" id="sigUpload" accept="image/*" onchange="loadAndRemoveBackground(event)">
+        </div>
+        <div class="form-group">
+            <label>हस्ताक्षर का आकार (Size):</label>
+            <div class="sig-controls">
+                <input type="range" id="sigSizeRange" min="57" max="300" value="150" oninput="resizeSignature(this.value)">
+                <span id="sigSizeVal">150px</span>
+                <button class="btn-action btn-reset" style="padding: 4px 8px; font-size: 12px; flex:0;" onclick="removeSignature()">हटाएं</button>
+            </div>
         </div>
 
         <h2 style="margin-top: 15px;">पंक्ति-वार स्थिति एवं एलाइनमेंट</h2>
@@ -351,7 +413,7 @@
             </select>
             <div class="slider-row">
                 <span>Shift:</span>
-                <input type="range" id="shift_line7" min="0" max="500" value="450" oninput="updateIndent('line7', this.value)">
+                <input type="range" id="shift_line7" min="0" max="500" value="500" oninput="updateIndent('line7', this.value)">
                 <span id="val_line7">450px</span>
             </div>
         </div>
@@ -365,15 +427,20 @@
     <!-- प्रीव्यू पैनल -->
     <div class="preview-container">
         <div class="a4-page" id="a4Page">
+            <!-- Transparent Draggable Signature Element -->
+            <div id="draggableSignature">
+                <img id="sigImagePreview" src="" alt="Signature" style="width: 150px;">
+            </div>
+
             <div class="letter-line" id="l_line1" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">सेवा में,</div>
-            <div class="letter-line" id="l_line2" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">श्रीमान् प्रधानाचार्य महोदय,</div>
-            <div class="letter-line" id="l_line3" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">श्री कृष्ण इण्टरमीडिएट कालेज, सेमरा कठकुइयाँ, कुशीनगर </div>
+            <div class="letter-line" id="l_line2" contenteditable="true" style="margin-left: 47px; text-align: left;" oninput="autoSave()">श्रीमान् प्रधानाचार्य महोदय</div>
+            <div class="letter-line" id="l_line3" contenteditable="true" style="margin-left: 47px; text-align: left;" oninput="autoSave()">श्री कृष्ण इण्टरमीडिएट कालेज सेमरा, कठकुइयाँ, कुशीनगर </div><br>
             
-            <div class="letter-line" id="l_line4" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()"><b>विषय:-</b> <span id="p_leaveType">आकस्मिक अवकाश</span> हेतु प्रार्थना पत्र।</div>
+            <div class="letter-line" id="l_line4" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()"><b>विषय:-</b> <span id="p_leaveType">आकस्मिक अवकाश</span> हेतु प्रार्थना पत्र।</div><br>
             
             <div class="letter-line" id="l_line5" contenteditable="true" style="margin-left: 0px; text-align: left;" oninput="autoSave()">महोदय,</div>
             
-            <div class="letter-line" id="l_line6" contenteditable="true" style="text-align: justify; text-indent: 40px; margin-left: 0px;" oninput="autoSave()">निवेदन पूर्वक अवगत कराना है कि <span id="p_reason">प्रार्थी के घर आवश्यक कार्य आ जाने के कारण</span> आज दिनांक <span id="p_startDate">....................</span> से दिनांक <span id="p_endDate">....................</span> तक (कुल <span id="p_days">01</span> दिवस) विद्यालय में उपस्थित होना संभव नहीं है。<br><br>अतः आपसे विनम्र निवेदन है कि मुझे उपर्युक्त तिथियों का <span id="p_leaveType2">आकस्मिक अवकाश</span> प्रदान करने की कृपा करें। इसके लिए मैं आपका आभारी रहूँगा।</div>
+            <div class="letter-line" id="l_line6" contenteditable="true" style="text-align: justify; text-indent: 40px; margin-left: 10px;" oninput="autoSave()">निवेदन पूर्वक अवगत कराना है कि <span id="p_reason">प्रार्थी के घर आवश्यक कार्य आ जाने के कारण</span> आज दिनांक <span id="p_startDate">....................</span> से दिनांक <span id="p_endDate">....................</span> तक ( कुल <span id="p_days">01</span> दिवस ) विद्यालय में उपस्थित होना सम्भव नहीं है ।<br>अतः आपसे विनम्र निवेदन है कि मुझे उपर्युक्त तिथियों का <span id="p_leaveType2">आकस्मिक अवकाश</span> प्रदान करने की कृपा करें। इसके लिए मैं आपका आभारी रहूँगा।</div>
             
             <div class="letter-line" id="l_line7" contenteditable="true" style="position: absolute; left: 450px; text-align: left;" oninput="autoSave()">
                 <b>प्रार्थी-</b><br>
@@ -383,7 +450,10 @@
             </div>
         </div>
 
-        <button class="btn-print" onclick="window.print()">🖨️ A4 प्रिंट करें</button>
+        <div class="action-buttons">
+            <button class="btn-print" onclick="window.print()">🖨️ A4 प्रिंट करें</button>
+            <button class="btn-whatsapp" onclick="sendViaWhatsApp()">📤 WhatsApp पर भेजें</button>
+        </div>
     </div>
 </div>
 
@@ -447,6 +517,149 @@
         autoSave();
     }
 
+    // Draggable Signature Logic
+    let sigBox = document.getElementById('draggableSignature');
+    let isDragging = false;
+    let startX, startY;
+
+    sigBox.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX - sigBox.offsetLeft;
+        startY = e.clientY - sigBox.offsetTop;
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        let x = e.clientX - startX;
+        let y = e.clientY - startY;
+        sigBox.style.left = x + 'px';
+        sigBox.style.top = y + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            autoSave();
+        }
+    });
+
+    // Mobile Touch Dragging Support
+    sigBox.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        let touch = e.touches[0];
+        startX = touch.clientX - sigBox.offsetLeft;
+        startY = touch.clientY - sigBox.offsetTop;
+    });
+
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        let touch = e.touches[0];
+        let x = touch.clientX - startX;
+        let y = touch.clientY - startY;
+        sigBox.style.left = x + 'px';
+        sigBox.style.top = y + 'px';
+    });
+
+    document.addEventListener('touchend', () => {
+        if (isDragging) {
+            isDragging = false;
+            autoSave();
+        }
+    });
+
+    // Advanced Image Processor to Remove White Background Completely
+    function loadAndRemoveBackground(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let img = new Image();
+            img.onload = function() {
+                let canvas = document.createElement('canvas');
+                let ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                ctx.drawImage(img, 0, 0);
+                
+                let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let data = imgData.data;
+                
+                // Loop through pixels to make light/white background fully transparent
+                for (let i = 0; i < data.length; i += 4) {
+                    let red = data[i];
+                    let green = data[i + 1];
+                    let blue = data[i + 2];
+                    
+                    // If pixel is close to white (light background), set alpha (transparency) to 0
+                    if (red > 200 && green > 200 && blue > 200) {
+                        data[i + 3] = 0; 
+                    }
+                }
+                
+                ctx.putImageData(imgData, 0, 0);
+                let transparentDataUrl = canvas.toDataURL('image/png');
+                
+                document.getElementById('sigImagePreview').src = transparentDataUrl;
+                sigBox.style.display = 'block';
+                if(!sigBox.style.left) {
+                    sigBox.style.left = '450px';
+                    sigBox.style.top = '550px';
+                }
+                autoSave();
+            }
+            img.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+
+    function resizeSignature(val) {
+        document.getElementById('sigImagePreview').style.width = val + 'px';
+        document.getElementById('sigSizeVal').innerText = val + 'px';
+        autoSave();
+    }
+
+    function removeSignature() {
+        sigBox.style.display = 'none';
+        document.getElementById('sigUpload').value = '';
+        autoSave();
+    }
+
+    // High-Resolution WhatsApp Image Generator & Direct Sharing
+    function sendViaWhatsApp() {
+        let page = document.getElementById('a4Page');
+        
+        html2canvas(page, { 
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: '#ffffff'
+        }).then(canvas => {
+            canvas.toBlob(blob => {
+                let file = new File([blob], "Avkash_Prarthna_Patra.png", { type: "image/png" });
+                
+                // Web Share API (Mobile App WhatsApp Integration)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'अवकाश प्रार्थना पत्र',
+                        text: 'कृपया संलग्न अवकाश प्रार्थना पत्र स्वीकार करें।'
+                    }).catch(error => console.log('Sharing failed', error));
+                } else {
+                    // PC / Web Fallback: Image downloads & Opens WhatsApp Web
+                    let link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'Avkash_Prarthna_Patra.png';
+                    link.click();
+                    
+                    let text = encodeURIComponent("मेरा अवकाश प्रार्थना पत्र इमेज के रूप में डाउनलोड हो गया है। कृपया अटैचमेंट देखें।");
+                    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+                }
+            }, 'image/png');
+        });
+    }
+
     function autoSave() {
         const data = {
             inputName: document.getElementById('inputName').value,
@@ -481,18 +694,24 @@
             html4: document.getElementById('l_line4').innerHTML,
             html5: document.getElementById('l_line5').innerHTML,
             html6: document.getElementById('l_line6').innerHTML,
-            html7: document.getElementById('l_line7').innerHTML
+            html7: document.getElementById('l_line7').innerHTML,
+
+            sigSrc: document.getElementById('sigImagePreview').src,
+            sigDisplay: sigBox.style.display,
+            sigLeft: sigBox.style.left,
+            sigTop: sigBox.style.top,
+            sigWidth: document.getElementById('sigSizeRange').value
         };
-        localStorage.setItem('avkashAppDataSecureFinalV3', JSON.stringify(data));
+        localStorage.setItem('avkashAppDataSecureFinalV6', JSON.stringify(data));
     }
 
     function saveSettings() {
         autoSave();
-        alert('✅ Aapki sabhi settings safalpurvak save ho gayi hain!');
+        alert('✅ Aapki sabhi settings aur signature safalpurvak save ho gayi hain!');
     }
 
     function loadSettings() {
-        let saved = localStorage.getItem('avkashAppDataSecureFinalV3');
+        let saved = localStorage.getItem('avkashAppDataSecureFinalV6');
         if(saved) {
             let data = JSON.parse(saved);
             document.getElementById('inputName').value = data.inputName || '';
@@ -527,6 +746,18 @@
             if(data.html6) document.getElementById('l_line6').innerHTML = data.html6;
             if(data.html7) document.getElementById('l_line7').innerHTML = data.html7;
 
+            if(data.sigSrc && data.sigDisplay === 'block') {
+                document.getElementById('sigImagePreview').src = data.sigSrc;
+                sigBox.style.display = 'block';
+                sigBox.style.left = data.sigLeft || '450px';
+                sigBox.style.top = data.sigTop || '550px';
+                if(data.sigWidth) {
+                    document.getElementById('sigSizeRange').value = data.sigWidth;
+                    document.getElementById('sigImagePreview').style.width = data.sigWidth + 'px';
+                    document.getElementById('sigSizeVal').innerText = data.sigWidth + 'px';
+                }
+            }
+
             applyGlobalStyle();
         } else {
             document.getElementById('inputStartDate').value = today;
@@ -539,7 +770,7 @@
 
     function resetSettings() {
         if(confirm('Kya aap sabhi settings ko reset karna chahte hain?')) {
-            localStorage.removeItem('avkashAppDataSecureFinalV3');
+            localStorage.removeItem('avkashAppDataSecureFinalV6');
             location.reload();
         }
     }
