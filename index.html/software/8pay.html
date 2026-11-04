@@ -189,6 +189,8 @@
         #vetan-app .btn-clear { background-color: #6c757d; }
         #vetan-app .btn-print { background-color: #17a2b8; }
         #vetan-app .btn-danger { background-color: #dc3545; }
+        
+        /* Vetan Software Table Styles Updated for Black Bold Text & Toggle Support */
         #vetan-app table {
             width: 100%;
             border-collapse: collapse;
@@ -196,18 +198,21 @@
             font-size: 12px;
         }
         #vetan-app th, #vetan-app td {
-            border: 1px solid #999;
+            border: 1px solid #000;
             padding: 5px 3px;
             text-align: center;
+            color: #000000 !important;
+            font-weight: var(--vetan-font-weight, bold) !important;
         }
         #vetan-app th {
-            background-color: var(--primary-color);
-            color: white;
+            background-color: #ffffff;
+            color: #000000 !important;
             font-size: 11px;
+            font-weight: bold !important;
         }
-        #vetan-app tr:nth-child(even) { background-color: #f9f9f9; }
+        #vetan-app tr:nth-child(even) { background-color: #fff; }
         #vetan-app tfoot { display: table-row-group; }
-        #vetan-app .total-row td { font-weight: bold; background-color: #e2e8f0; }
+        #vetan-app .total-row td { font-weight: bold; background-color: #fff !important; color: #000 !important; }
         #vetan-app .summary-box {
             margin-top: 20px;
             border: 1px solid var(--primary-color);
@@ -444,6 +449,29 @@
             #vetan-app .emp-row input { border: none; background: transparent; font-weight: bold; }
             #vetan-app tfoot { display: table-row-group !important; }
 
+            /* Vetan Software Print Rules - Background removed, text pure black bold */
+            #vetan-app {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+            }
+            #vetan-app table, #vetan-app th, #vetan-app td {
+                border: 1px solid #000000 !important;
+                color: #000000 !important;
+                background-color: #ffffff !important;
+                -webkit-print-color-adjust: exact;
+            }
+            #vetan-app th {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-weight: bold !important;
+            }
+            #vetan-app .total-row td {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                font-weight: bold !important;
+            }
+
             /* ACP Print Rules */
             #acp-app { background: white; padding: 0; font-size: 16px; color: #000; }
             #acp-app .acp-container { box-shadow: none; border: none; width: 100%; max-width: 100%; }
@@ -585,6 +613,19 @@
                         <input type="text" id="calcExpr" placeholder="उदा. 200*2/10 या 200-74*10" onkeydown="if(event.key==='Enter') runCalc()" style="flex:1;">
                         <button onclick="runCalc()">=</button>
                         <input type="text" id="calcRes" readonly placeholder="उत्तर" style="background:#fff; font-weight:bold; width:80px; text-align:center;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vetan Software Font & Bold/Unbold Toggle Control Bar -->
+            <div class="card p-2 mb-3 no-print bg-light" style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px;">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <span class="fw-bold text-secondary small"><i class="fa-solid fa-text-height me-1"></i> वेतन सॉफ्टवेयर तालिका टेक्स्ट सेटिंग्स:</span>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="form-check form-switch mb-0">
+                            <input class="form-check-input" type="checkbox" id="boldToggleVetan" checked onchange="toggleBoldTextVetan(this)">
+                            <label class="form-check-label small fw-semibold" for="boldToggleVetan">टेक्स्ट बोल्ड रखें (Bold Text - On/Off)</label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -748,7 +789,7 @@
                     <div><strong>कुल HRA योग:</strong> <span id="totHra">0.00</span></div>
                     <div><strong>कुल सकल वेतन (Gross Total):</strong> <span id="totGross">0.00</span></div>
                     <div><strong>कुल कटौती (Total Deductions):</strong> <span id="totDeduction">0.00</span></div>
-                    <div><strong>कुल शुद्ध देय वेतन (Net Payable):</strong> <span id="totNetPay" style="color: green; font-size: 16px;">0.00</span></div>
+                    <div><strong>कुल शुद्ध देय वेतन (Net Payable):</strong> <span id="totNetPay" style="color: black; font-weight: bold; font-size: 16px;">0.00</span></div>
                 </div>
             </div>
         </div>
@@ -979,7 +1020,7 @@
                     </div>
                     <div class="box b3">
                         <div class="box-title" style="color: #8a6d3b;">3. अंतिम ACP निर्धारण</div>
-                        <div>निर्धारित वेतन: <span id="box3_final" style="font-weight:bold; color:green;"></span></div>
+                        <div>निर्धारित वेतन: <span id="box3_final" style="font-weight:bold; color:black;"></span></div>
                     </div>
                 </div>
             </div>
@@ -1258,6 +1299,15 @@
             }
         }
 
+        // Vetan Software Bold/Unbold Toggle function
+        function toggleBoldTextVetan(checkbox) {
+            let appContainer = document.getElementById('vetan-app');
+            if (appContainer) {
+                const weightVal = checkbox.checked ? 'bold' : 'normal';
+                appContainer.style.setProperty('--vetan-font-weight', weightVal);
+            }
+        }
+
         const defaultDaMasterRates = {
             "2000": { "जनवरी": 38, "फरवरी": 38, "मार्च": 38, "अप्रैल": 38, "मई": 38, "जून": 38, "जुलाई": 41, "अगस्त": 41, "सितंबर": 41, "अक्टूबर": 41, "नवंबर": 41, "दिसंबर": 41 },
             "2001": { "जनवरी": 43, "फरवरी": 43, "मार्च": 43, "अप्रैल": 43, "मई": 43, "जून": 43, "जुलाई": 45, "अगस्त": 45, "सितंबर": 45, "अक्टूबर": 45, "नवंबर": 45, "दिसंबर": 45 },
@@ -1504,15 +1554,15 @@
                     <td>${item.sYear}</td>
                     <td>${item.sMonth}</td>
                     <td>${item.basic.toFixed(2)}</td>
-                    <td>${item.daAmt.toFixed(2)} <span style="font-size:9px; color:#555;">(${item.daRate}%)</span></td>
+                    <td>${item.daAmt.toFixed(2)} <span style="font-size:9px; color:#000;">(${item.daRate}%)</span></td>
                     <td>${item.hra.toFixed(2)}</td>
-                    <td><b>${item.gross.toFixed(2)}</b></td>
+                    <td>${item.gross.toFixed(2)}</td>
                     <td>${item.gpfAmt.toFixed(2)}</td>
                     <td>${item.npsAmt.toFixed(2)}</td>
                     <td>${item.gLic.toFixed(2)}</td>
                     <td>${item.tax.toFixed(2)}</td>
-                    <td><b>${item.totalDeduction.toFixed(2)}</b></td>
-                    <td style="color:green; font-weight:bold;">${item.netPay.toFixed(2)}</td>
+                    <td>${item.totalDeduction.toFixed(2)}</td>
+                    <td>${item.netPay.toFixed(2)}</td>
                     <td class="no-print action-btns">
                         <button class="btn-edit" onclick="editRecord(${index})">Edit</button>
                         <button class="btn-del" onclick="deleteRecord(${index})">Del</button>
@@ -1619,10 +1669,10 @@
                 "", "एक", "दो", "तीन", "चार", "पांच", "छह", "सात", "आठ", "नौ", "दस",
                 "ग्यारह", "बारह", "तेरह", "चौदह", "पंद्रह", "सोलह", "सत्रह", "अठारह", "उन्नीस", "बीस",
                 "इक्कीस", "बाईस", "तेईस", "चौबीस", "पच्चीस", "छब्बीस", "सत्ताईस", "अट्ठाईस", "उनतीस", "तीस",
-                "इकत्तीस", "बत्तीस", "तैंतीस", "चौंतीस", "पैंतीस", "छत्तीस", "सैंतीस", "अड़तीस", "उनतालीस", "चालिस",
-                "इकतालीस", "बयालीस", "तैंतालीस", "चौंवालिस", "पैंतालीस", "छियालीस", "सैंतीस", "अड़तालीस", "उनचास", "पचास",
+                "इकत्तीस", "बत्तीस", "तैंतीस", "चौंतीस", "पैंतीस", "छत्तीस", "सैंतीस", "अड़तीस", "उनतालीस", "चालिस",
+                "इकतालीस", "बयालीस", "तैंतालीस", "चौंवालिस", "पैंतालीस", "छियालीस", "सैंतीस", "अड़तालीस", "उनचास", "पचास",
                 "इक्यावन", "बावन", "तिर्पन", "चौवन", "पचपन", "छप्पन", "संतावन", "अत्तावन", "उनसठ", "साठ",
-                "इकसठ", "बासठ", "तिरसठ", "चौंसठ", "पैंसठ", "छियासठ", "सरसठ", "अड़सठ", "उनहत्तर", "सत्तर",
+                "इकसठ", "बासठ", "तिरसठ", "चौंसठ", "पैंसठ", "छियासठ", "सरसठ", "अड़सठ", "उनहत्तर", "सत्तर",
                 "इकहत्तर", "बहत्तर", "तिहत्तर", "चौहत्तर", "पचहत्तर", "छिहत्तर", "सतहत्तर", "अठहत्तर", "उन्यासी", "अस्सी",
                 "इक्यासी", "ब्यासी", "तिरासी", "चौरासी", "पचासी", "छियासी", "सत्तासी", "अट्ठासी", "नवासी", "नब्बे",
                 "इक्यान्वे", "बान्वे", "तिरान्वे", "चौरान्वे", "पंचान्वे", "छियान्वे", "संतानवे", "अट्ठानवे", "निन्नानवे"
@@ -1751,8 +1801,8 @@
                     <td>₹${emp.hra7th.toLocaleString('hi-IN')}</td>
                     <td>₹${emp.hra8th.toLocaleString('hi-IN')}</td>
                     <td><strong>${emp.fitmentFactor}</strong></td>
-                    <td style="color: green; font-weight: bold;">₹${emp.projected8thBasic.toLocaleString('hi-IN')}</td>
-                    <td style="color: #1e3a8a; font-weight: bold;">₹${emp.projected8thTotal.toLocaleString('hi-IN')}</td>
+                    <td style="color: black; font-weight: bold;">₹${emp.projected8thBasic.toLocaleString('hi-IN')}</td>
+                    <td style="color: black; font-weight: bold;">₹${emp.projected8thTotal.toLocaleString('hi-IN')}</td>
                     <td class="profit-text">+₹${emp.payDifference.toLocaleString('hi-IN')}</td>
                     <td class="action-col no-print">
                         <button class="btn-warning" onclick="editEmployee(${index})">Edit</button>
