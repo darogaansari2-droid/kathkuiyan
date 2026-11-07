@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>संपूर्ण वेतन विवरण एवं वेतन स्लिप जनरेटर</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; font-family: 'Noto Sans Devanagari', 'Segoe UI', Arial, sans-serif; }
+  body { background: #f0f2f5; margin: 0; padding: 15px; color: #000; }
+  
+  .controls-panel {
+    background: #fff; padding: 15px; margin-bottom: 15px; border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); border: 1px solid #ccc;
+  }
+  .format-selector-box {
+    background: #e8f0fe; padding: 10px 15px; border-radius: 6px; border: 1px solid #1a73e8;
+    margin-bottom: 15px; display: flex; align-items: center; gap: 15px;
+  }
+  .format-selector-box label { font-size: 15px; font-weight: bold; color: #1a73e8; }
+  .format-selector-box select {
+    padding: 8px 12px; font-size: 14px; font-weight: bold; border-radius: 4px; border: 1px solid #1a73e8; outline: none; flex: 1; max-width: 450px;
+  }
+
+  .controls-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;
+  }
+  .form-group { display: flex; flex-direction: column; font-size: 13px; font-weight: bold; }
+  .form-group label { margin-bottom: 4px; }
+  .form-group input, .form-group select {
+    padding: 6px; border: 1px solid #aaa; border-radius: 4px; font-size: 13px;
+  }
+  .checkbox-group { display: flex; align-items: center; gap: 6px; margin-top: 18px; }
+  .checkbox-group input { width: 16px; height: 16px; cursor: pointer; }
+
+  .btn-group { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-btn {
+    background: #1a73e8; color: white; padding: 10px 18px; border: none;
+    border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer;
+  }
+  .btn-add { background: #007bff; }
+  .btn-update { background: #ffc107; color: #000; display: none; }
+  .btn-print { background: #28a745; }
+  .btn-clear { background: #dc3545; }
+
+  .emp-list-panel {
+    margin-top: 15px; background: #eef2f7; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;
+  }
+  .emp-chip-container { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px; }
+  .emp-chip {
+    background: #fff; border: 1px solid #007bff; padding: 4px 10px; border-radius: 20px;
+    font-size: 13px; display: flex; align-items: center; gap: 6px; font-weight: 600;
+  }
+  .emp-chip span.edit-btn { color: #007bff; cursor: pointer; font-weight: bold; margin-left: 6px; }
+  .emp-chip span.remove { color: red; cursor: pointer; font-weight: bold; margin-left: 4px; }
+
+  /* Print Sheet Setup - A4 Landscape */
+  .sheet {
+    background: white; padding: 20px; width: 297mm; min-height: 210mm;
+    margin: 0 auto; border: 1px solid #999; box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  }
+  
+  .emp-block { margin-bottom: 25px; border-bottom: 2px dashed #666; padding-bottom: 20px; }
+  .emp-block:last-of-type { border-bottom: none; }
+
+  .header-section { margin-bottom: 10px; border-bottom: 2px solid #000; padding-bottom: 8px; }
+  .school-title { font-weight: bold; margin-bottom: 8px; text-align: left; }
+  .info-line-1, .info-line-2 {
+    display: flex; justify-content: space-between; align-items: center;
+    font-weight: bold; margin-top: 6px; color: #000;
+  }
+  .lbl { display: inline-block; margin-right: 15px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; table-layout: auto; }
+  th, td { border: 1px solid #000; padding: 5px; text-align: center; color: #000; }
+  th { background-color: #f2f2f2; font-weight: bold; }
+  tfoot tr { background-color: #f9f9f9; font-weight: bold; }
+
+  td[contenteditable="true"] { background-color: #fffde7; outline: none; }
+  td[contenteditable="true"]:focus { background-color: #e8f0fe; box-shadow: inset 0 0 3px #1a73e8; }
+
+  .hindi-words-container {
+    margin-top: 15px; font-size: 16px; font-weight: bold; border-top: 1px dashed #000; padding-top: 10px;
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .controls-panel { display: none; }
+    .sheet { border: none; box-shadow: none; width: 100%; padding: 0; }
+    th, tfoot tr { background-color: #f2f2f2 !important; -webkit-print-color-adjust: exact; }
+    td[contenteditable="true"] { background-color: transparent !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="controls-panel">
+  <div class="format-selector-box">
+    <label for="formatSelect">फारमट चुनें (Select Format):</label>
+    <select id="formatSelect" onchange="onFormatChange()">
+      <option value="1">फॉर्मेट 1: व्यक्तिगत वेतन स्लिप (Monthly/Periodical Slip)</option>
+      <option value="2" selected>फॉर्मेट 2: मासिक वेतन विवरण रजिस्टर (Monthly Register - Combined Table)</option>
+    </select>
+  </div>
+
+  <h3>वेतन विवरण जनरेटर एवं सेटिंग्स</h3>
+  
+  <div class="controls-grid">
+    <div class="form-group" style="grid-column: span 2;">
+      <label>विद्यालय का नाम:</label>
+      <input type="text" id="schName" value="विद्यालय का नाम:- श्री कृष्ण इण्टरमीडिएट कालेज सेमरा, कुशीनगर" oninput="renderAll()">
+    </div>
+    
+    <!-- Account & IFSC -->
+    <div class="form-group">
+      <label>खाता संख्या:</label>
+      <input type="text" id="empAcc" value="123456789012">
+    </div>
+    <div class="form-group">
+      <label>IFSC कोड:</label>
+      <input type="text" id="empIfsc" value="SBIN0001234">
+    </div>
+
+    <!-- Common Controls -->
+    <div class="form-group">
+      <label>प्रारंभिक माह / वेतन माह:</label>
+      <select id="startMonth" onchange="updateMonthDays(); applyAutoDaRate(); renderAll();">
+        <option value="0">जनवरी</option><option value="1">फरवरी</option><option value="2">मार्च</option>
+        <option value="3">अप्रैल</option><option value="4">मई</option><option value="5">जून</option>
+        <option value="6">जुलाई</option><option value="7" selected>अगस्त</option><option value="8">सितम्बर</option>
+        <option value="9">अक्टूबर</option><option value="10">नवम्बर</option><option value="11">दिसम्बर</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>वर्ष:</label>
+      <input type="number" id="startYear" value="2026" oninput="updateMonthDays(); applyAutoDaRate(); renderAll()">
+    </div>
+    <div class="form-group f1-only" style="display: none;">
+      <label>कुल माह संख्या:</label>
+      <input type="number" id="monthCount" value="3" min="1" max="24">
+    </div>
+
+    <!-- Employee Inputs -->
+    <div class="form-group">
+      <label>कर्मचारी का नाम:</label>
+      <input type="text" id="empName" value="नाम भरें....">
+    </div>
+    <div class="form-group">
+      <label>पदनाम:</label>
+      <input type="text" id="empDesig" value="पद भरें...">
+    </div>
+    <div class="form-group">
+      <label>मूल वेतन (Monthly Basic):</label>
+      <input type="number" id="baseBasic" value="44900" oninput="autoCalcDeductions()">
+    </div>
+    <div class="form-group">
+      <label>DA दर (%):</label>
+      <input type="number" id="daRate" value="60" oninput="autoCalcDeductions()">
+    </div>
+    <div class="form-group">
+      <label>आवास भत्ता (HRA):</label>
+      <input type="number" id="hraAmt" value="2760">
+    </div>
+
+    <!-- Broken Period / Joining Date Controls (Formats 1 & 2) -->
+    <div class="checkbox-group">
+      <input type="checkbox" id="chkBroken" onchange="toggleBrokenPeriod()">
+      <label for="chkBroken">खंडित वेतन / अंशकालिक कार्य (Broken Period)</label>
+    </div>
+    <div class="form-group broken-fields" style="display: none;">
+      <label>कार्यभार ग्रहण तिथि (प्रारंभ दिन):</label>
+      <input type="number" id="joinDay" value="1" min="1" max="31" oninput="calcWorkedDays()">
+    </div>
+    <div class="form-group broken-fields" style="display: none;">
+      <label>अंतिम देय तिथि (समाप्ति दिन):</label>
+      <input type="number" id="endDay" value="31" min="1" max="31">
+    </div>
+
+    <!-- Deductions -->
+    <div class="checkbox-group">
+      <input type="checkbox" id="chkGpf" checked onchange="toggleDeductions()">
+      <label for="chkGpf">GPF (मूल का 10%)</label>
+    </div>
+    <div class="form-group">
+      <label>GPF राशि:</label>
+      <input type="number" id="gpfVal" value="4760">
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="chkNps" onchange="toggleDeductions()">
+      <label for="chkNps">NPS (मूल + DA का 10%)</label>
+    </div>
+    <div class="form-group">
+      <label>NPS राशि:</label>
+      <input type="number" id="npsVal" value="7616" disabled>
+    </div>
+
+    <div class="form-group f2-only">
+      <label>आयकर (I. TAX):</label>
+      <input type="number" id="itaxVal" value="0">
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="chkLic" checked onchange="toggleDeductions()">
+      <label for="chkLic">GIS / LIC लागू करें</label>
+    </div>
+    <div class="form-group">
+      <label>GIS / LIC कटौती:</label>
+      <input type="number" id="licVal" value="100">
+    </div>
+
+    <!-- Formatting Controls -->
+    <div class="form-group">
+      <label>School Name Font (px):</label>
+      <input type="number" id="schFontSize" value="24" oninput="renderAll()">
+    </div>
+    <div class="form-group">
+      <label>Header Font (px):</label>
+      <input type="number" id="hdrFontSize" value="16" oninput="renderAll()">
+    </div>
+    <div class="form-group">
+      <label>Table Font (px):</label>
+      <input type="number" id="tblFontSize" value="13" oninput="renderAll()">
+    </div>
+    <div class="form-group">
+      <label>Row Padding (px):</label>
+      <input type="number" id="rowHeight" value="6" oninput="renderAll()">
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn-btn btn-add" id="btnAddEmp" onclick="saveEmployeeData()">+ इस कर्मचारी का Data Save / Jodein</button>
+    <button class="btn-btn btn-update" id="btnUpdateEmp" onclick="updateEmployeeData()">✔ Update Karein</button>
+    <button class="btn-btn btn-clear" onclick="resetCurrentForm()">Naya Form Clean Karein</button>
+    <button class="btn-btn btn-print" onclick="window.print()">प्रिंट / PDF डाउनलोड</button>
+  </div>
+
+  <div class="emp-list-panel">
+    <strong>Saved Karmchari List (<span id="empCount">0</span>):</strong>
+    <div class="emp-chip-container" id="empChipContainer"></div>
+  </div>
+</div>
+
+<div class="sheet" id="printSheet"></div>
+
+<script>
+const monthNames = ["जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितम्बर", "अक्टूबर", "नवम्बर", "दिसम्बर"];
+const monthNamesLookup = ["जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"];
+
+const daData = {
+  "2000": { "जनवरी": 38, "फरवरी": 38, "मार्च": 38, "अप्रैल": 38, "मई": 38, "जून": 38, "जुलाई": 41, "अगस्त": 41, "सितंबर": 41, "अक्टूबर": 41, "नवंबर": 41, "दिसंबर": 41 },
+  "2001": { "जनवरी": 43, "फरवरी": 43, "मार्च": 43, "अप्रैल": 43, "मई": 43, "जून": 43, "जुलाई": 45, "अगस्त": 45, "सितंबर": 45, "अक्टूबर": 45, "नवंबर": 45, "दिसंबर": 45 },
+  "2002": { "जनवरी": 49, "फरवरी": 49, "मार्च": 49, "अप्रैल": 49, "मई": 49, "जून": 49, "जुलाई": 52, "अगस्त": 52, "सितंबर": 52, "अक्टूबर": 52, "नवंबर": 52, "दिसंबर": 52 },
+  "2003": { "जनवरी": 55, "फरवरी": 55, "मार्च": 55, "अप्रैल": 55, "मई": 55, "जून": 55, "जुलाई": 59, "अगस्त": 59, "सितंबर": 59, "अक्टूबर": 59, "नवंबर": 59, "दिसंबर": 59 },
+  "2004": { "जनवरी": 61, "फरवरी": 61, "मार्च": 61, "अप्रैल": 11, "मई": 11, "जून": 11, "जुलाई": 14, "अगस्त": 14, "सितंबर": 14, "अक्टूबर": 14, "नवंबर": 14, "दिसंबर": 14 },
+  "2005": { "जनवरी": 17, "फरवरी": 17, "मार्च": 17, "अप्रैल": 17, "मई": 17, "जून": 17, "जुलाई": 21, "अगस्त": 21, "सितंबर": 21, "अक्टूबर": 21, "नवंबर": 21, "दिसंबर": 21 },
+  "2006": { "जनवरी": 0, "फरवरी": 0, "मार्च": 0, "अप्रैल": 0, "मई": 0, "जून": 0, "जुलाई": 2, "अगस्त": 2, "सितंबर": 2, "अक्टूबर": 2, "नवंबर": 2, "दिसंबर": 2 }, 
+  "2007": { "जनवरी": 6, "फरवरी": 6, "मार्च": 6, "अप्रैल": 6, "मई": 6, "जून": 6, "जुलाई": 9, "अगस्त": 9, "सितंबर": 9, "अक्टूबर": 9, "नवंबर": 9, "दिसंबर": 9 },
+  "2008": { "जनवरी": 12, "फरवरी": 12, "मार्च": 12, "अप्रैल": 12, "मई": 12, "जून": 12, "जुलाई": 16, "अगस्त": 16, "सितंबर": 16, "अक्टूबर": 16, "नवंबर": 16, "दिसंबर": 16 },
+  "2009": { "जनवरी": 22, "फरवरी": 22, "मार्च": 22, "अप्रैल": 22, "मई": 22, "जून": 22, "जुलाई": 27, "अगस्त": 27, "सितंबर": 27, "अक्टूबर": 27, "नवंबर": 27, "दिसंबर": 27 },
+  "2010": { "जनवरी": 35, "फरवरी": 35, "मार्च": 35, "अप्रैल": 35, "मई": 35, "जून": 35, "जुलाई": 45, "अगस्त": 45, "सितंबर": 45, "अक्टूबर": 45, "नवंबर": 45, "दिसंबर": 45 },
+  "2011": { "जनवरी": 51, "फरवरी": 51, "मार्च": 51, "अप्रैल": 51, "मई": 51, "जून": 51, "जुलाई": 58, "अगस्त": 58, "सितंबर": 58, "अक्टूबर": 58, "नवंबर": 58, "दिसंबर": 58 },
+  "2012": { "जनवरी": 65, "फरवरी": 65, "मार्च": 65, "अप्रैल": 65, "मई": 65, "जून": 65, "जुलाई": 72, "अगस्त": 72, "सितंबर": 72, "अक्टूबर": 72, "नवंबर": 72, "दिसंबर": 72 },
+  "2013": { "जनवरी": 80, "फरवरी": 80, "मार्च": 80, "अप्रैल": 80, "मई": 80, "जून": 80, "जुलाई": 90, "अगस्त": 90, "सितंबर": 90, "अक्टूबर": 90, "नवंबर": 90, "दिसंबर": 90 },
+  "2014": { "जनवरी": 100, "फरवरी": 100, "मार्च": 100, "अप्रैल": 100, "मई": 100, "जून": 100, "जुलाई": 107, "अगस्त": 107, "सितंबर": 107, "अक्टूबर": 107, "नवंबर": 107, "दिसंबर": 107 },
+  "2015": { "जनवरी": 113, "फरवरी": 113, "मार्च": 113, "अप्रैल": 113, "मई": 113, "जून": 113, "जुलाई": 119, "अगस्त": 119, "सितंबर": 119, "अक्टूबर": 119, "नवंबर": 119, "दिसंबर": 119 },
+  "2016": { "जनवरी": 0, "फरवरी": 0, "मार्च": 0, "अप्रैल": 0, "मई": 0, "जून": 0, "जुलाई": 2, "अगस्त": 2, "सितंबर": 2, "अक्टूबर": 2, "नवंबर": 2, "दिसंबर": 2 }, 
+  "2017": { "जनवरी": 4, "फरवरी": 4, "मार्च": 4, "अप्रैल": 4, "मई": 4, "जून": 4, "जुलाई": 5, "अगस्त": 5, "सितंबर": 5, "अक्टूबर": 5, "नवंबर": 5, "दिसंबर": 5 },
+  "2018": { "जनवरी": 7, "फरवरी": 7, "मार्च": 7, "अप्रैल": 7, "मई": 7, "जून": 7, "जुलाई": 9, "अगस्त": 9, "सितंबर": 9, "अक्टूबर": 9, "नवंबर": 9, "दिसंबर": 9 },
+  "2019": { "जनवरी": 12, "फरवरी": 12, "मार्च": 12, "अप्रैल": 12, "मई": 12, "जून": 12, "जुलाई": 17, "अगस्त": 17, "सितंबर": 17, "अक्टूबर": 17, "नवंबर": 17, "दिसंबर": 17 },
+  "2020": { "जनवरी": 17, "फरवरी": 17, "मार्च": 17, "अप्रैल": 17, "मई": 17, "जून": 17, "जुलाई": 17, "अगस्त": 17, "सितंबर": 17, "अक्टूबर": 17, "नवंबर": 17, "दिसंबर": 17 },
+  "2021": { "जनवरी": 17, "फरवरी": 17, "मार्च": 17, "अप्रैल": 17, "मई": 17, "जून": 17, "जुलाई": 28, "अगस्त": 28, "सितंबर": 28, "अक्टूबर": 28, "नवंबर": 28, "दिसंबर": 28 },
+  "2022": { "जनवरी": 34, "फरवरी": 34, "मार्च": 34, "अप्रैल": 34, "मई": 34, "जून": 34, "जुलाई": 38, "अगस्त": 38, "सितंबर": 38, "अक्टूबर": 38, "नवंबर": 38, "दिसंबर": 38 },
+  "2023": { "जनवरी": 42, "फरवरी": 42, "मार्च": 42, "अप्रैल": 42, "मई": 42, "जून": 42, "जुलाई": 46, "अगस्त": 46, "सितंबर": 46, "अक्टूबर": 46, "नवंबर": 46, "दिसंबर": 46 },
+  "2024": { "जनवरी": 50, "फरवरी": 50, "मार्च": 50, "अप्रैल": 50, "मई": 50, "जून": 50, "जुलाई": 53, "अगस्त": 53, "सितंबर": 53, "अक्टूबर": 53, "नवंबर": 53, "दिसंबर": 53 },
+  "2025": { "जनवरी": 55, "फरवरी": 55, "मार्च": 55, "अप्रैल": 55, "मई": 55, "जून": 55, "जुलाई": 58, "अगस्त": 58, "सितंबर": 58, "अक्टूबर": 58, "नवंबर": 58, "दिसंबर": 58 },
+  "2026": { "जनवरी": 60, "फरवरी": 60, "मार्च": 60, "अप्रैल": 60, "मई": 60, "जून": 60, "जुलाई": 60, "अगस्त": 60, "सितंबर": 60, "अक्टूबर": 60, "नवंबर": 60, "दिसंबर": 60 }
+};
+
+function getDaRateForMonthYear(monthIndex, year) {
+  const mName = monthNamesLookup[monthIndex];
+  const yStr = String(year);
+  if (daData[yStr] && daData[yStr][mName] !== undefined) {
+    return daData[yStr][mName];
+  }
+  return null;
+}
+
+function applyAutoDaRate() {
+  const m = parseInt(document.getElementById('startMonth').value);
+  const y = parseInt(document.getElementById('startYear').value);
+  const rate = getDaRateForMonthYear(m, y);
+  if (rate !== null) {
+    document.getElementById('daRate').value = rate;
+    autoCalcDeductions();
+  }
+}
+
+let employeesData = [];
+let editingIndex = -1;
+
+function onFormatChange() {
+  const fmt = document.getElementById('formatSelect').value;
+  const f1Elems = document.querySelectorAll('.f1-only');
+  const f2Elems = document.querySelectorAll('.f2-only');
+
+  if (fmt === "1") {
+    f1Elems.forEach(el => el.style.display = "flex");
+    f2Elems.forEach(el => el.style.display = "none");
+  } else {
+    f1Elems.forEach(el => el.style.display = "none");
+    f2Elems.forEach(el => el.style.display = "flex");
+  }
+  toggleDeductions();
+  toggleBrokenPeriod();
+  renderAll();
+}
+
+function getDaysInMonth(month, year) {
+  return new Date(year, month + 1, 0).getDate();
+}
+
+function updateMonthDays() {
+  const m = parseInt(document.getElementById('startMonth').value);
+  const y = parseInt(document.getElementById('startYear').value);
+  const totalDaysInM = getDaysInMonth(m, y);
+  
+  const endDayInput = document.getElementById('endDay');
+  if (!document.getElementById('chkBroken').checked || parseInt(endDayInput.value) > totalDaysInM) {
+    endDayInput.value = totalDaysInM;
+  }
+  endDayInput.max = totalDaysInM;
+  document.getElementById('joinDay').max = totalDaysInM;
+}
+
+function toggleBrokenPeriod() {
+  const isBroken = document.getElementById('chkBroken').checked;
+  const brokenFields = document.querySelectorAll('.broken-fields');
+  brokenFields.forEach(el => el.style.display = isBroken ? "flex" : "none");
+  
+  if (isBroken) {
+    updateMonthDays();
+  } else {
+    const m = parseInt(document.getElementById('startMonth').value);
+    const y = parseInt(document.getElementById('startYear').value);
+    document.getElementById('joinDay').value = 1;
+    document.getElementById('endDay').value = getDaysInMonth(m, y);
+  }
+  renderAll();
+}
+
+function calcWorkedDays() {
+  renderAll();
+}
+
+function toggleDeductions() {
+  document.getElementById('gpfVal').disabled = !document.getElementById('chkGpf').checked;
+  document.getElementById('npsVal').disabled = !document.getElementById('chkNps').checked;
+  document.getElementById('licVal').disabled = !document.getElementById('chkLic').checked;
+  autoCalcDeductions();
+}
+
+function autoCalcDeductions() {
+  const baseBasic = parseFloat(document.getElementById('baseBasic').value) || 0;
+  const daRate = parseFloat(document.getElementById('daRate').value) || 0;
+  const daVal = Math.round((baseBasic * daRate) / 100);
+
+  if (document.getElementById('chkGpf').checked) {
+    document.getElementById('gpfVal').value = Math.round(baseBasic * 0.10);
+  }
+  if (document.getElementById('chkNps').checked) {
+    document.getElementById('npsVal').value = Math.round((baseBasic + daVal) * 0.10);
+  }
+}
+
+function numToWordsHindi(num) {
+  if (isNaN(num) || num === 0) return "शून्य रुपये मात्र";
+  
+  const words = [
+    "", "एक", "दो", "तीन", "चार", "पांच", "छह", "सात", "आठ", "नौ", "दस",
+    "ग्यारह", "बारह", "तेरह", "चौदह", "पंद्रह", "सोलह", "सत्रह", "अठारह", "उन्नीस", "बीस",
+    "इक्कीस", "बाईस", "तेईस", "चौबीस", "पच्चीस", "छब्बीस", "सत्ताईस", "अट्ठाईस", "उनतीस", "तीस",
+    "इइकतीस", "बत्तीस", "तैंतीस", "चौंतीस", "पैंतीस", "छत्तीस", "सैंतीस", "अड़तालिस", "उनतालीस", "चालिस",
+    "इकतालीस", "बयालीस", "तैंतालिस", "चौंतालिस", "पैंतालिस", "छियालीस", "सैंतालिस", "अड़तालिस", "उंचास", "पचास",
+    "इक्कावन", "बावन", "तिर्पन", "चौवन", "पचपन", "छप्पन", "सत्तावन", "अट्ठावन", "उनसठ", "साठ",
+    "इकसठ", "बासठ", "तिरसठ", "चौंसठ", "पैंसठ", "छियासठ", "सरसठ", "अड़सठ", "उनहत्तर", "सत्तर",
+    "इकहत्तर", "बहत्तर", "तिहत्तर", "चौहत्तर", "पचहत्तर", "छहत्तर", "सतहत्तर", "अठहत्तर", "उनासी", "अस्सी",
+    "इक्यासी", "बयासी", "तिरासी", "चौरासी", "पचासी", "छियासी", "सत्तासी", "अट्ठासी", "नवासी", "नब्बे",
+    "इक्यान्वे", "बान्वे", "तिरान्वे", "चौरान्वे", "पञ्चान्वे", "छियान्वे", "सत्तान्वे", "अट्ठान्वे", "निन्यान्वे"
+  ];
+
+  function convertPart(n) {
+    let result = "";
+    if (n >= 100) {
+      let hundredDigit = Math.floor(n / 100);
+      result += words[hundredDigit] + " सौ ";
+      n %= 100;
+    }
+    if (n > 0) {
+      result += words[n] + " ";
+    }
+    return result;
+  }
+
+  let str = "";
+  let crore = Math.floor(num / 10000000);
+  num %= 10000000;
+  let lakh = Math.floor(num / 100000);
+  num %= 100000;
+  let thousand = Math.floor(num / 1000);
+  num %= 1000;
+  let remainder = num;
+
+  if (crore > 0) str += convertPart(crore).trim() + " करोड़ ";
+  if (lakh > 0) str += convertPart(lakh).trim() + " लाख ";
+  if (thousand > 0) str += convertPart(thousand).trim() + " हजार ";
+  if (remainder > 0) str += convertPart(remainder);
+
+  return str.trim() + " रुपये मात्र";
+}
+
+function getCurrentEmpFromForm() {
+  const baseBasic = parseFloat(document.getElementById('baseBasic').value) || 0;
+  const daRate = parseFloat(document.getElementById('daRate').value) || 0;
+  const daVal = Math.round((baseBasic * daRate) / 100);
+
+  const chkGpf = document.getElementById('chkGpf').checked;
+  const chkNps = document.getElementById('chkNps').checked;
+  const chkLic = document.getElementById('chkLic').checked;
+  const chkBroken = document.getElementById('chkBroken').checked;
+
+  const gpfVal = chkGpf ? Math.round(baseBasic * 0.10) : 0;
+  const npsVal = chkNps ? Math.round((baseBasic + daVal) * 0.10) : 0;
+  const itaxVal = parseFloat(document.getElementById('itaxVal').value) || 0;
+  const licVal = chkLic ? (parseFloat(document.getElementById('licVal').value) || 0) : 0;
+
+  const startM = parseInt(document.getElementById('startMonth').value);
+  const startY = parseInt(document.getElementById('startYear').value);
+  const totalDays = getDaysInMonth(startM, startY);
+
+  let joinDay = parseInt(document.getElementById('joinDay').value) || 1;
+  let endDay = parseInt(document.getElementById('endDay').value) || totalDays;
+
+  if (joinDay < 1) joinDay = 1;
+  if (endDay > totalDays) endDay = totalDays;
+
+  let workedDays = totalDays;
+  if (chkBroken) {
+    workedDays = (endDay - joinDay) + 1;
+    if (workedDays < 0) workedDays = 0;
+  }
+
+  return {
+    empName: document.getElementById('empName').value,
+    empDesig: document.getElementById('empDesig').value,
+    empAcc: document.getElementById('empAcc').value,
+    empIfsc: document.getElementById('empIfsc').value,
+    baseBasic: baseBasic,
+    daRate: daRate,
+    daVal: daVal,
+    baseHra: parseFloat(document.getElementById('hraAmt').value) || 0,
+    joinDay: joinDay,
+    endDay: endDay,
+    totalDays: totalDays,
+    workedDays: workedDays,
+    startMonth: startM,
+    startYear: startY,
+    monthCount: parseInt(document.getElementById('monthCount').value) || 1,
+    chkGpf: chkGpf,
+    gpfVal: gpfVal,
+    chkNps: chkNps,
+    npsVal: npsVal,
+    itaxVal: itaxVal,
+    chkLic: chkLic,
+    licVal: licVal,
+    chkBroken: chkBroken
+  };
+}
+
+function saveEmployeeData() {
+  const emp = getCurrentEmpFromForm();
+  if (!emp.empName.trim()) {
+    alert("कृपया कर्मचारी का नाम दर्ज करें।");
+    return;
+  }
+  employeesData.push(emp);
+  updateEmpChips();
+  renderAll();
+  resetCurrentForm();
+  alert(emp.empName + " का डेटा सफलतापूर्वक सेव हो गया!");
+}
+
+function editEmployee(index) {
+  const emp = employeesData[index];
+  document.getElementById('empName').value = emp.empName;
+  document.getElementById('empDesig').value = emp.empDesig;
+  document.getElementById('empAcc').value = emp.empAcc || "";
+  document.getElementById('empIfsc').value = emp.empIfsc || "";
+  document.getElementById('baseBasic').value = emp.baseBasic;
+  document.getElementById('daRate').value = emp.daRate;
+  document.getElementById('hraAmt').value = emp.baseHra;
+  document.getElementById('startMonth').value = emp.startMonth;
+  document.getElementById('startYear').value = emp.startYear;
+  document.getElementById('monthCount').value = emp.monthCount || 1;
+  
+  document.getElementById('chkBroken').checked = emp.chkBroken || false;
+  document.getElementById('joinDay').value = emp.joinDay || 1;
+  document.getElementById('endDay').value = emp.endDay || getDaysInMonth(emp.startMonth, emp.startYear);
+
+  document.getElementById('chkGpf').checked = emp.chkGpf;
+  document.getElementById('gpfVal').value = emp.gpfVal;
+  document.getElementById('chkNps').checked = emp.chkNps;
+  document.getElementById('npsVal').value = emp.npsVal;
+  document.getElementById('itaxVal').value = emp.itaxVal;
+  document.getElementById('chkLic').checked = emp.chkLic;
+  document.getElementById('licVal').value = emp.licVal;
+
+  toggleBrokenPeriod();
+  toggleDeductions();
+
+  editingIndex = index;
+  document.getElementById('btnAddEmp').style.display = "none";
+  document.getElementById('btnUpdateEmp').style.display = "inline-block";
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateEmployeeData() {
+  if (editingIndex === -1) return;
+  const emp = getCurrentEmpFromForm();
+  if (!emp.empName.trim()) {
+    alert("कृपया कर्मचारी का नाम दर्ज करें।");
+    return;
+  }
+  employeesData[editingIndex] = emp;
+  editingIndex = -1;
+  document.getElementById('btnAddEmp').style.display = "inline-block";
+  document.getElementById('btnUpdateEmp').style.display = "none";
+  updateEmpChips();
+  renderAll();
+  resetCurrentForm();
+  alert("कर्मचारी का डेटा सफलतापूर्वक अपडेट कर दिया गया है!");
+}
+
+function resetCurrentForm() {
+  document.getElementById('empName').value = "";
+  document.getElementById('empDesig').value = "";
+  document.getElementById('baseBasic').value = "0";
+  document.getElementById('gpfVal').value = "0";
+  document.getElementById('npsVal').value = "0";
+  document.getElementById('itaxVal').value = "0";
+  editingIndex = -1;
+  document.getElementById('btnAddEmp').style.display = "inline-block";
+  document.getElementById('btnUpdateEmp').style.display = "none";
+}
+
+function removeEmployee(index) {
+  employeesData.splice(index, 1);
+  if (editingIndex === index) {
+    resetCurrentForm();
+  }
+  updateEmpChips();
+  renderAll();
+}
+
+function updateEmpChips() {
+  const container = document.getElementById('empChipContainer');
+  document.getElementById('empCount').innerText = employeesData.length;
+  container.innerHTML = "";
+  
+  employeesData.forEach((emp, index) => {
+    const chip = document.createElement('div');
+    chip.className = 'emp-chip';
+    chip.innerHTML = `${index + 1}. ${emp.empName} (${emp.empDesig}) <span class="edit-btn" onclick="editEmployee(${index})" title="Edit">&#9998; Edit</span> <span class="remove" onclick="removeEmployee(${index})" title="Delete">&times;</span>`;
+    container.appendChild(chip);
+  });
+}
+
+function renderAll() {
+  const fmt = document.getElementById('formatSelect').value;
+  if (fmt === "1") {
+    renderFormat1();
+  } else {
+    renderFormat2();
+  }
+}
+
+// FORMAT 1 Rendering
+function renderFormat1() {
+  const schName = document.getElementById('schName').value;
+  const schFontSize = document.getElementById('schFontSize').value + 'px';
+  const hdrFontSize = document.getElementById('hdrFontSize').value + 'px';
+  const tblFontSize = document.getElementById('tblFontSize').value + 'px';
+  const rowPadding = document.getElementById('rowHeight').value + 'px';
+
+  let listToRender = employeesData.length > 0 ? employeesData : [getCurrentEmpFromForm()];
+
+  let html = "";
+  let grandAllBasic = 0, grandAllDa = 0, grandAllHra = 0, grandAllKulYog = 0;
+  let grandAllGpf = 0, grandAllNps = 0, grandAllLic = 0, grandAllKatauti = 0, grandAllNet = 0;
+
+  listToRender.forEach((emp, idx) => {
+    let endMonthIndex = (emp.startMonth + emp.monthCount - 1) % 12;
+    let endYear = emp.startYear + Math.floor((emp.startMonth + emp.monthCount - 1) / 12);
+    let lastDayOfEndMonth = getDaysInMonth(endMonthIndex, endYear);
+
+    let startDateStr = `${emp.joinDay} ${monthNames[emp.startMonth]} ${emp.startYear}`;
+    let endDateStr = `${lastDayOfEndMonth} ${monthNames[endMonthIndex]} ${endYear}`;
+    let periodStr = (emp.monthCount === 1 && emp.joinDay === 1) ? 
+                    `${monthNames[emp.startMonth]} ${emp.startYear}` : `${startDateStr} से ${endDateStr}`;
+
+    html += `
+      <div class="emp-block">
+        <div class="header-section">
+          <div class="school-title" style="font-size: ${schFontSize};">${schName}</div>
+          <div class="info-line-1" style="font-size: ${hdrFontSize};">
+            <span><span class="lbl">नाम कर्मचारी:</span>${emp.empName}</span>
+            <span><span class="lbl">पदनाम:</span>${emp.empDesig}</span>
+            <span></span>
+          </div>
+          <div class="info-line-2" style="font-size: ${hdrFontSize};">
+            <span><span class="lbl">वेतन अवधि / माह:</span>${periodStr}</span>
+            <span><span class="lbl">खाता संख्या:</span>${emp.empAcc}</span>
+            <span><span class="lbl">IFSC CODE:</span>${emp.empIfsc}</span>
+          </div>
+        </div>
+
+        <table style="font-size: ${tblFontSize};">
+          <thead>
+            <tr>
+              <th>क्र० सं०</th>
+              <th>माह एवं वर्ष</th>
+              <th>कार्य दिन</th>
+              <th>मूल वेतन</th>
+              <th>महंगाई  (DA%)</th>
+              <th>आवासीय </th>
+              <th>कुल योग</th>
+              <th>GPF</th>
+              <th>NPS</th>
+              <th>GIS / LIC</th>
+              <th>कुल कटौती</th>
+              <th>शुद्ध वेतन</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    let totalBasic = 0, totalDa = 0, totalHra = 0, grandKulYog = 0;
+    let totalGpf = 0, totalNps = 0, totalLic = 0, grandTotalKatauti = 0, grandTotalNet = 0;
+
+    let currM = emp.startMonth;
+    let currY = emp.startYear;
+
+    for (let i = 0; i < emp.monthCount; i++) {
+      let totalDays = getDaysInMonth(currM, currY);
+      let workedDays = totalDays;
+      
+      if (i === 0) {
+        if (emp.chkBroken) {
+          workedDays = emp.workedDays;
+        } else if (emp.joinDay > 1) {
+          workedDays = totalDays - emp.joinDay + 1;
+          if (workedDays < 0) workedDays = 0;
+        }
+      }
+
+      let monthDaRate = getDaRateForMonthYear(currM, currY);
+      if (monthDaRate === null) {
+        monthDaRate = emp.daRate;
+      }
+
+      let moolVetan = Math.round((emp.baseBasic / totalDays) * workedDays);
+      let daVal = Math.round((moolVetan * monthDaRate) / 100);
+      let hraVal = Math.round((emp.baseHra / totalDays) * workedDays);
+      let kulYog = moolVetan + daVal + hraVal;
+
+      let gpfDeduction = emp.chkGpf ? Math.round(moolVetan * 0.10) : 0;
+      let npsDeduction = emp.chkNps ? Math.round(((moolVetan + daVal) * 10) / 100) : 0;
+      let licDeduction = emp.chkLic ? emp.licVal : 0;
+      let totalKatauti = gpfDeduction + npsDeduction + licDeduction;
+      let shudhVetan = kulYog - totalKatauti;
+
+      totalBasic += moolVetan;
+      totalDa += daVal;
+      totalHra += hraVal;
+      grandKulYog += kulYog;
+      totalGpf += gpfDeduction;
+      totalNps += npsDeduction;
+      totalLic += licDeduction;
+      grandTotalKatauti += totalKatauti;
+      grandTotalNet += shudhVetan;
+
+      let monthLabel = monthNames[currM] + " " + currY;
+      let daysInfo = `${workedDays} / ${totalDays}`;
+
+      html += `
+        <tr>
+          <td style="padding: ${rowPadding};">${i + 1}</td>
+          <td contenteditable="true" style="padding: ${rowPadding};">${monthLabel}</td>
+          <td contenteditable="true" style="padding: ${rowPadding};">${daysInfo}</td>
+          <td contenteditable="true" style="padding: ${rowPadding};">${moolVetan.toLocaleString('hi-IN')}</td>
+          <td contenteditable="true" style="padding: ${rowPadding};">${daVal.toLocaleString('hi-IN')}</td>
+          <td contenteditable="true" style="padding: ${rowPadding};">${hraVal.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding};"><b>${kulYog.toLocaleString('hi-IN')}</b></td>
+          <td contenteditable="true" style="padding: ${rowPadding};">${gpfDeduction.toLocaleString('hi-IN')}</td>
+          <td contenteditable="true" style="padding: ${rowPadding};">${npsDeduction.toLocaleString('hi-IN')}</td>
+          <td contenteditable="true" style="padding: ${rowPadding};">${licDeduction.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding};"><b>${totalKatauti.toLocaleString('hi-IN')}</b></td>
+          <td style="padding: ${rowPadding};"><b>${shudhVetan.toLocaleString('hi-IN')}</b></td>
+        </tr>
+      `;
+
+      currM++;
+      if (currM > 11) { currM = 0; currY++; }
+    }
+
+    grandAllBasic += totalBasic;
+    grandAllDa += totalDa;
+    grandAllHra += totalHra;
+    grandAllKulYog += grandKulYog;
+    grandAllGpf += totalGpf;
+    grandAllNps += totalNps;
+    grandAllLic += totalLic;
+    grandAllKatauti += grandTotalKatauti;
+    grandAllNet += grandTotalNet;
+
+    html += `
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="padding: ${rowPadding}; font-weight: bold; text-align: right;">${listToRender.length === 1 ? 'कुल योग (Grand Total):' : 'कर्मचारी योग (Sub Total):'}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${totalBasic.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${totalDa.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${totalHra.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandKulYog.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${totalGpf.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${totalNps.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${totalLic.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandTotalKatauti.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandTotalNet.toLocaleString('hi-IN')}</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="hindi-words-container">
+          कुल शुद्ध धनराशि (शब्दों में): ${numToWordsHindi(grandTotalNet)}
+        </div>
+      </div>
+    `;
+  });
+
+  if (listToRender.length > 1) {
+    html += `
+      <div class="emp-block" style="margin-top: 30px; border-top: 3px double #000; padding-top: 15px;">
+        <div style="font-size: 16px; font-weight: bold; margin-bottom: 10px;">समस्त कर्मचारियों का कुल महायोग (Grand Total - All Employees):</div>
+        <table style="font-size: ${tblFontSize};">
+          <tfoot>
+            <tr style="background-color: #e2e8f0; font-size: 14px;">
+              <td colspan="3" style="padding: ${rowPadding}; font-weight: bold; text-align: right;">कुल महायोग (${listToRender.length} कर्मचारी):</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandAllBasic.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandAllDa.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandAllHra.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandAllKulYog.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandAllGpf.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandAllNps.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandAllLic.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandAllKatauti.toLocaleString('hi-IN')}</td>
+              <td style="padding: ${rowPadding}; font-weight: bold;">${grandAllNet.toLocaleString('hi-IN')}</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="hindi-words-container" style="font-size: 17px;">
+          अंतिम कुल शुद्ध धनराशि (शब्दों में): ${numToWordsHindi(grandAllNet)}
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('printSheet').innerHTML = html;
+}
+
+// FORMAT 2 Rendering (Combined Monthly Register Table with exact Format 1 calculation)
+function renderFormat2() {
+  const schName = document.getElementById('schName').value;
+  const vetanMonthIdx = parseInt(document.getElementById('startMonth').value);
+  const vetanYear = parseInt(document.getElementById('startYear').value);
+  const periodStr = `${monthNames[vetanMonthIdx]} ${vetanYear}`;
+
+  const schFontSize = document.getElementById('schFontSize').value + 'px';
+  const hdrFontSize = document.getElementById('hdrFontSize').value + 'px';
+  const tblFontSize = document.getElementById('tblFontSize').value + 'px';
+  const rowPadding = document.getElementById('rowHeight').value + 'px';
+
+  let listToRender = employeesData.length > 0 ? employeesData : [getCurrentEmpFromForm()];
+
+  let html = `
+    <div class="header-section" style="border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 12px;">
+      <div class="school-title" style="font-size: ${schFontSize}; font-weight: bold; margin-bottom: 8px; text-align: left;">
+        ${schName}
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; font-weight: bold;">
+        <div style="font-size: ${hdrFontSize};">वेतन विवरण:- माह/ वर्ष ${periodStr}</div>
+      </div>
+    </div>
+
+    <table style="font-size: ${tblFontSize};">
+      <thead>
+        <tr>
+          <th rowspan="2">क्र० सं०</th>
+          <th rowspan="2">नाम</th>
+          <th rowspan="2">पद</th>
+          <th rowspan="2">कार्य दिन</th>
+          <th rowspan="2">मूल वेतन</th>
+          <th rowspan="2">महंगाई </th>
+          <th rowspan="2">आवासीय </th>
+          <th rowspan="2">योग</th>
+          <th colspan="5">कटौती विवरण</th>
+          <th rowspan="2">शुद्ध देय वेतन</th>
+        </tr>
+        <tr>
+          <th>GPF</th>
+          <th>NPS</th>
+          <th>I. TAX</th>
+          <th>GIS / LIC</th>
+          <th>योग कटौती</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  let totalBasic = 0, totalDa = 0, totalHra = 0, grandKulYog = 0;
+  let totalGpf = 0, totalNps = 0, totalItax = 0, totalLic = 0, grandTotalKatauti = 0, grandTotalNet = 0;
+
+  listToRender.forEach((emp, i) => {
+    let totalDaysInMonth = getDaysInMonth(emp.startMonth, emp.startYear);
+    let workedDays = totalDaysInMonth;
+    let daysDisplay = `${totalDaysInMonth} / ${totalDaysInMonth}`;
+
+    if (emp.chkBroken) {
+      workedDays = emp.workedDays;
+      daysDisplay = `${emp.joinDay} से ${emp.endDay} (${workedDays}/${totalDaysInMonth})`;
+    }
+
+    let monthDaRate = getDaRateForMonthYear(emp.startMonth, emp.startYear);
+    if (monthDaRate === null) {
+      monthDaRate = emp.daRate;
+    }
+
+    let moolVetan = Math.round((emp.baseBasic / totalDaysInMonth) * workedDays);
+    let daVal = Math.round((moolVetan * monthDaRate) / 100);
+    let hraVal = Math.round((emp.baseHra / totalDaysInMonth) * workedDays);
+    let kulYog = moolVetan + daVal + hraVal;
+
+    let gpfDeduction = emp.chkGpf ? Math.round(moolVetan * 0.10) : 0;
+    let npsDeduction = emp.chkNps ? Math.round((moolVetan + daVal) * 0.10) : 0;
+    let itaxDeduction = emp.itaxVal || 0;
+    let licDeduction = emp.chkLic ? emp.licVal : 0;
+
+    let totalKatauti = gpfDeduction + npsDeduction + itaxDeduction + licDeduction;
+    let shudhVetan = kulYog - totalKatauti;
+
+    totalBasic += moolVetan;
+    totalDa += daVal;
+    totalHra += hraVal;
+    grandKulYog += kulYog;
+    totalGpf += gpfDeduction;
+    totalNps += npsDeduction;
+    totalItax += itaxDeduction;
+    totalLic += licDeduction;
+    grandTotalKatauti += totalKatauti;
+    grandTotalNet += shudhVetan;
+
+    html += `
+      <tr>
+        <td style="padding: ${rowPadding};">${i + 1}</td>
+        <td contenteditable="true" style="padding: ${rowPadding}; font-weight: 600;">${emp.empName}</td>
+        <td contenteditable="true" style="padding: ${rowPadding};">${emp.empDesig}</td>
+        <td contenteditable="true" style="padding: ${rowPadding};">${daysDisplay}</td>
+        <td contenteditable="true" style="padding: ${rowPadding};">${moolVetan.toLocaleString('hi-IN')}</td>
+        <td contenteditable="true" style="padding: ${rowPadding};">${daVal.toLocaleString('hi-IN')}</td>
+        <td contenteditable="true" style="padding: ${rowPadding};">${hraVal.toLocaleString('hi-IN')}</td>
+        <td style="padding: ${rowPadding};"><b>${kulYog.toLocaleString('hi-IN')}</b></td>
+        <td contenteditable="true" style="padding: ${rowPadding};">${gpfDeduction.toLocaleString('hi-IN')}</td>
+        <td contenteditable="true" style="padding: ${rowPadding};">${npsDeduction.toLocaleString('hi-IN')}</td>
+        <td contenteditable="true" style="padding: ${rowPadding};">${itaxDeduction.toLocaleString('hi-IN')}</td>
+        <td contenteditable="true" style="padding: ${rowPadding};">${licDeduction.toLocaleString('hi-IN')}</td>
+        <td style="padding: ${rowPadding};"><b>${totalKatauti.toLocaleString('hi-IN')}</b></td>
+        <td style="padding: ${rowPadding};"><b>${shudhVetan.toLocaleString('hi-IN')}</b></td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="4" style="padding: ${rowPadding}; font-weight: bold; text-align: right;">कुल योग (Grand Total):</td>
+          <td style="padding: ${rowPadding}; font-weight: bold;">${totalBasic.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding}; font-weight: bold;">${totalDa.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding}; font-weight: bold;">${totalHra.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding}; font-weight: bold;">${grandKulYog.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding}; font-weight: bold;">${totalGpf.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding}; font-weight: bold;">${totalNps.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding}; font-weight: bold;">${totalItax.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding}; font-weight: bold;">${totalLic.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding}; font-weight: bold;">${grandTotalKatauti.toLocaleString('hi-IN')}</td>
+          <td style="padding: ${rowPadding}; font-weight: bold;">${grandTotalNet.toLocaleString('hi-IN')}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="hindi-words-container">
+      कुल शुद्ध धनराशि (शब्दों में): ${numToWordsHindi(grandTotalNet)}
+    </div>
+  `;
+
+  document.getElementById('printSheet').innerHTML = html;
+}
+
+window.onload = function() {
+  updateMonthDays();
+  applyAutoDaRate();
+  onFormatChange();
+};
+</script>
+</body>
+</html>
