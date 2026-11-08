@@ -1488,6 +1488,15 @@
         let monthlyDifference = Math.round((basicPay * diffRate) / 100);
         document.getElementById('yog').value = monthlyDifference.toFixed(2);
 
+        // ऑटोमैटिक रूप से सभी महीनों के मूल वेतन को मुख्य basicPay से सिंक करें (जब तक यूजर ने अलग न किया हो)
+        let monthInputs = document.querySelectorAll('.month-input');
+        monthInputs.forEach((inp, idx) => {
+            let mBasicInput = document.getElementById(`mBasic_${idx}`);
+            if (mBasicInput) {
+                mBasicInput.value = basicPay;
+            }
+        });
+
         updateDynamicMonthValues(monthlyDifference);
         calculateGrandTotalOnly();
     }
@@ -1558,16 +1567,35 @@
         let container = document.getElementById('dynamicMonthGrid');
         container.innerHTML = '';
 
-        let monthlyDiff = parseFloat(document.getElementById('yog').value) || 0;
+        let prevRate = parseFloat(document.getElementById('prevDaRate').value) || 0;
+        let newRate = parseFloat(document.getElementById('newDaRate').value) || 0;
+        let diffRate = newRate - prevRate;
+
+        let basePay = parseFloat(document.getElementById('basicPay').value) || 0;
 
         for (let i = 0; i < count; i++) {
             let mIndex = (startIdx + i) % 12;
             let monthName = allMonths[mIndex];
+            
+            let monthlyDiff = Math.round((basePay * diffRate) / 100);
+
             let div = document.createElement('div');
             div.className = 'form-group';
+            div.style.background = '#ffffff';
+            div.style.padding = '6px';
+            div.style.border = '1px solid #cbd5e0';
+            div.style.borderRadius = '4px';
+
             div.innerHTML = `
-                <label for="month_${i}">${monthName}</label>
-                <input type="number" id="month_${i}" data-month="${monthName}" data-mindex="${mIndex}" class="month-input" value="${monthlyDiff.toFixed(2)}" oninput="calculateGrandTotalOnly()">
+                <label for="month_${i}" style="color:var(--primary-color); font-weight:bold;">${monthName}</label>
+                <div style="display:flex; flex-direction:column; gap:3px;">
+                    <input type="number" id="mBasic_${i}" placeholder="मूल वेतन" value="${basePay}" title="${monthName} का मूल वेतन" 
+                           style="font-size:11px; padding:3px 5px; background-color:#ebf8ff; border:1px solid #90cdf4;" 
+                           oninput="recalculateSingleMonthDiff(${i})">
+                    <input type="number" id="month_${i}" data-month="${monthName}" data-mindex="${mIndex}" class="month-input" 
+                           value="${monthlyDiff.toFixed(2)}" placeholder="अंतर राशि" 
+                           oninput="calculateGrandTotalOnly()">
+                </div>
             `;
             container.appendChild(div);
         }
@@ -1575,6 +1603,23 @@
         document.getElementById('gpfMonths').value = count;
         document.getElementById('cashMonths').value = 0;
         runMasterCalculations();
+    }
+
+    function recalculateSingleMonthDiff(index) {
+        let prevRate = parseFloat(document.getElementById('prevDaRate').value) || 0;
+        let newRate = parseFloat(document.getElementById('newDaRate').value) || 0;
+        let diffRate = newRate - prevRate;
+
+        let mBasicInput = document.getElementById(`mBasic_${index}`);
+        let mDiffInput = document.getElementById(`month_${index}`);
+
+        if (mBasicInput && mDiffInput) {
+            let monthBasic = parseFloat(mBasicInput.value) || 0;
+            let monthlyDiff = Math.round((monthBasic * diffRate) / 100);
+            mDiffInput.value = monthlyDiff.toFixed(2);
+        }
+
+        calculateGrandTotalOnly();
     }
 
     function updateDynamicMonthValues(fullMonthlyDiff) {
@@ -1603,10 +1648,19 @@
             }
         }
 
-        monthInputs.forEach((input) => {
+        let prevRate = parseFloat(document.getElementById('prevDaRate').value) || 0;
+        let newRate = parseFloat(document.getElementById('newDaRate').value) || 0;
+        let diffRate = newRate - prevRate;
+
+        monthInputs.forEach((input, i) => {
             let mIdx = parseInt(input.getAttribute('data-mindex')) || 0;
             let totalDaysInMonth = monthDaysList[mIdx];
-            let calculatedVal = fullMonthlyDiff;
+            
+            let mBasicElem = document.getElementById(`mBasic_${i}`);
+            let currentMonthBasic = mBasicElem ? (parseFloat(mBasicElem.value) || 0) : (parseFloat(document.getElementById('basicPay').value) || 0);
+            let currentFullDiff = Math.round((currentMonthBasic * diffRate) / 100);
+            
+            let calculatedVal = currentFullDiff;
 
             if (mIdx > deathMonthIdx) {
                 calculatedVal = 0;
@@ -1617,14 +1671,14 @@
                 if (activeDays < 0) activeDays = 0;
                 if (activeDays > totalDaysInMonth) activeDays = totalDaysInMonth;
 
-                let rawProRata = (fullMonthlyDiff / totalDaysInMonth) * activeDays;
+                let rawProRata = (currentFullDiff / totalDaysInMonth) * activeDays;
                 calculatedVal = Math.round(rawProRata);
             } 
             else if (mIdx === joinMonthIdx && joinDay > 1) {
                 let workingDays = (totalDaysInMonth - joinDay + 1);
                 if (workingDays < 0) workingDays = 0;
 
-                let rawProRata = (fullMonthlyDiff / totalDaysInMonth) * workingDays;
+                let rawProRata = (currentFullDiff / totalDaysInMonth) * workingDays;
                 calculatedVal = Math.round(rawProRata);
             }
 
@@ -1874,10 +1928,14 @@
             autoCapitalize(designationInput);
             let monthInputs = document.querySelectorAll('.month-input');
             let monthData = [];
-            monthInputs.forEach(input => {
+            monthInputs.forEach((input, idx) => {
+                let mBasicElem = document.getElementById(`mBasic_${idx}`);
+                let mBasicVal = mBasicElem ? (parseFloat(mBasicElem.value) || 0) : parseFloat(document.getElementById('basicPay').value) || 0;
+                
                 monthData.push({
                     name: input.getAttribute('data-month'),
-                    val: parseFloat(input.value) || 0
+                    val: parseFloat(input.value) || 0,
+                    basicPay: mBasicVal
                 });
             });
 
@@ -2769,9 +2827,22 @@
                 found.months.forEach((mObj, i) => {
                     let div = document.createElement('div');
                     div.className = 'form-group';
+                    div.style.background = '#ffffff';
+                    div.style.padding = '6px';
+                    div.style.border = '1px solid #cbd5e0';
+                    div.style.borderRadius = '4px';
+                    
+                    let mBasicVal = mObj.basicPay !== undefined ? mObj.basicPay : (found.basicPay || 0);
+
                     div.innerHTML = `
-                        <label for="month_${i}">${mObj.name}</label>
-                        <input type="number" id="month_${i}" data-month="${mObj.name}" class="month-input" value="${mObj.val.toFixed(2)}" oninput="calculateGrandTotalOnly()">
+                        <label for="month_${i}" style="color:var(--primary-color); font-weight:bold;">${mObj.name}</label>
+                        <div style="display:flex; flex-direction:column; gap:3px;">
+                            <input type="number" id="mBasic_${i}" placeholder="मूल वेतन" value="${mBasicVal}" title="${mObj.name} का मूल वेतन" 
+                                   style="font-size:11px; padding:3px 5px; background-color:#ebf8ff; border:1px solid #90cdf4;" 
+                                   oninput="recalculateSingleMonthDiff(${i})">
+                            <input type="number" id="month_${i}" data-month="${mObj.name}" class="month-input" value="${mObj.val.toFixed(2)}" 
+                                   oninput="calculateGrandTotalOnly()">
+                        </div>
                     `;
                     container.appendChild(div);
                 });
