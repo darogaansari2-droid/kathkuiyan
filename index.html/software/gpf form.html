@@ -18,15 +18,15 @@
             background-color: #eef2f5;
         }
 
-        /* Master Control Bar for Switching Software */
+        /* Master Control Bar for Switching Software & Font Controls */
         .master-nav {
             background: #1e293b;
             color: white;
-            padding: 12px 20px;
+            padding: 10px 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
@@ -35,13 +35,13 @@
         }
 
         .master-nav label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: bold;
         }
 
-        .master-select {
-            padding: 6px 12px;
-            font-size: 13px;
+        .master-select, .master-input-ctrl {
+            padding: 5px 8px;
+            font-size: 12px;
             font-weight: bold;
             border-radius: 4px;
             border: 1px solid #cbd5e1;
@@ -49,6 +49,22 @@
             color: #0f172a;
             cursor: pointer;
             outline: none;
+        }
+
+        .font-ctrl-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #334155;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* Dynamic Input Field Styling Rules Controlled via JS */
+        input[type="text"], .software-view input[type="text"] {
+            font-family: var(--custom-input-font, 'Hind', 'Noto Sans Devanagari', 'Mangal', 'Arial', sans-serif) !important;
+            font-size: var(--custom-input-size, 10.5pt) !important;
+            font-weight: var(--custom-input-weight, 800) !important;
         }
 
         /* View Container Control */
@@ -99,9 +115,6 @@
             border: none;
             border-bottom: 1px dotted #000;
             background: transparent;
-            font-family: inherit;
-            font-size: 12pt;
-            font-weight: bold;
             padding: 1px 4px;
             color: #000;
             outline: none;
@@ -123,8 +136,6 @@
         #view-bill .bill-table td { height: 100px; }
         #view-bill .bill-table td input {
             width: 95%;
-            font-size: 11pt;
-            font-weight: bold;
             border: none;
             border-bottom: 1px underline #000;
         }
@@ -222,13 +233,16 @@
             flex-wrap: wrap;
         }
         #view-sthai .form-label { font-weight: normal; white-space: nowrap; margin-right: 3px; }
+        #view-sthai .form-label-9 {
+            font-size: 9pt !important;
+            font-weight: normal;
+            white-space: nowrap;
+            margin-right: 3px;
+        }
         #view-sthai input[type="text"] {
             border: none;
             border-bottom: 1px dotted #000;
             background: transparent;
-            font-family: inherit;
-            font-size: 10.5pt;
-            font-weight: 800 !important;
             padding: 0 3px;
             color: #000;
             outline: none;
@@ -272,12 +286,9 @@
         #view-lekha .header-title input {
             border: none;
             border-bottom: 2px dotted #000;
-            font-size: 15pt;
-            font-weight: bold;
             text-align: center;
             width: 160px;
             background: transparent;
-            font-family: inherit;
         }
         #view-lekha .info-container { width: 100%; margin-bottom: 8px; font-size: 10.5pt; }
         #view-lekha .info-row { display: flex; align-items: center; margin-bottom: 6px; width: 100%; }
@@ -286,9 +297,6 @@
             border: none;
             border-bottom: 1.5px dotted #555;
             padding: 2px 5px;
-            font-family: inherit;
-            font-size: 10.5pt;
-            font-weight: 600;
             background: transparent;
         }
         #view-lekha .auto-adjust { white-space: nowrap; overflow: hidden; }
@@ -317,8 +325,6 @@
             border: none !important;
             border-bottom: none !important;
             background: transparent;
-            font-family: inherit;
-            font-size: 9.5pt;
             text-align: center;
             padding: 3px 2px;
             outline: none;
@@ -340,7 +346,7 @@
         #view-lekha .sub-text { font-size: 8pt; font-weight: normal; display: block; margin-top: 3px; }
 
         /* ==========================================
-           4. ASTHAI.HTML STYLES (OPTIMIZED FOR PDF & PRINT)
+           4. ASTHAI.HTML STYLES
            ========================================== */
         #view-asthai {
             font-size: 9.5pt;
@@ -400,9 +406,6 @@
             border: none;
             border-bottom: 1px dotted #000;
             background: transparent;
-            font-family: inherit;
-            font-size: 9.5pt;
-            font-weight: 800 !important;
             padding: 0 3px;
             color: #000;
             outline: none;
@@ -426,7 +429,6 @@
         #view-asthai .stamp-space { height: 18px; }
         #view-asthai .sig-box-right { width: 50%; text-align: left; }
 
-        /* Custom spacing for bottom signatures: Lekhadhikari shifted further RIGHT, DIOS shifted further LEFT */
         #view-asthai .bottom-sig-container {
             display: flex;
             justify-content: space-between;
@@ -439,12 +441,12 @@
         #view-asthai .sig-box-lekhadhikari {
             text-align: center;
             width: 40%;
-            margin-left: 12%; /* Shifted more to the right */
+            margin-left: 12%;
         }
         #view-asthai .sig-box-dios {
             text-align: center;
             width: 40%;
-            margin-right: 12%; /* Shifted more to the left */
+            margin-right: 12%;
         }
 
         /* ==========================================
@@ -491,9 +493,6 @@
             border: none;
             border-bottom: 1px dotted #000;
             background: transparent;
-            font-family: inherit;
-            font-size: 10pt;
-            font-weight: 800 !important;
             padding: 0 4px;
             color: #000;
             outline: none;
@@ -512,7 +511,7 @@
             font-size: 9pt;
         }
         #view-viivran .advance-table th { font-weight: bold; background-color: #f9f9f9; }
-        #view-viivran .advance-table td input { width: 100%; border: none !important; text-align: center; font-size: 9.5pt; }
+        #view-viivran .advance-table td input { width: 100%; border: none !important; text-align: center; }
         #view-viivran .header-bg { font-size: 11pt; font-weight: bold; }
         #view-viivran .sig-row {
             display: flex;
@@ -574,7 +573,7 @@
             width: 150px;
         }
 
-        /* Print Media Styles Optimized for PDF Saving without cutting bottom */
+        /* Print Media Styles */
         @media print {
             body { background: none; padding: 0; }
             .master-nav, .search-panel, .no-print { display: none !important; }
@@ -583,7 +582,7 @@
             
             @page { 
                 size: A4 portrait; 
-                margin: 5mm 8mm 5mm 8mm; /* Reduced top/bottom margins so bottom signatures never get clipped in PDF */
+                margin: 5mm 8mm 5mm 8mm; 
             }
             
             #view-lekha.active {
@@ -605,16 +604,48 @@
 </head>
 <body>
 
-<!-- Master Switcher Navigation Bar -->
+<!-- Master Switcher Navigation Bar with Font Customization Controls -->
 <div class="master-nav no-print">
-    <label for="softwareSwitcher">📂 सॉफ़्टवेयर चुनें:</label>
+    <label for="softwareSwitcher">📂 सॉफ़्टवेयर:</label>
     <select id="softwareSwitcher" class="master-select" onchange="switchSoftware(this.value)">
         <option value="bill">1. बिल प्रपत्र</option>
-        <option value="sthai">2. भविष्य निर्वाह निधि - स्थाई निष्कासन</option>
+        <option value="sthai" selected>2. भविष्य निर्वाह निधि - स्थाई निष्कासन</option>
         <option value="lekha">3. सामान्य भविष्य निधि लेखा पर्ची</option>
-        <option value="asthai" selected>4. अस्थाई अग्रीम आवेदन पत्र</option>
+        <option value="asthai">4. अस्थाई अग्रीम आवेदन पत्र</option>
         <option value="viivran">5. पूर्ववर्ती अग्रिमों का विवरण</option>
     </select>
+
+    <!-- Font Family, Size, and Weight Settings Controls (Only for Input Fields) -->
+    <div class="font-ctrl-group">
+        <label for="fontFamilySelect" style="font-size: 12px;">🔤 फॉन्ट:</label>
+        <select id="fontFamilySelect" class="master-input-ctrl" onchange="updateInputStyles()">
+            <option value="'Mangal', sans-serif">Mangal</option>
+            <option value="'Hind', sans-serif">Hind</option>
+            <option value="'Nirmal UI', sans-serif">Nirmal UI</option>
+            <option value="'Arial', sans-serif">Arial</option>
+            <option value="'Noto Sans Devanagari', sans-serif">Noto Sans</option>
+        </select>   
+
+        <label for="fontSizeSelect" style="font-size: 12px;">📏 साइज:</label>
+        <select id="fontSizeSelect" class="master-input-ctrl" onchange="updateInputStyles()">
+            <option value="8pt">8pt</option>
+            <option value="9pt">9pt</option>
+            <option value="10pt">10pt</option>
+            <option value="10.5pt" selected>10.5pt</option>
+            <option value="11pt">11pt</option>
+            <option value="12pt">12pt</option>
+            <option value="14pt">14pt</option>
+            <option value="16pt">16pt</option>
+        </select>
+
+        <label for="fontWeightSelect" style="font-size: 12px;">𝐁 बोल्ड:</label>
+        <select id="fontWeightSelect" class="master-input-ctrl" onchange="updateInputStyles()">
+            <option value="normal">Normal</option>
+            <option value="bold" selected>Bold</option>
+            <option value="800">Extra Bold</option>
+        </select>
+    </div>
+
     <button class="btn btn-primary" onclick="saveDataToLocalStorage()">💾 सेव करें</button>
     <button class="btn btn-warning" onclick="updateDataInLocalStorage()">🔄 अपडेट करें</button>
     <button class="btn btn-danger" onclick="deleteDataFromLocalStorage()">🗑️ डिलीट करें</button>
@@ -631,9 +662,7 @@
 <!-- Hidden Active Record ID tracker -->
 <input type="hidden" id="currentRecordId" value="">
 
-<!-- ==========================================
-     1. BILL.HTML VIEW CONTAINER
-     ========================================== -->
+<!-- 1. BILL.HTML VIEW CONTAINER -->
 <div id="view-bill" class="software-view">
     <div class="sheet">
         <div class="main-title">बिल प्रपत्र</div>
@@ -677,16 +706,16 @@
                 <tr>
                     <td>
                         <div class="emp-details">
-                            <input type="text" id="bill_emp_name" style="width: 90%; font-size: 10pt;" value="">
-                            <input type="text" id="bill_emp_desig" style="width: 80%; font-size: 10pt;" value="">
+                            <input type="text" id="bill_emp_name" style="width: 90%;" value="">
+                            <input type="text" id="bill_emp_desig" style="width: 80%;" value="">
                             <br>
-                            <input type="text" id="bill_basic_pay" style="width: 85%; font-size: 10pt;" value="">
+                            <input type="text" id="bill_basic_pay" style="width: 85%;" value="">
                         </div>
                     </td>
-                    <td><input type="text" id="bill_table_ledger" style="width: 90%; font-size: 10pt;" value=""></td>
-                    <td><input type="text" id="bill_table_type" style="width: 90%;  font-size: 10pt;" value=""></td>
-                    <td><input type="text" id="amountNum" oninput="convertAmountToWords()" style="width: 90%;  font-size: 10pt;" value=""></td>
-                    <td><input type="text" id="bill_table_total" style="width: 90%;  font-size: 10pt;" value=""></td>
+                    <td><input type="text" id="bill_table_ledger" style="width: 90%;" value=""></td>
+                    <td><input type="text" id="bill_table_type" style="width: 90%;" value=""></td>
+                    <td><input type="text" id="amountNum" oninput="convertAmountToWords()" style="width: 90%;" value=""></td>
+                    <td><input type="text" id="bill_table_total" style="width: 90%;" value=""></td>
                 </tr>
             </tbody>
         </table>
@@ -694,14 +723,14 @@
         <div class="bank-section">
             <div class="header-row">
                 <span class="header-label">बैंक का नाम -</span>
-                <input type="text" id="bill_bank_name" style="flex-grow: 1; font-size: 10pt;" value="">
+                <input type="text" id="bill_bank_name" style="flex-grow: 1;" value="">
             </div>
             <div class="header-row" style="margin-top: 6px; margin-bottom: 0;">
                 <span class="header-label">खाता संख्या -</span>
-                <input type="text" id="bill_bank_acc" style="width: 160px; font-size: 10pt;" value="">
+                <input type="text" id="bill_bank_acc" style="width: 160px;" value="">
                 <span style="flex-grow: 1;"></span>
                 <span class="header-label">आई० एफ० एस० सी० कोड -</span>
-                <input type="text" id="bill_bank_ifsc" style="width: 200px; font-size: 10pt;" value="">
+                <input type="text" id="bill_bank_ifsc" style="width: 200px;" value="">
             </div>
         </div>
 
@@ -709,39 +738,39 @@
             <div class="header-row">
                 <span style="flex-grow: 1;"></span>
                 <span class="header-label">रुपया शब्दों मे -</span>
-                <input type="text" id="amountWords" style="width: 450px; font-size: 10pt;" value="">
+                <input type="text" id="amountWords" style="width: 450px;" value="">
                 <span style="flex-grow: 1; border-bottom: 1px dotted #000; margin-left: 5px;"></span>
             </div>
             <div style="margin-top: 4px;">
                 उप शिक्षा निदेशक सप्तम मण्डल गोरखपुर / जि० वि० नि० कुशीनगर के आदेश संख्या - 
-                <input type="text" id="bill_order_no" style="width: 400px; font-size: 10pt;" value="">
+                <input type="text" id="bill_order_no" style="width: 400px;" value="">
             </div>
             <div class="header-row" style="margin-top: 4px;">
-                <input type="text" id="bill_order_place" style="width: 350px; text-align: left; font-size: 10pt;" value="">
+                <input type="text" id="bill_order_place" style="width: 350px; text-align: left;" value="">
                 <span style="flex-grow: 1;"></span>
                 <span class="header-label">दिनांक -</span>
-                <input type="text" id="bill_order_date" style="width: 140px; font-size: 10pt;" value="">
+                <input type="text" id="bill_order_date" style="width: 140px;" value="">
                 <span style="width: 50px; border-bottom: 1px dotted #000; margin-left: 5px;"></span>
             </div>
             <div style="margin-top: 4px;">
                 द्वारा रुपया <span style="width: 150px; border-bottom: 1px dotted #000; display: inline-block;"></span>
-                <input type="text" id="amountNumRef" style="width: 130px; font-size: 10pt;" value="">&nbsp;&nbsp;
-                <input type="text" id="bill_order_type_text" style="width: 110px; font-size: 10pt;" value="">&nbsp;&nbsp;
+                <input type="text" id="amountNumRef" style="width: 130px;" value="">&nbsp;&nbsp;
+                <input type="text" id="bill_order_type_text" style="width: 110px;" value="">&nbsp;&nbsp;
                 <span style="width: 60px; border-bottom: 1px dotted #000; display: inline-block;"></span>&nbsp;&nbsp; अस्थाई/स्थाई अन्तिम स्वीकृति जिनकी कटौती
             </div>
             <div style="margin-top: 4px;">
                 रुपया <span style="width: 100px; border-bottom: 1px dotted #000; display: inline-block;"></span>
-                <input type="text" id="bill_inst_rate" style="width: 100px; font-size: 10pt;" value="">
+                <input type="text" id="bill_inst_rate" style="width: 100px;" value="">
                 <span style="width: 180px; border-bottom: 1px dotted #000; display: inline-block;"></span> के दर से कुल 
-                <input type="text" id="bill_total_inst" style="width: 60px; font-size: 10pt;" value="">
+                <input type="text" id="bill_total_inst" style="width: 60px;" value="">
                 <span style="width: 100px; border-bottom: 1px dotted #000; display: inline-block;"></span> किस्तों में की जाएगी
             </div>
             <div style="margin-top: 4px;">
                 पहली किस्त माह <span style="width: 60px; border-bottom: 1px dotted #000; display: inline-block;"></span>
                 <span style="width: 85px; border-bottom: 1px dotted #000; display: inline-block;"></span>
-                <input type="text" id="bill_first_inst_m" style="width: 85px; font-size: 10pt;" value="">&nbsp;&nbsp;&nbsp;&nbsp; के वेतन माह 
+                <input type="text" id="bill_first_inst_m" style="width: 85px;" value="">&nbsp;&nbsp;&nbsp;&nbsp; के वेतन माह 
                 <span style="width: 60px; border-bottom: 1px dotted #000; display: inline-block;"></span>
-                <input type="text" id="bill_salary_m" style="width: 90px; font-size: 10pt;" value="">
+                <input type="text" id="bill_salary_m" style="width: 90px;" value="">
             </div>
         </div>
 
@@ -768,10 +797,8 @@
     </div>
 </div>
 
-<!-- ==========================================
-     2. STHAI.HTML VIEW CONTAINER
-     ========================================== -->
-<div id="view-sthai" class="software-view">
+<!-- 2. STHAI.HTML VIEW CONTAINER -->
+<div id="view-sthai" class="software-view active">
     <div class="sheet">
         <div class="photo-box"></div>
         <div class="main-title">
@@ -805,12 +832,12 @@
                 <input type="text" id="sthai_pay" style="width: 100px;" class="center" value="">
                 <input type="text" style="width: 210px;" value="">
             </div>
-            <div class="form-row">
-                <span class="form-label">6- सेवा में आने की तिथि तथा अर्ध वार्षिक -</span>
-                <input type="text" style="width: 90px;" class="center" value="">
-                <input type="text" style="width: 30px;" class="center" value="">
-                <span class="form-label">छमाही</span>
-                <input type="text" style="width: 95px;" value="">
+            <div class="form-row" style="flex-wrap: nowrap;">
+                <span class="form-label-9">6- सेवा में आने की तिथि तथा अर्ध वार्षिक -</span>
+                <input type="text" id="sthai_doj" style="width: 100px;" class="center" value="" placeholder="" oninput="calculateSthaiHalfYear()">
+                <span class="form-label-9" style="margin-left: 6px;">छमाही-</span>
+                <input type="text" id="sthai_half_year_num" style="width: 45px;" class="center" value="">
+                <input type="text" id="sthai_half_year_text" style="width: 70px;" value="">
             </div>
         </div>
 
@@ -891,24 +918,23 @@
                 <div><strong>आवेदक के हस्ताक्षर -</strong></div>
                 <div class="form-row" style="margin-bottom: 1px;">
                     <span class="form-label">नाम -</span>
-                    <input type="text" style="width: 170px;" value="">
+                    <input type="text" id="sthai_name_sig" style="width: 170px;" value="">
                 </div>
                 <div class="form-row" style="margin-bottom: 1px;">
                     <span class="form-label">पदनाम ....</span>
-                    <input type="text" style="width: 170px;" value="">
+                    <input type="text" id="sthai_desig_sig" style="width: 170px;" value="">
                 </div>
                 <div class="form-row">
                     <span class="form-label">अनुभाग / शाखा -</span>
-                    <input type="text" style="width: 275px;" value="श्री कृष्ण इण्टर कालेज सेमरा,कठकुइयाँ">
+                    <input type="text" id="sthai_branch" style="width: 275px;" value="श्री कृष्ण इण्टर कालेज सेमरा,कठकुइयाँ">
                 </div>
             </div>
         </div>
 
-          <div class="section-title">प्रमाण - पत्र एवं संस्तुति</div>
+        <div class="section-title">प्रमाण - पत्र एवं संस्तुति</div>
         <div class="form-row">
             <span class="form-label">1 - प्रमाणित किया जाता है कि-</span>
-           
-            <input type="text" id="asthai_name_cert1" style="width: 170px;" class="center" value="">
+            <input type="text" id="sthai_name_cert1" style="width: 170px;" class="center" value="">
             <span class="form-label">पद -</span>
             <input type="text" id="sthai_desig_cert1" style="width: 125px;" class="center" value="">
             <span class="form-label">विद्यालय के जी० पी० एफ ० लेजर की जाँच</span>
@@ -918,8 +944,8 @@
         </div>
         <div class="form-row" style="margin-top: 2px;">
             <span class="form-label">2- यह भी प्रमाणित किया जाता है कि उनके खाते में मास /वर्ष तक</span>
-            <input type="text" id="asthai_cert_m_year" style="width: 130px;" class="center" value="अक्टूबर-2026 तक ">
-            <input type="text" id="asthai_cert_balance" style="width: 85px;" class="center" value="">
+            <input type="text" id="sthai_cert_m_year" style="width: 130px;" class="center" value="अक्टूबर-2026 तक ">
+            <input type="text" id="sthai_cert_balance" style="width: 85px;" class="center" value="">
             <span class="form-label">शुद्ध जमा धनराशि</span>
         </div>
         <div class="form-row sub-indent" style="padding-left: 10px;">
@@ -939,7 +965,7 @@
         </div>
 
         <div style="margin-top: 8px;">
-            <div class="sig-row" style="padding: 0 30px; font-size: 9.5pt;">
+            <div class="sig-row" style="padding: 0 70px; font-size: 9.5pt;">
                 <span>प्रबन्धक</span><span>प्रधानाचार्य</span>
             </div>
             <div class="stamp-space"></div>
@@ -984,9 +1010,7 @@
     </div>
 </div>
 
-<!-- ==========================================
-     3. LEKHA.HTML VIEW CONTAINER (GPF Slip)
-     ========================================== -->
+<!-- 3. LEKHA.HTML VIEW CONTAINER (GPF Slip) -->
 <div id="view-lekha" class="software-view">
     <div class="no-print" style="text-align: center; margin-bottom: 12px; background: #ffffff; padding: 10px; border-radius: 8px;">
         <button class="btn" onclick="addLekhaRow()">➕ पंक्ति जोड़ें</button>
@@ -995,18 +1019,18 @@
 
     <div class="sheet">
         <div class="header-title">
-            सामान्य भविष्य निधि लेखा पर्ची वर्ष - <input type="text" id="lekha_year_header" value="2024-25-26" placeholder="वर्ष लिखें">
+            सामान्य भविष्य निधि लेखा पर्ची वर्ष - <input type="text" id="lekha_year_header" value="2025-26-27" placeholder="वर्ष लिखें">
         </div>
         <div class="info-container">
             <div class="info-row">
                 <span class="info-label">1 - नाम विद्यालय -</span>
-                <input type="text" class="info-input auto-adjust" value="श्री कृष्ण इण्टर कालेज सेमरा पो०- कठकुइयाँ जनपद - कुशीनगर" style="flex-grow: 1;" oninput="adjustLekhaFontSize(this)">
+                <input type="text" id="lekha_school_name" class="info-input auto-adjust" value="श्री कृष्ण इण्टर कालेज सेमरा पो०- कठकुइयाँ जनपद - कुशीनगर" style="flex-grow: 1;">
             </div>
             <div class="info-row" style="margin-top: 5px;">
                 <span class="info-label">2 - अभिदाता का नाम व पद -</span>
-                <input type="text" class="info-input auto-adjust" value="" style="flex-grow: 1; margin-right: 20px;" oninput="adjustLekhaFontSize(this)">
+                <input type="text" id="lekha_emp_name_desig" class="info-input auto-adjust" value="" style="flex-grow: 1; margin-right: 20px;">
                 <span class="info-label">खाता संख्या -</span>
-                <input type="text" class="info-input" value="" style="width: 160px; text-align: center;">
+                <input type="text" id="lekha_account_no" class="info-input" value="" style="width: 160px; text-align: center;">
             </div>
         </div>
 
@@ -1031,7 +1055,7 @@
             <tbody id="lekhaTableBody">
                 <tr oninput="recalculateLekhaAll(event, this)">
                     <td><input type="text" class="col-c1-val" value=""></td>
-                    <td><input type="text" class="auto-adjust" value="" style="text-align: left; font-weight: 600;" oninput="adjustLekhaFontSize(this)"></td>
+                    <td><input type="text" class="auto-adjust col-c2-val" value="" style="text-align: left;"></td>
                     <td><input type="text" class="col-c3-val" value=""></td>
                     <td><input type="text" class="col-c4-val" value=""></td>
                     <td><input type="text" class="col-c5-val" value=""></td>
@@ -1056,10 +1080,8 @@
     </div>
 </div>
 
-<!-- ==========================================
-     4. ASTHAI.HTML VIEW CONTAINER (OPTIMIZED FOR PDF EXPORT)
-     ========================================== -->
-<div id="view-asthai" class="software-view active">
+<!-- 4. ASTHAI.HTML VIEW CONTAINER -->
+<div id="view-asthai" class="software-view">
     <div class="sheet">
         <div class="photo-box"></div>
         <div class="main-title">
@@ -1071,7 +1093,7 @@
                 <span class="form-label">1 - विद्यालय का नाम</span>
                 <input type="text" id="asthai_school" style="width: 250px;" value="श्री कृष्ण इ० का० सेमरा,कठकुइयाँ">
                 <span class="form-label" style="margin-left: 4px;">जनपद -</span>
-                <input type="text" style="width: 80px;" class="center" value="कुशीनगर">
+                <input type="text" style="width: 65px;" class="center" value="कुशीनगर">
                 <input type="text" style="width: 50px;" value="">
             </div>
             <div class="form-row">
@@ -1186,8 +1208,8 @@
         <div class="section-title">प्रमाण - पत्र एवं संस्तुति</div>
         <div class="form-row">
             <span class="form-label">1 - प्रमाणित किया जाता है कि-</span>
-            <input type="text" id="asthai_ledger_cert1" style="width: 45px;" class="center" value="">
-            <input type="text" id="asthai_name_cert1" style="width: 125px;" class="center" value="">
+          
+            <input type="text" id="asthai_name_cert1" style="width: 170px;" class="center" value="">
             <span class="form-label">पद -</span>
             <input type="text" id="asthai_desig_cert1" style="width: 85px;" class="center" value="">
             <span class="form-label">विद्यालय के जी० पी० एफ ० लेजर की</span>
@@ -1197,8 +1219,8 @@
         </div>
         <div class="form-row" style="margin-top: 2px;">
             <span class="form-label">2- यह भी प्रमाणित किया जाता है कि उनके खाते में मास /वर्ष तक</span>
-            <input type="text" id="asthai_cert_m_year" style="width: 110px;" class="center" value="माह अक्टूबर-2026">
-            <input type="text" id="asthai_cert_balance" style="width: 85px;" class="center" value="">
+            <input type="text" id="asthai_cert_m_year" style="width: 145px;" class="center" value="माह अक्टूबर-2026 तक">
+            <input type="text" id="asthai_cert_balance" style="width: 100px;" class="center" value="">
             <span class="form-label">शुद्ध जमा धनराशि</span>
         </div>
         <div class="form-row sub-indent" style="padding-left: 10px;">
@@ -1217,13 +1239,12 @@
         </div>
 
         <div style="margin-top: 4px;">
-            <div class="sig-row" style="padding: 0 40px; font-size: 9.5pt; font-weight: bold;">
+            <div class="sig-row" style="padding: 0 00px; font-size: 9.5pt; font-weight: bold;">
                 <span>प्रबन्धक</span><span>प्रधानाचार्य</span>
             </div>
             <div class="stamp-space"></div>
         </div>
 
-        <!-- BOTTOM SIGNATURE AREA OPTIMIZED TO PREVENT PDF CUTTING -->
         <div class="bottom-sig-container">
             <div class="sig-box-lekhadhikari">
                 <div style="font-size: 9.5pt; font-weight: bold;">लेखाधिकारी</div>
@@ -1237,13 +1258,11 @@
     </div>
 </div>
 
-<!-- ==========================================
-     5. VIIVRAN.HTML VIEW CONTAINER
-     ========================================== -->
+<!-- 5. VIIVRAN.HTML VIEW CONTAINER -->
 <div id="view-viivran" class="software-view">
     <div class="sheet">
         <div class="main-title">पूर्ववर्ती अग्रिमों का विवरण</div>
-        <div class="sub-title">
+        <div class="sub-title"></br>
             सहायता प्राप्त माध्यमिक विद्यालयों में अध्यापको एवं कर्मचारियों के सामान्य भविष्य निर्वाह निधि से स्थाई /अस्थाई अग्रिम को स्वीकृति हेतु .....
         </div>
 
@@ -1336,23 +1355,48 @@
     </div>
 </div>
 
-<!-- ==========================================
-     MASTER JAVASCRIPT LOGIC WITH AUTO-SYNC
-     ========================================== -->
+<!-- MASTER JAVASCRIPT LOGIC WITH AUTO-SYNC & UNIFIED STORAGE -->
 <script>
+    // Function to update Input Font Styles Dynamically based on Master Nav Selectors
+    function updateInputStyles() {
+        let fontFamily = document.getElementById('fontFamilySelect').value;
+        let fontSize = document.getElementById('fontSizeSelect').value;
+        let fontWeight = document.getElementById('fontWeightSelect').value;
+
+        let rootStyle = document.documentElement.style;
+        rootStyle.setProperty('--custom-input-font', fontFamily);
+        rootStyle.setProperty('--custom-input-size', fontSize);
+        rootStyle.setProperty('--custom-input-weight', fontWeight);
+    }
+
     function setupRealtimeAutoSync() {
         const syncMap = [
-            { source: 'asthai_school', targets: ['asthai_branch'] },
-            { source: 'asthai_name', targets: ['asthai_name_sig', 'asthai_name_cert1', 'sthai_name', 'bill_emp_name', 'viivran_emp_name'] },
-            { source: 'asthai_desig', targets: ['asthai_desig_sig', 'asthai_desig_cert1', 'sthai_desig', 'bill_emp_desig', 'viivran_emp_designation'] },
-            { source: 'asthai_ledger', targets: ['asthai_ledger_cert1', 'sthai_ledger', 'bill_ledger', 'viivran_ledger'] },
+            // Asthai & Sthai Core Sync
+            { source: 'asthai_school', targets: ['asthai_branch', 'sthai_school', 'bill_school', 'lekha_school_name'] },
+            { source: 'asthai_name', targets: ['asthai_name_sig', 'asthai_name_cert1', 'sthai_name', 'sthai_name_sig', 'sthai_name_cert1', 'bill_emp_name', 'viivran_emp_name', 'lekha_emp_name_desig'] },
+            { source: 'asthai_desig', targets: ['asthai_desig_sig', 'asthai_desig_cert1', 'sthai_desig', 'sthai_desig_sig', 'sthai_desig_cert1', 'bill_emp_desig', 'viivran_emp_designation'] },
+            { source: 'asthai_ledger', targets: ['asthai_ledger_cert1', 'sthai_ledger', 'bill_ledger', 'bill_table_ledger', 'viivran_ledger', 'lekha_account_no'] },
             { source: 'asthai_pay', targets: ['sthai_pay', 'bill_basic_pay'] },
-            { source: 'asthai_m_year_6kh', targets: ['asthai_cert_m_year'] },
+            { source: 'asthai_m_year_6kh', targets: ['asthai_cert_m_year', 'sthai_cert_m_year'] },
 
-            { source: 'sthai_name', targets: ['asthai_name', 'asthai_name_sig', 'asthai_name_cert1', 'bill_emp_name', 'viivran_emp_name'] },
-            { source: 'sthai_desig', targets: ['asthai_desig', 'asthai_desig_sig', 'asthai_desig_cert1', 'bill_emp_desig', 'viivran_emp_designation'] },
-            { source: 'sthai_ledger', targets: ['asthai_ledger', 'asthai_ledger_cert1', 'bill_ledger', 'viivran_ledger'] },
-            { source: 'sthai_school', targets: ['asthai_school', 'asthai_branch'] }
+            { source: 'sthai_name', targets: ['asthai_name', 'asthai_name_sig', 'asthai_name_cert1', 'sthai_name_sig', 'sthai_name_cert1', 'bill_emp_name', 'viivran_emp_name', 'lekha_emp_name_desig'] },
+            { source: 'sthai_desig', targets: ['asthai_desig', 'asthai_desig_sig', 'asthai_desig_cert1', 'sthai_desig_sig', 'sthai_desig_cert1', 'bill_emp_desig', 'viivran_emp_designation'] },
+            { source: 'sthai_ledger', targets: ['asthai_ledger', 'asthai_ledger_cert1', 'bill_ledger', 'bill_table_ledger', 'viivran_ledger', 'lekha_account_no'] },
+            { source: 'sthai_school', targets: ['asthai_school', 'asthai_branch', 'bill_school', 'lekha_school_name'] },
+
+            // Sthai DoJ auto-sync to Vivran DoJ
+            { source: 'sthai_doj', targets: ['viivran_doj'] },
+            { source: 'viivran_doj', targets: ['sthai_doj'] },
+
+            // Lekha Parchi Auto-Sync to Sthai & Asthai
+            { source: 'lekha_emp_name_desig', targets: ['asthai_name', 'asthai_name_sig', 'asthai_name_cert1', 'sthai_name', 'sthai_name_sig', 'sthai_name_cert1', 'bill_emp_name', 'viivran_emp_name'] },
+            { source: 'lekha_account_no', targets: ['asthai_ledger', 'asthai_ledger_cert1', 'sthai_ledger', 'bill_ledger', 'bill_table_ledger', 'viivran_ledger'] },
+            { source: 'lekha_school_name', targets: ['asthai_school', 'asthai_branch', 'sthai_school', 'bill_school'] },
+
+            // Vivran Pratr Auto-Sync
+            { source: 'viivran_emp_name', targets: ['asthai_name', 'asthai_name_sig', 'asthai_name_cert1', 'sthai_name', 'sthai_name_sig', 'sthai_name_cert1', 'bill_emp_name', 'lekha_emp_name_desig'] },
+            { source: 'viivran_emp_designation', targets: ['asthai_desig', 'asthai_desig_sig', 'asthai_desig_cert1', 'sthai_desig', 'sthai_desig_sig', 'sthai_desig_cert1', 'bill_emp_desig'] },
+            { source: 'viivran_ledger', targets: ['asthai_ledger', 'asthai_ledger_cert1', 'sthai_ledger', 'bill_ledger', 'bill_table_ledger', 'lekha_account_no'] }
         ];
 
         syncMap.forEach(item => {
@@ -1362,8 +1406,10 @@
                     let val = this.value;
                     item.targets.forEach(targetId => {
                         let tgtEl = document.getElementById(targetId);
-                        if (tgtEl) {
+                        if (tgtEl && tgtEl.value !== val) {
                             tgtEl.value = val;
+                            let event = new Event('input', { bubbles: true });
+                            tgtEl.dispatchEvent(event);
                         }
                     });
                 });
@@ -1372,6 +1418,7 @@
     }
 
     window.onload = function() {
+        updateInputStyles();
         setupRealtimeAutoSync();
         recalculateLekhaAll();
         calculateViivranAll();
@@ -1438,6 +1485,23 @@
         let rounded75 = Math.round(p75 / 1000) * 1000;
         document.getElementById('sthai_req_amount_1').value = rounded75.toFixed(2);
         document.getElementById('sthai_req_amount_2').value = rounded75.toFixed(2);
+    }
+
+    function calculateSthaiHalfYear() {
+        let dojStr = document.getElementById('sthai_doj').value.trim();
+        let doj = parseViivranDate(dojStr);
+        if (doj) {
+            let today = new Date();
+            let totalMonths = (today.getFullYear() - doj.getFullYear()) * 12 + (today.getMonth() - doj.getMonth());
+            let halfYears = Math.floor(totalMonths / 6);
+            document.getElementById('sthai_half_year_num').value = halfYears >= 0 ? halfYears : 0;
+            
+            let viivranDoJ = document.getElementById('viivran_doj');
+            if (viivranDoJ && viivranDoJ.value !== dojStr) {
+                viivranDoJ.value = dojStr;
+                calculateViivranAll();
+            }
+        }
     }
 
     function parseLekhaVal(val) {
@@ -1511,22 +1575,13 @@
         });
     }
 
-    function adjustLekhaFontSize(input) {
-        let maxFontSize = 10.5, minFontSize = 6;
-        input.style.fontSize = maxFontSize + 'pt';
-        while (input.scrollWidth > input.clientWidth && maxFontSize > minFontSize) {
-            maxFontSize -= 0.5;
-            input.style.fontSize = maxFontSize + 'pt';
-        }
-    }
-
     function addLekhaRow() {
         var tbody = document.getElementById("lekhaTableBody");
         var tr = document.createElement("tr");
         tr.setAttribute("oninput", "recalculateLekhaAll(event, this)");
         tr.innerHTML = `
             <td><input type="text" class="col-c1-val" value=""></td>
-            <td><input type="text" class="auto-adjust" value="" style="text-align: left;" oninput="adjustLekhaFontSize(this)"></td>
+            <td><input type="text" class="auto-adjust col-c2-val" value="" style="text-align: left;"></td>
             <td><input type="text" class="col-c3-val" value=""></td>
             <td><input type="text" class="col-c4-val" value=""></td>
             <td><input type="text" class="col-c5-val" value=""></td>
@@ -1629,12 +1684,11 @@
 
     function calculateViivranServiceOnly() {
         let dojStr = document.getElementById('viivran_doj').value.trim();
-        let dorStr = document.getElementById('viivran_dor').value.trim();
         let doj = parseViivranDate(dojStr);
-        let dor = parseViivranDate(dorStr);
-        if (doj && dor) {
+        let today = new Date();
+        if (doj) {
             let y1 = doj.getFullYear(), m1 = doj.getMonth(), d1 = doj.getDate();
-            let y2 = dor.getFullYear(), m2 = dor.getMonth(), d2 = dor.getDate();
+            let y2 = today.getFullYear(), m2 = today.getMonth(), d2 = today.getDate();
             let years = y2 - y1, months = m2 - m1, days = d2 - d1;
             if (days < 0) {
                 months--;
@@ -1647,34 +1701,58 @@
             document.getElementById('viivran_serv_yrs').value = years >= 0 ? years : 0;
             document.getElementById('viivran_serv_months').value = months >= 0 ? months : 0;
             document.getElementById('viivran_serv_days').value = days >= 0 ? days : 0;
+
+            let sthaiDoJ = document.getElementById('sthai_doj');
+            if (sthaiDoJ && sthaiDoJ.value !== dojStr) {
+                sthaiDoJ.value = dojStr;
+                calculateSthaiHalfYear();
+            }
         }
     }
 
     function getAllFormsPayload() {
         let currentView = document.getElementById('softwareSwitcher').value;
         let isSthai = (currentView === 'sthai' || currentView === 'bill');
-        let lekhaRows = document.querySelectorAll('#lekhaTableBody tr');
-        let lastLekhaRow = lekhaRows[lekhaRows.length - 1];
+
+        let lekhaRowsData = [];
+        document.querySelectorAll('#lekhaTableBody tr').forEach(row => {
+            let inputs = row.querySelectorAll('input');
+            if (inputs.length > 0) {
+                lekhaRowsData.push(Array.from(inputs).map(i => i.value));
+            }
+        });
+
+        let viivranRowsData = [];
+        document.querySelectorAll('#viivranTable tbody tr').forEach(row => {
+            let inputs = row.querySelectorAll('input');
+            if (inputs.length > 0) {
+                viivranRowsData.push(Array.from(inputs).map(i => i.value));
+            }
+        });
 
         return {
             formType: isSthai ? "स्थाई निष्कासन" : "अस्थाई अग्रीम",
-            empName: isSthai ? document.getElementById('sthai_name').value : document.getElementById('asthai_name').value,
-            empDesignation: isSthai ? document.getElementById('sthai_desig').value : document.getElementById('asthai_desig').value,
-            ledgerNo: isSthai ? document.getElementById('sthai_ledger').value : document.getElementById('asthai_ledger').value,
-            basicPay: isSthai ? document.getElementById('sthai_pay').value : document.getElementById('asthai_pay').value,
+            schoolName: document.getElementById('asthai_school').value || document.getElementById('sthai_school').value,
+            empName: document.getElementById('asthai_name').value || document.getElementById('sthai_name').value,
+            empDesignation: document.getElementById('asthai_desig').value || document.getElementById('sthai_desig').value,
+            ledgerNo: document.getElementById('asthai_ledger').value || document.getElementById('sthai_ledger').value,
+            basicPay: document.getElementById('asthai_pay').value || document.getElementById('sthai_pay').value,
             
-            gpfSlipBal: isSthai ? document.getElementById('sthai_val_1').value : document.getElementById('asthai_val_1').value,
-            monthlyDeposit: isSthai ? document.getElementById('sthai_val_2').value : document.getElementById('asthai_val_2').value,
-            totalBalance: isSthai ? document.getElementById('sthai_total_7').value : document.getElementById('asthai_total_6').value,
-            reqAmount: isSthai ? document.getElementById('sthai_req_amount_1').value : document.getElementById('asthai_req_amount_1').value,
-            purpose: isSthai ? document.getElementById('sthai_purpose').value : document.getElementById('asthai_purpose').value,
+            gpfSlipBal: document.getElementById('asthai_val_1').value || document.getElementById('sthai_val_1').value,
+            monthlyDeposit: document.getElementById('asthai_val_2').value || document.getElementById('sthai_val_2').value,
+            totalBalance: document.getElementById('asthai_total_6').value || document.getElementById('sthai_total_7').value,
+            reqAmount: document.getElementById('asthai_req_amount_1').value || document.getElementById('sthai_req_amount_1').value,
+            purpose: document.getElementById('asthai_purpose').value || document.getElementById('sthai_purpose').value,
 
+            lekhaSchool: document.getElementById('lekha_school_name').value,
+            lekhaEmpNameDesig: document.getElementById('lekha_emp_name_desig').value,
+            lekhaAccNo: document.getElementById('lekha_account_no').value,
             lekhaYear: document.getElementById('lekha_year_header').value,
-            lekhaOpeningBal: lastLekhaRow.querySelector('.col-c3-val') ? lastLekhaRow.querySelector('.col-c3-val').value : '',
-            lekhaDeposit: lastLekhaRow.querySelector('.col-c4-val') ? lastLekhaRow.querySelector('.col-c4-val').value : '',
-            lekhaLoan: lastLekhaRow.querySelector('.col-c6-val') ? lastLekhaRow.querySelector('.col-c6-val').value : '',
-            lekhaInterest: lastLekhaRow.querySelector('.col-c8-val') ? lastLekhaRow.querySelector('.col-c8-val').value : '',
-            lekhaClosingBal: lastLekhaRow.querySelector('.col-c9-val') ? lastLekhaRow.querySelector('.col-c9-val').value : '',
+            lekhaRows: lekhaRowsData,
+
+            sthaiDoJ: document.getElementById('sthai_doj').value,
+            sthaiHalfYearNum: document.getElementById('sthai_half_year_num').value,
+            sthaiHalfYearText: document.getElementById('sthai_half_year_text').value,
 
             dob: document.getElementById('viivran_dob').value,
             doj: document.getElementById('viivran_doj').value,
@@ -1682,6 +1760,7 @@
             servYrs: document.getElementById('viivran_serv_yrs').value,
             servMonths: document.getElementById('viivran_serv_months').value,
             servDays: document.getElementById('viivran_serv_days').value,
+            viivranRows: viivranRowsData,
 
             billNo: document.getElementById('bill_no').value,
             billMonth: document.getElementById('bill_month').value,
@@ -1713,7 +1792,7 @@
         let formData = getAllFormsPayload();
 
         if (currentId) {
-            if(confirm("यह रिकॉर्ड पहले से मौजूद है (ID: " + currentId + ")। क्या आप इसे अपडेट करना चाहते हैं?")) {
+            if(confirm("यह रिकॉर्ड पहले से ID क्र०: " + currentId + " पर मौजूद है। क्या आप इसे अपडेट करना चाहते हैं?")) {
                 updateDataInLocalStorage();
                 return;
             } else {
@@ -1731,8 +1810,9 @@
         records.push(formData);
         saveStoredRecords(records);
         
-        alert("डेटा सफलतापूर्वक Local Storage में ID क्र० " + newId + " पर सेव हो गया है!");
-        clearFormAndResetId();
+        alert("डेटा सफलतापूर्वक ID क्र० " + newId + " पर सेव हो गया है!");
+        document.getElementById('currentRecordId').value = newId;
+        document.getElementById('searchId').value = newId;
     }
 
     function searchDataFromLocalStorage() {
@@ -1750,17 +1830,14 @@
             fillFormWithData(found);
             document.getElementById('currentRecordId').value = found.id;
             document.getElementById('searchId').value = found.id;
-            alert("रिकॉर्ड मिल गया! (ID क्र०: " + found.id + ")");
+            alert("रिकॉर्ड सफलतापूर्वक लोड हो गया! (ID क्र०: " + found.id + ")");
         } else {
             alert("कोई रिकॉर्ड नहीं मिला!");
         }
     }
 
     function updateDataInLocalStorage() {
-        let currentId = document.getElementById('currentRecordId').value;
-        if (!currentId) {
-            currentId = document.getElementById('searchId').value.trim();
-        }
+        let currentId = document.getElementById('currentRecordId').value || document.getElementById('searchId').value.trim();
 
         if (!currentId) {
             alert("अपडेट करने के लिए पहले कोई रिकॉर्ड खोजें!");
@@ -1781,7 +1858,6 @@
         saveStoredRecords(records);
 
         alert("ID क्र० " + currentId + " का रिकॉर्ड सफलतापूर्वक अपडेट हो गया है!");
-        clearFormAndResetId();
     }
 
     function deleteDataFromLocalStorage() {
@@ -1812,7 +1888,7 @@
         document.getElementById('searchId').value = '';
 
         let inputIds = [
-            'sthai_name', 'sthai_ledger', 'sthai_desig', 'sthai_pay', 
+            'sthai_name', 'sthai_ledger', 'sthai_desig', 'sthai_pay', 'sthai_doj', 'sthai_half_year_num', 'sthai_half_year_text',
             'sthai_val_1', 'sthai_val_2', 'sthai_total_7', 'sthai_net_balance', 
             'sthai_req_amount_1', 'sthai_purpose', 'sthai_cert_balance', 'sthai_req_amount_2',
             'asthai_name', 'asthai_ledger', 'asthai_desig', 'asthai_pay',
@@ -1826,7 +1902,8 @@
             'bill_table_type', 'amountNum', 'bill_table_total', 'bill_bank_name',
             'bill_bank_acc', 'bill_bank_ifsc', 'amountWords', 'bill_order_no',
             'bill_order_place', 'bill_order_date', 'amountNumRef', 'bill_order_type_text',
-            'bill_inst_rate', 'bill_total_inst', 'bill_first_inst_m', 'bill_salary_m'
+            'bill_inst_rate', 'bill_total_inst', 'bill_first_inst_m', 'bill_salary_m',
+            'lekha_school_name', 'lekha_emp_name_desig', 'lekha_account_no'
         ];
 
         inputIds.forEach(id => {
@@ -1844,34 +1921,63 @@
     function fillFormWithData(d) {
         if(d.id) document.getElementById('currentRecordId').value = d.id;
         
+        if(d.schoolName) {
+            document.getElementById('sthai_school').value = d.schoolName;
+            document.getElementById('asthai_school').value = d.schoolName;
+            document.getElementById('asthai_branch').value = d.schoolName;
+            document.getElementById('bill_school').value = d.schoolName;
+            document.getElementById('lekha_school_name').value = d.schoolName;
+        }
+
         if(d.empName) {
             document.getElementById('sthai_name').value = d.empName;
             document.getElementById('asthai_name').value = d.empName;
             if(document.getElementById('asthai_name_sig')) document.getElementById('asthai_name_sig').value = d.empName;
             if(document.getElementById('asthai_name_cert1')) document.getElementById('asthai_name_cert1').value = d.empName;
+            if(document.getElementById('sthai_name_sig')) document.getElementById('sthai_name_sig').value = d.empName;
+            if(document.getElementById('sthai_name_cert1')) document.getElementById('sthai_name_cert1').value = d.empName;
             if(document.getElementById('bill_emp_name')) document.getElementById('bill_emp_name').value = d.empName;
             if(document.getElementById('viivran_emp_name')) document.getElementById('viivran_emp_name').value = d.empName;
         }
+
         if(d.empDesignation) {
             document.getElementById('sthai_desig').value = d.empDesignation;
             document.getElementById('asthai_desig').value = d.empDesignation;
             if(document.getElementById('asthai_desig_sig')) document.getElementById('asthai_desig_sig').value = d.empDesignation;
             if(document.getElementById('asthai_desig_cert1')) document.getElementById('asthai_desig_cert1').value = d.empDesignation;
+            if(document.getElementById('sthai_desig_sig')) document.getElementById('sthai_desig_sig').value = d.empDesignation;
+            if(document.getElementById('sthai_desig_cert1')) document.getElementById('sthai_desig_cert1').value = d.empDesignation;
             if(document.getElementById('bill_emp_desig')) document.getElementById('bill_emp_desig').value = d.empDesignation;
             if(document.getElementById('viivran_emp_designation')) document.getElementById('viivran_emp_designation').value = d.empDesignation;
         }
+
+        if(d.empName || d.empDesignation) {
+            document.getElementById('lekha_emp_name_desig').value = (d.empName || '') + (d.empDesignation ? (' ' + d.empDesignation) : '');
+        }
+
         if(d.ledgerNo) {
             document.getElementById('sthai_ledger').value = d.ledgerNo;
             document.getElementById('asthai_ledger').value = d.ledgerNo;
             if(document.getElementById('asthai_ledger_cert1')) document.getElementById('asthai_ledger_cert1').value = d.ledgerNo;
             if(document.getElementById('bill_ledger')) document.getElementById('bill_ledger').value = d.ledgerNo;
+            if(document.getElementById('bill_table_ledger')) document.getElementById('bill_table_ledger').value = d.ledgerNo;
             if(document.getElementById('viivran_ledger')) document.getElementById('viivran_ledger').value = d.ledgerNo;
+            if(document.getElementById('lekha_account_no')) document.getElementById('lekha_account_no').value = d.ledgerNo;
         }
+
         if(d.basicPay) {
             document.getElementById('sthai_pay').value = d.basicPay;
             document.getElementById('asthai_pay').value = d.basicPay;
             if(document.getElementById('bill_basic_pay')) document.getElementById('bill_basic_pay').value = d.basicPay;
         }
+
+        if(d.sthaiDoJ) {
+            document.getElementById('sthai_doj').value = d.sthaiDoJ;
+            document.getElementById('viivran_doj').value = d.sthaiDoJ;
+            calculateSthaiHalfYear();
+            calculateViivranAll();
+        }
+
         if(d.gpfSlipBal) {
             document.getElementById('sthai_val_1').value = d.gpfSlipBal;
             document.getElementById('asthai_val_1').value = d.gpfSlipBal;
@@ -1894,12 +2000,22 @@
             document.getElementById('sthai_purpose').value = d.purpose;
             document.getElementById('asthai_purpose').value = d.purpose;
         }
+
+        if(d.dob) document.getElementById('viivran_dob').value = d.dob;
+        if(d.doj) {
+            document.getElementById('viivran_doj').value = d.doj;
+            document.getElementById('sthai_doj').value = d.doj;
+            calculateSthaiHalfYear();
+        }
+        if(d.dor) document.getElementById('viivran_dor').value = d.dor;
+        
+        calculateViivranAll();
         
         if(d.billNo) document.getElementById('bill_no').value = d.billNo;
         if(d.billMonth) document.getElementById('bill_month').value = d.billMonth;
         if(d.bankName) document.getElementById('bill_bank_name').value = d.bankName;
-        if(d.billAcc) document.getElementById('bill_bank_acc').value = d.billAcc;
-        if(d.billIfsc) document.getElementById('bill_bank_ifsc').value = d.billIfsc;
+        if(d.bankAcc) document.getElementById('bill_bank_acc').value = d.bankAcc;
+        if(d.bankIfsc) document.getElementById('bill_bank_ifsc').value = d.billBankIfsc;
         if(d.billAmountNum) {
             document.getElementById('amountNum').value = d.billAmountNum;
             convertAmountToWords(); 
@@ -1907,6 +2023,42 @@
         if(d.installmentRate) document.getElementById('bill_inst_rate').value = d.installmentRate;
         if(d.totalInstallments) document.getElementById('bill_total_inst').value = d.totalInstallments;
         if(d.firstInstallmentMonth) document.getElementById('bill_first_inst_m').value = d.firstInstallmentMonth;
+
+        // Populate Lekha Table Rows
+        if(d.lekhaRows && d.lekhaRows.length > 0) {
+            let tbody = document.getElementById('lekhaTableBody');
+            tbody.innerHTML = '';
+            d.lekhaRows.forEach(rowValues => {
+                let tr = document.createElement('tr');
+                tr.setAttribute('oninput', 'recalculateLekhaAll(event, this)');
+                tr.innerHTML = `
+                    <td><input type="text" class="col-c1-val" value="${rowValues[0] || ''}"></td>
+                    <td><input type="text" class="auto-adjust col-c2-val" value="${rowValues[1] || ''}" style="text-align: left;"></td>
+                    <td><input type="text" class="col-c3-val" value="${rowValues[2] || ''}"></td>
+                    <td><input type="text" class="col-c4-val" value="${rowValues[3] || ''}"></td>
+                    <td><input type="text" class="col-c5-val" value="${rowValues[4] || ''}"></td>
+                    <td><input type="text" class="col-c6-val" value="${rowValues[5] || ''}"></td>
+                    <td><input type="text" class="col-c7-val" value="${rowValues[6] || ''}"></td>
+                    <td><input type="text" class="col-c8-val" value="${rowValues[7] || ''}"></td>
+                    <td><input type="text" class="col-c9-val" value="${rowValues[8] || ''}"></td>
+                    <td><input type="text" value="${rowValues[9] || ''}"></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Populate Vivran Table Rows
+        if(d.viivranRows && d.viivranRows.length > 0) {
+            let rows = document.querySelectorAll('#viivranTable tbody tr');
+            d.viivranRows.forEach((rowValues, idx) => {
+                if(rows[idx]) {
+                    let inputs = rows[idx].querySelectorAll('input');
+                    rowValues.forEach((val, iIdx) => {
+                        if(inputs[iIdx]) inputs[iIdx].value = val;
+                    });
+                }
+            });
+        }
     }
 </script>
 
