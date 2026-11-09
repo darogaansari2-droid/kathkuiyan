@@ -569,7 +569,7 @@
 </head>
 <body>
 
-    <!-- मास्टर चयन बार (Dropdown List) -->
+   <!-- मास्टर चयन बार (Dropdown List) -->
     <div class="master-nav-bar no-print">
         <div>
             <span style="font-size: 18px; letter-spacing: 0.5px;">📂 मास्टर सॉफ्टवेयर स्विच पैनल:</span>
@@ -716,8 +716,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label>खंडित दिन (यदि हो, max 30)</label>
-                    <input type="number" id="partialDays" placeholder="पूरा माह (30)" min="1" max="30">
+                    <label>खंडित दिन / कार्यग्रहण तिथि</label>
+                    <input type="text" id="partialDays" placeholder="दिन (उदा. 15) या तिथि (02/10/2026)">
                 </div>
 
                 <div class="checkbox-group">
@@ -733,7 +733,10 @@
                             <option value="NPS">NPS ((Basic+DA) 10%)</option>
                         </select>
                     </label>
-                    <input type="number" id="gpfNpsVal" placeholder="0" style="margin-top:2px;" title="10% Auto or Manual">
+                    <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
+                        <input type="checkbox" id="autoGpfNpsCheck" checked onchange="calculateAutoDeductionType()" style="width:14px; height:14px; cursor:pointer;" title="GPF/NPS कटौती ऑटो की गणना हेतु चेक करें (Uncheck करने पर कटौती नहीं होगी)">
+                        <input type="number" id="gpfNpsVal" placeholder="0" style="flex:1;" title="10% Auto or Manual">
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -1299,7 +1302,6 @@
             }
         }
 
-        // Vetan Software Bold/Unbold Toggle function
         function toggleBoldTextVetan(checkbox) {
             let appContainer = document.getElementById('vetan-app');
             if (appContainer) {
@@ -1335,7 +1337,13 @@
             "2023": { "जनवरी": 42, "फरवरी": 42, "मार्च": 42, "अप्रैल": 42, "मई": 42, "जून": 42, "जुलाई": 46, "अगस्त": 46, "सितंबर": 46, "अक्टूबर": 46, "नवंबर": 46, "दिसंबर": 46 },
             "2024": { "जनवरी": 50, "फरवरी": 50, "मार्च": 50, "अप्रैल": 50, "मई": 50, "जून": 50, "जुलाई": 53, "अगस्त": 53, "सितंबर": 53, "अक्टूबर": 53, "नवंबर": 53, "दिसंबर": 53 },
             "2025": { "जनवरी": 55, "फरवरी": 55, "मार्च": 55, "अप्रैल": 55, "मई": 55, "जून": 55, "जुलाई": 58, "अगस्त": 58, "सितंबर": 58, "अक्टूबर": 58, "नवंबर": 58, "दिसंबर": 58 },
-            "2026": { "जनवरी": 60, "फरवरी": 60, "मार्च": 60, "अप्रैल": 60, "मई": 60, "जून": 60, "जुलाई": 60, "अगस्त": 60, "सितंबर": 60, "अक्टूबर": 60, "नवंबर": 60, "दिसंबर": 60 }
+            "2026": { "जनवरी": 60, "फरवरी": 60, "मार्च": 60, "अप्रैल": 60, "मई": 60, "जून": 60, "जुलाई": 63, "अगस्त": 63, "सितंबर": 63, "अक्टूबर": 63, "नवंबर": 63, "दिसंबर": 63 },
+  "2027": { "जनवरी": 0, "फरवरी": 0, "मार्च": 0, "अप्रैल": 0, "मई": 0, "जून": 0, "जुलाई": 0, "अगस्त": 0, "सितंबर": 0, "अक्टूबर": 0, "नवंबर": 0, "दिसंबर": 0 },
+  "2028": { "जनवरी": 0, "फरवरी": 0, "मार्च": 0, "अप्रैल": 0, "मई": 0, "जून": 0, "जुलाई": 0, "अगस्त": 0, "सितंबर": 0, "अक्टूबर": 0, "नवंबर": 0, "दिसंबर": 0 },
+  "2029":  { "जनवरी": 0, "फरवरी": 0, "मार्च": 0, "अप्रैल": 0, "मई": 0, "जून": 0, "जुलाई": 0, "अगस्त": 0, "सितंबर": 0, "अक्टूबर": 0, "नवंबर": 0, "दिसंबर": 0 },
+  "2030": { "जनवरी": 0, "फरवरी": 0, "मार्च": 0, "अप्रैल": 0, "मई": 0, "जून": 0, "जुलाई": 0, "अगस्त": 0, "सितंबर": 0, "अक्टूबर": 0, "नवंबर": 0, "दिसंबर": 0 },
+  "2031":  { "जनवरी": 0, "फरवरी": 0, "मार्च": 0, "अप्रैल": 0, "मई": 0, "जून": 0, "जुलाई": 0, "अगस्त": 0, "सितंबर": 0, "अक्टूबर": 0, "नवंबर": 0, "दिसंबर": 0 }
+
         };
 
         let daMasterRates = JSON.parse(localStorage.getItem('customDaMasterRates')) || defaultDaMasterRates;
@@ -1404,6 +1412,11 @@
         }
 
         function calculateAutoDeductionType() {
+            let isAuto = document.getElementById('autoGpfNpsCheck').checked;
+            if (!isAuto) {
+                document.getElementById('gpfNpsVal').value = 0;
+                return;
+            }
             let inputBasic = parseFloat(document.getElementById('basic').value) || 0;
             let isIncrement = document.getElementById('incrementCheck').checked;
             let finalBasic = isIncrement ? getIncrementedBasic(inputBasic) : inputBasic;
@@ -1469,6 +1482,44 @@
             onPeriodChange();
         }
 
+        function getDaysInMonth(monthName, year) {
+            const y = parseInt(year);
+            const monthMap = {
+                "जनवरी": 1, "फरवरी": 2, "मार्च": 3, "अप्रैल": 4,
+                "मई": 5, "जून": 6, "जुलाई": 7, "अगस्त": 8,
+                "सितंबर": 9, "अक्टूबर": 10, "नवंबर": 11, "दिसंबर": 12
+            };
+            const m = monthMap[monthName] || 1;
+            return new Date(y, m, 0).getDate();
+        }
+
+        function calculateWorkedDays(inputVal, monthName, year) {
+            const totalDays = getDaysInMonth(monthName, year);
+            if (!inputVal || inputVal.trim() === '') {
+                return { workedDays: totalDays, totalDays: totalDays };
+            }
+            let str = inputVal.trim();
+            let dateMatch = str.match(/^(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})$/);
+            if (dateMatch) {
+                let day = parseInt(dateMatch[1]);
+                let m = parseInt(dateMatch[2]);
+                let y = parseInt(dateMatch[3]);
+                let daysInInputMonth = new Date(y, m, 0).getDate();
+                let worked = daysInInputMonth - day + 1;
+                if (worked < 1) worked = 1;
+                if (worked > daysInInputMonth) worked = daysInInputMonth;
+                return { workedDays: worked, totalDays: daysInInputMonth };
+            }
+
+            let num = parseInt(str);
+            if (!isNaN(num) && num > 0) {
+                if (num > totalDays) num = totalDays;
+                return { workedDays: num, totalDays: totalDays };
+            }
+
+            return { workedDays: totalDays, totalDays: totalDays };
+        }
+
         function saveData() {
             let editIndex = document.getElementById('editIndex').value;
             let sYear = document.getElementById('sYear').value;
@@ -1476,20 +1527,23 @@
             let inputBasic = parseFloat(document.getElementById('basic').value) || 0;
             let daRate = parseFloat(document.getElementById('daRate').value) || 0;
             let fullHra = parseFloat(document.getElementById('hra').value) || 0;
-            let days = parseInt(document.getElementById('partialDays').value) || 30;
-            if(days <= 0 || days > 30) days = 30;
+            let rawDaysInput = document.getElementById('partialDays').value;
+
+            let dayInfo = calculateWorkedDays(rawDaysInput, sMonth, sYear);
+            let days = dayInfo.workedDays;
+            let totalDaysInMonth = dayInfo.totalDays;
 
             let isIncrement = document.getElementById('incrementCheck').checked;
             let finalBasic = isIncrement ? getIncrementedBasic(inputBasic) : inputBasic;
 
-            let basic = (finalBasic * days) / 30;
-            let hra = (fullHra * days) / 30;
-            let daAmt = (basic * daRate) / 100;
-            let gross = basic + daAmt + hra;
+            let basic = Math.round((finalBasic * days) / totalDaysInMonth);
+            let hra = Math.round((fullHra * days) / totalDaysInMonth);
+            let daAmt = Math.round((basic * daRate) / 100);
+            let gross = Math.round(basic + daAmt + hra);
 
             let deductionType = document.getElementById('deductionType').value;
             let gpfNpsVal = parseFloat(document.getElementById('gpfNpsVal').value) || 0;
-            let adjustedGpfNpsVal = (gpfNpsVal * days) / 30;
+            let adjustedGpfNpsVal = Math.round((gpfNpsVal * days) / totalDaysInMonth);
 
             let gpfAmt = (deductionType === 'GPF') ? adjustedGpfNpsVal : 0;
             let npsExtra = parseFloat(document.getElementById('npsExtra').value) || 0;
@@ -1497,11 +1551,11 @@
 
             let gLic = parseFloat(document.getElementById('gLic').value) || 0;
             let tax = parseFloat(document.getElementById('tax').value) || 0;
-            let totalDeduction = gpfAmt + npsAmt + gLic + tax;
-            let netPay = gross - totalDeduction;
+            let totalDeduction = Math.round(gpfAmt + npsAmt + gLic + tax);
+            let netPay = Math.round(gross - totalDeduction);
 
             let record = { 
-                sYear, sMonth, days, inputBasic, finalBasic, isIncrement, basic, daRate, daAmt, fullHra, hra, 
+                sYear, sMonth, days, totalDaysInMonth, inputBasic, finalBasic, isIncrement, basic, daRate, daAmt, fullHra, hra, 
                 gross, deductionType, gpfNpsVal, gpfAmt, npsAmt, gLic, tax, totalDeduction, netPay 
             };
 
@@ -1554,7 +1608,7 @@
                     <td>${item.sYear}</td>
                     <td>${item.sMonth}</td>
                     <td>${item.basic.toFixed(2)}</td>
-                    <td>${item.daAmt.toFixed(2)} <span style="font-size:9px; color:#000;">(${item.daRate}%)</span></td>
+                    <td>${item.daAmt.toFixed(2)}</td>
                     <td>${item.hra.toFixed(2)}</td>
                     <td>${item.gross.toFixed(2)}</td>
                     <td>${item.gpfAmt.toFixed(2)}</td>
@@ -1613,6 +1667,7 @@
             document.getElementById('partialDays').value = item.days === 30 ? '' : item.days;
             document.getElementById('incrementCheck').checked = item.isIncrement || false;
             document.getElementById('deductionType').value = item.deductionType || 'GPF';
+            document.getElementById('autoGpfNpsCheck').checked = (item.gpfNpsVal !== undefined ? item.gpfNpsVal > 0 : true);
             document.getElementById('gpfNpsVal').value = item.gpfNpsVal || (item.deductionType === 'GPF' ? item.gpfAmt : item.npsAmt);
             document.getElementById('npsExtra').value = 0;
             document.getElementById('gLic').value = item.gLic;
@@ -1650,6 +1705,7 @@
             document.getElementById('partialDays').value = "";
             document.getElementById('incrementCheck').checked = false;
             document.getElementById('deductionType').value = "GPF";
+            document.getElementById('autoGpfNpsCheck').checked = true;
             document.getElementById('gpfNpsVal').value = "";
             document.getElementById('npsExtra').value = "";
             document.getElementById('gLic').value = "";
@@ -1877,7 +1933,6 @@
             document.getElementById('govtIncreasePercent').value = "14.3";
             liveCalculateAll();
         }
-
 
         /* --- ACP Software Logic --- */
         const payMatrixTable = {
