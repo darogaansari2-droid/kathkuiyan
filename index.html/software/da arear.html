@@ -414,7 +414,7 @@
         <h2>DA Arrear / Bonus / NPS System Login</h2>
         <div class="login-form-group">
             <label for="usernameInput">Login ID</label>
-            <input type="password" id="usernameInput" placeholder="Login ID दर्ज करें" style="text-transform: none;">
+            <input type="text" id="usernameInput" placeholder="Login ID दर्ज करें" style="text-transform: none;">
         </div>
         <div class="login-form-group">
             <label for="passwordInput">Password</label>
@@ -510,29 +510,33 @@
             </div>
         </div>
 
-        <!-- NPS MASTER EMPLOYEE DIRECTORY SETTING PANEL -->
-        <div class="panel nps-only-field" style="display: none; background-color: #e6fffa; border-color: #b2f5ea;">
+        <!-- MASTER EMPLOYEE DIRECTORY SETTING PANEL (DA ARREAR & ALL MODES) -->
+        <div class="panel" style="background-color: #e6fffa; border-color: #b2f5ea;">
             <div class="section-title" style="color: #234e52; display: flex; justify-content: space-between; align-items: center;">
-                <span>कर्मचारी मास्टर डायरेक्टरी (NPS Employee Directory Master)</span>
-                <button type="button" class="btn" style="background-color: #319795; padding: 4px 10px; font-size: 11px;" onclick="openEmpMasterModal()">मैनेज मास्टर सूची देखें</button>
+                <span>कर्मचारी मास्टर सेटिंग एवं पेनड्राइव बैकअप (Master Employee Directory & PenDrive Sync)</span>
+                <button type="button" class="btn" style="background-color: #319795; padding: 4px 10px; font-size: 11px;" onclick="openEmpMasterModal()">गुप्त मास्टर सूची देखें/मैनेज करें</button>
             </div>
             <div style="font-size: 12px; color: #2c7a7b; margin-bottom: 6px;">
-                यहाँ कर्मचारी का नाम, PRAN नंबर और मूल वेतन सेव कर सकते हैं। NPS Schedule में क्रम संख्या या नाम से सर्च करते ही PRAN और मूल वेतन ऑटो-फिल हो जाएगा।
+                यहाँ कर्मचारी का <b>नाम, पद तथा मूल वेतन</b> दर्ज कर सेव करें। यह सूची मुख्य स्क्रीन पर दिखेगी नहीं। DA Arrear या अन्य मोड में नाम के 2-3 शब्द टाइप करते ही ऑटो-कम्पलीट ड्रॉपडाउन लिस्ट खुल जाएगी जिससे डेटा स्वतः भर जाएगा।
             </div>
-            <div class="grid-3-col">
+            <div class="grid-4-col">
                 <div class="form-group">
-                    <label for="masterEmpName">मास्टर कर्मचारी नाम</label>
+                    <label for="masterEmpName">कर्मचारी का नाम</label>
                     <input type="text" id="masterEmpName" placeholder="कर्मचारी का पूरा नाम" onblur="autoCapitalize(this)">
                 </div>
                 <div class="form-group">
-                    <label for="masterPranNo">मास्टर PRAN No.</label>
-                    <input type="text" id="masterPranNo" placeholder="PRAN Number" style="text-transform: uppercase;">
+                    <label for="masterDesignation">पद (Designation)</label>
+                    <input type="text" id="masterDesignation" placeholder="उदा० सहायक अध्यापक / प्रवक्ता" onblur="autoCapitalize(this)">
                 </div>
                 <div class="form-group">
-                    <label for="masterBasicPay">मास्टर मूल वेतन (Basic Pay)</label>
+                    <label for="masterBasicPay">मूल वेतन (Basic Pay)</label>
+                    <input type="number" id="masterBasicPay" placeholder="मूल वेतन दर्ज करें">
+                </div>
+                <div class="form-group">
+                    <label for="masterPranNo">PRAN No. (ऐच्छिक)</label>
                     <div style="display: flex; gap: 5px;">
-                        <input type="number" id="masterBasicPay" placeholder="मूल वेतन">
-                        <button type="button" class="btn btn-save" style="padding: 7px 12px;" onclick="saveEmpToMasterDirectory()">Save Master</button>
+                        <input type="text" id="masterPranNo" placeholder="PRAN No." style="text-transform: uppercase;">
+                        <button type="button" class="btn btn-save" style="padding: 7px 12px; white-space: nowrap;" onclick="saveEmpToMasterDirectory()">मास्टर में सेव करें</button>
                     </div>
                 </div>
             </div>
@@ -731,11 +735,11 @@
             <div class="grid-4-col" style="margin-bottom: 12px;">
                 <div class="form-group">
                     <label for="prevDaRate">पूर्व DA दर (%)</label>
-                    <input type="number" id="prevDaRate" value="58" step="0.01" oninput="runMasterCalculations()">
+                    <input type="number" id="prevDaRate" value="58" step="0.01" oninput="runMasterCalculations(); saveDaRatesToStorage();">
                 </div>
                 <div class="form-group">
                     <label for="newDaRate">नवीन DA दर (%)</label>
-                    <input type="number" id="newDaRate" value="60" step="0.01" oninput="runMasterCalculations()">
+                    <input type="number" id="newDaRate" value="60" step="0.01" oninput="runMasterCalculations(); saveDaRatesToStorage();">
                 </div>
                 <div class="form-group">
                     <label for="startMonth">प्रारंभिक माह</label>
@@ -925,12 +929,28 @@
         return num.toFixed(2);
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+    
+    function saveDaRatesToStorage() {
+        let prevR = document.getElementById('prevDaRate').value;
+        let newR = document.getElementById('newDaRate').value;
+        localStorage.setItem('saved_prev_da_rate', prevR);
+        localStorage.setItem('saved_new_da_rate', newR);
+    }
+
+    function loadDaRatesFromStorage() {
+        let savedPrev = localStorage.getItem('saved_prev_da_rate');
+        let savedNew = localStorage.getItem('saved_new_da_rate');
+        if (savedPrev !== null) document.getElementById('prevDaRate').value = savedPrev;
+        if (savedNew !== null) document.getElementById('newDaRate').value = savedNew;
+    }
+
+window.addEventListener('DOMContentLoaded', () => {
         let isLoggedIn = localStorage.getItem('is_arrear_logged_in');
         if (isLoggedIn === 'true') {
             openAppUI();
         }
         loadMasterDirectory();
+        loadDaRatesFromStorage();
     });
 
     function validateLogin() {
@@ -992,7 +1012,9 @@
             retirement_employees: JSON.parse(localStorage.getItem('employees') || '[]'),
             nps_master_directory: JSON.parse(localStorage.getItem('nps_master_directory') || '[]'),
             last_used_bank: localStorage.getItem('last_used_bank') || '',
-            last_used_ifsc: localStorage.getItem('last_used_ifsc') || ''
+            last_used_ifsc: localStorage.getItem('last_used_ifsc') || '',
+            saved_prev_da_rate: localStorage.getItem('saved_prev_da_rate') || '58',
+            saved_new_da_rate: localStorage.getItem('saved_new_da_rate') || '60'
         };
 
         const jsonDataString = JSON.stringify(fullDataPackage, null, 2);
@@ -1053,9 +1075,13 @@
                     if (parsedData.nps_master_directory) localStorage.setItem('nps_master_directory', JSON.stringify(parsedData.nps_master_directory));
                     if (parsedData.last_used_bank) localStorage.setItem('last_used_bank', parsedData.last_used_bank);
                     if (parsedData.last_used_ifsc) localStorage.setItem('last_used_ifsc', parsedData.last_used_ifsc);
+                    if (parsedData.saved_prev_da_rate) localStorage.setItem('saved_prev_da_rate', parsedData.saved_prev_da_rate);
+                    if (parsedData.saved_new_da_rate) localStorage.setItem('saved_new_da_rate', parsedData.saved_new_da_rate);
+                    loadDaRatesFromStorage();
 
                     loadLocalStorageData();
                     loadMasterDirectory();
+        loadDaRatesFromStorage();
                     triggerNotificationBox("✅ पेनड्राइव से डेटा सफलतापूर्वक लोड और रीस्टोर हो गया है!", true);
                 } else {
                     triggerNotificationBox("❌ अमान्य बैकअप फ़ाइल! कृपया सही पेनड्राइव JSON फ़ाइल चुनें।", false);
@@ -1110,6 +1136,7 @@
 
     function saveEmpToMasterDirectory() {
         let name = document.getElementById('masterEmpName').value.trim();
+        let desig = document.getElementById('masterDesignation') ? document.getElementById('masterDesignation').value.trim() : '';
         let pran = document.getElementById('masterPranNo').value.trim().toUpperCase();
         let basic = parseFloat(document.getElementById('masterBasicPay').value) || 0;
 
@@ -1120,30 +1147,30 @@
 
         let existing = npsMasterDirectory.find(e => e.name.toLowerCase() === name.toLowerCase());
         if (existing) {
-            existing.pranNo = pran;
-            existing.basicPay = basic;
+            if (desig) existing.designation = desig;
+            if (pran) existing.pranNo = pran;
+            if (basic > 0) existing.basicPay = basic;
         } else {
-            npsMasterDirectory.push({ name: name, pranNo: pran, basicPay: basic });
+            npsMasterDirectory.push({ name: name, designation: desig, pranNo: pran, basicPay: basic });
         }
 
         localStorage.setItem('nps_master_directory', JSON.stringify(npsMasterDirectory));
-        triggerNotificationBox(`कर्मचारी '${name}' मास्टर डायरेक्टरी में सुरक्षित हो गया है!`, true);
+        triggerNotificationBox(`कर्मचारी '${name}' का नाम, पद एवं मूल वेतन मास्टर डायरेक्टरी में सेव हो गया है!`, true);
         
         document.getElementById('masterEmpName').value = '';
+        if (document.getElementById('masterDesignation')) document.getElementById('masterDesignation').value = '';
         document.getElementById('masterPranNo').value = '';
         document.getElementById('masterBasicPay').value = '';
     }
 
-    function handleEmpNameInput(inputElem) {
-        if (currentMode !== 'NPS_FORMAT') return;
-        
+        function handleEmpNameInput(inputElem) {
         let val = inputElem.value.trim().toLowerCase();
         let parentDiv = inputElem.parentNode;
         
         let oldList = parentDiv.querySelector('.autocomplete-items');
         if (oldList) oldList.remove();
 
-        if (!val) return;
+        if (val.length < 2) return;
 
         let matched = [];
         if (!isNaN(val)) {
@@ -1165,11 +1192,20 @@
 
         matched.forEach(item => {
             let itemDiv = document.createElement('div');
-            itemDiv.innerHTML = `<b>${item.srNo}. ${item.name}</b> (PRAN: ${item.pranNo || 'N/A'}, Basic: ${item.basicPay})`;
+            let desigText = item.designation ? ` (${item.designation})` : '';
+            let basicText = item.basicPay ? ` - मूल वेतन: ₹${item.basicPay}` : '';
+            itemDiv.innerHTML = `<b>${item.srNo}. ${item.name}</b>${desigText}${basicText}`;
             itemDiv.addEventListener('click', function() {
                 inputElem.value = item.name;
-                document.getElementById('pranNo').value = item.pranNo || '';
-                document.getElementById('basicPay').value = item.basicPay || '';
+                if (document.getElementById('designation') && item.designation) {
+                    document.getElementById('designation').value = item.designation;
+                }
+                if (document.getElementById('basicPay') && item.basicPay) {
+                    document.getElementById('basicPay').value = item.basicPay;
+                }
+                if (document.getElementById('pranNo') && item.pranNo) {
+                    document.getElementById('pranNo').value = item.pranNo;
+                }
                 runMasterCalculations();
                 listDiv.remove();
             });
@@ -1190,9 +1226,9 @@
         if (npsMasterDirectory.length === 0) {
             container.innerHTML = '<p>कोई मास्टर रिकॉर्ड उपलब्ध नहीं है।</p>';
         } else {
-            let html = `<table class="preview-table"><thead><tr><th>क्र.सं. (Sr)</th><th>कर्मचारी का नाम</th><th>PRAN No.</th><th>मूल वेतन</th><th>हटाएं</th></tr></thead><tbody>`;
+            let html = `<table class="preview-table"><thead><tr><th>क्र.सं. (Sr)</th><th>कर्मचारी का नाम</th><th>पद (Designation)</th><th>मूल वेतन</th><th>PRAN No.</th><th>हटाएं</th></tr></thead><tbody>`;
             npsMasterDirectory.forEach((emp, i) => {
-                html += `<tr><td><b>${i+1}</b></td><td style="text-align:left;"><b>${emp.name}</b></td><td>${emp.pranNo || '-'}</td><td>${emp.basicPay}</td><td><button type="button" class="btn-tbl-del" onclick="deleteMasterEmp(${i})">X</button></td></tr>`;
+                html += `<tr><td><b>${i+1}</b></td><td style="text-align:left;"><b>${emp.name}</b></td><td>${emp.designation || '-'}</td><td>${emp.basicPay || '-'}</td><td>${emp.pranNo || '-'}</td><td><button type="button" class="btn-tbl-del" onclick="deleteMasterEmp(${i})">X</button></td></tr>`;
             });
             html += `</tbody></table>`;
             container.innerHTML = html;
@@ -1963,6 +1999,20 @@
             savedEmployeeList[existingIndex] = empObject;
         } else {
             savedEmployeeList.push(empObject);
+        }
+
+        // Auto add/sync new employee to Master Directory for future quick search
+        if (empObject.name && (empObject.basicPay || empObject.designation)) {
+            let mExisting = npsMasterDirectory.find(e => e.name.toLowerCase() === empObject.name.toLowerCase());
+            if (!mExisting) {
+                npsMasterDirectory.push({
+                    name: empObject.name,
+                    designation: empObject.designation || '',
+                    basicPay: empObject.basicPay || 0,
+                    pranNo: empObject.pranNo || ''
+                });
+                localStorage.setItem('nps_master_directory', JSON.stringify(npsMasterDirectory));
+            }
         }
 
         saveToLocalStorageByMode();
