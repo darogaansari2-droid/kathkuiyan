@@ -19,12 +19,12 @@
         *, *::before, *::after { box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Nirmal UI', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
             margin: 0;
-            padding: 10px;
+            padding: 12px;
             color: var(--text-color);
-            line-height: 1.3;
+            line-height: 1.6;
         }
 
         /* LOGIN SCREEN STYLES */
@@ -220,6 +220,7 @@
             font-size: 13px;
             color: #2d3748;
             font-weight: bold;
+            font-family: inherit;
         }
 
         input[type="text"] { text-transform: capitalize; }
@@ -274,6 +275,7 @@
             font-size: 13px;
             cursor: pointer;
             transition: all 0.2s ease;
+            font-family: inherit;
         }
 
         .btn-save { background-color: var(--success-color); }
@@ -353,7 +355,7 @@
                 width: 100%;
                 background: #fff;
                 color: #000;
-                font-family: Arial, sans-serif;
+                font-family: 'Nirmal UI', Arial, sans-serif;
             }
 
             .print-header {
@@ -457,6 +459,17 @@
         <div class="panel" style="background-color: #f0fdf4; border-color: #bbf7d0;">
             <div class="section-title" style="color: #166534;">प्रिंट एवं टेबल कस्टमाइज़ेशन सेटिंग (Print & Table Layout Settings)</div>
             <div class="grid-4-col">
+                <div class="form-group">
+                    <label for="fontFamilySelect">फ़ॉन्ट स्टाइल (Font Style)</label>
+                    <select id="fontFamilySelect" onchange="changeAppFontFamily(this.value)" style="border: 1px solid #166534;">
+                        <option value="'Nirmal UI', 'Segoe UI', sans-serif" selected>Nirmal UI (डिफ़ॉल्ट)</option>
+                        <option value="'Segoe UI', Tahoma, sans-serif">Segoe UI</option>
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="Mangal, sans-serif">Mangal</option>
+                        <option value="'Kruti Dev 010', sans-serif">Kruti Dev 010</option>
+                    </select>
+                </div>
                 <div class="form-group">
                     <label for="printOrientation">प्रिंट लेआउट (Orientation)</label>
                     <select id="printOrientation" style="border: 1px solid #166534;">
@@ -920,6 +933,20 @@
     let currentMode = 'DA';
     let userManuallyChangedMonth = false;
 
+    function changeAppFontFamily(fontVal) {
+        document.body.style.fontFamily = fontVal;
+        localStorage.setItem('saved_app_font_family', fontVal);
+    }
+
+    function loadSavedFontFamily() {
+        let savedFont = localStorage.getItem('saved_app_font_family');
+        if (savedFont) {
+            document.body.style.fontFamily = savedFont;
+            let fontSelect = document.getElementById('fontFamilySelect');
+            if (fontSelect) fontSelect.value = savedFont;
+        }
+    }
+
     // Helper function for print formatting: removes .00 if whole number, shows 00 if empty/zero
     function formatPrintAmount(val) {
         let num = parseFloat(val);
@@ -951,6 +978,7 @@
         if (isLoggedIn === 'true') {
             openAppUI();
         }
+        loadSavedFontFamily();
         loadMasterDirectory();
         loadDaRatesFromStorage();
     });
@@ -1016,7 +1044,8 @@
             last_used_bank: localStorage.getItem('last_used_bank') || '',
             last_used_ifsc: localStorage.getItem('last_used_ifsc') || '',
             saved_prev_da_rate: localStorage.getItem('saved_prev_da_rate') || '58',
-            saved_new_da_rate: localStorage.getItem('saved_new_da_rate') || '60'
+            saved_new_da_rate: localStorage.getItem('saved_new_da_rate') || '60',
+            saved_app_font_family: localStorage.getItem('saved_app_font_family') || "'Nirmal UI', 'Segoe UI', sans-serif"
         };
 
         const jsonDataString = JSON.stringify(fullDataPackage, null, 2);
@@ -1079,11 +1108,12 @@
                     if (parsedData.last_used_ifsc) localStorage.setItem('last_used_ifsc', parsedData.last_used_ifsc);
                     if (parsedData.saved_prev_da_rate) localStorage.setItem('saved_prev_da_rate', parsedData.saved_prev_da_rate);
                     if (parsedData.saved_new_da_rate) localStorage.setItem('saved_new_da_rate', parsedData.saved_new_da_rate);
+                    if (parsedData.saved_app_font_family) localStorage.setItem('saved_app_font_family', parsedData.saved_app_font_family);
+                    
+                    loadSavedFontFamily();
                     loadDaRatesFromStorage();
-
                     loadLocalStorageData();
                     loadMasterDirectory();
-                    loadDaRatesFromStorage();
                     triggerNotificationBox("✅ पेनड्राइव से डेटा सफलतापूर्वक लोड और रीस्टोर हो गया है!", true);
                 } else {
                     triggerNotificationBox("❌ अमान्य बैकअप फ़ाइल! कृपया सही पेनड्राइव JSON फ़ाइल चुनें।", false);
@@ -2996,6 +3026,7 @@
         let paddingVal = document.getElementById('rowPadding').value;
         let fontSizeVal = document.getElementById('tableFontSize').value;
         let textWeightVal = document.getElementById('textWeight').value;
+        let selectedFont = document.getElementById('fontFamilySelect').value;
 
         let styleSheet = document.getElementById('dynamicPrintStyle');
         if (!styleSheet) {
@@ -3003,7 +3034,7 @@
             styleSheet.id = 'dynamicPrintStyle';
             document.head.appendChild(styleSheet);
         }
-        styleSheet.innerHTML = `@media print { @page { size: ${orientation}; margin: 5mm; } }`;
+        styleSheet.innerHTML = `@media print { @page { size: ${orientation}; margin: 5mm; } #printArea { font-family: ${selectedFont} !important; } }`;
 
         let printTable = document.getElementById('pTable');
         let printSummary = document.getElementById('pSummaryBox');
@@ -3013,11 +3044,13 @@
                 cell.style.padding = paddingVal;
                 cell.style.fontSize = fontSizeVal;
                 cell.style.fontWeight = textWeightVal;
+                cell.style.fontFamily = selectedFont;
             });
         }
 
         if (printSummary) {
             printSummary.style.fontSize = fontSizeVal;
+            printSummary.style.fontFamily = selectedFont;
         }
 
         window.print();
