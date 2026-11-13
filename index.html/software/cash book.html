@@ -1,513 +1,644 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>रोकड़ पंजीका (Cash Book System)</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-        body { background-color: #e2e8f0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
-        .cashbook-container { width: 100%; max-width: 1700px; background: white; padding: 15px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); overflow-x: auto; }
-        
-        .header-controls { display: flex; gap: 15px; background: #2d3748; color: white; padding: 10px; border-radius: 4px; margin-bottom: 10px; align-items: center; }
-        .header-controls label { font-weight: bold; font-size: 0.85rem; }
-        .header-controls select, .header-controls input { padding: 4px 8px; border-radius: 3px; border: 1px solid #ccc; font-weight: bold; }
-        
-        table.cashbook { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: center; }
-        table.cashbook th, table.cashbook td { border: 1px solid #1a202c; padding: 3px 2px; height: 26px; }
-        
-        .th-green { background-color: #86efac; color: #000; font-weight: bold; }
-        .th-month { background-color: #86efac; font-size: 1.1rem; font-weight: bold; color: #000; border-top: none; }
-        
-        .paisa-col { background-color: #fef08a; width: 16px; font-size: 0.6rem; }
-        .sep-col { background-color: #4a5568; width: 8px; }
-        .light-blue-bg { background-color: #dbeafe; }
-        
-        table.cashbook input { width: 100%; border: none; background: transparent; text-align: center; font-weight: bold; font-size: 0.8rem; outline: none; }
-        
-        .summary-row { background-color: #dbeafe; font-weight: bold; }
-        
-        .btn-bar { margin-top: 10px; display: flex; gap: 10px; justify-content: flex-end; }
-        button { padding: 6px 14px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; color: white; font-size: 0.8rem; }
-        .btn-add { background-color: #2563eb; }
-        .btn-save { background-color: #16a34a; }
-        .btn-clear { background-color: #d97706; }
-        .btn-reset { background-color: #dc2626; }
-        .btn-del { background-color: #ef4444; padding: 1px 4px; font-size: 0.7rem; border-radius: 2px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>विद्यालय लेखा-जोखा पंजिका</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    body { background: #f4f6f9; color: #1a202c; padding: 15px; font-size: 13px; }
+    
+    /* हेडर एवं टूलबार */
+    .header-box { background: #1e3a8a; color: #fff; padding: 14px 20px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .header-box h1 { font-size: 19px; letter-spacing: 0.3px; }
+    .header-meta { font-size: 12.5px; opacity: 0.92; margin-top: 3px; }
+    
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 15px; }
+    .btn { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 12.5px; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; height: 36px; }
+    .btn-primary { background: #15803d; color: #fff; }
+    .btn-primary:hover { background: #166534; }
+    .btn-break { background: #b45309; color: #fff; }
+    .btn-break:hover { background: #92400e; }
+    .btn-bank { background: #0369a1; color: #fff; }
+    .btn-bank:hover { background: #075985; }
+    .btn-settings { background: #475569; color: #fff; }
+    .btn-settings:hover { background: #334155; }
+    .btn-print { background: #1e293b; color: #fff; }
+    .btn-print:hover { background: #0f172a; }
+    .btn-reset { background: #dc2626; color: #fff; }
 
-        /* अलग कैलकुलेटर की स्टाइलिंग */
-        .calculator-wrapper {
-            margin-top: 25px;
-            width: 300px;
-            background: #1e293b;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-            align-self: center;
-        }
-        .calculator-wrapper h3 {
-            color: white;
-            text-align: center;
-            font-size: 0.95rem;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #475569;
-            padding-bottom: 5px;
-        }
-        .calc-display {
-            width: 100%;
-            height: 40px;
-            background: #0f172a;
-            color: #38bdf8;
-            text-align: right;
-            padding: 5px 10px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border: 1px solid #334155;
-            border-radius: 5px;
-            margin-bottom: 12px;
-            outline: none;
-        }
-        .calc-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-        }
-        .calc-btn {
-            height: 38px;
-            background: #334155;
-            color: white;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .calc-btn:hover { background: #475569; }
-        .calc-btn:active { background: #64748b; }
-        .calc-btn.op { background: #2563eb; }
-        .calc-btn.op:hover { background: #1d4ed8; }
-        .calc-btn.action { background: #dc2626; }
-        .calc-btn.action:hover { background: #b91c1c; }
-        .calc-btn.equal { background: #16a34a; grid-column: span 2; }
-        .calc-btn.equal:hover { background: #15803d; }
-    </style>
+    /* कैलकुलेटर विजेट (टूलबार के आकार में) */
+    .calc-box { display: inline-flex; align-items: center; background: #fff; border: 1px solid #cbd5e1; border-radius: 4px; height: 36px; padding: 0 6px; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .calc-input { width: 140px; height: 26px; border: 1px solid #cbd5e1; border-radius: 3px; text-align: right; padding: 0 6px; font-size: 13px; font-weight: 600; }
+    .calc-btn { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 3px; width: 26px; height: 26px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; }
+    .calc-btn:hover { background: #e2e8f0; }
+    .calc-btn-eq { background: #1e3a8a; color: #fff; border-color: #1e3a8a; }
+    .calc-btn-eq:hover { background: #1e40af; }
+    
+    /* पंजिका पेज कार्ड */
+    .register-page { background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 14px; margin-bottom: 24px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); overflow-x: auto; }
+    .page-title-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #1e3a8a; padding-bottom: 6px; margin-bottom: 10px; font-weight: bold; color: #1e3a8a; font-size: 14px; }
+    
+    /* मुख्य पंजिका तालिका */
+    table.ledger { width: 100%; border-collapse: collapse; min-width: 1180px; font-size: 12px; }
+    table.ledger th, table.ledger td { border: 1px solid #64748b; padding: 5px 4px; text-align: center; vertical-align: middle; }
+    table.ledger thead th { background: #e2e8f0; color: #0f172a; font-weight: 700; }
+    .side-left-hdr { background: #dbeafe !important; color: #1e3a8a !important; font-size: 13px; }
+    .side-right-hdr { background: #fef3c7 !important; color: #92400e !important; font-size: 13px; }
+    
+    .text-left { text-align: left !important; padding-left: 6px !important; }
+    .num { text-align: right !important; padding-right: 5px !important; font-variant-numeric: tabular-nums; }
+    .paise { width: 26px; text-align: center !important; color: #334155; }
+    .rupee { min-width: 52px; }
+    
+    /* विशेष पंक्तियाँ */
+    .row-opening { background: #f8fafc; font-weight: 600; color: #334155; }
+    .row-page-total { background: #f1f5f9; font-weight: 700; border-top: 2px solid #334155 !important; }
+    .row-grand-tally { background: #ecfdf5; font-weight: 800; color: #065f46; border-top: 2px solid #059669 !important; border-bottom: 2px solid #059669 !important; font-size: 12.5px; }
+    .tally-badge { display: inline-block; background: #059669; color: #fff; padding: 2px 7px; border-radius: 3px; font-size: 11px; margin-left: 5px; }
+    .del-btn { background: none; border: none; color: #dc2626; cursor: pointer; font-weight: bold; font-size: 13px; }
+    
+    /* डायनामिक मोडल स्टाइल */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 15px; }
+    .modal-box { background: #fff; border-radius: 8px; width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.25); }
+    .modal-box.wide { max-width: 900px; }
+    .modal-hdr { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 14px; font-size: 16px; font-weight: 700; color: #1e3a8a; }
+    .close-modal { background: none; border: none; font-size: 22px; cursor: pointer; color: #64748b; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-bottom: 12px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 12px; font-weight: 600; color: #334155; }
+    .form-group input, .form-group select { padding: 7px 9px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; }
+    .info-strip { background: #eff6ff; border-left: 4px solid #2563eb; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; color: #1e40af; }
+
+    @media print {
+      .toolbar, .del-btn { display: none !important; }
+      body { background: #fff; padding: 0; }
+      .register-page { box-shadow: none; border: none; page-break-after: always; padding: 5px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="cashbook-container">
-    <div class="header-controls">
-        <label>माह:</label>
-        <select id="monthSelect" onchange="changeMonth()">
-            <option value="0">Apr-24</option><option value="1">May-24</option><option value="2">Jun-24</option>
-            <option value="3">Jul-24</option><option value="4">Aug-24</option><option value="5">Sep-24</option>
-            <option value="6">Oct-24</option><option value="7">Nov-24</option><option value="8">Dec-24</option>
-            <option value="9">Jan-25</option><option value="10">Feb-25</option><option value="11">Mar-25</option>
-        </select>
-        <!-- अप्रैल के लिए ओपनिंग बैलेंस इनपुट -->
-        <div id="aprilOpenContainer" style="display: flex; align-items: center; gap: 5px; margin-left: 20px;">
-            <label>अप्रैल पिछला रोकड़ (Opening):</label>
-            <input type="number" id="aprilOpenInput" style="background: white; color: black; width: 100px; padding: 3px; border-radius: 3px;" oninput="updateAprilOpening()">
-        </div>
-        <div style="margin-left:auto; font-weight:bold;" id="tallyStatus">स्थिति: मैच ✓</div>
+  <div class="header-box">
+    <div>
+      <h1 id="dispSchoolName">श्री कृष्ण इण्टर कालेज सेमरा कठकुइयाँ — लेखा-जोखा पंजिका</h1>
+      <div class="header-meta" id="dispSchoolMeta">शैक्षणिक सत्र: 2026-27 | बैंक खाता सं.: SBI-30984512789</div>
     </div>
-
-    <table class="cashbook">
-        <thead>
-            <tr class="th-green">
-                <th style="width: 45px;">दिनांक</th>
-                <th style="width: 45px;">फ़ीस /ब्याज</th>
-                <th style="width: 45px;">पुनः प्रवेश</th>
-                <th style="width: 45px;">छात्र पत्रावली</th>
-                <th style="width: 45px;">विलम्ब</th>
-                <th style="width: 45px;">महंगाई</th>
-                <th class="sep-col"></th>
-                <th style="width: 50px;">प्राप्त धन</th>
-                <th style="width: 50px;">दैनिक योग</th>
-                <th class="paisa-col">पैसा</th>
-                <th style="width: 55px;">पिछला रोकण</th>
-                <th class="paisa-col">पैसा</th>
-                <th style="width: 55px;">कुल योग</th>
-                <th class="paisa-col">पैसा</th>
-                <th class="sep-col"></th>
-                <th style="width: 45px;">दिनांक</th>
-                <th style="width: 60px;">वाउचर</th>
-                <th style="width: 50px;">दिया गया</th>
-                <th style="width: 50px;">दैनिक योग</th>
-                <th style="width: 55px;">शेष रोकण</th>
-                <th class="paisa-col">पैसा</th>
-                <th style="width: 55px;">बैंक में</th>
-                <th class="paisa-col">पैसा</th>
-                <th style="width: 55px;">तिजोरी में</th>
-                <th class="paisa-col">पैसा</th>
-                <th style="width: 25px;">X</th>
-            </tr>
-            <tr>
-                <td colspan="26" class="th-month" id="monthBanner">Apr-24</td>
-            </tr>
-        </thead>
-
-        <tbody id="tableBody">
-            <!-- Data Rows -->
-        </tbody>
-
-        <tfoot>
-            <tr class="summary-row">
-                <td colspan="8"></td>
-                <td><input type="number" id="totPrapteDhan" readonly></td>
-                <td class="paisa-col"></td><td></td><td class="paisa-col"></td><td></td><td class="paisa-col"></td>
-                <td class="sep-col"></td><td></td><td></td><td></td>
-                <td><input type="number" id="totDiyaGaya" readonly></td>
-                <td colspan="7"></td>
-            </tr>
-            <tr class="summary-row">
-                <td colspan="8"></td>
-                <td><input type="number" id="totOpening" readonly></td>
-                <td class="paisa-col"></td><td></td><td class="paisa-col"></td><td></td><td class="paisa-col"></td>
-                <td class="sep-col"></td><td></td><td></td><td></td>
-                <td><input type="number" id="totFinalRem" readonly></td>
-                <td colspan="7"></td>
-            </tr>
-            <tr class="summary-row">
-                <td colspan="8"></td>
-                <td><input type="number" id="totGrandLeft" readonly></td>
-                <td class="paisa-col"></td><td></td><td class="paisa-col"></td><td></td><td class="paisa-col"></td>
-                <td class="sep-col"></td><td></td><td></td><td></td>
-                <td><input type="number" id="totGrandRight" readonly></td>
-                <td colspan="7"></td>
-            </tr>
-        </tfoot>
-    </table>
-
-    <div class="btn-bar">
-        <button class="btn-add" onclick="addRow()">+ पंक्ति जोड़ें</button>
-        <button class="btn-save" onclick="saveData()">सुरक्षित करें (Save)</button>
-        <button class="btn-clear" onclick="clearMonth()">यह महीना साफ़ करें</button>
-        <button class="btn-reset" onclick="resetAll()">पूरा रिसेट करें</button>
+    <div style="text-align:right; font-size:12.5px;">
+      <div>वर्तमान बैंक शेष: <strong id="topBankBal">₹ 0.00</strong></div>
+      <div>वर्तमान तिजोरी शेष: <strong id="topCashBal">₹ 0.00</strong></div>
     </div>
+  </div>
 
-    <!-- अलग से कैलकुलेटर जोड़ें -->
-    <div class="calculator-wrapper">
-        <h3>गणक (Calculator)</h3>
-        <input type="text" id="calcDisplay" class="calc-display" readonly value="0">
-        <div class="calc-grid">
-            <button class="calc-btn action" onclick="calcClear()">C</button>
-            <button class="calc-btn action" onclick="calcBackspace()">⌫</button>
-            <button class="calc-btn op" onclick="calcAppend('%')">%</button>
-            <button class="calc-btn op" onclick="calcAppend('/')">÷</button>
+  <div class="toolbar">
+    <button class="btn btn-primary" onclick="openEntryModal()">+ नई प्रविष्टि जोड़ें</button>
+    <button class="btn btn-break" onclick="addParaBreak()">✂ पैरा ब्रेक (नया पेज)</button>
+    <button class="btn btn-bank" onclick="openPassbookModal()">📒 पासबुक मिलान</button>
+    <button class="btn btn-settings" onclick="openSettingsModal()">⚙️ सेटिंग्स</button>
+    <button class="btn btn-print" onclick="window.print()">🖨️ प्रिंट</button>
+    <button class="btn btn-reset" onclick="resetAllData()">रीसेट</button>
 
-            <button class="calc-btn" onclick="calcAppend('7')">7</button>
-            <button class="calc-btn" onclick="calcAppend('8')">8</button>
-            <button class="calc-btn" onclick="calcAppend('9')">9</button>
-            <button class="calc-btn op" onclick="calcAppend('*')">×</button>
-
-            <button class="calc-btn" onclick="calcAppend('4')">4</button>
-            <button class="calc-btn" onclick="calcAppend('5')">5</button>
-            <button class="calc-btn" onclick="calcAppend('6')">6</button>
-            <button class="calc-btn op" onclick="calcAppend('-')">-</button>
-
-            <button class="calc-btn" onclick="calcAppend('1')">1</button>
-            <button class="calc-btn" onclick="calcAppend('2')">2</button>
-            <button class="calc-btn" onclick="calcAppend('3')">3</button>
-            <button class="calc-btn op" onclick="calcAppend('+')">+</button>
-
-            <button class="calc-btn" onclick="calcAppend('0')">0</button>
-            <button class="calc-btn" onclick="calcAppend('.')">.</button>
-            <button class="calc-btn equal" onclick="calcEvaluate()">=</button>
-        </div>
+    <!-- कैलकुलेटर बॉक्स (टूलबार के दाएँ हिस्से में) -->
+    <div class="calc-box" title="त्वरित कैलकुलेटर">
+      <input type="text" id="calcInput" class="calc-input" placeholder="0" onkeydown="if(event.key==='Enter') calcCompute()">
+      <button class="calc-btn" onclick="calcAppend('+')" title="जोड़">+</button>
+      <button class="calc-btn" onclick="calcAppend('-')" title="घटाव">-</button>
+      <button class="calc-btn" onclick="calcAppend('*')" title="गुणा">×</button>
+      <button class="calc-btn" onclick="calcAppend('/')" title="भाग">÷</button>
+      <button class="calc-btn calc-btn-eq" onclick="calcCompute()" title="बराबर">=</button>
+      <button class="calc-btn" onclick="calcClear()" title="साफ़ करें" style="color:#dc2626;">C</button>
     </div>
-</div>
+  </div>
 
-<script>
-    const STORAGE_KEY = 'cashbook_footer_tally_shifted';
-    const monthsName = ["Apr-24", "May-24", "Jun-24", "Jul-24", "Aug-24", "Sep-24", "Oct-24", "Nov-24", "Dec-24", "Jan-25", "Feb-25", "Mar-25"];
-    
-    let yearlyData = Array.from({ length: 12 }, () => ({
-        openBal: 11017,
-        rows: []
-    }));
+  <!-- मुख्य पंजिका तालिका कंटेनर -->
+  <div id="registerPagesContainer"></div>
 
-    let currentMonthIdx = 0;
+  <script>
+    const STORAGE_KEY = 'vidyalay_panjika_v7';
 
-    function initDefaultData() {
-        yearlyData[0] = {
-            openBal: 11017,
-            rows: [
-                { date: '', type: '', f1: '', f2: '', f3: '', f4: '', intVal: '', expDate: '', voucher: '', expAmt: '', manualBank: '' },
-                { date: '', type: 'INT', f1: '', f2: '', f3: '', f4: '', intVal: '22', expDate: '', voucher: '', expAmt: '', manualBank: '' },
-                { date: '', type: 'FEE', f1: '1000', f2: '200', f3: '300', f4: '500', intVal: '', expDate: '', voucher: '', expAmt: '', manualBank: '' },
-                { date: '', type: 'FEE', f1: '200', f2: '300', f3: '100', f4: '20', intVal: '', expDate: '', voucher: '', expAmt: '', manualBank: '' },
-                { date: '', type: 'FEE', f1: '100', f2: '2000', f3: '100', f4: '300', intVal: '', expDate: '', voucher: '', expAmt: '', manualBank: '' },
-                { date: '', type: 'FEE', f1: '', f2: '', f3: '', f4: '', intVal: '', expDate: '', voucher: '', expAmt: '', manualBank: '' },
-                { date: '', type: 'FEE', f1: '', f2: '', f3: '', f4: '', intVal: '', expDate: '', voucher: '', expAmt: '', manualBank: '' },
-                { date: '', type: 'INT', f1: '', f2: '', f3: '', f4: '', intVal: '', expDate: '', voucher: '', expAmt: '', manualBank: '' },
-                { date: '', type: 'INT', f1: '', f2: '', f3: '', f4: '', intVal: '', expDate: '', voucher: '', expAmt: '', manualBank: '12000' },
-                { date: '', type: '', f1: '', f2: '', f3: '', f4: '', intVal: '', expDate: '', voucher: 'BANK', expAmt: '3000', manualBank: '' }
-            ]
-        };
-    }
-
-    function renderRows() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-
-        let mData = yearlyData[currentMonthIdx];
-
-        document.getElementById('aprilOpenInput').value = yearlyData[0].openBal;
-        document.getElementById('aprilOpenContainer').style.display = (currentMonthIdx === 0) ? 'flex' : 'none';
-
-        mData.rows.forEach((r, idx) => {
-            const tr = document.createElement('tr');
-            tr.className = 'light-blue-bg data-row';
-            tr.innerHTML = `
-                <td><input type="text" class="r-date" value="${r.date||''}"></td>
-                <td><input type="text" class="r-type" value="${r.type||''}" oninput="calculate()"></td>
-                <td><input type="number" class="fee1" value="${r.f1||''}" oninput="calculate()"></td>
-                <td><input type="number" class="fee2" value="${r.f2||''}" oninput="calculate()"></td>
-                <td><input type="number" class="fee3" value="${r.f3||''}" oninput="calculate()"></td>
-                <td><input type="number" class="fee4" value="${r.f4||''}" oninput="calculate()"></td>
-                <td class="sep-col"></td>
-                <td><input type="number" class="int-val" value="${r.intVal||''}" oninput="calculate()"></td>
-                <td><input type="number" class="row-daily" readonly></td><td class="paisa-col"></td>
-                <td><input type="number" class="row-prev" readonly></td><td class="paisa-col"></td>
-                <td><input type="number" class="row-total" readonly></td><td class="paisa-col"></td>
-                <td class="sep-col"></td>
-                <td><input type="text" class="exp-date" value="${r.expDate||''}"></td>
-                <td><input type="text" class="exp-voucher" value="${r.voucher||''}" oninput="calculate()"></td>
-                <td><input type="number" class="exp-amount" value="${r.expAmt||''}" oninput="calculate()"></td>
-                <td><input type="number" class="exp-daily" readonly></td>
-                <td><input type="number" class="row-rem" readonly></td><td class="paisa-col"></td>
-                <td><input type="number" class="manual-bank" value="${r.manualBank||''}" oninput="calculate()"></td><td class="paisa-col"></td>
-                <td><input type="number" class="row-vault" readonly></td><td class="paisa-col"></td>
-                <td><button class="btn-del" onclick="deleteRow(${idx})">X</button></td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        calculate();
-    }
-
-    function updateAprilOpening() {
-        let val = parseFloat(document.getElementById('aprilOpenInput').value);
-        yearlyData[0].openBal = isNaN(val) ? 0 : val;
-        calculate();
-    }
-
-    function addRow() {
-        yearlyData[currentMonthIdx].rows.push({ date: '', type: '', f1: '', f2: '', f3: '', f4: '', intVal: '', expDate: '', voucher: '', expAmt: '', manualBank: '' });
-        renderRows();
-    }
-
-    function deleteRow(idx) {
-        yearlyData[currentMonthIdx].rows.splice(idx, 1);
-        renderRows();
-    }
-
-    function calculate() {
-        saveUIState();
-
-        let carryOverBal = yearlyData[0].openBal;
-
-        for (let m = 0; m < 12; m++) {
-            yearlyData[m].openBal = carryOverBal;
-            let currentPrev = carryOverBal;
-            let rowsUI = (m === currentMonthIdx) ? document.querySelectorAll('.data-row') : null;
-
-            yearlyData[m].rows.forEach((r, idx) => {
-                let f1 = parseFloat(r.f1) || 0;
-                let f2 = parseFloat(r.f2) || 0;
-                let f3 = parseFloat(r.f3) || 0;
-                let f4 = parseFloat(r.f4) || 0;
-                let intVal = parseFloat(r.intVal) || 0;
-                let expAmt = parseFloat(r.expAmt) || 0;
-                let voucher = (r.voucher || '').toUpperCase();
-                let typeStr = (r.type || '').toUpperCase();
-
-                let feeSum = f1 + f2 + f3 + f4;
-                let hasIncomeInput = (feeSum > 0 || intVal > 0);
-                let prapteDhan = feeSum > 0 ? feeSum : (intVal > 0 ? intVal : 0);
-                
-                let displayPrev = '';
-                let displayTotal = '';
-
-                if (hasIncomeInput || idx === 0) {
-                    displayPrev = currentPrev;
-                    displayTotal = currentPrev + prapteDhan;
-                    currentPrev = displayTotal - expAmt;
-                } else {
-                    currentPrev = currentPrev - expAmt;
-                }
-
-                let remBal = (displayTotal !== '') ? (displayTotal - expAmt) : currentPrev;
-
-                let manualBankInput = r.manualBank !== '' ? parseFloat(r.manualBank) : NaN;
-                
-                let displayRemBal = '';
-                let displayBank = '';
-                let displayVault = '';
-
-                if (!isNaN(manualBankInput)) {
-                    displayRemBal = remBal;
-                    displayBank = manualBankInput;
-                    displayVault = remBal - manualBankInput;
-                } else if (typeStr.includes('INT') && intVal > 0) {
-                    // ब्याज (INT) का पैसा सीधे बैंक में जाएगा और तिजोरी खाली रहेगी
-                    displayRemBal = remBal;
-                    displayBank = remBal;
-                    displayVault = '';
-                } else if (voucher.includes('BANK') || voucher.includes('CHALLAN') || voucher.includes('CHALAN')) {
-                    displayRemBal = remBal;
-                    displayBank = remBal;
-                    displayVault = 0;
-                } else if (idx === 0) {
-                    displayRemBal = remBal;
-                    displayBank = remBal;
-                    displayVault = '';
-                }
-
-                if (m === currentMonthIdx && rowsUI && rowsUI[idx]) {
-                    let rowEl = rowsUI[idx];
-                    rowEl.querySelector('.row-daily').value = prapteDhan > 0 ? prapteDhan : '';
-                    rowEl.querySelector('.row-prev').value = displayPrev !== '' ? displayPrev : '';
-                    rowEl.querySelector('.row-total').value = displayTotal !== '' ? displayTotal : '';
-                    rowEl.querySelector('.exp-daily').value = expAmt > 0 ? expAmt : '';
-                    rowEl.querySelector('.row-rem').value = displayRemBal;
-                    rowEl.querySelector('.manual-bank').value = displayBank !== '' ? displayBank : '';
-                    rowEl.querySelector('.row-vault').value = displayVault !== '' ? displayVault : '';
-                }
-            });
-
-            carryOverBal = currentPrev;
-        }
-
-        updateSummary();
-    }
-
-    function updateSummary() {
-        let mData = yearlyData[currentMonthIdx];
-        let totPrapte = 0;
-        let totDiya = 0;
-
-        mData.rows.forEach(r => {
-            let f = (parseFloat(r.f1)||0)+(parseFloat(r.f2)||0)+(parseFloat(r.f3)||0)+(parseFloat(r.f4)||0)+(parseFloat(r.intVal)||0);
-            totPrapte += f;
-            totDiya += (parseFloat(r.expAmt)||0);
-        });
-
-        document.getElementById('totPrapteDhan').value = totPrapte;
-        document.getElementById('totOpening').value = mData.openBal;
-        document.getElementById('totGrandLeft').value = mData.openBal + totPrapte;
-
-        document.getElementById('totDiyaGaya').value = totDiya;
-        let lastRem = mData.rows.length > 0 ? (mData.openBal + totPrapte - totDiya) : mData.openBal;
-        document.getElementById('totFinalRem').value = lastRem;
-        document.getElementById('totGrandRight').value = totDiya + lastRem;
-
-        document.getElementById('monthBanner').innerText = monthsName[currentMonthIdx];
-    }
-
-    function saveUIState() {
-        let rows = [];
-        document.querySelectorAll('.data-row').forEach(row => {
-            rows.push({
-                date: row.querySelector('.r-date').value,
-                type: row.querySelector('.r-type').value,
-                f1: row.querySelector('.fee1').value,
-                f2: row.querySelector('.fee2').value,
-                f3: row.querySelector('.fee3').value,
-                f4: row.querySelector('.fee4').value,
-                intVal: row.querySelector('.int-val').value,
-                expDate: row.querySelector('.exp-date').value,
-                voucher: row.querySelector('.exp-voucher').value,
-                expAmt: row.querySelector('.exp-amount').value,
-                manualBank: row.querySelector('.manual-bank').value
-            });
-        });
-        yearlyData[currentMonthIdx].rows = rows;
-    }
-
-    function changeMonth() {
-        saveUIState();
-        currentMonthIdx = parseInt(document.getElementById('monthSelect').value);
-        renderRows();
-    }
-
-    function saveData() {
-        saveUIState();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(yearlyData));
-        alert('डाटा सुरक्षित कर दिया गया है!');
-    }
-
-    function clearMonth() {
-        if(confirm(`${monthsName[currentMonthIdx]} का डाटा साफ़ करें?`)) {
-            yearlyData[currentMonthIdx].rows = [];
-            renderRows();
-        }
-    }
-
-    function resetAll() {
-        if(confirm("पूरा रिसेट करें?")) {
-            localStorage.removeItem(STORAGE_KEY);
-            initDefaultData();
-            currentMonthIdx = 0;
-            document.getElementById('monthSelect').value = "0";
-            renderRows();
-        }
-    }
-
-    /* अलग से कैलकुलेटर का लॉजिक */
-    let calcVal = "0";
-    
-    function updateCalcDisplay() {
-        document.getElementById('calcDisplay').value = calcVal;
-    }
-
-    function calcAppend(char) {
-        if (calcVal === "0" || calcVal === "Error") {
-            if (['+', '*', '/', '%'].includes(char)) return;
-            calcVal = char;
-        } else {
-            calcVal += char;
-        }
-        updateCalcDisplay();
-    }
-
-    function calcClear() {
-        calcVal = "0";
-        updateCalcDisplay();
-    }
-
-    function calcBackspace() {
-        if (calcVal.length === 1 || calcVal === "Error") {
-            calcVal = "0";
-        } else {
-            calcVal = calcVal.slice(0, -1);
-        }
-        updateCalcDisplay();
-    }
-
-    function calcEvaluate() {
-        try {
-            // प्रतिशत (%) गणना को संभालने के लिए रिप्लेसमेंट
-            let expr = calcVal.replace(/(\d+(\.\d+)?)%/g, '($1/100)');
-            let result = eval(expr);
-            calcVal = String(Number(result.toFixed(4))); // 4 दशमलव स्थान तक शुद्ध परिणाम
-        } catch (e) {
-            calcVal = "Error";
-        }
-        updateCalcDisplay();
-    }
-
-    window.onload = function() {
-        let saved = localStorage.getItem(STORAGE_KEY);
-        if(saved) {
-            yearlyData = JSON.parse(saved);
-        } else {
-            initDefaultData();
-        }
-        renderRows();
+    let state = {
+      schoolName: 'श्री कृष्ण इण्टर कालेज सेमरा कठकुइयाँ — लेखा-जोखा पंजिका',
+      session: '2026-27',
+      accountNo: 'SBI-30984512789',
+      openingBank: 12000.00,
+      openingCash: 0.00,
+      entries: [
+        { id: 1, type: 'fee', date: '2026-04-06', desc: 'मासिक फ़ीस जमा (किस्त 1/4)', feeBase: 1000, reAdm: 0, fileFee: 0, lateFee: 0, daFee: 0, amount: 1000, voucher: '', mode: 'cash' },
+        { id: 2, type: 'bank_deposit', date: '2026-04-10', desc: 'तिजोरी से बैंक खाता में जमा', amount: 1000, voucher: '', mode: 'transfer' },
+        { id: 3, type: 'govt_challan', date: '2026-04-18', desc: '', amount: 400, voucher: 'सरकारी फ़ीस चालान सं. 01 जमा', mode: 'bank' },
+        { id: 4, type: 'interest', date: '2026-06-30', desc: 'बैंक बचत खाते का त्रैमासिक ब्याज', amount: 150.50, voucher: '', mode: 'bank' }
+      ],
+      pageBreaks: []
     };
-</script>
 
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try { state = JSON.parse(saved); } catch(e) {}
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    /* कैलकुलेटर फ़ंक्शन */
+    function calcAppend(val) {
+      const inp = document.getElementById('calcInput');
+      inp.value += val;
+    }
+    function calcClear() {
+      document.getElementById('calcInput').value = '';
+    }
+    function calcCompute() {
+      const inp = document.getElementById('calcInput');
+      try {
+        // सुरक्षात्मक इवेल्यूएशन
+        let res = Function('return ' + inp.value)();
+        if (res === undefined || isNaN(res)) res = 'Error';
+        inp.value = res;
+      } catch(e) {
+        inp.value = 'Error';
+      }
+    }
+
+    function splitRP(val) {
+      const n = Math.round((Number(val) || 0) * 100);
+      const r = Math.floor(n / 100);
+      const p = String(n % 100).padStart(2, '0');
+      return { r: r.toLocaleString('en-IN'), p };
+    }
+
+    function fmtMoney(val) {
+      return '₹ ' + (Number(val) || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function fmtDate(d) {
+      if (!d) return '';
+      const parts = d.split('-');
+      return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : d;
+    }
+
+    function renderLedger() {
+      document.getElementById('dispSchoolName').textContent = state.schoolName;
+      document.getElementById('dispSchoolMeta').textContent = `शैक्षणिक सत्र: ${state.session} | बैंक खाता सं.: ${state.accountNo}`;
+
+      const container = document.getElementById('registerPagesContainer');
+      container.innerHTML = '';
+
+      let pages = [];
+      let currentChunk = [];
+      state.entries.forEach(entry => {
+        currentChunk.push(entry);
+        if (state.pageBreaks.includes(entry.id)) {
+          pages.push(currentChunk);
+          currentChunk = [];
+        }
+      });
+      pages.push(currentChunk);
+
+      let runningBank = Number(state.openingBank) || 0;
+      let runningCash = Number(state.openingCash) || 0;
+
+      pages.forEach((chunk, pageIdx) => {
+        const pageOpenBank = runningBank;
+        const pageOpenCash = runningCash;
+        const pageOpenTotal = pageOpenBank + pageOpenCash;
+
+        let sumReAdm = 0, sumFile = 0, sumLate = 0, sumDa = 0;
+        let sumReceived = 0;
+        let sumGiven = 0;
+
+        let rowsHtml = '';
+        const opTotRP = splitRP(pageOpenTotal);
+        const opBankRP = splitRP(pageOpenBank);
+        const opCashRP = splitRP(pageOpenCash);
+
+        rowsHtml += `
+          <tr class="row-opening">
+            <td>—</td>
+            <td class="text-left"><strong>पिछला / प्रारंभिक अवशेष (Opening Balance)</strong></td>
+            <td>—</td><td>—</td><td>—</td><td>—</td>
+            <td class="num rupee">0</td><td class="paise">00</td>
+            <td class="num rupee">${opTotRP.r}</td><td class="paise">${opTotRP.p}</td>
+            <td class="num rupee">${opTotRP.r}</td><td class="paise">${opTotRP.p}</td>
+            <td>—</td>
+            <td class="text-left"></td>
+            <td class="num rupee">0</td><td class="paise">00</td>
+            <td class="num rupee">${opTotRP.r}</td><td class="paise">${opTotRP.p}</td>
+            <td class="num rupee">${opBankRP.r}</td><td class="paise">${opBankRP.p}</td>
+            <td class="num rupee">${opCashRP.r}</td><td class="paise">${opCashRP.p}</td>
+            <td>—</td>
+          </tr>
+        `;
+
+        chunk.forEach(e => {
+          const prevTotal = runningBank + runningCash;
+          let recToday = 0;
+          let givenToday = 0;
+          let leftDesc = e.desc || '';
+          let rightVoucher = '';
+
+          if (e.type === 'fee') {
+            recToday = Number(e.amount) || 0;
+            runningCash += recToday;
+            sumReAdm += Number(e.reAdm) || 0;
+            sumFile += Number(e.fileFee) || 0;
+            sumLate += Number(e.lateFee) || 0;
+            sumDa += Number(e.daFee) || 0;
+          } else if (e.type === 'interest') {
+            recToday = Number(e.amount) || 0;
+            runningBank += recToday;
+          } else if (e.type === 'bank_deposit') {
+            const amt = Number(e.amount) || 0;
+            runningCash -= amt;
+            runningBank += amt;
+          } else if (e.type === 'expense' || e.type === 'govt_challan') {
+            givenToday = Number(e.amount) || 0;
+            rightVoucher = e.voucher || '';
+            if (e.mode === 'bank') runningBank -= givenToday;
+            else runningCash -= givenToday;
+          }
+
+          sumReceived += recToday;
+          sumGiven += givenToday;
+
+          const rowTotalLeft = prevTotal + recToday;
+          const closingTotal = runningBank + runningCash;
+
+          const recRP = splitRP(recToday);
+          const prevRP = splitRP(prevTotal);
+          const totLeftRP = splitRP(rowTotalLeft);
+          const givRP = splitRP(givenToday);
+          const remRP = splitRP(closingTotal);
+          const bnkRP = splitRP(runningBank);
+          const cshRP = splitRP(runningCash);
+
+          rowsHtml += `
+            <tr>
+              <td>${fmtDate(e.date)}</td>
+              <td class="text-left">${leftDesc}</td>
+              <td>${e.reAdm ? e.reAdm : '—'}</td>
+              <td>${e.fileFee ? e.fileFee : '—'}</td>
+              <td>${e.lateFee ? e.lateFee : '—'}</td>
+              <td>${e.daFee ? e.daFee : '—'}</td>
+              <td class="num rupee">${recRP.r}</td><td class="paise">${recRP.p}</td>
+              <td class="num rupee">${prevRP.r}</td><td class="paise">${prevRP.p}</td>
+              <td class="num rupee"><strong>${totLeftRP.r}</strong></td><td class="paise">${totLeftRP.p}</td>
+              <td>${(givenToday > 0 || e.type === 'bank_deposit') ? fmtDate(e.date) : '—'}</td>
+              <td class="text-left">${rightVoucher}</td>
+              <td class="num rupee">${givRP.r}</td><td class="paise">${givRP.p}</td>
+              <td class="num rupee"><strong>${remRP.r}</strong></td><td class="paise">${remRP.p}</td>
+              <td class="num rupee">${bnkRP.r}</td><td class="paise">${bnkRP.p}</td>
+              <td class="num rupee">${cshRP.r}</td><td class="paise">${cshRP.p}</td>
+              <td><button class="del-btn" title="हटाएं" onclick="deleteEntry(${e.id})">×</button></td>
+            </tr>
+          `;
+        });
+
+        const sRecRP = splitRP(sumReceived);
+        const sOpRP = splitRP(pageOpenTotal);
+        const leftGrandTotal = pageOpenTotal + sumReceived;
+        const sLeftGrandRP = splitRP(leftGrandTotal);
+
+        const sGivRP = splitRP(sumGiven);
+        const endTotal = runningBank + runningCash;
+        const sEndRP = splitRP(endTotal);
+        const sEndBankRP = splitRP(runningBank);
+        const sEndCashRP = splitRP(runningCash);
+        const rightGrandTotal = sumGiven + endTotal;
+        const sRightGrandRP = splitRP(rightGrandTotal);
+
+        const isTallied = Math.abs(leftGrandTotal - rightGrandTotal) < 0.01;
+
+        rowsHtml += `
+          <tr class="row-page-total">
+            <td colspan="2" class="text-left">पृष्ठ ${pageIdx + 1} का दैनिक लेन-देन एवं अवशेष योग:</td>
+            <td>${sumReAdm || 0}</td>
+            <td>${sumFile || 0}</td>
+            <td>${sumLate || 0}</td>
+            <td>${sumDa || 0}</td>
+            <td class="num rupee">${sRecRP.r}</td><td class="paise">${sRecRP.p}</td>
+            <td class="num rupee">${sOpRP.r}</td><td class="paise">${sOpRP.p}</td>
+            <td class="num rupee">${sLeftGrandRP.r}</td><td class="paise">${sLeftGrandRP.p}</td>
+            <td colspan="2" class="text-left">कुल दिया गया (व्यय/चालान) एवं अंतिम शेष:</td>
+            <td class="num rupee">${sGivRP.r}</td><td class="paise">${sGivRP.p}</td>
+            <td class="num rupee">${sEndRP.r}</td><td class="paise">${sEndRP.p}</td>
+            <td class="num rupee">${sEndBankRP.r}</td><td class="paise">${sEndBankRP.p}</td>
+            <td class="num rupee">${sEndCashRP.r}</td><td class="paise">${sEndCashRP.p}</td>
+            <td>—</td>
+          </tr>
+          <tr class="row-grand-tally">
+            <td colspan="10" class="text-left">
+              बायाँ पक्ष महायोग (पिछला रोकड़ ${fmtMoney(pageOpenTotal)} + कुल प्राप्त धन ${fmtMoney(sumReceived)}) =
+            </td>
+            <td class="num rupee">${sLeftGrandRP.r}</td><td class="paise">${sLeftGrandRP.p}</td>
+            <td colspan="4" class="text-left">
+              दायाँ पक्ष महायोग (दिया गया/चालान ${fmtMoney(sumGiven)} + अंतिम शेष ${fmtMoney(endTotal)}) =
+            </td>
+            <td class="num rupee">${sRightGrandRP.r}</td><td class="paise">${sRightGrandRP.p}</td>
+            <td colspan="5" class="text-left">
+              ${isTallied ? '<span class="tally-badge">✓ दोनों पक्ष बराबर (TALLY OK)</span>' : '⚠️ अंतर'}
+            </td>
+          </tr>
+        `;
+
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'register-page';
+        pageDiv.innerHTML = `
+          <div class="page-title-bar">
+            <span>पृष्ठ संख्या: ${pageIdx + 1} ${pageIdx < pages.length - 1 ? '(पैरा ब्रेक द्वारा समाप्त — शेष अगले पृष्ठ पर)' : '(वर्तमान चालू पृष्ठ)'}</span>
+            <span>प्रारंभिक अवशेष: ${fmtMoney(pageOpenTotal)} | अंतिम शेष: ${fmtMoney(endTotal)}</span>
+          </div>
+          <table class="ledger">
+            <thead>
+              <tr>
+                <th colspan="12" class="side-left-hdr">प्राप्ति पक्ष (RECEIPTS SIDE)</th>
+                <th colspan="11" class="side-right-hdr">भुगतान एवं शेष पक्ष (PAYMENTS & BALANCE SIDE)</th>
+              </tr>
+              <tr>
+                <th rowspan="2">दिनांक</th>
+                <th rowspan="2" style="min-width:165px;">फ़ीस / ब्याज<br><small>(केवल मद का नाम)</small></th>
+                <th rowspan="2">पुनः<br>प्रवेश</th>
+                <th rowspan="2">छात्र<br>पत्रावली</th>
+                <th rowspan="2">विलम्ब</th>
+                <th rowspan="2">महंगाई</th>
+                <th colspan="2">प्राप्त धन दैनिक योग</th>
+                <th colspan="2">पिछला रोकड़</th>
+                <th colspan="2">कुल योग</th>
+                <th rowspan="2">दिनांक</th>
+                <th rowspan="2" style="min-width:165px;">वाउचर विवरण<br><small>(केवल व्यय/चालान मद)</small></th>
+                <th colspan="2">दिया गया दैनिक योग</th>
+                <th colspan="2">शेष रोकड़</th>
+                <th colspan="2">बैंक में पैसा</th>
+                <th colspan="2">तिजोरी में पैसा</th>
+                <th rowspan="2">क्र.</th>
+              </tr>
+              <tr>
+                <th>रुपये</th><th>पैसा</th>
+                <th>रुपये</th><th>पैसा</th>
+                <th>रुपये</th><th>पैसा</th>
+                <th>रुपये</th><th>पैसा</th>
+                <th>रुपये</th><th>पैसा</th>
+                <th>रुपये</th><th>पैसा</th>
+                <th>रुपये</th><th>पैसा</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        `;
+        container.appendChild(pageDiv);
+      });
+
+      document.getElementById('topBankBal').textContent = fmtMoney(runningBank);
+      document.getElementById('topCashBal').textContent = fmtMoney(runningCash);
+    }
+
+    function addParaBreak() {
+      if (state.entries.length === 0) {
+        alert('पैरा ब्रेक लगाने के लिए कम से कम एक प्रविष्टि होनी चाहिए।');
+        return;
+      }
+      const lastId = state.entries[state.entries.length - 1].id;
+      if (state.pageBreaks.includes(lastId)) {
+        alert('अंतिम प्रविष्टि के बाद पहले से ही पैरा ब्रेक लगा हुआ है।');
+        return;
+      }
+      state.pageBreaks.push(lastId);
+      saveState();
+      renderLedger();
+    }
+
+    function deleteEntry(id) {
+      if (!confirm('क्या आप इस प्रविष्टि को हटाना चाहते हैं?')) return;
+      state.entries = state.entries.filter(e => e.id !== id);
+      state.pageBreaks = state.pageBreaks.filter(bid => bid !== id);
+      saveState();
+      renderLedger();
+    }
+
+    function closeModal() {
+      const existing = document.getElementById('dynamicModal');
+      if (existing) existing.remove();
+    }
+
+    function openEntryModal() {
+      closeModal();
+      const today = new Date().toISOString().split('T')[0];
+      const modal = document.createElement('div');
+      modal.id = 'dynamicModal';
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-box">
+          <div class="modal-hdr">
+            <span>नई लेखा प्रविष्टि दर्ज करें</span>
+            <button class="close-modal" onclick="closeModal()">×</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>प्रविष्टि का प्रकार *</label>
+              <select id="mType" onchange="toggleEntryFields()">
+                <option value="fee">1) फ़ीस जमा (माह में अधिकतम 4 बार)</option>
+                <option value="bank_deposit">2) तिजोरी से बैंक में नकद जमा</option>
+                <option value="govt_challan">3) सरकारी फ़ीस चालान द्वारा जमा (व्यय पक्ष)</option>
+                <option value="interest">4) बैंक द्वारा दिया गया ब्याज</option>
+                <option value="expense">5) सामान्य वाउचर भुगतान / व्यय</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>दिनांक *</label>
+              <input type="date" id="mDate" value="${today}">
+            </div>
+          </div>
+          <div id="dynamicFields"></div>
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:15px;">
+            <button class="btn btn-settings" onclick="closeModal()">रद्द करें</button>
+            <button class="btn btn-primary" onclick="submitNewEntry()">पंजिका में सुरक्षित करें</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      toggleEntryFields();
+    }
+
+    function toggleEntryFields() {
+      const type = document.getElementById('mType').value;
+      const box = document.getElementById('dynamicFields');
+      if (type === 'fee') {
+        box.innerHTML = `
+          <div class="info-strip">नियम: एक माह में अधिकतम 4 बार फ़ीस जमा। 'फ़ीस / ब्याज' कॉलम में केवल मद का नाम दिखेगा।</div>
+          <div class="form-grid">
+            <div class="form-group"><label>मद का टेक्स्ट नाम *</label><input type="text" id="mDesc" placeholder="जैसे: मासिक फ़ीस (किस्त 1/4)"></div>
+            <div class="form-group"><label>मूल फ़ीस राशि (₹)</label><input type="number" step="0.01" id="mFeeBase" value="0"></div>
+            <div class="form-group"><label>पुनः प्रवेश (₹)</label><input type="number" step="0.01" id="mReAdm" value="0"></div>
+            <div class="form-group"><label>छात्र पत्रावली (₹)</label><input type="number" step="0.01" id="mFileFee" value="0"></div>
+            <div class="form-group"><label>विलम्ब शुल्क (₹)</label><input type="number" step="0.01" id="mLateFee" value="0"></div>
+            <div class="form-group"><label>महंगाई शुल्क (₹)</label><input type="number" step="0.01" id="mDaFee" value="0"></div>
+          </div>
+        `;
+      } else if (type === 'bank_deposit') {
+        box.innerHTML = `
+          <div class="info-strip">तिजोरी से घटकर बैंक खाते में जुड़ेगा।</div>
+          <div class="form-grid">
+            <div class="form-group"><label>विवरण</label><input type="text" id="mDesc" value="तिजोरी से बैंक खाता में जमा"></div>
+            <div class="form-group"><label>बैंक में जमा राशि (₹) *</label><input type="number" step="0.01" id="mAmount" placeholder="0.00"></div>
+          </div>
+        `;
+      } else if (type === 'interest') {
+        box.innerHTML = `
+          <div class="info-strip">बैंक पासबुक के अनुसार प्राप्त ब्याज की प्रविष्टि।</div>
+          <div class="form-grid">
+            <div class="form-group"><label>मद का टेक्स्ट नाम *</label><input type="text" id="mDesc" value="बैंक बचत खाते का ब्याज"></div>
+            <div class="form-group"><label>ब्याज राशि (₹) *</label><input type="number" step="0.01" id="mAmount" placeholder="0.00"></div>
+          </div>
+        `;
+      } else {
+        const isChallan = type === 'govt_challan';
+        box.innerHTML = `
+          <div class="info-strip">${isChallan ? 'सरकारी चालान प्रेषण दाएँ पक्ष में जुड़ेगा।' : 'वास्तविक व्यय दाएँ पक्ष में जुड़ेगा।'}</div>
+          <div class="form-grid">
+            <div class="form-group"><label>वाउचर / चालान मद का नाम *</label><input type="text" id="mVoucher" placeholder="${isChallan ? 'जैसे: सरकारी फ़ीस चालान सं. 02' : 'जैसे: वाउचर सं. 01 - स्टेशनरी क्रय'}"></div>
+            <div class="form-group"><label>भुगतान माध्यम *</label>
+              <select id="mMode">
+                <option value="bank">बैंक खाता / चालान से</option>
+                <option value="cash">तिजोरी (नकद) से</option>
+              </select>
+            </div>
+            <div class="form-group"><label>राशि (₹) *</label><input type="number" step="0.01" id="mAmount" placeholder="0.00"></div>
+          </div>
+        `;
+      }
+    }
+
+    function submitNewEntry() {
+      const type = document.getElementById('mType').value;
+      const date = document.getElementById('mDate').value;
+      if (!date) return alert('कृपया दिनांक चुनें।');
+
+      if (type === 'fee') {
+        const ym = date.slice(0, 7);
+        const countInMonth = state.entries.filter(e => e.type === 'fee' && e.date.startsWith(ym)).length;
+        if (countInMonth >= 4) {
+          return alert('नियम: इस माह में पहले ही 4 बार फ़ीस जमा हो चुकी है!');
+        }
+        const desc = document.getElementById('mDesc').value.trim();
+        const feeBase = Number(document.getElementById('mFeeBase').value) || 0;
+        const reAdm = Number(document.getElementById('mReAdm').value) || 0;
+        const fileFee = Number(document.getElementById('mFileFee').value) || 0;
+        const lateFee = Number(document.getElementById('mLateFee').value) || 0;
+        const daFee = Number(document.getElementById('mDaFee').value) || 0;
+        const total = feeBase + reAdm + fileFee + lateFee + daFee;
+        if (!desc || total <= 0) return alert('कृपया मद का नाम और सही राशि भरें।');
+
+        state.entries.push({ id: Date.now(), type, date, desc, feeBase, reAdm, fileFee, lateFee, daFee, amount: total, voucher: '', mode: 'cash' });
+      } else if (type === 'bank_deposit' || type === 'interest') {
+        const desc = document.getElementById('mDesc').value.trim();
+        const amount = Number(document.getElementById('mAmount').value) || 0;
+        if (!desc || amount <= 0) return alert('कृपया विवरण और राशि भरें।');
+        state.entries.push({ id: Date.now(), type, date, desc, amount, voucher: '', mode: type === 'interest' ? 'bank' : 'transfer' });
+      } else {
+        const voucher = document.getElementById('mVoucher').value.trim();
+        const mode = document.getElementById('mMode').value;
+        const amount = Number(document.getElementById('mAmount').value) || 0;
+        if (!voucher || amount <= 0) return alert('कृपया वाउचर विवरण और राशि भरें।');
+        state.entries.push({ id: Date.now(), type, date, desc: '', amount, voucher, mode });
+      }
+
+      saveState();
+      closeModal();
+      renderLedger();
+    }
+
+    function openPassbookModal() {
+      closeModal();
+      let pbBal = Number(state.openingBank) || 0;
+      let pbRows = `<tr><td>सत्रारंभ</td><td class="text-left">प्रारंभिक बैंक अवशेष</td><td class="num">—</td><td class="num">—</td><td class="num"><strong>${fmtMoney(pbBal)}</strong></td></tr>`;
+
+      state.entries.forEach(e => {
+        if (e.type === 'bank_deposit') {
+          pbBal += e.amount;
+          pbRows += `<tr><td>${fmtDate(e.date)}</td><td class="text-left">${e.desc}</td><td class="num">—</td><td class="num" style="color:#15803d;">+${fmtMoney(e.amount)}</td><td class="num"><strong>${fmtMoney(pbBal)}</strong></td></tr>`;
+        } else if (e.type === 'interest') {
+          pbBal += e.amount;
+          pbRows += `<tr><td>${fmtDate(e.date)}</td><td class="text-left">${e.desc}</td><td class="num">—</td><td class="num" style="color:#15803d;">+${fmtMoney(e.amount)}</td><td class="num"><strong>${fmtMoney(pbBal)}</strong></td></tr>`;
+        } else if ((e.type === 'expense' || e.type === 'govt_challan') && e.mode === 'bank') {
+          pbBal -= e.amount;
+          pbRows += `<tr><td>${fmtDate(e.date)}</td><td class="text-left">${e.voucher}</td><td class="num" style="color:#dc2626;">-${fmtMoney(e.amount)}</td><td class="num">—</td><td class="num"><strong>${fmtMoney(pbBal)}</strong></td></tr>`;
+        }
+      });
+
+      const modal = document.createElement('div');
+      modal.id = 'dynamicModal';
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-box wide">
+          <div class="modal-hdr">
+            <span>📒 बैंक पासबुक विवरण एवं मिलान (खाता सं.: ${state.accountNo})</span>
+            <button class="close-modal" onclick="closeModal()">×</button>
+          </div>
+          <div class="info-strip">পंजिका अनुसार बैंक में पैसा: <strong>${fmtMoney(pbBal)}</strong> | पासबुक का अंतिम शेष स्वतः सिंक है।</div>
+          <table class="ledger" style="min-width:100%;">
+            <thead>
+              <tr><th>दिनांक</th><th>विवरण / चालान / वाउचर</th><th>नाम / डेबिट (निकासी)</th><th>जमा / क्रेडिट</th><th>बैंक पासबुक शेष</th></tr>
+            </thead>
+            <tbody>${pbRows}</tbody>
+          </table>
+          <div style="text-align:right; margin-top:12px;">
+            <button class="btn btn-primary" onclick="closeModal()">बंद करें</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function openSettingsModal() {
+      closeModal();
+      const modal = document.createElement('div');
+      modal.id = 'dynamicModal';
+      modal.className = 'modal-overlay';
+      modal.innerHTML = `
+        <div class="modal-box">
+          <div class="modal-hdr">
+            <span>⚙️ विद्यालय विवरण एवं प्रारंभिक अवशेष</span>
+            <button class="close-modal" onclick="closeModal()">×</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group"><label>विद्यालय का नाम</label><input type="text" id="sName" value="${state.schoolName}"></div>
+            <div class="form-group"><label>शैक्षणिक सत्र</label><input type="text" id="sSession" value="${state.session}"></div>
+            <div class="form-group"><label>बैंक खाता संख्या</label><input type="text" id="sAcc" value="${state.accountNo}"></div>
+            <div class="form-group"><label>प्रारंभिक बैंक में पैसा (₹)</label><input type="number" step="0.01" id="sOpBank" value="${state.openingBank}"></div>
+            <div class="form-group"><label>प्रारंभिक तिजोरी में पैसा (₹)</label><input type="number" step="0.01" id="sOpCash" value="${state.openingCash}"></div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;">
+            <button class="btn btn-settings" onclick="closeModal()">रद्द करें</button>
+            <button class="btn btn-primary" onclick="saveSettings()">सुरक्षित करें</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    function saveSettings() {
+      state.schoolName = document.getElementById('sName').value.trim() || state.schoolName;
+      state.session = document.getElementById('sSession').value.trim() || state.session;
+      state.accountNo = document.getElementById('sAcc').value.trim() || state.accountNo;
+      state.openingBank = Number(document.getElementById('sOpBank').value) || 0;
+      state.openingCash = Number(document.getElementById('sOpCash').value) || 0;
+      saveState();
+      closeModal();
+      renderLedger();
+    }
+
+    function resetAllData() {
+      if (!confirm('क्या आप सभी प्रविष्टियाँ मिटाकर नई खाली पंजिका शुरू करना चाहते हैं?')) return;
+      state.entries = [];
+      state.pageBreaks = [];
+      saveState();
+      renderLedger();
+    }
+
+    loadState();
+    renderLedger();
+  </script>
 </body>
 </html>
