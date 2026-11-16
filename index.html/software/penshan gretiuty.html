@@ -113,6 +113,12 @@ center h2 {
 .btn-logout:hover {
     background: #a50e0e;
 }
+.btn-delete {
+    background: #b31412 !important;
+}
+.btn-delete:hover {
+    background: #800e0c !important;
+}
 .form-box {
     width: 100%;
     max-width: 1000px;
@@ -187,8 +193,9 @@ button:hover {
     background: #084298;
 }
 .hide-value {
-    color: transparent;
-    background-color: #e9ecef;
+    color: transparent !important;
+    background-color: #e9ecef !important;
+    border-color: #e9ecef !important;
 }
 
 /* Print Header - Hidden on Screen, Visible on Print */
@@ -199,7 +206,7 @@ button:hover {
     display: none;
 }
 
-/* Print Specific A4 Design - Larger Fonts, Spanning Box & Clear Visibility */
+/* Print Specific A4 Design */
 @media print {
     @page {
         size: A4 portrait;
@@ -339,14 +346,16 @@ button:hover {
     <div class="form-box">
     <h2>Anas Akhtar Penshan Getiuty Data Entry Form</h2>
 
-    <!-- Print Only Two-Group Layout with Larger Fonts & Expanded Box -->
+    <!-- Print Only Two-Group Layout -->
     <div class="print-only-container">
         <div>
-            <div class="print-college-header">Shri Krishn Inter College Semra Kathkuiyan - Kushinagar</div>
+            <div class="print-college-header" id="p_printHeaderName">Shri Krishn Inter College Semra Kathkuiyan - Kushinagar</div>
             
             <div class="print-section-title">कर्मचारी एवं सेवा विवरण (Employee & Service Details)</div>
             <div class="print-grid-2">
-                <div class="print-field full-width"><label>आईडी</label><input type="text" id="p_id"></div>
+                <div class="print-field"><label>आईडी</label><input type="text" id="p_id"></div>
+                <div class="print-field"><label>विभाग प्रकार:-</label><input type="text" id="p_deptType"></div>
+                <div class="print-field"><label>क्लास (Class):-</label><input type="text" id="p_employeeClass"></div>
                 <div class="print-field"><label>नाम कर्मचारी:- </label><input type="text" id="p_combo1"></div>
                 <div class="print-field"><label>पदनाम:- </label><input type="text" id="p_combo2"></div>
                 <div class="print-field"><label>जन्मतिथि:-</label><input type="text" id="p_t1"></div>
@@ -355,7 +364,7 @@ button:hover {
                 <div class="print-field"><label>एज रेट:-</label><input type="text" id="p_t4"></div>
                 <div class="print-field"><label>छमाही / वर्ष:-</label><input type="text" id="p_t5"></div>
                 <div class="print-field"><label>मूल वेतन:-</label><input type="text" id="p_t6"></div>
-                <div class="print-field"><label> महंगाई दर %</label><input type="text" id="p_t7"></div>
+                <div class="print-field"><label>महंगाई दर %</label><input type="text" id="p_t7"></div>
                 <div class="print-field"><label>महंगाई:-</label><input type="text" id="p_t8"></div>
                 <div class="print-field"><label>योग:-</label><input type="text" id="p_t9"></div>
             </div>
@@ -364,14 +373,14 @@ button:hover {
         <div>
             <div class="print-section-title">पेंशन एवं ग्रेच्युटी गणना (Pension & Gratuity Calculation)</div>
             <div class="print-grid-2">
-                <div class="print-field"><label>पेंशन::-</label><input type="text" id="p_t10"></div>
+                <div class="print-field" id="p_f_t10"><label>पेंशन:-</label><input type="text" id="p_t10"></div>
                 <div class="print-field" id="p_f_t11"><label>महंगाई:-</label><input type="text" id="p_t11"></div>
                 <div class="print-field" id="p_f_t12"><label>कम्यूट वैल्यू:-</label><input type="text" id="p_t12"></div>
                 <div class="print-field" id="p_f_t13"><label>कम्यूट योग:-</label><input type="text" id="p_t13"></div>
                 <div class="print-field" id="p_f_t14"><label>कुल पेंशन:-</label><input type="text" id="p_t14"></div>
                 <div class="print-field" id="p_f_t15"><label>ग्रेच्युटी:-</label><input type="text" id="p_t15"></div>
                 <div class="print-field" id="p_rowFamily1"><label>पारिवारिक पेंशन:-</label><input type="text" id="p_t16"></div>
-                <div class="print-field" id="p_rowFamily2"><label>महंगाई::-</label><input type="text" id="p_t17"></div>
+                <div class="print-field" id="p_rowFamily2"><label>महंगाई:-</label><input type="text" id="p_t17"></div>
                 <div class="print-field" id="p_rowFamily3"><label>योग:-</label><input type="text" id="p_t18"></div>
                 <div class="print-field" id="p_rowDeath1"><label>मृत्यु तिथि:-</label><input type="text" id="p_t19"></div>
                 <div class="print-field" id="p_rowDeath2"><label>मृत्यु ग्रेच्युटी:-</label><input type="text" id="p_t20"></div>
@@ -381,17 +390,47 @@ button:hover {
     </div>
 
     <form id="myForm">
-    <!-- Commutation Setting Row -->
+    <!-- Department Header Input Row -->
     <div class="row" style="background: #e8f0fe; padding: 8px; border-radius: 4px; margin-bottom: 5px;">
         <div class="field" style="flex: 2;">
-            <label style="color: #1a0dab;">कम्यूटेशन वर्ष सेटिंग (Commutation Years Setting):-</label>
+            <label style="color: #1a0dab;">विभाग/कॉलेज का नाम (Print Header Name):-</label>
+            <input type="text" id="printHeaderName" value="Shri Krishn Inter College Semra Kathkuiyan - Kushinagar" placeholder="विभाग या विद्यालय का नाम दर्ज करें">
         </div>
-        <div class="field" style="flex: 1;">
+    </div>
+
+    <!-- Department, Class, Gratuity Eligibility & Commutation Setting Row -->
+    <div class="row" style="background: #e8f0fe; padding: 8px; border-radius: 4px; margin-bottom: 5px;">
+        <div class="field">
+            <label style="color: #1a0dab;">विभाग (Department):-</label>
+            <select id="deptType" onchange="updateGratuityDefault(); setAgeRate(); setRetirementDate(); calculateAll();">
+                <option value="school">शिक्षा विभाग / विद्यालय</option>
+                <option value="other">अन्य विभाग (सामान्य)</option>
+            </select>
+        </div>
+        <div class="field">
+            <label style="color: #1a0dab;">कर्मचारी क्लास (Class):-</label>
+            <select id="employeeClass" onchange="updateGratuityDefault(); setAgeRate(); setRetirementDate(); calculateAll();">
+                <option value="">-- Select Class --</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+            </select>
+        </div>
+        <div class="field">
+            <label style="color: #1a0dab;">ग्रेच्युटी देय (Gratuity):-</label>
+            <select id="gratuityOption" onchange="calculateAll();">
+                <option value="no">नहीं (No)</option>
+                <option value="yes">हाँ (Yes - आदेशानुसार)</option>
+            </select>
+        </div>
+        <div class="field">
+            <label style="color: #1a0dab;">कम्यूटेशन प्रतिशत:-</label>
             <select id="commuteSetting" onchange="saveCommuteSetting(); calculateAll();">
                 <option value="select">-- Select --</option>
-                <option value="15">15 वर्ष</option>
-                <option value="12">12 वर्ष</option>
-                <option value="10">10 वर्ष</option>
+                <option value="20" selected>20% Commutation</option>
+                <option value="30">30% Commutation</option>
+                <option value="40">40% Commutation</option>
             </select>
         </div>
     </div>
@@ -399,7 +438,7 @@ button:hover {
     <div class="row">
         <div class="field"><label>आईडी</label><input type="text" id="id"></div>
         <div class="field"><label>नाम कर्मचारी:- </label><input type="text" id="combo1"></div>
-        <div class="field"><label>पदनाम:- </label><input type="text" id="combo2" oninput="setAgeRate();setRetirementDate();calculateAll();"></div>
+        <div class="field"><label>पदनाम:- </label><input type="text" id="combo2" oninput="setAgeRate(); updateGratuityDefault(); setRetirementDate(); calculateAll();"></div>
     </div>
 
     <div class="row">
@@ -410,7 +449,7 @@ button:hover {
 
     <div class="row">
         <div class="field"><label>एज रेट:-</label><input type="text" id="t4"></div>
-        <div class="field"><label>छमाही:- </ वर्ष</label><input type="text" id="t5"></div>
+        <div class="field"><label>छमाही:-</label><input type="text" id="t5"></div>
         <div class="field"><label>मूल वेतन:-</label><input type="text" id="t6" onkeyup="calculateAll();"></div>
     </div>
 
@@ -420,13 +459,13 @@ button:hover {
         <div class="field"><label>योग:-</label><input type="text" id="t9"></div>
     </div>
 
-    <div class="row">
+    <div class="row" id="rowPensionFields">
         <div class="field"><label>पेंशन:-</label><input type="text" id="t10"></div>
         <div class="field"><label>महंगाई:-</label><input type="text" id="t11"></div>
         <div class="field"><label>कम्यूट वैल्यू:-</label><input type="text" id="t12"></div>
     </div>
 
-    <div class="row">
+    <div class="row" id="rowCommuteFields">
         <div class="field"><label>कम्यूट योग:-</label><input type="text" id="t13"></div>
         <div class="field"><label>कुल पेंशन:-</label><input type="text" id="t14"></div>
         <div class="field"><label>ग्रेच्युटी:-</label><input type="text" id="t15"></div>
@@ -446,9 +485,10 @@ button:hover {
 
     <div class="button-group">
         <button type="button" onclick="saveData()">Save</button>
-        <button type="reset" onclick="setTimeout(syncPrintForm, 100)">Clear</button>
+        <button type="reset" onclick="setTimeout(() => { updateGratuityDefault(); syncPrintForm(); }, 100)">Clear</button>
         <button type="button" onclick="updateData()">Update</button>
         <button type="button" onclick="searchData()">Search</button>
+        <button type="button" class="btn-delete" onclick="deleteData()">Delete</button>
         <button type="button" onclick="printForm()">Print</button>
         <button type="button" class="btn-logout" onclick="handleLogout()">Log Out</button>
     </div>
@@ -457,7 +497,6 @@ button:hover {
 </div>
 
 <script>
-// Authentication Logic
 const AUTH_KEY = "PENSHANA_LOGGED_IN";
 const COMMUTE_SETTING_KEY = "PENSHANA_COMMUTE_SETTING";
 
@@ -466,13 +505,14 @@ document.addEventListener('DOMContentLoaded', () => {
         showMainApp();
     }
     
-    // Load saved commute setting
     let savedSetting = localStorage.getItem(COMMUTE_SETTING_KEY);
     if(savedSetting) {
         document.getElementById("commuteSetting").value = savedSetting;
     }
 
-    const allInputs = ['id', 'combo1', 'combo2', 't1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 't10', 't11', 't12', 't13', 't14', 't15', 't16', 't17', 't18', 't19', 't20', 't21'];
+    updateGratuityDefault();
+
+    const allInputs = ['id', 'printHeaderName', 'deptType', 'employeeClass', 'gratuityOption', 'combo1', 'combo2', 't1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 't10', 't11', 't12', 't13', 't14', 't15', 't16', 't17', 't18', 't19', 't20', 't21'];
     allInputs.forEach(id => {
         let el = document.getElementById(id);
         if(el) {
@@ -490,6 +530,7 @@ function saveCommuteSetting() {
 function syncPrintForm() {
     const map = {
         'id': 'p_id',
+        'employeeClass': 'p_employeeClass',
         'combo1': 'p_combo1',
         'combo2': 'p_combo2',
         't1': 'p_t1',
@@ -520,6 +561,17 @@ function syncPrintForm() {
         if(src && dst) {
             dst.value = src.value;
         }
+    }
+    let deptSelect = document.getElementById("deptType");
+    let pDept = document.getElementById("p_deptType");
+    if(deptSelect && pDept) {
+        pDept.value = deptSelect.options[deptSelect.selectedIndex].text;
+    }
+
+    let headerInput = document.getElementById("printHeaderName");
+    let headerPrint = document.getElementById("p_printHeaderName");
+    if(headerInput && headerPrint) {
+        headerPrint.innerText = headerInput.value;
     }
 }
 
@@ -554,108 +606,180 @@ function handleLogout() {
 
 const scriptURL = "https://script.google.com/macros/s/AKfycbzVmo8BBfo0t2vbjXkHVoe7tVU_f8U1bvwC409__7hGyHD3ylkmh-kYvijSVJMBq_bP/exec";
 
+function isTeachingBeneficiary() {
+    let dept = document.getElementById("deptType").value;
+    let post = document.getElementById("combo2").value.trim();
+    
+    if (dept !== "school") return false;
+
+    return (
+        post.includes("प्रधानाचार्य") || 
+        post.includes("प्रवक्ता") || 
+        post.includes("स० अ०") || 
+        post.includes("सहायक अध्यापक") ||
+        post.includes("स0 अ0")
+    );
+}
+
+function updateGratuityDefault() {
+    let gratOpt = document.getElementById("gratuityOption");
+    if (isTeachingBeneficiary()) {
+        gratOpt.value = "no";
+    } else {
+        gratOpt.value = "yes";
+    }
+}
+
 function setAgeRate(){
-    let p=document.getElementById("combo2").value.trim();
-    document.getElementById("t4").value = (p==="प्रधानाचार्य" || p==="प्रवक्ता" || p==="स० अ०") ? "7.982" : "8.194";
+    if (isTeachingBeneficiary()) {
+        document.getElementById("t4").value = "7.982";
+    } else {
+        document.getElementById("t4").value = "8.194";
+    }
     syncPrintForm();
 }
 
 function setRetirementDate(){
-    let dob=document.getElementById("t1").value.trim();
-    let post=document.getElementById("combo2").value.trim();
-    if(!dob)return;
-    dob=dob.replace(/\//g,"-");
-    let x=dob.split("-");
-    if(x.length!==3)return;
-    let d=parseInt(x[0]);
-    let m=parseInt(x[1]);
-    let y=parseInt(x[2]);
-    let ry = (post==="प्रधानाचार्य" || post==="प्रवक्ता" || post==="स० अ०") ? y + 62 : y + 60;
+    let dob = document.getElementById("t1").value.trim();
+    if(!dob) return;
+    
+    dob = dob.replace(/\//g,"-");
+    let x = dob.split("-");
+    if(x.length !== 3) return;
+    let d = parseInt(x[0]);
+    let m = parseInt(x[1]);
+    let y = parseInt(x[2]);
+    if(isNaN(d) || isNaN(m) || isNaN(y)) return;
+
+    let is62WithSession = isTeachingBeneficiary();
+    let retirementAgeYears = is62WithSession ? 62 : 60;
+    let ry = y + retirementAgeYears;
     let r;
-    if(post==="प्रधानाचार्य" || post==="प्रवक्ता" || post==="स० अ०"){
-        if(m===4 && d===1) r=new Date(ry,2,31);
-        else if(m>4 || (m===4 && d>=2)) r=new Date(ry+1,2,31);
-        else r=new Date(ry,2,31);
-    }else{
-        if(d===1) r=new Date(ry,m-1,0);
-        else r=new Date(ry,m,0);
+
+    if(is62WithSession) {
+        if(m === 4 && d === 1) r = new Date(ry, 2, 31);
+        else if(m > 4 || (m === 4 && d >= 2)) r = new Date(ry + 1, 2, 31);
+        else r = new Date(ry, 2, 31);
+    } else {
+        if(d === 1) r = new Date(ry, m - 1, 0);
+        else r = new Date(ry, m, 0);
     }
-    document.getElementById("t3").value= String(r.getDate()).padStart(2,"0")+"-"+String(r.getMonth()+1).padStart(2,"0")+"-"+r.getFullYear();
+
+    document.getElementById("t3").value = String(r.getDate()).padStart(2,"0")+"-"+String(r.getMonth()+1).padStart(2,"0")+"-"+r.getFullYear();
     syncPrintForm();
 }
 
+function formatSheetDate(dateStr) {
+    if (!dateStr) return "";
+    let str = String(dateStr).trim();
+    
+    if (/^\d{1,2}[-\/]\d{1,2}[-\/]\d{4}$/.test(str)) {
+        let parts = str.replace(/\//g, "-").split("-");
+        return parts[0].padStart(2, "0") + "-" + parts[1].padStart(2, "0") + "-" + parts[2];
+    }
+    
+    let dt = new Date(str);
+    if (!isNaN(dt.getTime())) {
+        let day = String(dt.getDate()).padStart(2, "0");
+        let month = String(dt.getMonth() + 1).padStart(2, "0");
+        let year = dt.getFullYear();
+        return day + "-" + month + "-" + year;
+    }
+    return str;
+}
+
 function parseDate(v){
-    if(!v)return null;
-    v=v.replace(/\//g,"-");
-    let p=v.split("-");
-    if(p.length!==3)return null;
-    return new Date(p[2],p[1]-1,p[0]);
+    if(!v) return null;
+    v = String(v).trim().replace(/\//g,"-");
+    let p = v.split("-");
+    if(p.length !== 3) return null;
+    if(p[0].length === 4) {
+        return new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+    }
+    return new Date(parseInt(p[2]), parseInt(p[1])-1, parseInt(p[0]));
 }
 
 function calculateAll(){
-    let commuteValSetting = document.getElementById("commuteSetting").value;
+    let commutePctSetting = document.getElementById("commuteSetting").value;
+    let gratOpt = document.getElementById("gratuityOption").value;
 
-    let j=parseDate(document.getElementById("t2").value);
-    let r=parseDate(document.getElementById("t3").value);
-    let d=parseDate(document.getElementById("t19").value);
-    if(!j || !r)return;
+    let j = parseDate(document.getElementById("t2").value);
+    let r = parseDate(document.getElementById("t3").value);
+    let d = parseDate(document.getElementById("t19").value);
+    if(!j || !r) return;
 
-    let serviceDays=(r-j)/(1000*60*60*24);
-    let serviceYears=serviceDays/365.25;
-    let half=serviceYears*2;
-    if(half>66)half=66;
-    let showT5=half;
+    let serviceDays = (r - j) / (1000 * 60 * 60 * 24);
+    let serviceYears = serviceDays / 365.25;
+    let half = serviceYears * 2;
+    if(half > 66) half = 66; 
+    let showT5 = half;
 
     if(d){
-        let deathYears=(d-j)/(1000*60*60*24*365.25);
-        if(deathYears>=0) showT5=deathYears;
+        let deathYears = (d - j) / (1000 * 60 * 60 * 24 * 365.25);
+        if(deathYears >= 0) showT5 = deathYears;
     }
-    document.getElementById("t5").value=showT5.toFixed(0);
+    document.getElementById("t5").value = showT5.toFixed(0);
 
-    let v6=parseFloat(document.getElementById("t6").value)||0;
-    let v7=parseFloat(document.getElementById("t7").value)||0;
-    let v8=v6*(v7/100);
-    document.getElementById("t8").value=Math.round(v8);
-    let v9=v6+v8;
-    document.getElementById("t9").value=Math.round(v9);
-    let t10=v6/2;
-    document.getElementById("t10").value=Math.round(t10);
-    let t11=(t10*v7)/100;
-    document.getElementById("t11").value=Math.round(t11);
+    let v6 = parseFloat(document.getElementById("t6").value) || 0;
+    let v7 = parseFloat(document.getElementById("t7").value) || 0;
+    let v8 = v6 * (v7 / 100);
+    document.getElementById("t8").value = Math.round(v8);
+    let v9 = v6 + v8;
+    document.getElementById("t9").value = Math.round(v9);
+    
+    let t10 = v6 / 2; 
+    document.getElementById("t10").value = Math.round(t10);
+    
+    let t11 = (t10 * v7) / 100; 
+    document.getElementById("t11").value = Math.round(t11);
 
-    // Agar setting 'select' hai toh commute aur related values ki koi ganana nahi hogi
-    if(commuteValSetting === "select") {
+    if(commutePctSetting === "select") {
         document.getElementById("t12").value = "";
         document.getElementById("t13").value = "";
         document.getElementById("t14").value = "";
     } else {
-        let multiplierYears = parseInt(commuteValSetting) || 12; // Default 12 varsh ya setting anusaar
-        let t12=t10*0.20;
-        document.getElementById("t12").value=Math.round(t12);
-        let v4=parseFloat(document.getElementById("t4").value)||0;
-        document.getElementById("t13").value=Math.round(v4*t12*multiplierYears);
-        let t14=t10-t12+t11;
-        document.getElementById("t14").value=Math.round(t14);
+        let pct = parseFloat(commutePctSetting) / 100; 
+        let t12 = t10 * pct; 
+        document.getElementById("t12").value = Math.round(t12);
+
+        let v4 = parseFloat(document.getElementById("t4").value) || 0; 
+        let t13 = t12 * 12 * v4;
+        document.getElementById("t13").value = Math.round(t13);
+
+        let t14 = t10 - t12 + t11; 
+        document.getElementById("t14").value = Math.round(t14);
     }
 
-    let t15 = (showT5 * v9) / 4;
-    t15 = Math.min(t15, 2500000);
-    document.getElementById("t15").value = Math.round(t15);
-    let t16=v6*0.30;
-    document.getElementById("t16").value=Math.round(t16);
-    let t17=t16*(v7/100);
-    document.getElementById("t17").value=Math.round(t17);
-    let t18=t16+t17;
-    document.getElementById("t18").value=Math.round(t18);
+    if (gratOpt === "yes") {
+        let t15 = (showT5 * v9) / 4;
+        t15 = Math.min(t15, 2500000); 
+        document.getElementById("t15").value = Math.round(t15);
+    } else {
+        document.getElementById("t15").value = "0";
+    }
 
-    let hideIds = ["t3","t11","t12","t13","t14","t15","t16","t17","t18"];
+    let t16 = v6 * 0.30; 
+    document.getElementById("t16").value = Math.round(t16);
+    let t17 = t16 * (v7 / 100);
+    document.getElementById("t17").value = Math.round(t17);
+    let t18 = t16 + t17;
+    document.getElementById("t18").value = Math.round(t18);
+
+    // यदि मृत्यु तिथि (t19) दर्ज है, तो कर्मचारी की पेंशन, महंगाई, कम्यूट वैल्यू, कम्यूट योग, कुल पेंशन, और सामान्य ग्रेच्युटी छुपा दी जाएगी
+    let pensionFieldsToHide = ["t3", "t10", "t11", "t12", "t13", "t14", "t15"];
 
     if(!d){
-        hideIds.forEach(id=>{ document.getElementById(id).classList.remove("hide-value"); });
-        document.getElementById("t20").value="";
-        document.getElementById("t21").value="";
-    }else{
-        hideIds.forEach(id=>{ document.getElementById(id).classList.add("hide-value"); });
+        pensionFieldsToHide.forEach(id => { 
+            let el = document.getElementById(id);
+            if(el) el.classList.remove("hide-value"); 
+        });
+        document.getElementById("t20").value = "";
+        document.getElementById("t21").value = "";
+    } else {
+        pensionFieldsToHide.forEach(id => { 
+            let el = document.getElementById(id);
+            if(el) el.classList.add("hide-value"); 
+        });
         let v5 = parseFloat(document.getElementById("t5").value) || 0;
         let t20 = v9 * v5;
         if (t20 > 2500000) t20 = 2500000;
@@ -672,6 +796,7 @@ function printForm() {
     let deathDate = document.getElementById("t19").value.trim();
     
     let ft3 = document.getElementById("p_f_t3");
+    let ft10 = document.getElementById("p_f_t10");
     let ft11 = document.getElementById("p_f_t11");
     let ft12 = document.getElementById("p_f_t12");
     let ft13 = document.getElementById("p_f_t13");
@@ -687,6 +812,7 @@ function printForm() {
 
     if (deathDate) {
         if(ft3) ft3.style.display = "none";
+        if(ft10) ft10.style.display = "none";
         if(ft11) ft11.style.display = "none";
         if(ft12) ft12.style.display = "none";
         if(ft13) ft13.style.display = "none";
@@ -701,6 +827,7 @@ function printForm() {
         if(rd3) rd3.style.display = "flex";
     } else {
         if(ft3) ft3.style.display = "flex";
+        if(ft10) ft10.style.display = "flex";
         if(ft11) ft11.style.display = "flex";
         if(ft12) ft12.style.display = "flex";
         if(ft13) ft13.style.display = "flex";
@@ -722,6 +849,11 @@ function prepareFormData() {
     let deathDate = document.getElementById("t19").value.trim();
     return {
         id: document.getElementById("id").value,
+        printHeaderName: document.getElementById("printHeaderName").value,
+        deptType: document.getElementById("deptType").value,
+        employeeClass: document.getElementById("employeeClass").value,
+        gratuityOption: document.getElementById("gratuityOption").value,
+        commuteSetting: document.getElementById("commuteSetting").value,
         name: document.getElementById("combo1").value,
         post: document.getElementById("combo2").value,
         dob: document.getElementById("t1").value,
@@ -733,15 +865,15 @@ function prepareFormData() {
         ratePercent: document.getElementById("t7").value,
         da: document.getElementById("t8").value,
         total: document.getElementById("t9").value,
-        pension: document.getElementById("t10").value,
+        pension: deathDate ? "" : document.getElementById("t10").value,
         da2: deathDate ? "" : document.getElementById("t11").value,
         commutValue: deathDate ? "" : document.getElementById("t12").value,
         commutTotal: deathDate ? "" : document.getElementById("t13").value,
         totalPension: deathDate ? "" : document.getElementById("t14").value,
         gratuity: deathDate ? "" : document.getElementById("t15").value,
-        familyPension: deathDate ? "" : document.getElementById("t16").value,
-        familyDa: deathDate ? "" : document.getElementById("t17").value,
-        familyTotal: deathDate ? "" : document.getElementById("t18").value,
+        familyPension: document.getElementById("t16").value,
+        familyDa: document.getElementById("t17").value,
+        familyTotal: document.getElementById("t18").value,
         deathDate: document.getElementById("t19").value,
         deathGratuity: document.getElementById("t20").value,
         deathPension: document.getElementById("t21").value
@@ -758,6 +890,7 @@ function saveData(){
     .then(response=>{
         alert("Data Saved Successfully");
         document.getElementById("myForm").reset();
+        updateGratuityDefault();
         syncPrintForm();
     })
     .catch(error=>{
@@ -781,24 +914,66 @@ function searchData() {
         if (data.error) {
             alert("Data Search Successful: " + data.error);
         } else {
+            if (data.printHeaderName !== undefined) {
+                document.getElementById("printHeaderName").value = data.printHeaderName;
+            }
+            document.getElementById("deptType").value = data.deptType || "school";
+            document.getElementById("employeeClass").value = data.employeeClass || "";
+            if (data.commuteSetting) {
+                document.getElementById("commuteSetting").value = data.commuteSetting;
+            }
+            
             document.getElementById("combo1").value = data.name || "";
             document.getElementById("combo2").value = data.post || "";
-            document.getElementById("t1").value = data.dob || "";
-            document.getElementById("t2").value = data.joinDate || "";
+            
+            document.getElementById("t1").value = formatSheetDate(data.dob);
+            document.getElementById("t2").value = formatSheetDate(data.joinDate);
+            document.getElementById("t19").value = formatSheetDate(data.deathDate);
+            
             document.getElementById("t6").value = data.basicSalary || "";
             document.getElementById("t7").value = data.ratePercent || "";
-            document.getElementById("t19").value = data.deathDate || "";
 
-            setAgeRate();
-            setRetirementDate();
+            if (data.ageRate) {
+                document.getElementById("t4").value = data.ageRate;
+            } else {
+                setAgeRate();
+            }
+
+            if (data.retireDate) {
+                document.getElementById("t3").value = formatSheetDate(data.retireDate);
+            } else {
+                setRetirementDate();
+            }
+
+            if (data.gratuityOption) {
+                document.getElementById("gratuityOption").value = data.gratuityOption;
+            } else if (data.gratuity && parseFloat(data.gratuity) > 0) {
+                document.getElementById("gratuityOption").value = "yes";
+            } else {
+                updateGratuityDefault();
+            }
+
             calculateAll();
             
-            if (data.deathDate) {
-                document.getElementById("t20").value = data.deathGratuity || "";
-                document.getElementById("t21").value = data.deathPension || "";
-            }
-            syncPrintForm();
+            if (data.halfYear) document.getElementById("t5").value = data.halfYear;
+            if (data.da) document.getElementById("t8").value = data.da;
+            if (data.total) document.getElementById("t9").value = data.total;
+            if (data.pension) document.getElementById("t10").value = data.pension;
+            if (data.da2) document.getElementById("t11").value = data.da2;
+            if (data.commutValue) document.getElementById("t12").value = data.commutValue;
+            if (data.commutTotal) document.getElementById("t13").value = data.commutTotal;
+            if (data.totalPension) document.getElementById("t14").value = data.totalPension;
+            if (data.gratuity !== undefined && data.gratuity !== "") document.getElementById("t15").value = data.gratuity;
+            if (data.familyPension) document.getElementById("t16").value = data.familyPension;
+            if (data.familyDa) document.getElementById("t17").value = data.familyDa;
+            if (data.familyTotal) document.getElementById("t18").value = data.familyTotal;
 
+            if (document.getElementById("t19").value) {
+                if (data.deathGratuity) document.getElementById("t20").value = data.deathGratuity;
+                if (data.deathPension) document.getElementById("t21").value = data.deathPension;
+            }
+
+            syncPrintForm();
             alert("Data Search Successful");
         }
     })
@@ -830,6 +1005,34 @@ function updateData() {
         alert("Error Updating Data");
         console.log(error);
     });
+}
+
+function deleteData() {
+    let idValue = document.getElementById("id").value.trim();
+    if (!idValue) {
+        alert("कृपया डिलीट करने के लिए पहले 'आईडी' टाइप करें।");
+        return;
+    }
+
+    if (confirm("क्या आप वाकई इस आईडी का डेटा डिलीट करना चाहते हैं?")) {
+        let data = { action: "delete", id: idValue };
+
+        fetch(scriptURL, {
+            method: "POST",
+            body: JSON.stringify(data)
+        })
+        .then(res => res.text())
+        .then(response => {
+            alert("Data Deleted Successfully");
+            document.getElementById("myForm").reset();
+            updateGratuityDefault();
+            syncPrintForm();
+        })
+        .catch(error => {
+            alert("Error Deleting Data");
+            console.log(error);
+        });
+    }
 }
 </script>
 </body>
