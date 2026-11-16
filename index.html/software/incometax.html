@@ -78,6 +78,13 @@
             <button class="action-btn btn-blue" onclick="searchData()">Search</button>
             <button class="action-btn btn-red" onclick="deleteData()">Delete</button>
         </div>
+        <div class="control-unit" style="background: #e2e8f0; padding: 1px; border: 1px solid #cbd5e1;">
+            <label>📌 कटौती चयन: </label>
+            <select id="deductionTypeSelect" onchange="onDeductionTypeChange()">
+                <option value="gpf" selected>GPF (Manual Input)</option>
+                <option value="nps">NPS (Auto 10% Basic+DA)</option>
+            </select>
+        </div>
         <div class="control-unit" style="background: #fef08a; padding: 1px; border: 1px solid #eab308;">
             <label>📈 वेतन वृद्धि: </label>
             <select id="incMonthSelect">
@@ -126,8 +133,8 @@
 
     <div class="header-title-area">
         आयकर आगणन वित्तीय वर्ष - 
-        <input type="text" id="dynamic_fy_start" class="fy-input" value="2025" oninput="updateMonthsByYear()"> - 
-        <input type="text" id="dynamic_fy_end" class="fy-input" value="26" style="width:25px;" oninput="updateMonthsByYear()">
+        <input type="text" id="dynamic_fy_start" class="fy-input" value="2026" oninput="updateMonthsByYear()"> - 
+        <input type="text" id="dynamic_fy_end" class="fy-input" value="27" style="width:25px;" oninput="updateMonthsByYear()">
     </div>
 
     <table class="sheet-table">
@@ -172,7 +179,7 @@
                 <th width="8%">HRA</th>
                 <th width="11%">Other Allow</th>
                 <th width="11%">Total pay</th>
-                <th width="9%">GPF/NPS</th>
+                <th width="9%" id="th_gpf_nps">GPF/NPS</th>
                 <th width="9%">GPF Adv</th>
                 <th width="7%">GIS</th>
                 <th width="8%">ADV. IT</th>
@@ -247,7 +254,7 @@
         </tr>
         <tr>
             <td>2</td><td class="text-left">घटाये मकान किराया भत्ता / ऋण ब्याज भुगतान</td><td><input type="number" id="tax_2" class="cell-input" value="0" oninput="recalculateSystem()"></td>
-            <td class="text-left" width="33%">जी० पी० एफ० / एन०पी०एस०</td><td id="ded_gpf" width="15%">0</td>
+            <td class="text-left" width="33%" id="lbl_ded_gpf_nps">जी० पी० एफ० / एन०पी०एस०</td><td id="ded_gpf" width="15%">0</td>
         </tr>
         <tr>
             <td>3</td><td class="text-left" id="lbl_std_ded">मानक कटौती (Standard Deduction)</td><td id="tax_3" class="bold-row">50000</td>
@@ -354,7 +361,7 @@
             <tr>
                 <td class="bold-row">14</td>
                 <td class="text-left">घटायें अग्रिम कर (Total ADV. IT Paid)</td>
-                <td id="fin_v1_14" class="bold-row">0</td>
+                <td><input type="number" id="fin_v1_14" class="cell-input bold-row" value="0" oninput="recalculateSystem()"></td>
             </tr>
             <tr style="background:#bbf7d0; font-size:10.5px;">
                 <td class="bold-row">15</td>
@@ -436,7 +443,7 @@
             <tr>
                 <td class="bold-row">14</td>
                 <td class="text-left">घटायें अग्रिम कर (Total ADV. IT Paid)</td>
-                <td id="fin_v2_14" class="bold-row">0</td>
+                <td><input type="number" id="fin_v2_14" class="cell-input bold-row" value="0" oninput="recalculateSystem()"></td>
             </tr>
             <tr style="background:#bbf7d0; font-size:10.5px;">
                 <td class="bold-row">15</td>
@@ -490,8 +497,8 @@
     function updateMonthsByYear() {
         let startYearStr = document.getElementById('dynamic_fy_start').value.trim();
         let endYearStr = document.getElementById('dynamic_fy_end').value.trim();
-        let startShort = startYearStr.substring(2,4) || "25";
-        let endShort = endYearStr || "26";
+        let startShort = startYearStr.substring(2,4) || "26";
+        let endShort = endYearStr || "27";
 
         baseMonths.forEach((m, idx) => {
             let labelCell = document.getElementById(`lbl_month_${idx}`);
@@ -508,6 +515,18 @@
         let val = parseFloat(document.getElementById(`${type}_${idx}`).value) || 0;
         for (let i = idx; i < baseMonths.length; i++) {
             document.getElementById(`${type}_${i}`).value = val;
+        }
+        recalculateSystem();
+    }
+
+    function onDeductionTypeChange() {
+        let mode = document.getElementById('deductionTypeSelect').value;
+        let th_gpf_nps = document.getElementById('th_gpf_nps');
+        
+        if(mode === 'nps') {
+            th_gpf_nps.textContent = "NPS";
+        } else {
+            th_gpf_nps.textContent = "GPF";
         }
         recalculateSystem();
     }
@@ -553,6 +572,7 @@
     }
 
     function recalculateSystem() {
+        let deductionMode = document.getElementById('deductionTypeSelect').value;
         let tot_b = 0, tot_d = 0, tot_h = 0, tot_o = 0, tot_p = 0;
         let tot_g = 0, tot_ga = 0, tot_gi = 0, tot_adv = 0, tot_n = 0;
 
@@ -565,7 +585,19 @@
             let t_pay = b + d + h + o;
             document.getElementById(`total_${i}`).textContent = t_pay;
 
-            let g = parseFloat(document.getElementById(`gpf_${i}`).value) || 0;
+            let gpfInputEl = document.getElementById(`gpf_${i}`);
+            
+            if(deductionMode === 'nps') {
+                let autoNps = Math.round((b + d) * 0.10);
+                gpfInputEl.value = autoNps;
+                gpfInputEl.readOnly = true;
+                gpfInputEl.style.background = "#e2e8f0";
+            } else {
+                gpfInputEl.readOnly = false;
+                gpfInputEl.style.background = "transparent";
+            }
+
+            let g = parseFloat(gpfInputEl.value) || 0;
             let ga = parseFloat(document.getElementById(`gpfadv_${i}`).value) || 0;
             let gi = parseFloat(document.getElementById(`gis_${i}`).value) || 0;
             let adv = parseFloat(document.getElementById(`advit_${i}`).value) || 0;
@@ -675,7 +707,7 @@
         calculateNewRegime(taxable_income, g_adv_it);
     }
 
-    function calculateOldRegime(income, advPaid) {
+    function calculateOldRegime(income, advPaidFromSalary) {
         let rem = income; let s1 = 0, s2 = 0, s3 = 0, s4 = 0;
         s1 = Math.min(250000, rem); rem -= s1;
         if(rem > 0) { s2 = Math.min(250000, rem); rem -= s2; }
@@ -702,11 +734,17 @@
         let payable = tax_minus_rebate + cess;
         document.getElementById('fin_v1_12').textContent = payable;
         let relief = parseFloat(document.getElementById('fin_v1_13').value) || 0;
-        document.getElementById('fin_v1_14').textContent = advPaid;
-        document.getElementById('fin_v1_15').textContent = payable - relief - advPaid;
+        
+        let manualAdvIt1 = parseFloat(document.getElementById('fin_v1_14').value);
+        if(isNaN(manualAdvIt1) || document.getElementById('fin_v1_14').value === "") {
+            manualAdvIt1 = advPaidFromSalary;
+            document.getElementById('fin_v1_14').value = manualAdvIt1;
+        }
+
+        document.getElementById('fin_v1_15').textContent = payable - relief - manualAdvIt1;
     }
 
-    function calculateNewRegime(income, advPaid) {
+    function calculateNewRegime(income, advPaidFromSalary) {
         let rem = income; let s1=0, s2=0, s3=0, s4=0, s5=0, s6=0, s7=0;
         s1 = Math.min(400000, rem); rem -= s1;
         if(rem > 0) { s2 = Math.min(400000, rem); rem -= s2; }
@@ -715,8 +753,17 @@
         if(rem > 0) { s5 = Math.min(400000, rem); rem -= s5; }
         if(rem > 0) { s6 = Math.min(400000, rem); rem -= s6; }
         if(rem > 0) { s7 = rem; }
-        let t1 = 0, t2 = Math.round(s2 * 0.05), t3 = Math.round(s3 * 0.10), t4 = Math.round(s4 * 0.15), t5 = Math.round(s5 * 0.20), t6 = Math.round(s6 * 0.25), t7 = Math.round(s7 * 0.30);
+        
+        let t1 = 0;
+        let t2 = Math.round(s2 * 0.05);
+        let t3 = Math.round(s3 * 0.10);
+        let t4 = Math.round(s4 * 0.15);
+        let t5 = Math.round(s5 * 0.20);
+        let t6 = Math.round(s6 * 0.25);
+        let t7 = Math.round(s7 * 0.30);
+        
         let total_tax = t1 + t2 + t3 + t4 + t5 + t6 + t7;
+        
         document.getElementById('v2_s1_base').textContent = s1;
         document.getElementById('v2_s2_base').textContent = s2;
         document.getElementById('v2_s3_base').textContent = s3;
@@ -724,6 +771,7 @@
         document.getElementById('v2_s5_base').textContent = s5;
         document.getElementById('v2_s6_base').textContent = s6;
         document.getElementById('v2_s7_base').textContent = s7;
+        
         document.getElementById('v2_s1_tax').textContent = t1;
         document.getElementById('v2_s2_tax').textContent = t2;
         document.getElementById('v2_s3_tax').textContent = t3;
@@ -731,9 +779,19 @@
         document.getElementById('v2_s5_tax').textContent = t5;
         document.getElementById('v2_s6_tax').textContent = t6;
         document.getElementById('v2_s7_tax').textContent = t7;
+        
         document.getElementById('v2_tax_total').textContent = total_tax;
         document.getElementById('fin_v2_8').textContent = total_tax;
-        let rebate = 0; if (income <= 1200000 || total_tax <= 60000) { rebate = total_tax; } else { let excess_income = income - 1200000; if (total_tax > excess_income + 60000) { rebate = total_tax - (excess_income + 60000); } }
+        
+        let rebate = 0; 
+        if (income <= 1200000 || total_tax <= 60000) { 
+            rebate = total_tax; 
+        } else { 
+            let excess_income = income - 1200000; 
+            if (total_tax > excess_income + 60000) { 
+                rebate = total_tax - (excess_income + 60000); 
+            } 
+        }
         document.getElementById('fin_v2_9').textContent = rebate;
         let tax_minus_rebate = Math.max(0, total_tax - rebate);
         document.getElementById('fin_v2_10').textContent = tax_minus_rebate;
@@ -742,13 +800,17 @@
         let payable = tax_minus_rebate + cess;
         document.getElementById('fin_v2_12').textContent = payable;
         let relief = parseFloat(document.getElementById('fin_v2_13').value) || 0;
-        document.getElementById('fin_v2_14').textContent = advPaid;
-        document.getElementById('fin_v2_15').textContent = payable - relief - advPaid;
+        
+        let manualAdvIt2 = parseFloat(document.getElementById('fin_v2_14').value);
+        if(isNaN(manualAdvIt2) || document.getElementById('fin_v2_14').value === "") {
+            manualAdvIt2 = advPaidFromSalary;
+            document.getElementById('fin_v2_14').value = manualAdvIt2;
+        }
+
+        document.getElementById('fin_v2_15').textContent = payable - relief - manualAdvIt2;
     }
 
-    // फॉर्म रिसेट या साफ़ करने का लॉजिक (सभी इनपुट फ़ील्ड को ज़ीरो या ब्लैंक करना)
     function clearFormFields() {
-        // टेक्स्ट मेटाडेटा को खाली करना
         document.getElementById('meta_block').value = "";
         document.getElementById('meta_mobile').value = "";
         document.getElementById('meta_school').value = "";
@@ -761,7 +823,6 @@
         document.getElementById('meta_ifsc').value = "";
         document.getElementById('searchQuery').value = "";
 
-        // मंथली टेबल को 0 करना
         for(let i=0; i<12; i++) {
             document.getElementById(`pay_${i}`).value = 0;
             document.getElementById(`da_${i}`).value = 0;
@@ -773,7 +834,6 @@
             document.getElementById(`advit_${i}`).value = 0;
         }
 
-        // एरियर व एक्स्ट्रा को क्लियर करना
         const extraFields = [
             'ar1_note','ar1_period','ar1_pay','ar1_gpf','ar1_gpf_adv','ar1_gis','ar1_adv_it',
             'ar2_note','ar2_period','ar2_pay','ar2_gpf','ar2_gpf_adv','ar2_gis','ar2_adv_it',
@@ -785,11 +845,10 @@
             if(el) el.value = (el.type === 'number') ? 0 : "";
         });
 
-        // टैक्स डिडक्शन को रीसेट करना
         const taxFields = [
             'tax_2', 'ded_lic', 'ded_tuition', 'ded_nsc', 'ded_fd', 'ded_hl', 
             'ded_ssy', 'ded_nps', 'ded_other', 'tax_80u', 'tax_80ccd2', 'tax_80d', 
-            'tax_other_ded', 'fin_v1_13', 'fin_v2_13'
+            'tax_other_ded', 'fin_v1_13', 'fin_v1_14', 'fin_v2_13', 'fin_v2_14'
         ];
         taxFields.forEach(f => {
             let el = document.getElementById(f);
@@ -801,8 +860,6 @@
 
     function resetForm() { clearFormFields(); }
 
-    // ================= LOCALSTORAGE DATA ENGINE (SAVE, UPDATE, SEARCH, DELETE) =================
-    
     function getFormSnapshot() {
         let snapshot = {
             metadata: {
@@ -819,6 +876,7 @@
                 pan: document.getElementById('meta_pan').value,
                 ifsc: document.getElementById('meta_ifsc').value
             },
+            deductionMode: document.getElementById('deductionTypeSelect').value,
             monthly: [],
             extras: {
                 ar1_note: document.getElementById('ar1_note').value, ar1_period: document.getElementById('ar1_period').value, ar1_pay: document.getElementById('ar1_pay').value, ar1_gpf: document.getElementById('ar1_gpf').value, ar1_gpf_adv: document.getElementById('ar1_gpf_adv').value, ar1_gis: document.getElementById('ar1_gis').value, ar1_adv_it: document.getElementById('ar1_adv_it').value,
@@ -841,7 +899,9 @@
                 tax_80d: document.getElementById('tax_80d').value,
                 tax_other_ded: document.getElementById('tax_other_ded').value,
                 fin_v1_13: document.getElementById('fin_v1_13').value,
-                fin_v2_13: document.getElementById('fin_v2_13').value
+                fin_v1_14: document.getElementById('fin_v1_14').value,
+                fin_v2_13: document.getElementById('fin_v2_13').value,
+                fin_v2_14: document.getElementById('fin_v2_14').value
             }
         };
 
@@ -877,7 +937,7 @@
         storedData[id] = getFormSnapshot();
         localStorage.setItem('tax_records', JSON.stringify(storedData));
         alert("बधाई हो! ID: " + id + " का डेटा सफलतापूर्वक सेव कर लिया गया है।");
-        clearFormFields(); // सेव होने के बाद फॉर्म खाली करें
+        clearFormFields();
     }
 
     function updateData() {
@@ -896,7 +956,7 @@
         storedData[id] = getFormSnapshot();
         localStorage.setItem('tax_records', JSON.stringify(storedData));
         alert("सफलतापूर्वक! ID: " + id + " का डेटा अपडेट कर दिया गया है।");
-        clearFormFields(); // अपडेट होने के बाद फॉर्म खाली करें
+        clearFormFields();
     }
 
     function searchData() {
@@ -926,6 +986,13 @@
         document.getElementById('meta_ac').value = record.metadata.ac || "";
         document.getElementById('meta_pan').value = record.metadata.pan || "";
         document.getElementById('meta_ifsc').value = record.metadata.ifsc || "";
+
+        if(record.deductionMode) {
+            document.getElementById('deductionTypeSelect').value = record.deductionMode;
+        } else {
+            document.getElementById('deductionTypeSelect').value = 'gpf';
+        }
+        onDeductionTypeChange();
 
         updateMonthsByYear();
 
@@ -986,13 +1053,14 @@
         document.getElementById('tax_80d').value = record.taxDeductions.tax_80d || 0;
         document.getElementById('tax_other_ded').value = record.taxDeductions.tax_other_ded || 0;
         document.getElementById('fin_v1_13').value = record.taxDeductions.fin_v1_13 || 0;
+        document.getElementById('fin_v1_14').value = record.taxDeductions.fin_v1_14 || 0;
         document.getElementById('fin_v2_13').value = record.taxDeductions.fin_v2_13 || 0;
+        document.getElementById('fin_v2_14').value = record.taxDeductions.fin_v2_14 || 0;
 
         recalculateSystem();
         alert("सफलतापूर्वक! ID '" + query + "' का पूरा डेटा लोड कर दिया गया है।");
     }
 
-    // नया डिलीट फंक्शन (डेटा को हटाने के लिए)
     function deleteData() {
         let query = document.getElementById('searchQuery').value.trim();
         if(!query) {
@@ -1007,13 +1075,12 @@
             return;
         }
 
-        // पुष्टि (Confirm) करना कि यूजर गलती से डिलीट न कर दे
         let confirmDelete = confirm("क्या आप निश्चित रूप से ID: " + query + " का डेटा हमेशा के लिए डिलीट करना चाहते हैं?");
         if(confirmDelete) {
-            delete storedData[query]; // मेमोरी से हटाना
-            localStorage.setItem('tax_records', JSON.stringify(storedData)); // अपडेटेड लिस्ट सेव करना
+            delete storedData[query];
+            localStorage.setItem('tax_records', JSON.stringify(storedData));
             alert("सफलतापूर्वक! ID: " + query + " का डेटा डिलीट कर दिया गया है।");
-            clearFormFields(); // स्क्रीन साफ़ करना
+            clearFormFields();
         }
     }
 
